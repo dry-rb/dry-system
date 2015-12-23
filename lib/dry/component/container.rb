@@ -10,7 +10,7 @@ module Dry
     class Container
       extend Dry::Container::Mixin
 
-      setting :env, ENV.fetch('RACK_ENV', :development).to_sym
+      setting :env
       setting :root, Pathname.pwd.freeze
       setting :auto_register
       setting :app
