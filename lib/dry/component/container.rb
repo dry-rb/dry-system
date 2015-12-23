@@ -68,7 +68,7 @@ module Dry
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
           component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
-          component = Rodakase.Component(component_path)
+          component = Component.Loader(component_path)
 
           next if key?(component.identifier)
 
@@ -128,7 +128,7 @@ module Dry
       end
 
       def self.require_component(key, &block)
-        component = Rodakase.Component(key)
+        component = Component.Loader(key)
         path = load_paths.detect { |p| p.join(component.file).exist? }
 
         if path

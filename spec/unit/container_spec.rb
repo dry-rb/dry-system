@@ -1,7 +1,9 @@
-RSpec.describe Rodakase::Container do
+require 'dry/component/container'
+
+RSpec.describe Dry::Component::Container do
   before do
     module Test
-      class Container < Rodakase::Container
+      class Container < Dry::Component::Container
         setting :root, SPEC_ROOT.join('fixtures/test').realpath
 
         configure do

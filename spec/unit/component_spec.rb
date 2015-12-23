@@ -1,6 +1,6 @@
-require 'rodakase/component'
+require 'dry/component/loader'
 
-RSpec.describe Rodakase::Component do
+RSpec.describe Dry::Component::Loader do
   before do
     module Test
       class Bar
@@ -47,13 +47,13 @@ RSpec.describe Rodakase::Component do
   end
 
   context 'from identifier' do
-    subject(:component) { Rodakase::Component('test.bar') }
+    subject(:component) { Dry::Component::Loader('test.bar') }
 
     it_behaves_like 'a valid component'
   end
 
   context 'from path' do
-    subject(:component) { Rodakase::Component('test/bar') }
+    subject(:component) { Dry::Component::Loader('test/bar') }
 
     it_behaves_like 'a valid component'
   end
