@@ -68,7 +68,7 @@ Application['utils.logger']
 ## Auto-Registration
 
 By using simple naming conventions we can automatically register objects within
-out container.
+our container.
 
 Let's provide a custom logger object and put it under a custom load-path that we
 will configure:
@@ -114,7 +114,7 @@ Import = Application.import_module
 
 # in a class definition you simply specify what it needs
 class PostPublisher
-  Import['utils.logger']
+  include Import['utils.logger']
 
   def call(post)
     # some stuff
@@ -207,3 +207,17 @@ end
 Application.options.foo # => "bar"
 ```
 
+## Underlying Tools
+
+`dry-component` uses [dry-container](https://github.com/dryrb/dry-container) and
+[dry-auto_inject](https://github.com/dryrb/dry-auto_inject) under the hood. These
+gems are very small and simple with a total 254LOC. Just saying.
+
+## Status and Roadmap
+
+Will be released soon. Please test it out and provide feedback. Report any issues
+and feature requests too, thanks <3.
+
+## LICENSE
+
+See `LICENSE` file.
