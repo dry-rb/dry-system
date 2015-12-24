@@ -15,153 +15,164 @@ module Dry
       setting :auto_register
       setting :app
 
-      def self.configure(env = config.env, &block)
-        if !configured?
-          super() do |config|
-            app_config = Config.load(root, env)
-            config.app = app_config if app_config
+      class << self
+        def configure(env = config.env, &_block)
+          unless configured?
+            super() do |config|
+              Config.load(root, env).tap do |app_config|
+                config.app = app_config if app_config
+              end
+            end
+
+            load_paths!('core')
+            @_configured = true
           end
 
-          load_paths!('core')
+          yield(self) if block_given?
 
-          @_configured = true
+          self
         end
 
-        yield(self)
-
-        self
-      end
-
-      def self.finalize(name, &block)
-        finalizers[name] = block
-      end
-
-      def self.configured?
-        @_configured
-      end
-
-      def self.finalize!(&block)
-        yield(self) if block
-
-        Dir[root.join('core/boot/**/*.rb')].each do |path|
-          boot!(File.basename(path, '.rb').to_sym)
+        def finalize(name, &block)
+          finalizers[name] = block
         end
 
-        if config.auto_register
-          Array(config.auto_register).each(&method(:auto_register!))
+        def configured?
+          @_configured
         end
 
-        freeze
-      end
+        def finalize!(&_block)
+          yield(self) if block_given?
 
-      def self.import_module
-        auto_inject = Dry::AutoInject(self)
+          Dir[root.join('core/boot/**/*.rb')].each do |path|
+            boot!(File.basename(path, '.rb').to_sym)
+          end
 
-        -> *keys {
-          keys.each { |key| load_component(key) unless key?(key) }
-          auto_inject[*keys]
-        }
-      end
+          auto_register.each(&method(:auto_register!)) if auto_register?
 
-      def self.auto_register!(dir, &block)
-        dir_root = root.join(dir.to_s.split('/')[0])
+          freeze
+        end
 
-        Dir["#{root}/#{dir}/**/*.rb"].each do |path|
-          component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
-          component = Component.Loader(component_path)
+        def import_module
+          auto_inject = Dry::AutoInject(self)
 
-          next if key?(component.identifier)
+          -> *keys {
+            keys.each { |key| load_component(key) unless key?(key) }
+            auto_inject[*keys]
+          }
+        end
 
-          Kernel.require component.path
+        def auto_register!(dir, &_block)
+          dir_root = root.join(dir.to_s.split('/')[0])
 
-          if block
-            register(component.identifier, yield(component.constant))
+          Dir["#{root}/#{dir}/**/*.rb"].each do |path|
+            component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
+            Component.Loader(component_path).tap do |component|
+              next if key?(component.identifier)
+
+              Kernel.require component.path
+
+              if block_given?
+                register(component.identifier, yield(component.constant))
+              else
+                register(component.identifier) { component.instance }
+              end
+            end
+          end
+
+          self
+        end
+
+        def boot!(name)
+          check_component_identifier!(name)
+          return self unless booted?(name)
+          boot(name)
+          self
+        end
+
+        def boot(name)
+          require "core/boot/#{name}.rb"
+
+          finalizers[name].tap do |finalizer|
+            finalizer.() if finalizer
+          end
+
+          booted[name] = true
+        end
+
+        def booted?(name)
+          !booted.key?(name)
+        end
+
+        def require(*paths)
+          paths.flat_map { |path|
+            path.include?('*') ? Dir[root.join(path)] : root.join(path)
+          }.each { |path|
+            Kernel.require path.to_s
+          }
+        end
+
+        def load_component(key)
+          require_component(key) { |klass| register(key) { klass.new } }
+        end
+
+        def require_component(key, &block)
+          component = Component.Loader(key)
+          path = load_paths.detect { |p| p.join(component.file).exist? }
+
+          if path
+            Kernel.require component.path
+            yield(component.constant) if block
           else
-            register(component.identifier) { component.instance }
+            fail ArgumentError, "could not resolve require file for #{key}"
           end
         end
 
-        self
-      end
-
-      def self.boot!(name)
-        unless name.is_a?(Symbol)
-          raise ArgumentError, 'component identifier must be a symbol'
+        def root
+          config.root
         end
 
-        unless root.join("core/boot/#{name}.rb").exist?
-          raise ArgumentError, "component identifier +#{name}+ is invalid or boot file is missing"
+        def load_paths!(*dirs)
+          dirs.map(&:to_s).each do |dir|
+            path = root.join(dir)
+            load_paths << path
+            $LOAD_PATH.unshift(path.to_s)
+          end
+          self
         end
 
-        return self unless boot?(name)
-
-        boot(name)
-
-        finalizer = finalizers[name]
-        finalizer.() if finalizer
-
-        booted[name] = true
-
-        self
-      end
-
-      def self.boot(name)
-        require "core/boot/#{name}.rb"
-      end
-
-      def self.boot?(name)
-        ! booted.key?(name)
-      end
-
-      def self.require(*paths)
-        paths
-          .flat_map { |path|
-          path.include?('*') ? Dir[root.join(path)] : root.join(path)
-        }
-          .each { |path|
-          Kernel.require path.to_s
-        }
-      end
-
-      def self.load_component(key)
-        require_component(key) { |klass| register(key) { klass.new } }
-      end
-
-      def self.require_component(key, &block)
-        component = Component.Loader(key)
-        path = load_paths.detect { |p| p.join(component.file).exist? }
-
-        if path
-          Kernel.require component.path
-          yield(component.constant) if block
-        else
-          raise ArgumentError, "could not resolve require file for #{key}"
+        def load_paths
+          @_load_paths ||= []
         end
-      end
 
-      def self.root
-        config.root
-      end
-
-      def self.load_paths!(*dirs)
-        dirs.map(&:to_s).each do |dir|
-          path = root.join(dir)
-          load_paths << path
-          $LOAD_PATH.unshift(path.to_s)
+        def booted
+          @_booted ||= {}
         end
-        self
-      end
 
-      def self.load_paths
-        @_load_paths ||= []
-      end
+        def finalizers
+          @_finalizers ||= {}
+        end
 
-      def self.booted
-        @_booted ||= {}
-      end
+        private
 
-      def self.finalizers
-        @_finalizers ||= {}
+        def auto_register
+          Array(config.auto_register)
+        end
+
+        def auto_register?
+          !auto_register.empty?
+        end
+
+        def check_component_identifier!(name)
+          fail(
+            ArgumentError,
+            'component identifier must be a symbol'
+          ) unless name.is_a?(Symbol)
+          fail(
+            ArgumentError,
+            "component identifier +#{name}+ is invalid or boot file is missing"
+          ) unless root.join("core/boot/#{name}.rb").exist?
+        end
       end
     end
   end

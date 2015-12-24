@@ -60,7 +60,10 @@ RSpec.describe Dry::Component::Container do
     it 'expects identifier to point to an existing boot file' do
       expect {
         Test::Container.boot!(:foo)
-      }.to raise_error(ArgumentError, 'component identifier +foo+ is invalid or boot file is missing')
+      }.to raise_error(
+        ArgumentError,
+        'component identifier +foo+ is invalid or boot file is missing'
+      )
     end
   end
 end

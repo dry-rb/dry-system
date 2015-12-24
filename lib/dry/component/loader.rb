@@ -27,11 +27,11 @@ module Dry
       end
 
       def name
-        Inflecto.camelize(path)
+        @name ||= Inflecto.camelize(path)
       end
 
       def constant
-        Inflecto.constantize(name)
+        @constant ||= Inflecto.constantize(name)
       end
 
       def instance(*args)
