@@ -46,7 +46,13 @@ RSpec.describe Dry::Component::Loader do
     end
   end
 
-  context 'from identifier' do
+  context 'from identifier as a symbol' do
+    subject(:component) { Dry::Component::Loader(:'test.bar') }
+
+    it_behaves_like 'a valid component'
+  end
+
+  context 'from identifier as a string' do
     subject(:component) { Dry::Component::Loader('test.bar') }
 
     it_behaves_like 'a valid component'

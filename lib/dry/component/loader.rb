@@ -16,11 +16,11 @@ module Dry
       attr_reader :identifier, :path, :file
 
       def self.identifier(input)
-        input.gsub(PATH_SEPARATOR, IDENTIFIER_SEPARATOR)
+        input.to_s.gsub(PATH_SEPARATOR, IDENTIFIER_SEPARATOR)
       end
 
       def self.path(input)
-        input.gsub(IDENTIFIER_SEPARATOR, PATH_SEPARATOR)
+        input.to_s.gsub(IDENTIFIER_SEPARATOR, PATH_SEPARATOR)
       end
 
       def initialize(identifier, path)
