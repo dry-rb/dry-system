@@ -213,11 +213,6 @@ Application.options.foo # => "bar"
 [dry-auto_inject](https://github.com/dryrb/dry-auto_inject) under the hood. These
 gems are very small and simple with a total 254LOC. Just saying.
 
-## Status and Roadmap
-
-Will be released soon. Please test it out and provide feedback. Report any issues
-and feature requests too, thanks <3.
-
 ## LICENSE
 
 See `LICENSE` file.
