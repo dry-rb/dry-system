@@ -8,7 +8,7 @@ module Dry
       def self.load(root, env)
         path = root.join('config').join('application.yml')
 
-        return unless File.exist?(path)
+        return {} unless File.exist?(path)
 
         yaml = YAML.load_file(path)
 

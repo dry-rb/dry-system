@@ -14,17 +14,14 @@ module Dry
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'core'.freeze
       setting :auto_register
-      setting :app
+      setting :options
 
       def self.configure(env = config.env, &block)
         return self if configured?
 
         super() do |config|
           yield(config) if block
-
-          Config.load(root, env).tap do |app_config|
-            config.app = app_config if app_config
-          end
+          config.options = Config.load(root, env)
         end
 
         load_paths!(config.core_dir)
@@ -32,6 +29,10 @@ module Dry
         @configured = true
 
         self
+      end
+
+      def self.options
+        config.options
       end
 
       def self.finalize(name, &block)
