@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'memoizable', '~> 0.4'
   spec.add_runtime_dependency 'inflecto', '>= 0.0.2'
-  spec.add_runtime_dependency 'dry-container', '~> 0.2'
+  spec.add_runtime_dependency 'dry-container', '~> 0.2', '>= 0.2.7'
   spec.add_runtime_dependency 'dry-auto_inject', '~> 0.1'
   spec.add_runtime_dependency 'dry-configurable', '~> 0.1'
 
