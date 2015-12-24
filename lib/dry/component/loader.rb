@@ -29,13 +29,15 @@ module Dry
         @file = "#{path}.rb"
       end
 
-      memoize def name
+      def name
         Inflecto.camelize(path)
       end
+      memoize :name
 
-      memoize def constant
+      def constant
         Inflecto.constantize(name)
       end
+      memoize :constant
 
       def instance(*args)
         constant.new(*args)
