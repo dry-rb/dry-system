@@ -101,19 +101,22 @@ module Dry
 
       def self.boot!(name)
         check_component_identifier!(name)
-        return self unless booted?(name)
-        boot(name)
-        self
-      end
 
-      def self.boot(name)
-        require "#{config.core_dir}/boot/#{name}.rb"
+        return self unless booted?(name)
+
+        boot(name)
 
         finalizers[name].tap do |finalizer|
           finalizer.() if finalizer
         end
 
         booted[name] = true
+
+        self
+      end
+
+      def self.boot(name)
+        require "#{config.core_dir}/boot/#{name}"
       end
 
       def self.booted?(name)

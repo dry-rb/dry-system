@@ -45,6 +45,25 @@ RSpec.describe Dry::Component::Container do
     end
   end
 
+  describe '.boot' do
+    before do
+      class Test::Container < Dry::Component::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures/lazytest').realpath
+        end
+
+        load_paths!('lib')
+      end
+    end
+
+    it 'lazy-boot a given component' do
+      container.boot(:bar)
+
+      expect(Test.const_defined?(:Bar)).to be(true)
+      expect(container.key?('test.bar')).to be(false)
+    end
+  end
+
   describe '.boot!' do
     shared_examples_for 'a booted component' do
       it 'boots a given component and finalizes it' do
