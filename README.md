@@ -199,6 +199,7 @@ Now let's configure our container for a specific env:
 ``` ruby
 class Application < Dry::Component::Container
   configure('development') do |config|
+    config.name = :application # this is used to determine options file name
     config.root = '/my/app'
   end
 end
