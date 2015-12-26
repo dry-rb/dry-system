@@ -4,6 +4,7 @@ RSpec.describe Dry::Component::Config do
   before do
     class Test::App < Dry::Component::Container
       configure do |config|
+        config.name = :application
         config.root = SPEC_ROOT.join('fixtures/test').realpath
       end
     end

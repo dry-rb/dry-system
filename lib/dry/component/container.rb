@@ -22,7 +22,7 @@ module Dry
 
         super() do |config|
           yield(config) if block
-          config.options = Config.load(root, env)
+          config.options = Config.load(root, config.name, env)
         end
 
         load_paths!(config.core_dir)

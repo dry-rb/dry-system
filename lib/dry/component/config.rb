@@ -5,8 +5,8 @@ module Dry
     class Config
       extend Dry::Configurable
 
-      def self.load(root, env)
-        path = root.join('config').join('application.yml')
+      def self.load(root, name, env)
+        path = root.join('config').join("#{name}.yml")
 
         return {} unless File.exist?(path)
 
