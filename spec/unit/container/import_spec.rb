@@ -1,9 +1,7 @@
 require 'dry/component/container'
 
 RSpec.describe Dry::Component::Container, '.import' do
-  let(:app) do
-    Class.new(Dry::Component::Container)
-  end
+  subject(:app) { Class.new(Dry::Component::Container) }
 
   let(:db) do
     Class.new(Dry::Component::Container) do
@@ -11,13 +9,30 @@ RSpec.describe Dry::Component::Container, '.import' do
     end
   end
 
-  it 'imports one container into another' do
-    app.import(persistence: db)
+  shared_examples_for 'an extended container' do
+    it 'imports one container into another' do
+      expect(app.key?('persistence.users')).to be(false)
 
-    expect(app.key?('persistence.users')).to be(false)
+      app.finalize!
 
-    app.finalize!
+      expect(app['persistence.users']).to eql(%w(jane joe))
+    end
+  end
 
-    expect(app['persistence.users']).to eql(%w(jane joe))
+  context 'when a container has a name' do
+    before do
+      db.configure { |c| c.name = :persistence }
+      app.import(db)
+    end
+
+    it_behaves_like 'an extended container'
+  end
+
+  context 'when container does not have a name' do
+    before do
+      app.import(persistence: db)
+    end
+
+    it_behaves_like 'an extended container'
   end
 end

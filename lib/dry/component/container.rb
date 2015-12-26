@@ -11,6 +11,7 @@ module Dry
       extend Dry::Container::Mixin
 
       setting :env
+      setting :name
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'core'.freeze
       setting :auto_register
@@ -35,6 +36,10 @@ module Dry
         case other
         when Dry::Container::Namespace then super
         when Hash then imports.update(other)
+        else
+          if other < Component::Container
+            imports.update(other.config.name => other)
+          end
         end
       end
 
