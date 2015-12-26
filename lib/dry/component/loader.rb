@@ -1,4 +1,3 @@
-require 'memoizable'
 require 'inflecto'
 
 module Dry
@@ -8,8 +7,6 @@ module Dry
     end
 
     class Loader
-      include Memoizable
-
       IDENTIFIER_SEPARATOR = '.'.freeze
       PATH_SEPARATOR = '/'.freeze
 
@@ -32,12 +29,10 @@ module Dry
       def name
         Inflecto.camelize(path)
       end
-      memoize :name
 
       def constant
         Inflecto.constantize(name)
       end
-      memoize :constant
 
       def instance(*args)
         constant.new(*args)
