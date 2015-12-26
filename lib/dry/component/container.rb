@@ -31,6 +31,13 @@ module Dry
         self
       end
 
+      def self.import(other)
+        case other
+        when Dry::Container::Namespace then super
+        when Hash then imports.update(other)
+        end
+      end
+
       def self.options
         config.options
       end
@@ -45,6 +52,8 @@ module Dry
 
       def self.finalize!(&_block)
         yield(self) if block_given?
+
+        imports.each { |ns, container| import_container(ns, container) }
 
         Dir[root.join("#{config.core_dir}/boot/**/*.rb")].each do |path|
           boot!(File.basename(path, '.rb').to_sym)
@@ -155,7 +164,21 @@ module Dry
         @finalizers ||= {}
       end
 
+      def self.imports
+        @imports ||= {}
+      end
+
       private
+
+      def self.import_container(ns, container)
+        container.finalize!
+
+        items = container._container.each_with_object({}) { |(key, item), res|
+          res[[ns, key].join(config.namespace_separator)] = item
+        }
+
+        _container.update(items)
+      end
 
       def self.auto_register
         Array(config.auto_register)
