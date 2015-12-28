@@ -48,7 +48,7 @@ module Dry
       end
 
       def self.finalize(name, &block)
-        finalizers[name] = block
+        finalizers[name] = proc { block.(self) }
       end
 
       def self.configured?

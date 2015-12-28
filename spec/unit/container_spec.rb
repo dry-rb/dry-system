@@ -117,5 +117,19 @@ RSpec.describe Dry::Component::Container do
         end
       end
     end
+
+    it 'passes container to the finalizer block' do
+      class Test::Container < Dry::Component::Container
+        configure { |c| c.env = :awesome }
+
+        finalize(:foo) do |container|
+          register(:w00t, container.config.env)
+        end
+      end
+
+      Test::Container.finalizers[:foo].()
+
+      expect(Test::Container[:w00t]).to be(:awesome)
+    end
   end
 end
