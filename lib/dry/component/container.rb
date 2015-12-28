@@ -125,7 +125,7 @@ module Dry
 
       def self.require(*paths)
         paths.flat_map { |path|
-          path.include?('*') ? Dir[root.join(path)] : root.join(path)
+          path.to_s.include?('*') ? Dir[root.join(path)] : root.join(path)
         }.each { |path|
           Kernel.require path.to_s
         }

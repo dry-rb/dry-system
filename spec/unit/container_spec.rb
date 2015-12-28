@@ -20,13 +20,13 @@ RSpec.describe Dry::Component::Container do
 
     describe '.require' do
       it 'requires a single file' do
-        container.require('lib/test/models')
+        container.require(Pathname('lib/test/models'))
 
         expect(Test.const_defined?(:Models)).to be(true)
       end
 
       it 'requires many files when glob pattern is passed' do
-        container.require('lib/test/models/*.rb')
+        container.require(Pathname('lib/test/models/*.rb'))
 
         expect(Test::Models.const_defined?(:User)).to be(true)
         expect(Test::Models.const_defined?(:Book)).to be(true)
