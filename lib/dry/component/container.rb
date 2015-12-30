@@ -58,7 +58,9 @@ module Dry
       def self.finalize!(&_block)
         yield(self) if block_given?
 
-        imports.each { |ns, container| import_container(ns, container) }
+        imports.each do |ns, container|
+          import_container(ns, container.finalize!)
+        end
 
         Dir[root.join("#{config.core_dir}/boot/**/*.rb")].each do |path|
           boot!(File.basename(path, '.rb').to_sym)
@@ -132,18 +134,30 @@ module Dry
       end
 
       def self.load_component(key)
-        require_component(key) { |klass| register(key) { klass.new } }
+        component = Component.Loader(key)
+        src_key = component.namespaces[0]
+
+        if imports.key?(src_key)
+          src_container = imports[src_key]
+
+          src_container.load_component(
+            (component.namespaces - [src_key]).map(&:to_s).join('.')
+          )
+
+          import_container(src_key, src_container)
+        else
+          require_component(component) { |klass| register(key) { klass.new } }
+        end
       end
 
-      def self.require_component(key, &block)
-        component = Component.Loader(key)
+      def self.require_component(component, &block)
         path = load_paths.detect { |p| p.join(component.file).exist? }
 
         if path
           Kernel.require component.path
           yield(component.constant) if block
         else
-          fail ArgumentError, "could not resolve require file for #{key}"
+          fail ArgumentError, "could not resolve require file for #{component.identifier}"
         end
       end
 
@@ -179,8 +193,6 @@ module Dry
       private
 
       def self.import_container(ns, container)
-        container.finalize!
-
         items = container._container.each_with_object({}) { |(key, item), res|
           res[[ns, key].join(config.namespace_separator)] = item
         }

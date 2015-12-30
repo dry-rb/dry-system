@@ -26,6 +26,10 @@ module Dry
         @file = "#{path}.rb"
       end
 
+      def namespaces
+        identifier.split(IDENTIFIER_SEPARATOR).map(&:to_sym)
+      end
+
       def name
         Inflecto.camelize(path)
       end

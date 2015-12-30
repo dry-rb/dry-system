@@ -35,4 +35,36 @@ RSpec.describe Dry::Component::Container, '.import' do
 
     it_behaves_like 'an extended container'
   end
+
+  describe 'import module' do
+    it 'loads component when it was not loaded in the imported container yet' do
+      class Test::Other < Dry::Component::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures/import_test').realpath
+        end
+
+        load_paths!('lib')
+      end
+
+      class Test::Container < Dry::Component::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures/test').realpath
+        end
+
+        load_paths!('lib')
+
+        import other: Test::Other
+      end
+
+      module Test
+        Import = Container.import_module
+      end
+
+      class Test::Foo
+        include Test::Import['other.test.bar']
+      end
+
+      expect(Test::Foo.new.bar).to be_instance_of(Test::Bar)
+    end
+  end
 end

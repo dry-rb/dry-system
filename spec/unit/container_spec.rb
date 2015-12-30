@@ -33,9 +33,9 @@ RSpec.describe Dry::Component::Container do
       end
     end
 
-    describe '.require_component' do
-      it 'requires components from configured load paths' do
-        container.require_component('test.foo')
+    describe '.load_component' do
+      it 'loads and registers components from configured load paths' do
+        container.load_component('test.foo')
 
         expect(Test.const_defined?(:Foo)).to be(true)
         expect(Test.const_defined?(:Dep)).to be(true)
