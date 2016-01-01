@@ -58,7 +58,7 @@ module Dry
       def self.finalize!(&_block)
         yield(self) if block_given?
 
-        imports.each { |ns, container| import_container(ns, container) }
+        import_containers
 
         Dir[root.join("#{config.core_dir}/boot/**/*.rb")].each do |path|
           boot!(File.basename(path, '.rb').to_sym)
@@ -177,6 +177,10 @@ module Dry
       end
 
       private
+
+      def self.import_containers
+        imports.each { |ns, container| import_container(ns, container) }
+      end
 
       def self.import_container(ns, container)
         container.finalize!
