@@ -73,6 +73,7 @@ module Dry
         auto_inject = Dry::AutoInject(self)
 
         -> *keys {
+          import_containers
           keys.each { |key| load_component(key) unless key?(key) }
           auto_inject[*keys]
         }
