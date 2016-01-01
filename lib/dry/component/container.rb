@@ -176,13 +176,23 @@ module Dry
         @imports ||= {}
       end
 
+      def self.imported
+        @imported ||= {}
+      end
+
       private
+
+      def self.imported?(name)
+        imported.key?(name)
+      end
 
       def self.import_containers
         imports.each { |ns, container| import_container(ns, container) }
       end
 
       def self.import_container(ns, container)
+        return if imported?(ns)
+
         container.finalize!
 
         items = container._container.each_with_object({}) { |(key, item), res|
@@ -190,6 +200,8 @@ module Dry
         }
 
         _container.update(items)
+
+        imported[ns] = true
       end
 
       def self.auto_register
