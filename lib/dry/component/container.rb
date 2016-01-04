@@ -143,6 +143,14 @@ module Dry
           Kernel.require component.path
           yield(component.constant) if block
         else
+          imports.each do |ns, container|
+            begin
+              localized_key = key.sub(/^#{Regexp.escape(ns)}#{Regexp.escape(config.namespace_separator)}/, '')
+              return container.require_component(localized_key, &block)
+            rescue ArgumentError
+            end
+          end
+
           fail ArgumentError, "could not resolve require file for #{key}"
         end
       end
