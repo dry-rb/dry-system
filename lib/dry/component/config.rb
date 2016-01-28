@@ -3,8 +3,6 @@ require 'yaml'
 module Dry
   module Component
     class Config
-      extend Dry::Configurable
-
       def self.load(root, name, env)
         path = root.join('config').join("#{name}.yml")
 
@@ -12,11 +10,13 @@ module Dry
 
         yaml = YAML.load_file(path)
 
-        yaml.fetch(env.to_s).each do |key, value|
-          setting key.downcase.to_sym, ENV.fetch(key, value)
-        end
+        Class.new do
+          extend Dry::Configurable
 
-        config
+          yaml.fetch(env.to_s).each do |key, value|
+            setting key.downcase.to_sym, ENV.fetch(key, value)
+          end
+        end.config
       end
     end
   end
