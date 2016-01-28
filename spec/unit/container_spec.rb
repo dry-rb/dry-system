@@ -5,7 +5,18 @@ RSpec.describe Dry::Component::Container do
 
   context 'with default core dir' do
     before do
+      class Test::ImportableContainer < Dry::Component::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures/importable').realpath
+          config.auto_register = ['lib']
+        end
+
+        load_paths!('lib')
+      end
+
       class Test::Container < Dry::Component::Container
+        import other: Test::ImportableContainer
+
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures/test').realpath
         end
@@ -15,6 +26,15 @@ RSpec.describe Dry::Component::Container do
 
       module Test
         Import = Container.import_module
+      end
+    end
+
+    describe '.import_module' do
+      it 'makes components available from imported containers' do
+        container.require_component 'test.using_imported'
+
+        expect(Test.const_defined?(:ImportableDep)).to be(true)
+        expect(Test::UsingImported.new.importable_dep).to be_instance_of(Test::ImportableDep)
       end
     end
 
