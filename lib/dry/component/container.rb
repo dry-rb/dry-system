@@ -1,4 +1,6 @@
+require 'pathname'
 require 'inflecto'
+
 require 'dry-container'
 require 'dry-auto_inject'
 
