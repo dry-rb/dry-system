@@ -34,6 +34,10 @@ module Dry
         self
       end
 
+      def self.Loader(key)
+        Component.Loader(key)
+      end
+
       def self.import(other)
         case other
         when Dry::Container::Namespace then super
@@ -87,10 +91,10 @@ module Dry
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
           component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
-          Component.Loader(component_path).tap do |component|
+          Loader(component_path).tap do |component|
             next if key?(component.identifier)
 
-            Kernel.require component.path
+            Kernel.require path
 
             if block_given?
               register(component.identifier, yield(component.constant))
@@ -136,7 +140,7 @@ module Dry
       end
 
       def self.load_component(key)
-        component = Component.Loader(key)
+        component = Loader(key)
         src_key = component.namespaces[0]
 
         if imports.key?(src_key)
