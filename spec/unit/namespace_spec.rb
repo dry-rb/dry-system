@@ -1,10 +1,10 @@
 require 'dry/component/namespace'
-require SPEC_ROOT.join("fixtures/namespaced/namespace")
 
 RSpec.describe Dry::Component::Namespace do
   subject! { Tests::Namespaced }
 
   before(:all) do
+    require SPEC_ROOT.join("fixtures/namespaced/namespace")
     Tests::Namespaced.finalize!
   end
 
@@ -14,5 +14,9 @@ RSpec.describe Dry::Component::Namespace do
 
   it 'auto_register inside the namespace' do
     expect(subject['foos.bar']).to be_kind_of(Tests::Namespaced::Foos::Bar)
+  end
+
+  it 'works with auto inject' do
+    expect(Tests::Namespaced::Something.new.call).to be_kind_of(Tests::Namespaced::Imported)
   end
 end

@@ -157,14 +157,15 @@ module Dry
       end
 
       def self.require_component(component, &block)
-        path = load_paths.detect { |p| p.join(component.file).exist? }
-
-        if path
+        if root.join(component.file).exist?
+          require component.file
+        elsif path = load_paths.detect { |p| p.join(component.file).exist? }
           Kernel.require component.path
-          yield(component.constant) if block
         else
           fail ArgumentError, "could not resolve require file for #{component.identifier}"
         end
+
+        yield(component.constant) if block
       end
 
       def self.root
