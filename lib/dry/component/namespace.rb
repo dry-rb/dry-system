@@ -8,6 +8,7 @@ module Dry
         def extended(namespace)
           container = build(namespace)
           namespace.const_set(:Container, container)
+          namespace.const_set(:Import, container.import_module)
 
           namespace.extend SingleForwardable
           namespace.def_delegators container,
