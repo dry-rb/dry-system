@@ -53,7 +53,7 @@ require 'dry/component/container'
 
 class Application < Dry::Component::Container
   configure do |config|
-    config.root = '/my/app'
+    config.root = Pathname.new('./my/app')
   end
 end
 
