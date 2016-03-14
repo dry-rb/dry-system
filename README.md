@@ -1,10 +1,10 @@
-# dry-component <a href="https://gitter.im/dryrb/chat" target="_blank">![Join the chat at https://gitter.im/dryrb/chat](https://badges.gitter.im/Join%20Chat.svg)</a>
+# dry-component <a href="https://gitter.im/dry-rb/chat" target="_blank">![Join the chat at https://gitter.im/dry-rb/chat](https://badges.gitter.im/Join%20Chat.svg)</a>
 
 <a href="https://rubygems.org/gems/dry-component" target="_blank">![Gem Version](https://badge.fury.io/rb/dry-component.svg)</a>
-<a href="https://travis-ci.org/dryrb/dry-component" target="_blank">![Build Status](https://travis-ci.org/dryrb/dry-component.svg?branch=master)</a>
-<a href="https://gemnasium.com/dryrb/dry-component" target="_blank">![Dependency Status](https://gemnasium.com/dryrb/dry-component.svg)</a>
-<a href="https://codeclimate.com/github/dryrb/dry-component" target="_blank">![Code Climate](https://codeclimate.com/github/dryrb/dry-component/badges/gpa.svg)</a>
-<a href="http://inch-ci.org/github/dryrb/dry-component" target="_blank">![Documentation Status](http://inch-ci.org/github/dryrb/dry-component.svg?branch=master&style=flat)</a>
+<a href="https://travis-ci.org/dry-rb/dry-component" target="_blank">![Build Status](https://travis-ci.org/dry-rb/dry-component.svg?branch=master)</a>
+<a href="https://gemnasium.com/dry-rb/dry-component" target="_blank">![Dependency Status](https://gemnasium.com/dry-rb/dry-component.svg)</a>
+<a href="https://codeclimate.com/github/dry-rb/dry-component" target="_blank">![Code Climate](https://codeclimate.com/github/dry-rb/dry-component/badges/gpa.svg)</a>
+<a href="http://inch-ci.org/github/dry-rb/dry-component" target="_blank">![Documentation Status](http://inch-ci.org/github/dry-rb/dry-component.svg?branch=master&style=flat)</a>
 
 Sane dependency management system allowing you to configure reusable components
 in any environment, set up their load-paths, require needed files and instantiate
@@ -210,8 +210,8 @@ Application.options.foo # => "bar"
 
 ## Underlying Tools
 
-`dry-component` uses [dry-container](https://github.com/dryrb/dry-container) and
-[dry-auto_inject](https://github.com/dryrb/dry-auto_inject) under the hood. These
+`dry-component` uses [dry-container](https://github.com/dry-rb/dry-container) and
+[dry-auto_inject](https://github.com/dry-rb/dry-auto_inject) under the hood. These
 gems are very small and simple with a total 254LOC. Just saying.
 
 ## LICENSE
