@@ -1,4 +1,5 @@
 require 'yaml'
+require 'erb'
 
 module Dry
   module Component
@@ -8,7 +9,8 @@ module Dry
 
         return {} unless File.exist?(path)
 
-        yaml = YAML.load_file(path)
+        data = ERB.new(File.read(path)).result(binding)
+        yaml = YAML.load(data)
 
         Class.new do
           extend Dry::Configurable

@@ -24,4 +24,8 @@ RSpec.describe Dry::Component::Config do
   it 'allows different components to have different configurations' do
     expect(Test::SubApp.options.bar).to eql('baz')
   end
+
+  it 'erb processes the config before passing to yaml' do
+    expect(Test::App.options.env).not_to be_nil
+  end
 end
