@@ -2,8 +2,8 @@ require 'pathname'
 require 'inflecto'
 
 require 'dry-container'
-require 'dry-auto_inject'
 
+require 'dry/component/injector'
 require 'dry/component/loader'
 require 'dry/component/config'
 
@@ -73,13 +73,8 @@ module Dry
         freeze
       end
 
-      def self.import_module
-        auto_inject = Dry::AutoInject(self)
-
-        -> *keys {
-          keys.each { |key| load_component(key) unless key?(key) }
-          auto_inject[*keys]
-        }
+      def self.Inject
+        @Inject ||= Injector.new(self)
       end
 
       def self.auto_register!(dir, &_block)
