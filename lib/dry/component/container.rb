@@ -19,6 +19,11 @@ module Dry
       setting :auto_register
       setting :options
 
+      def self.inherited(subclass)
+        super
+        subclass.const_set :Inject, subclass.injector
+      end
+
       def self.configure(env = config.env, &block)
         return self if configured?
 
@@ -73,8 +78,8 @@ module Dry
         freeze
       end
 
-      def self.Inject
-        @Inject ||= Injector.new(self)
+      def self.injector
+        Injector.new(self)
       end
 
       def self.auto_register!(dir, &_block)
