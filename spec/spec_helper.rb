@@ -33,6 +33,7 @@ RSpec.configure do |config|
 
   config.before do
     @load_paths = $LOAD_PATH.dup
+    @loaded_features = $LOADED_FEATURES.dup
     Object.const_set(:Test, Module.new { |m| m.extend(TestNamespace) })
   end
 
@@ -40,6 +41,10 @@ RSpec.configure do |config|
     ($LOAD_PATH - @load_paths).each do |path|
       $LOAD_PATH.delete(path)
     end
+    ($LOADED_FEATURES - @loaded_features).each do |file|
+      $LOADED_FEATURES.delete(file)
+    end
+
     Test.remove_constants
     Object.send(:remove_const, :Test)
   end

@@ -57,7 +57,7 @@ RSpec.describe Dry::Component::Container, '.import' do
       end
 
       module Test
-        Import = Container.import_module
+        Import = Container::Inject
       end
 
       class Test::Foo
