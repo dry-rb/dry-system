@@ -39,6 +39,10 @@ module Dry
         self
       end
 
+      def self.Loader(key)
+        Component.Loader(key)
+      end
+
       def self.import(other)
         case other
         when Dry::Container::Namespace then super
@@ -87,10 +91,10 @@ module Dry
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
           component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
-          Component.Loader(component_path).tap do |component|
+          Loader(component_path).tap do |component|
             next if key?(component.identifier)
 
-            Kernel.require component.path
+            Kernel.require path
 
             if block_given?
               register(component.identifier, yield(component.constant))
@@ -136,7 +140,7 @@ module Dry
       end
 
       def self.load_component(key)
-        component = Component.Loader(key)
+        component = Loader(key)
         src_key = component.namespaces[0]
 
         if imports.key?(src_key)
@@ -153,14 +157,15 @@ module Dry
       end
 
       def self.require_component(component, &block)
-        path = load_paths.detect { |p| p.join(component.file).exist? }
-
-        if path
+        if root.join(component.file).exist?
+          require component.file
+        elsif path = load_paths.detect { |p| p.join(component.file).exist? }
           Kernel.require component.path
-          yield(component.constant) if block
         else
           fail ArgumentError, "could not resolve require file for #{component.identifier}"
         end
+
+        yield(component.constant) if block
       end
 
       def self.root

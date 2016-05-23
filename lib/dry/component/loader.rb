@@ -2,8 +2,8 @@ require 'inflecto'
 
 module Dry
   module Component
-    def self.Loader(input)
-      Loader.new(Loader.identifier(input), Loader.path(input))
+    def self.Loader(input, namespace=nil)
+      Loader.new(Loader.identifier(input), Loader.path(input), namespace)
     end
 
     class Loader
@@ -20,7 +20,8 @@ module Dry
         input.to_s.gsub(IDENTIFIER_SEPARATOR, PATH_SEPARATOR)
       end
 
-      def initialize(identifier, path)
+      def initialize(identifier, path, namespace)
+        @namespace = namespace
         @identifier = identifier
         @path = path
         @file = "#{path}.rb"
@@ -31,7 +32,7 @@ module Dry
       end
 
       def name
-        Inflecto.camelize(path)
+        [@namespace, Inflecto.camelize(path)].compact.join('::')
       end
 
       def constant
