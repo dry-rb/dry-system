@@ -3,52 +3,28 @@ require "dry-auto_inject"
 module Dry
   module Component
     class Injector
-      class Strategy
-        # @api private
-        attr_reader :container
-
-        # @api private
-        attr_reader :injector
-
-        # @api private
-        def initialize(container, type)
-          @container = container
-          @injector = if type == :args
-            Dry::AutoInject(container)
-          else
-            Dry::AutoInject(container).send(type)
-          end
-        end
-
-        # @api public
-        def [](*deps)
-          load_components(*deps)
-          injector[*deps]
-        end
-
-        private
-
-        def load_components(*components)
-          components = components.dup
-          aliases = components.last.is_a?(Hash) ? components.pop : {}
-
-          (components + aliases.values).each do |key|
-            container.load_component(key) unless container.key?(key)
-          end
-        end
-      end
-
       # @api private
       attr_reader :container
 
       # @api private
-      def initialize(container)
+      attr_reader :injector
+
+      # @api private
+      def initialize(container, strategy: :args, strategies_cache: nil)
         @container = container
+        @strategies = strategies_cache
+
+        @injector = if strategy == :args
+          Dry::AutoInject(container)
+        else
+          Dry::AutoInject(container).send(strategy)
+        end
       end
 
       # @api public
       def [](*deps)
-        args[*deps]
+        load_components(*deps)
+        injector[*deps]
       end
 
       # @api public
@@ -68,9 +44,18 @@ module Dry
 
       private
 
+      def load_components(*components)
+        components = components.dup
+        aliases = components.last.is_a?(Hash) ? components.pop : {}
+
+        (components + aliases.values).each do |key|
+          container.load_component(key) unless container.key?(key)
+        end
+      end
+
       def strategies
-        @strategies ||= Hash.new do |h, strategy_type|
-          Strategy.new(container, strategy_type)
+        @strategies ||= Hash.new do |cache, strategy|
+          cache[strategy] = self.class.new(container, strategy: strategy, strategies_cache: cache)
         end
       end
     end
