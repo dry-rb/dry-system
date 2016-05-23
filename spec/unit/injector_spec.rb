@@ -41,6 +41,14 @@ RSpec.describe Dry::Component::Injector do
     expect(obj.dep).to be_a Test::Dep
   end
 
+  it "allows injection strategies to be swapped" do
+    obj = Class.new do
+      include Test::Container::Inject.kwargs.hash["test.dep"]
+    end.new
+
+    expect(obj.dep).to be_a Test::Dep
+  end
+
   it "supports aliases" do
     obj = Class.new do
       include Test::Container::Inject[foo: "test.dep"]
