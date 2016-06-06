@@ -9,12 +9,6 @@ RSpec.describe Dry::Component::Loader do
   end
 
   shared_examples_for 'a valid component' do
-    describe '#name' do
-      it 'returns name of the constant' do
-        expect(component.name).to eql('Test::Bar')
-      end
-    end
-
     describe '#constant' do
       it 'returns the constant' do
         expect(component.constant).to be(Test::Bar)
@@ -47,19 +41,19 @@ RSpec.describe Dry::Component::Loader do
   end
 
   context 'from identifier as a symbol' do
-    subject(:component) { Dry::Component::Loader(:'test.bar') }
+    subject(:component) { Dry::Component::Loader.new(:'test.bar') }
 
     it_behaves_like 'a valid component'
   end
 
   context 'from identifier as a string' do
-    subject(:component) { Dry::Component::Loader('test.bar') }
+    subject(:component) { Dry::Component::Loader.new('test.bar') }
 
     it_behaves_like 'a valid component'
   end
 
   context 'from path' do
-    subject(:component) { Dry::Component::Loader('test/bar') }
+    subject(:component) { Dry::Component::Loader.new('test/bar') }
 
     it_behaves_like 'a valid component'
   end
