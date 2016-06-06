@@ -18,6 +18,7 @@ module Dry
       setting :core_dir, 'core'.freeze
       setting :auto_register
       setting :options
+      setting :loader, Dry::Component::Loader
 
       def self.inherited(subclass)
         super
@@ -87,7 +88,7 @@ module Dry
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
           component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
-          Component.Loader(component_path).tap do |component|
+          config.loader.new(component_path).tap do |component|
             next if key?(component.identifier)
 
             Kernel.require component.path
@@ -136,7 +137,7 @@ module Dry
       end
 
       def self.load_component(key)
-        component = Component.Loader(key)
+        component = config.loader.new(key)
         src_key = component.namespaces[0]
 
         if imports.key?(src_key)
