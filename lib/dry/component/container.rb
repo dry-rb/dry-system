@@ -15,7 +15,7 @@ module Dry
       setting :env
       setting :name
       setting :root, Pathname.pwd.freeze
-      setting :core_dir, 'core'.freeze
+      setting :core_dir, 'component'.freeze
       setting :auto_register
       setting :options
       setting :loader, Dry::Component::Loader
