@@ -5,6 +5,7 @@
 * Provide a dependency injector as an `Inject` constant inside any subclass of `Dry::Component::Container`. This injector supports all of `dry-auto_inject`'s default injection strategies, and will lazily load any dependencies as they are injected. It also supports arbitrarily switching strategies, so they can be used in different classes as required (e.g. `include MyComponent::Inject.args["dep"]`) (timriley)
 * Support aliased dependency names when calling the injector object (e.g. `MyComponent::Inject[foo: "my_app.foo", bar: "another.thing"]`) (timriley)
 * Allow a custom dependency loader to be set on a container via its config (AMHOL)
+
     ```ruby
     class MyContainer < Dry::Component::Container
       configure do |config|
