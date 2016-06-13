@@ -2,6 +2,7 @@
 
 ## Changed
 
+- Component core directory is now `component/` by default (timriley)
 - Injector default stragegy is now whatever dry-auto_inject's default is (rather than hard-coding a particular default strategy for dry-component) (timriley)
 
 ## Fixed
