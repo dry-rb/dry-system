@@ -1,3 +1,13 @@
+# 0.2.0 - 2016-06-13
+
+## Changed
+
+- Injector default stragegy is now whatever dry-auto_inject's default is (rather than hard-coding a particular default strategy for dry-component) (timriley)
+
+## Fixed
+
+- Fixed bug where specified auto-inject strategies were not respected (timriley)
+
 # 0.1.0 - 2016-06-07
 
 ## Added
