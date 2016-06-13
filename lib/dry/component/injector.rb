@@ -10,15 +10,15 @@ module Dry
       attr_reader :injector
 
       # @api private
-      def initialize(container, strategy: :args, strategies_cache: nil)
+      def initialize(container, strategy: nil, strategies_cache: nil)
         @container = container
         @strategies = strategies_cache
-
-        @injector = if strategy == :args
-          Dry::AutoInject(container)
-        else
-          Dry::AutoInject(container).send(strategy)
-        end
+        @injector =
+          if strategy
+            Dry::AutoInject(container).send(strategy)
+          else
+            Dry::AutoInject(container)
+          end
       end
 
       # @api public
