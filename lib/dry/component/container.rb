@@ -1,23 +1,22 @@
 require 'pathname'
 require 'inflecto'
 
+require 'dry-configurable'
 require 'dry-container'
 
 require 'dry/component/injector'
 require 'dry/component/loader'
-require 'dry/component/config'
 
 module Dry
   module Component
     class Container
+      extend Dry::Configurable
       extend Dry::Container::Mixin
 
-      setting :env
       setting :name
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'component'.freeze
       setting :auto_register
-      setting :options
       setting :loader, Dry::Component::Loader
 
       def self.inherited(subclass)
@@ -25,17 +24,10 @@ module Dry
         subclass.const_set :Inject, subclass.injector
       end
 
-      def self.configure(env = config.env, &block)
-        return self if configured?
-
-        super() do |config|
-          yield(config) if block
-          config.options = Config.load(root, config.name, env)
-        end
+      def self.configure(&block)
+        super(&block)
 
         load_paths!(config.core_dir)
-
-        @configured = true
 
         self
       end
@@ -51,16 +43,8 @@ module Dry
         end
       end
 
-      def self.options
-        config.options
-      end
-
       def self.finalize(name, &block)
         finalizers[name] = proc { block.(self) }
-      end
-
-      def self.configured?
-        @configured
       end
 
       def self.finalize!(&_block)
@@ -171,9 +155,13 @@ module Dry
       def self.load_paths!(*dirs)
         dirs.map(&:to_s).each do |dir|
           path = root.join(dir)
+
+          next if load_paths.include?(path)
+
           load_paths << path
           $LOAD_PATH.unshift(path.to_s)
         end
+
         self
       end
 

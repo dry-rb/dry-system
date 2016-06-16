@@ -120,10 +120,10 @@ RSpec.describe Dry::Component::Container do
 
     it 'passes container to the finalizer block' do
       class Test::Container < Dry::Component::Container
-        configure { |c| c.env = :awesome }
+        configure { |c| c.name = :awesome }
 
         finalize(:foo) do |container|
-          register(:w00t, container.config.env)
+          register(:w00t, container.config.name)
         end
       end
 

@@ -40,11 +40,10 @@ RSpec.describe Dry::Component::Container, '.auto_register!' do
         auto_register!('components')
       end
     end
-    
+
     it { expect(Test::Container['foo']).to be_an_instance_of(Foo) }
     it { expect(Test::Container['bar']).to eq(Bar) }
     it { expect(Test::Container['bar'].call).to eq("Welcome to my Moe's Tavern!") }
     it { expect(Test::Container['bar-baz']).to be_an_instance_of(Bar::Baz) }
   end
-
 end
