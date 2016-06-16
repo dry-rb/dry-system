@@ -1,6 +1,7 @@
 require 'pathname'
 require 'inflecto'
 
+require 'dry-configurable'
 require 'dry-container'
 
 require 'dry/component/injector'
@@ -9,6 +10,7 @@ require 'dry/component/loader'
 module Dry
   module Component
     class Container
+      extend Dry::Configurable
       extend Dry::Container::Mixin
 
       setting :name
