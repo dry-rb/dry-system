@@ -16,10 +16,6 @@ Dir[SPEC_ROOT.join('shared/*.rb').to_s].each { |f| require f }
 
 require 'dry/component/container'
 
-class Dry::Component::Container
-  setting :env, 'test'
-end
-
 module TestNamespace
   def remove_constants
     constants.each do |name|
