@@ -1,3 +1,13 @@
+# 0.3.0 - 2016-06-18
+
+## Changed
+
+Removed two pieces that are moving to dry-web:
+
+- Removed `env` setting from `Container` (timriley)
+- Removed `Dry::Component::Config` and `options` setting from `Container` (timriley)
+- Changed `Component#configure` behavior so it can be run multiple times for configuration to be applied in multiple passes (timriley)
+
 # 0.2.0 - 2016-06-13
 
 ## Changed
