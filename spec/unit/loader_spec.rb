@@ -40,20 +40,23 @@ RSpec.describe Dry::Component::Loader do
     end
   end
 
+  let(:container) { Class.new(Dry::Component::Container) }
+  let(:loader) { Dry::Component::Loader.new(container) }
+
   context 'from identifier as a symbol' do
-    subject(:component) { Dry::Component::Loader.new(:'test.bar') }
+    subject(:component) { loader.load(:'test.bar') }
 
     it_behaves_like 'a valid component'
   end
 
   context 'from identifier as a string' do
-    subject(:component) { Dry::Component::Loader.new('test.bar') }
+    subject(:component) { loader.load('test.bar') }
 
     it_behaves_like 'a valid component'
   end
 
   context 'from path' do
-    subject(:component) { Dry::Component::Loader.new('test/bar') }
+    subject(:component) { loader.load('test/bar') }
 
     it_behaves_like 'a valid component'
   end
