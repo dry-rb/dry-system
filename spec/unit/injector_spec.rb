@@ -7,11 +7,13 @@ RSpec.describe Dry::Component::Injector do
 
       load_paths! "lib"
     end
+
+    Test::Inject = Test::Container.injector
   end
 
   it "supports args injection by default" do
     obj = Class.new do
-      include Test::Container::Inject["test.dep"]
+      include Test::Inject["test.dep"]
     end.new
 
     expect(obj.dep).to be_a Test::Dep
@@ -19,7 +21,7 @@ RSpec.describe Dry::Component::Injector do
 
   it "supports args injection with explicit method" do
     obj = Class.new do
-      include Test::Container::Inject.args["test.dep"]
+      include Test::Inject.args["test.dep"]
     end.new
 
     expect(obj.dep).to be_a Test::Dep
@@ -27,7 +29,7 @@ RSpec.describe Dry::Component::Injector do
 
   it "supports hash injection" do
     obj = Class.new do
-      include Test::Container::Inject.hash["test.dep"]
+      include Test::Inject.hash["test.dep"]
     end.new
 
     expect(obj.dep).to be_a Test::Dep
@@ -35,7 +37,7 @@ RSpec.describe Dry::Component::Injector do
 
   it "support kwargs injection" do
     obj = Class.new do
-      include Test::Container::Inject.kwargs["test.dep"]
+      include Test::Inject.kwargs["test.dep"]
     end.new
 
     expect(obj.dep).to be_a Test::Dep
@@ -43,7 +45,7 @@ RSpec.describe Dry::Component::Injector do
 
   it "allows injection strategies to be swapped" do
     obj = Class.new do
-      include Test::Container::Inject.kwargs.hash["test.dep"]
+      include Test::Inject.kwargs.hash["test.dep"]
     end.new
 
     expect(obj.dep).to be_a Test::Dep
@@ -51,7 +53,7 @@ RSpec.describe Dry::Component::Injector do
 
   it "supports aliases" do
     obj = Class.new do
-      include Test::Container::Inject[foo: "test.dep"]
+      include Test::Inject[foo: "test.dep"]
     end.new
 
     expect(obj.foo).to be_a Test::Dep

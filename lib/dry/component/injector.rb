@@ -7,17 +7,16 @@ module Dry
       attr_reader :container
 
       # @api private
+      attr_reader :options
+
+      # @api private
       attr_reader :injector
 
       # @api private
-      def initialize(container, strategy: nil)
+      def initialize(container, options: {}, strategy: :default)
         @container = container
-        @injector =
-          if strategy
-            ::Dry::AutoInject(container).send(strategy)
-          else
-            ::Dry::AutoInject(container)
-          end
+        @options = options
+        @injector = ::Dry::AutoInject(container, options).send(strategy)
       end
 
       # @api public
@@ -27,7 +26,7 @@ module Dry
       end
 
       def method_missing(name, *args, &block)
-        ::Dry::Component::Injector.new(container, strategy: name)
+        ::Dry::Component::Injector.new(container, options: options, strategy: name)
       end
 
       def respond_to_missing?(name, _include_private = false)
