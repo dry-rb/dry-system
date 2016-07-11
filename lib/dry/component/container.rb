@@ -17,6 +17,7 @@ module Dry
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'component'.freeze
       setting :auto_register
+      setting :injector_options, {}
       setting :loader, Dry::Component::Loader
 
       def self.inherited(subclass)
@@ -64,7 +65,7 @@ module Dry
       end
 
       def self.injector
-        Injector.new(self)
+        Injector.new(self, config.injector_options)
       end
 
       def self.auto_register!(dir, &_block)
