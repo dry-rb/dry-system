@@ -16,7 +16,7 @@ module Dry
       def initialize(container, options: {}, strategy: :default)
         @container = container
         @options = options
-        @injector = ::Dry::AutoInject(container, options).send(strategy)
+        @injector = ::Dry::AutoInject(container, options).public_send(strategy)
       end
 
       # @api public
