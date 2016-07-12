@@ -29,8 +29,8 @@ module Dry
         ::Dry::Component::Injector.new(container, options: options, strategy: name)
       end
 
-      def respond_to_missing?(name, _include_private = false)
-        injector.respond_to?(name)
+      def respond_to?(name, include_private = false)
+        injector.respond_to?(name, include_private)
       end
 
       private
