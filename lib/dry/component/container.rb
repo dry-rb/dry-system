@@ -14,7 +14,7 @@ module Dry
       extend Dry::Container::Mixin
 
       setting :name
-      setting :namespace
+      setting :default_namespace
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'component'.freeze
       setting :auto_register
@@ -65,7 +65,7 @@ module Dry
       end
 
       def self.loader
-        @loader ||= config.loader.new(self)
+        @loader ||= config.loader.new(config)
       end
 
       def self.injector

@@ -41,7 +41,7 @@ RSpec.describe Dry::Component::Loader do
   end
 
   let(:container) { Class.new(Dry::Component::Container) }
-  let(:loader) { Dry::Component::Loader.new(container) }
+  let(:loader) { Dry::Component::Loader.new(container.config) }
 
   context 'from identifier as a symbol' do
     subject(:component) { loader.load(:'test.bar') }

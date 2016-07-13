@@ -11,8 +11,8 @@ module Dry
           @loader = loader
 
           @identifier = input.to_s.gsub(loader.path_separator, loader.namespace_separator)
-          if loader.namespace
-            re = /^#{Regexp.escape(loader.namespace)}#{Regexp.escape(loader.namespace_separator)}/
+          if loader.default_namespace
+            re = /^#{Regexp.escape(loader.default_namespace)}#{Regexp.escape(loader.namespace_separator)}/
             @identifier = @identifier.gsub(re, '')
           end
 
@@ -41,13 +41,13 @@ module Dry
 
       PATH_SEPARATOR = '/'.freeze
 
-      attr_reader :namespace
+      attr_reader :default_namespace
       attr_reader :namespace_separator
       attr_reader :path_separator
 
-      def initialize(container)
-        @namespace = container.config.namespace
-        @namespace_separator = container.config.namespace_separator
+      def initialize(config)
+        @default_namespace = config.default_namespace
+        @namespace_separator = config.namespace_separator
         @path_separator = PATH_SEPARATOR
       end
 

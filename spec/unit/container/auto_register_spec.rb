@@ -23,7 +23,7 @@ RSpec.describe Dry::Component::Container, '.auto_register!' do
       class Test::Container < Dry::Component::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures').realpath
-          config.namespace = 'namespaced'
+          config.default_namespace = 'namespaced'
         end
 
         load_paths!('components')
