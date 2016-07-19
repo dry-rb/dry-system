@@ -2,23 +2,21 @@ require "dry-auto_inject"
 
 module Dry
   module Component
-    class Injector
+    class Injector < BasicObject
       # @api private
       attr_reader :container
+
+      # @api private
+      attr_reader :options
 
       # @api private
       attr_reader :injector
 
       # @api private
-      def initialize(container, strategy: nil, strategies_cache: nil)
+      def initialize(container, options: {}, strategy: :default)
         @container = container
-        @strategies = strategies_cache
-        @injector =
-          if strategy
-            Dry::AutoInject(container).send(strategy)
-          else
-            Dry::AutoInject(container)
-          end
+        @options = options
+        @injector = ::Dry::AutoInject(container, options).public_send(strategy)
       end
 
       # @api public
@@ -27,35 +25,22 @@ module Dry
         injector[*deps]
       end
 
-      # @api public
-      def args
-        strategies[:args]
+      def method_missing(name, *args, &block)
+        ::Dry::Component::Injector.new(container, options: options, strategy: name)
       end
 
-      # @api public
-      def hash
-        strategies[:hash]
-      end
-
-      # @api public
-      def kwargs
-        strategies[:kwargs]
+      def respond_to?(name, include_private = false)
+        injector.respond_to?(name, include_private)
       end
 
       private
 
       def load_components(*components)
         components = components.dup
-        aliases = components.last.is_a?(Hash) ? components.pop : {}
+        aliases = components.last.is_a?(::Hash) ? components.pop : {}
 
         (components + aliases.values).each do |key|
           container.load_component(key) unless container.key?(key)
-        end
-      end
-
-      def strategies
-        @strategies ||= Hash.new do |cache, strategy|
-          cache[strategy] = self.class.new(container, strategy: strategy, strategies_cache: cache)
         end
       end
     end
