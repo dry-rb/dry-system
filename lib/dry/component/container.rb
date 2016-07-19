@@ -19,11 +19,6 @@ module Dry
       setting :auto_register
       setting :loader, Dry::Component::Loader
 
-      def self.inherited(subclass)
-        super
-        subclass.const_set :Inject, subclass.injector
-      end
-
       def self.configure(&block)
         super(&block)
 
@@ -63,8 +58,8 @@ module Dry
         freeze
       end
 
-      def self.injector
-        Injector.new(self)
+      def self.injector(options = {})
+        Injector.new(self, options: options)
       end
 
       def self.auto_register!(dir, &_block)
