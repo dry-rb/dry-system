@@ -14,6 +14,7 @@ module Dry
       extend Dry::Container::Mixin
 
       setting :name
+      setting :default_namespace
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'component'.freeze
       setting :auto_register
@@ -58,6 +59,10 @@ module Dry
         freeze
       end
 
+      def self.loader
+        @loader ||= config.loader.new(config)
+      end
+
       def self.injector(options = {})
         Injector.new(self, options: options)
       end
@@ -67,7 +72,7 @@ module Dry
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
           component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
-          config.loader.new(component_path).tap do |component|
+          loader.load(component_path).tap do |component|
             next if key?(component.identifier)
 
             Kernel.require component.path
@@ -116,7 +121,7 @@ module Dry
       end
 
       def self.load_component(key)
-        component = config.loader.new(key)
+        component = loader.load(key)
         src_key = component.namespaces[0]
 
         if imports.key?(src_key)
