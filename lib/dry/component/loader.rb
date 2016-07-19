@@ -13,7 +13,7 @@ module Dry
           @identifier = input.to_s.gsub(loader.path_separator, loader.namespace_separator)
           if loader.default_namespace
             re = /^#{Regexp.escape(loader.default_namespace)}#{Regexp.escape(loader.namespace_separator)}/
-            @identifier = @identifier.gsub(re, '')
+            @identifier = @identifier.sub(re, '')
           end
 
           @path = input.to_s.gsub(loader.namespace_separator, loader.path_separator)
