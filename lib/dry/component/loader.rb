@@ -24,12 +24,16 @@ module Dry
           identifier.split(loader.namespace_separator).map(&:to_sym)
         end
 
-        def constant
-          Inflecto.constantize(constant_name)
+        def instance(*args)
+          if constant.respond_to?(:instance) && !constant.respond_to?(:new)
+            constant.instance(*args) # a singleton
+          else
+            constant.new(*args)
+          end
         end
 
-        def instance(*args)
-          constant.new(*args)
+        def constant
+          Inflecto.constantize(constant_name)
         end
 
         private
