@@ -133,7 +133,7 @@ module Dry
 
           import_container(src_key, src_container)
         else
-          require_component(component) { |klass| register(key) { klass.new } }
+          require_component(component) { |klass| register(key) { component.instance } }
         end
       end
 
