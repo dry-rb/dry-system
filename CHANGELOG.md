@@ -1,4 +1,10 @@
-# 0.4.1 - 2016-07-26
+# 0.4.2 - 2016-07-26
+
+### Fixed
+
+- Ensure file components can be loaded when they're requested for the first time using their shorthand container identifier (i.e. with the container's default namespace removed) (timriley)
+
+# 0.4.1 - 2016-07-26 [YANKED]
 
 ### Fixed
 
@@ -6,7 +12,7 @@
 
 [Compare v0.3.0...v0.4.0](https://github.com/dry-rb/dry-component/compare/v0.4.0...v0.4.1)
 
-# 0.4.0 - 2016-07-26
+# 0.4.0 - 2016-07-26 [YANKED]
 
 ### Added
 
