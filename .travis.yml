@@ -5,7 +5,6 @@ bundler_args: --without tools
 script:
   - bundle exec rake spec
 rvm:
-  - 2.0
   - 2.1
   - 2.2
   - 2.3.1
