@@ -1,3 +1,11 @@
+# 0.4.1 - 2016-07-26
+
+### Fixed
+
+- Require the 0.4.0 release of dry-auto_inject for the features below (in 0.4.0) to work properly (timriley)
+
+[Compare v0.3.0...v0.4.0](https://github.com/dry-rb/dry-component/compare/v0.4.0...v0.4.1)
+
 # 0.4.0 - 2016-07-26
 
 ### Added
