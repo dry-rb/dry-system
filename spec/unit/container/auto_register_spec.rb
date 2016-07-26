@@ -26,13 +26,14 @@ RSpec.describe Dry::Component::Container, '.auto_register!' do
           config.default_namespace = 'namespaced'
         end
 
-        load_paths!('components')
-        auto_register!('components/namespaced')
+        load_paths!('namespaced_components')
+        auto_register!('namespaced_components')
       end
     end
 
-    specify { expect(Test::Container['foo']).to be_a(Namespaced::Foo) }
     specify { expect(Test::Container['bar']).to be_a(Namespaced::Bar) }
+    specify { expect(Test::Container['bar'].foo).to be_a(Namespaced::Foo) }
+    specify { expect(Test::Container['foo']).to be_a(Namespaced::Foo) }
   end
 
   context 'with a custom loader' do
