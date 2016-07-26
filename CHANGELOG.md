@@ -4,13 +4,15 @@
 
 - Ensure file components can be loaded when they're requested for the first time using their shorthand container identifier (i.e. with the container's default namespace removed) (timriley)
 
+[Compare v0.4.1...v0.4.2](https://github.com/dry-rb/dry-component/compare/v0.4.1...v0.4.2)
+
 # 0.4.1 - 2016-07-26 [YANKED]
 
 ### Fixed
 
 - Require the 0.4.0 release of dry-auto_inject for the features below (in 0.4.0) to work properly (timriley)
 
-[Compare v0.3.0...v0.4.0](https://github.com/dry-rb/dry-component/compare/v0.4.0...v0.4.1)
+[Compare v0.4.0...v0.4.1](https://github.com/dry-rb/dry-component/compare/v0.4.0...v0.4.1)
 
 # 0.4.0 - 2016-07-26 [YANKED]
 
