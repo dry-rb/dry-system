@@ -1,3 +1,40 @@
+# 0.4.0 - 2016-07-26
+
+### Added
+
+- Support for supplying a default namespace to a container, which is passed to the container's injector to allow for convenient shorthand access to registered objects in the same namespace (timriley in [#20](https://github.com/dry-rb/dry-component/pull/20))
+
+    ```ruby
+    # Set up container with default namespace
+    module Admin
+      class Container < Dry::Component::Container
+        configure do |config|
+          config.root = Pathname.new(__dir__).join("../..")
+          config.default_namespace = "admin"
+        end
+      end
+
+      Import = Container.injector
+    end
+
+    module Admin
+      class CreateUser
+        # "users.repository" will resolve an Admin::Users::Repository instance,
+        # where previously you had to identify it as "admin.users.repository"
+        include Admin::Import["users.repository"]
+      end
+    end
+    ```
+
+- Support for supplying to options directly to dry-auto_inject's `Builder` via `Dry::Component::Container#injector(options)`. This allows you to provide dry-auto_inject customizations like your own container of injection strategies (timriley in [#20](https://github.com/dry-rb/dry-component/pull/20))
+- Support for accessing all available injector strategies, not just the defaults (e.g. `MyContainer.injector.some_custom_strategy`) (timriley in [#19](https://github.com/dry-rb/dry-component/pull/19))
+
+### Changed
+
+- Subclasses of `Dry::Component::Container` no longer have an `Injector` constant automatically defined within them. The recommended approach is to save your own injector object to a constant, which allows you to pass options to it at the same time, e.g. `MyApp::Import = MyApp::Container.injector(my_options)` (timriley in [#19](https://github.com/dry-rb/dry-component/pull/19))
+
+[Compare v0.3.0...v0.4.0](https://github.com/dry-rb/dry-component/compare/v0.3.0...v0.4.0)
+
 # 0.3.0 - 2016-06-18
 
 ### Changed
