@@ -9,6 +9,8 @@ require 'dry/component/loader'
 
 module Dry
   module Component
+    FileNotFoundError = Class.new(StandardError)
+
     class Container
       extend Dry::Configurable
       extend Dry::Container::Mixin
@@ -133,7 +135,15 @@ module Dry
 
           import_container(src_key, src_container)
         else
-          require_component(component) { |klass| register(key) { klass.new } }
+          begin
+            require_component(component) { |klass| register(key) { klass.new } }
+          rescue FileNotFoundError => e
+            if config.default_namespace
+              load_component("#{config.default_namespace}#{config.namespace_separator}#{component.identifier}")
+            else
+              raise e
+            end
+          end
         end
       end
 
@@ -144,7 +154,7 @@ module Dry
           Kernel.require component.path
           yield(component.constant) if block
         else
-          fail ArgumentError, "could not resolve require file for #{component.identifier}"
+          fail FileNotFoundError, "could not resolve require file for #{component.identifier}"
         end
       end
 
