@@ -123,6 +123,8 @@ module Dry
       end
 
       def self.load_component(key)
+        return if key?(key)
+
         component = loader.load(key)
         src_key = component.namespaces[0]
 
