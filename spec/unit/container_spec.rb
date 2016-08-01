@@ -42,6 +42,16 @@ RSpec.describe Dry::Component::Container do
 
         expect(Test::Foo.new.dep).to be_instance_of(Test::Dep)
       end
+
+      it "raises an error if a component's file can't be found" do
+        expect { container.load_component('test.missing') }.to raise_error Dry::Component::FileNotFoundError
+      end
+
+      it "is a no op if a matching component is already registered" do
+        container.register "test.no_matching_file", Object.new
+
+        expect { container.load_component("test.no_matching_file") }.not_to raise_error
+      end
     end
   end
 
