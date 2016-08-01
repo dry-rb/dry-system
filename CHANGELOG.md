@@ -1,3 +1,11 @@
+# 0.4.3 - 2016-08-01
+
+### Fixed
+
+- Return immediately from `Container.load_component` if the requested component key already exists in the container. This fixes a crash when requesting to load a manually registered component with a name that doesn't map to a filename (timriley in [#24](https://github.com/dry-rb/dry-component/pull/24))
+
+[Compare v0.4.2...v0.4.3](https://github.com/dry-rb/dry-component/compare/v0.4.2...v0.4.3)
+
 # 0.4.2 - 2016-07-26
 
 ### Fixed
