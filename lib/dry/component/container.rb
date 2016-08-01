@@ -123,7 +123,7 @@ module Dry
       end
 
       def self.load_component(key)
-        return if key?(key)
+        return self if key?(key)
 
         component = loader.load(key)
         src_key = component.namespaces[0]
@@ -147,6 +147,8 @@ module Dry
             end
           end
         end
+
+        self
       end
 
       def self.require_component(component, &block)
