@@ -29,7 +29,11 @@ module Dry
         end
 
         def instance(*args)
-          constant.new(*args)
+          if constant.respond_to?(:instance) && !constant.respond_to?(:new)
+            constant.instance(*args) # a singleton
+          else
+            constant.new(*args)
+          end
         end
 
         private
