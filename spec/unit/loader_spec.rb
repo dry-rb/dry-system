@@ -71,7 +71,7 @@ RSpec.describe Dry::Component::Loader do
         end
       end
     end
-    subject(:component) { Dry::Component::Loader.new('test/bar') }
+    subject(:component) { loader.load(:'test.bar') }
 
     it_behaves_like 'a valid component'
   end
