@@ -80,7 +80,7 @@ module Dry
             Kernel.require component.path
 
             if block_given?
-              register(component.identifier, yield(component.constant))
+              register(component.identifier, yield(component))
             else
               register(component.identifier) { component.instance }
             end
@@ -138,7 +138,7 @@ module Dry
           import_container(src_key, src_container)
         else
           begin
-            require_component(component) { |klass| register(key) { klass.new } }
+            require_component(component) { |klass| register(key) { component.instance } }
           rescue FileNotFoundError => e
             if config.default_namespace
               load_component("#{config.default_namespace}#{config.namespace_separator}#{component.identifier}")

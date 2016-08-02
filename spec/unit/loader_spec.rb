@@ -1,4 +1,5 @@
 require 'dry/component/loader'
+require 'singleton'
 
 RSpec.describe Dry::Component::Loader do
   before do
@@ -60,4 +61,18 @@ RSpec.describe Dry::Component::Loader do
 
     it_behaves_like 'a valid component'
   end
+
+  context 'singleton' do
+    before do
+        module Test
+          remove_const(:Bar)
+          class Bar
+            include Singleton
+          end
+        end
+      end
+      subject(:component) { Dry::Component::Loader.new('test/bar') }
+
+      it_behaves_like 'a valid component'
+    end
 end
