@@ -78,7 +78,7 @@ module Dry
             Kernel.require component.path
 
             if block_given?
-              register(component.identifier, yield(component.constant))
+              register(component.identifier, yield(component))
             else
               register(component.identifier) { component.instance }
             end
