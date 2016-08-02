@@ -62,7 +62,7 @@ RSpec.describe Dry::Component::Injector do
   context "singleton" do
     it "supports injection" do
       obj = Class.new do
-        include Test::Container::Inject[foo: "test.singleton_dep"]
+        include Test::Inject[foo: "test.singleton_dep"]
       end.new
 
       expect(obj.foo).to be_a Test::SingletonDep
