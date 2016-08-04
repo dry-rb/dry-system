@@ -139,12 +139,11 @@ module Dry
       def self.require_component(component, &block)
         path = load_paths.detect { |p| p.join(component.file).exist? }
 
-        if path
-          Kernel.require component.path
-          yield(component) if block
-        else
-          raise FileNotFoundError, component
-        end
+        raise FileNotFoundError, component unless path
+
+        Kernel.require component.path
+
+        yield(component) if block
       end
 
       def self.root
