@@ -4,17 +4,12 @@ require 'inflecto'
 require 'dry-configurable'
 require 'dry-container'
 
+require 'dry/component/errors'
 require 'dry/component/injector'
 require 'dry/component/loader'
 
 module Dry
   module Component
-    FileNotFoundError = Class.new(StandardError) do
-      def initialize(component)
-        super("could not resolve require file for #{component.identifier}")
-      end
-    end
-
     class Container
       extend Dry::Configurable
       extend Dry::Container::Mixin
@@ -237,17 +232,11 @@ module Dry
 
       def self.check_component_identifier(name)
         unless name.is_a?(Symbol)
-          raise(
-            ArgumentError,
-            'component identifier must be a symbol'
-          )
+          raise InvalidComponentIdentifierTypeError, name
         end
 
         unless root.join("#{config.core_dir}/boot/#{name}.rb").exist?
-          raise(
-            ArgumentError,
-            "component identifier +#{name}+ is invalid or boot file is missing"
-          )
+          raise InvalidComponentIdentifierError, name
         end
       end
       private_class_method :check_component_identifier

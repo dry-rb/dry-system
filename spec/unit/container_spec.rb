@@ -86,7 +86,7 @@ RSpec.describe Dry::Component::Container do
       it 'expects a symbol identifier matching file name' do
         expect {
           container.boot!('bar')
-        }.to raise_error(ArgumentError, 'component identifier must be a symbol')
+        }.to raise_error(ArgumentError, 'component identifier "bar" must be a symbol')
       end
 
       it 'expects identifier to point to an existing boot file' do
