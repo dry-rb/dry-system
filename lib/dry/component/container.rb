@@ -126,28 +126,12 @@ module Dry
         return self if key?(key)
 
         component = loader.load(key)
-        src_key = component.namespaces[0]
+        src_key = component.root_key
 
         if imports.key?(src_key)
-          src_container = imports[src_key]
-
-          src_container.load_component(
-            (component.namespaces - [src_key]).map(&:to_s).join('.')
-          )
-
-          import_container(src_key, src_container)
+          load_external_component(src_key, component)
         else
-          begin
-            require_component(component) do
-              register(key) { component.instance }
-            end
-          rescue FileNotFoundError => e
-            if config.default_namespace
-              load_component("#{config.default_namespace}#{config.namespace_separator}#{component.identifier}")
-            else
-              raise e
-            end
-          end
+          load_local_component(key, component)
         end
 
         self
@@ -196,6 +180,32 @@ module Dry
       def self.imports
         @imports ||= {}
       end
+
+      def self.load_local_component(key, component)
+        begin
+          require_component(component) do
+            register(key) { component.instance }
+          end
+        rescue FileNotFoundError => e
+          if config.default_namespace
+            load_component("#{config.default_namespace}#{config.namespace_separator}#{component.identifier}")
+          else
+            raise e
+          end
+        end
+      end
+      private_class_method :load_local_component
+
+      def self.load_external_component(key, component)
+        container = imports[key]
+
+        container.load_component(
+          (component.namespaces - [key]).map(&:to_s).join('.')
+        )
+
+        import_container(key, container)
+      end
+      private_class_method :load_external_component
 
       def self.import_container(ns, container)
         items = container._container.each_with_object({}) { |(key, item), res|

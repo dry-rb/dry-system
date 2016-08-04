@@ -20,6 +20,10 @@ module Dry
           @file = "#{path}.rb"
         end
 
+        def root_key
+          namespaces.first
+        end
+
         def namespaces
           identifier.split(loader.namespace_separator).map(&:to_sym)
         end
