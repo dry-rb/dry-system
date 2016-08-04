@@ -63,6 +63,8 @@ RSpec.describe Dry::Component::Loader do
   end
 
   context 'singleton' do
+    subject(:component) { loader.load(:'test.bar') }
+
     before do
       module Test
         remove_const(:Bar)
@@ -71,8 +73,11 @@ RSpec.describe Dry::Component::Loader do
         end
       end
     end
-    subject(:component) { loader.load(:'test.bar') }
 
     it_behaves_like 'a valid component'
+
+    it 'returns singleton instance' do
+      expect(component.instance).to be(Test::Bar.instance)
+    end
   end
 end
