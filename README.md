@@ -1,10 +1,18 @@
-# dry-component <a href="https://gitter.im/dry-rb/chat" target="_blank">![Join the chat at https://gitter.im/dry-rb/chat](https://badges.gitter.im/Join%20Chat.svg)</a>
+[gem]: https://rubygems.org/gems/dry-component
+[travis]: https://travis-ci.org/dry-rb/dry-component
+[gemnasium]: https://gemnasium.com/dry-rb/dry-component
+[codeclimate]: https://codeclimate.com/github/dry-rb/dry-component
+[coveralls]: https://coveralls.io/r/dry-rb/dry-component
+[inchpages]: http://inch-ci.org/github/dry-rb/dry-component
 
-<a href="https://rubygems.org/gems/dry-component" target="_blank">![Gem Version](https://badge.fury.io/rb/dry-component.svg)</a>
-<a href="https://travis-ci.org/dry-rb/dry-component" target="_blank">![Build Status](https://travis-ci.org/dry-rb/dry-component.svg?branch=master)</a>
-<a href="https://gemnasium.com/dry-rb/dry-component" target="_blank">![Dependency Status](https://gemnasium.com/dry-rb/dry-component.svg)</a>
-<a href="https://codeclimate.com/github/dry-rb/dry-component" target="_blank">![Code Climate](https://codeclimate.com/github/dry-rb/dry-component/badges/gpa.svg)</a>
-<a href="http://inch-ci.org/github/dry-rb/dry-component" target="_blank">![Documentation Status](http://inch-ci.org/github/dry-rb/dry-component.svg?branch=master&style=flat)</a>
+# dry-component [![Join the chat at https://gitter.im/dry-rb/chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dry-rb/chat)
+
+[![Gem Version](https://badge.fury.io/rb/dry-component.svg)][gem]
+[![Build Status](https://travis-ci.org/dry-rb/dry-component.svg?branch=master)][travis]
+[![Dependency Status](https://gemnasium.com/dry-rb/dry-component.svg)][gemnasium]
+[![Code Climate](https://codeclimate.com/github/dry-rb/dry-component/badges/gpa.svg)][codeclimate]
+[![Test Coverage](https://codeclimate.com/github/dry-rb/dry-component/badges/coverage.svg)][codeclimate]
+[![Inline docs](http://inch-ci.org/github/dry-rb/dry-component.svg?branch=master)][inchpages]
 
 ## Links
 
