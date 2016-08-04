@@ -192,7 +192,7 @@ module Dry
           end
         rescue FileNotFoundError => e
           if config.default_namespace
-            load_component("#{config.default_namespace}#{config.namespace_separator}#{component.identifier}")
+            load_component(key(component.identifier))
           else
             raise e
           end
@@ -210,6 +210,11 @@ module Dry
         import_container(key, container)
       end
       private_class_method :load_external_component
+
+      def self.key(name)
+        "#{config.default_namespace}#{config.namespace_separator}#{name}"
+      end
+      private_class_method :key
 
       def self.import_container(ns, container)
         items = container._container.each_with_object({}) { |(key, item), res|
