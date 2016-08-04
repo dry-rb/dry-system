@@ -181,16 +181,14 @@ module Dry
       end
 
       def self.load_local_component(key, component)
-        begin
-          require_component(component) do
-            register(key) { component.instance }
-          end
-        rescue FileNotFoundError => e
-          if config.default_namespace
-            load_component(key(component.identifier))
-          else
-            raise e
-          end
+        require_component(component) do
+          register(key) { component.instance }
+        end
+      rescue FileNotFoundError => e
+        if config.default_namespace
+          load_component(key(component.identifier))
+        else
+          raise e
         end
       end
       private_class_method :load_local_component
