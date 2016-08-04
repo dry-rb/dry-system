@@ -197,8 +197,6 @@ module Dry
         @imports ||= {}
       end
 
-      private
-
       def self.import_container(ns, container)
         items = container._container.each_with_object({}) { |(key, item), res|
           res[[ns, key].join(config.namespace_separator)] = item
@@ -206,26 +204,34 @@ module Dry
 
         _container.update(items)
       end
+      private_class_method :import_container
 
       def self.auto_register
         Array(config.auto_register)
       end
+      private_class_method :auto_register
 
       def self.auto_register?
         !auto_register.empty?
       end
+      private_class_method :auto_register?
 
       def self.check_component_identifier!(name)
-        fail(
-          ArgumentError,
-          'component identifier must be a symbol'
-        ) unless name.is_a?(Symbol)
+        unless name.is_a?(Symbol)
+          raise(
+            ArgumentError,
+            'component identifier must be a symbol'
+          )
+        end
 
-        fail(
-          ArgumentError,
-          "component identifier +#{name}+ is invalid or boot file is missing"
-        ) unless root.join("#{config.core_dir}/boot/#{name}.rb").exist?
+        unless root.join("#{config.core_dir}/boot/#{name}.rb").exist?
+          raise(
+            ArgumentError,
+            "component identifier +#{name}+ is invalid or boot file is missing"
+          )
+        end
       end
+      private_class_method :check_component_identifier!
     end
   end
 end
