@@ -9,7 +9,11 @@ require 'dry/component/loader'
 
 module Dry
   module Component
-    FileNotFoundError = Class.new(StandardError)
+    FileNotFoundError = Class.new(StandardError) do
+      def initialize(component)
+        super("could not resolve require file for #{component.identifier}")
+      end
+    end
 
     class Container
       extend Dry::Configurable
@@ -144,7 +148,7 @@ module Dry
           Kernel.require component.path
           yield(component) if block
         else
-          raise FileNotFoundError, "could not resolve require file for #{component.identifier}"
+          raise FileNotFoundError, component
         end
       end
 
