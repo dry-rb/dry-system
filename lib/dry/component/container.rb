@@ -91,7 +91,7 @@ module Dry
       end
 
       def self.boot!(name)
-        check_component_identifier!(name)
+        check_component_identifier(name)
 
         return self unless booted?(name)
 
@@ -216,7 +216,7 @@ module Dry
       end
       private_class_method :auto_register?
 
-      def self.check_component_identifier!(name)
+      def self.check_component_identifier(name)
         unless name.is_a?(Symbol)
           raise(
             ArgumentError,
@@ -231,7 +231,7 @@ module Dry
           )
         end
       end
-      private_class_method :check_component_identifier!
+      private_class_method :check_component_identifier
     end
   end
 end
