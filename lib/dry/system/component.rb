@@ -20,6 +20,11 @@ module Dry
         @file = "#{path}.rb"
       end
 
+      def dependency?(name)
+        *deps, _ = namespaces
+        (deps & name.split(loader.namespace_separator).map(&:to_sym)).size > 0
+      end
+
       def root_key
         namespaces.first
       end

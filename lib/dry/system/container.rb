@@ -114,6 +114,12 @@ module Dry
         !booted.key?(name)
       end
 
+      def self.bootable_components
+        Dir[root.join(config.core_dir).join('boot/*.rb')]
+          .map(&Kernel.method(:Pathname))
+          .map { |file| file.basename('.*').to_s }
+      end
+
       def self.require(*paths)
         paths.flat_map { |path|
           path.to_s.include?('*') ? Dir[root.join(path)] : root.join(path)
@@ -138,6 +144,8 @@ module Dry
       end
 
       def self.require_component(component, &block)
+        return if keys.include?(component.identifier)
+
         path = load_paths.detect { |p| p.join(component.file).exist? }
 
         raise FileNotFoundError, component unless path
@@ -181,6 +189,12 @@ module Dry
       end
 
       def self.load_local_component(key, component)
+        unless frozen?
+          bootable_components
+            .select { |dep| component.dependency?(dep) }
+            .each { |dep| boot!(dep.to_sym) }
+        end
+
         require_component(component) do
           register(key) { component.instance }
         end
@@ -195,10 +209,9 @@ module Dry
 
       def self.load_external_component(key, component)
         container = imports[key]
+        component_key = (component.namespaces - [key]).map(&:to_s).join('.')
 
-        container.load_component(
-          (component.namespaces - [key]).map(&:to_s).join('.')
-        )
+        container.load_component(component_key)
 
         import_container(key, container)
       end
