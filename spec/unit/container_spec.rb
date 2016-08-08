@@ -1,11 +1,11 @@
-require 'dry/component/container'
+require 'dry/system/container'
 
-RSpec.describe Dry::Component::Container do
+RSpec.describe Dry::System::Container do
   subject(:container) { Test::Container }
 
   context 'with default core dir' do
     before do
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures/test').realpath
         end
@@ -34,7 +34,7 @@ RSpec.describe Dry::Component::Container do
     end
 
     describe '.load_component' do
-      it 'loads and registers components from configured load paths' do
+      it 'loads and registers systems from configured load paths' do
         container.load_component('test.foo')
 
         expect(Test.const_defined?(:Foo)).to be(true)
@@ -43,11 +43,11 @@ RSpec.describe Dry::Component::Container do
         expect(Test::Foo.new.dep).to be_instance_of(Test::Dep)
       end
 
-      it "raises an error if a component's file can't be found" do
-        expect { container.load_component('test.missing') }.to raise_error Dry::Component::FileNotFoundError
+      it "raises an error if a system's file can't be found" do
+        expect { container.load_component('test.missing') }.to raise_error Dry::System::FileNotFoundError
       end
 
-      it "is a no op if a matching component is already registered" do
+      it "is a no op if a matching system is already registered" do
         container.register "test.no_matching_file", Object.new
 
         expect { container.load_component("test.no_matching_file") }.not_to raise_error
@@ -57,7 +57,7 @@ RSpec.describe Dry::Component::Container do
 
   describe '.boot' do
     before do
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures/lazytest').realpath
         end
@@ -66,7 +66,7 @@ RSpec.describe Dry::Component::Container do
       end
     end
 
-    it 'lazy-boot a given component' do
+    it 'lazy-boot a given system' do
       container.boot(:bar)
 
       expect(Test.const_defined?(:Bar)).to be(true)
@@ -75,8 +75,8 @@ RSpec.describe Dry::Component::Container do
   end
 
   describe '.boot!' do
-    shared_examples_for 'a booted component' do
-      it 'boots a given component and finalizes it' do
+    shared_examples_for 'a booted system' do
+      it 'boots a given system and finalizes it' do
         container.boot!(:bar)
 
         expect(Test.const_defined?(:Bar)).to be(true)
@@ -100,9 +100,9 @@ RSpec.describe Dry::Component::Container do
     end
 
     context 'with the default core dir' do
-      it_behaves_like 'a booted component' do
+      it_behaves_like 'a booted system' do
         before do
-          class Test::Container < Dry::Component::Container
+          class Test::Container < Dry::System::Container
             configure do |config|
               config.root = SPEC_ROOT.join('fixtures/test').realpath
             end
@@ -114,9 +114,9 @@ RSpec.describe Dry::Component::Container do
     end
 
     context 'with a custom core dir' do
-      it_behaves_like 'a booted component' do
+      it_behaves_like 'a booted system' do
         before do
-          class Test::Container < Dry::Component::Container
+          class Test::Container < Dry::System::Container
             configure do |config|
               config.root = SPEC_ROOT.join('fixtures/other').realpath
               config.core_dir = 'config'
@@ -129,7 +129,7 @@ RSpec.describe Dry::Component::Container do
     end
 
     it 'passes container to the finalizer block' do
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure { |c| c.name = :awesome }
 
         finalize(:foo) do |container|

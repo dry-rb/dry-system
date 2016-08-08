@@ -1,6 +1,6 @@
-RSpec.describe Dry::Component::Injector do
+RSpec.describe Dry::System::Injector do
   before do
-    class Test::Container < Dry::Component::Container
+    class Test::Container < Dry::System::Container
       configure do |config|
         config.root = SPEC_ROOT.join("fixtures/test").realpath
       end

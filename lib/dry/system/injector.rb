@@ -1,7 +1,7 @@
 require "dry-auto_inject"
 
 module Dry
-  module Component
+  module System
     class Injector < BasicObject
       # @api private
       attr_reader :container
@@ -26,7 +26,7 @@ module Dry
       end
 
       def method_missing(name, *args, &block)
-        ::Dry::Component::Injector.new(container, options: options, strategy: name)
+        ::Dry::System::Injector.new(container, options: options, strategy: name)
       end
 
       def respond_to?(name, include_private = false)
@@ -40,7 +40,7 @@ module Dry
         aliases = components.last.is_a?(::Hash) ? components.pop : {}
 
         (components + aliases.values).each do |key|
-          container.load_component(key) unless container.key?(key)
+          container.load_component(key)
         end
       end
     end

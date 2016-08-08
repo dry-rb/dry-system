@@ -4,12 +4,12 @@ require 'inflecto'
 require 'dry-configurable'
 require 'dry-container'
 
-require 'dry/component/errors'
-require 'dry/component/injector'
-require 'dry/component/loader'
+require 'dry/system/errors'
+require 'dry/system/injector'
+require 'dry/system/loader'
 
 module Dry
-  module Component
+  module System
     class Container
       extend Dry::Configurable
       extend Dry::Container::Mixin
@@ -19,7 +19,7 @@ module Dry
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'component'.freeze
       setting :auto_register
-      setting :loader, Dry::Component::Loader
+      setting :loader, Dry::System::Loader
 
       def self.configure(&block)
         super(&block)
@@ -34,7 +34,7 @@ module Dry
         when Dry::Container::Namespace then super
         when Hash then imports.update(other)
         else
-          if other < Component::Container
+          if other < System::Container
             imports.update(other.config.name => other)
           end
         end
@@ -73,6 +73,7 @@ module Dry
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
           component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
+
           loader.load(component_path).tap do |component|
             next if key?(component.identifier)
 
