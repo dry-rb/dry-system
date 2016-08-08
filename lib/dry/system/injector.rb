@@ -40,7 +40,7 @@ module Dry
         aliases = components.last.is_a?(::Hash) ? components.pop : {}
 
         (components + aliases.values).each do |key|
-          container.load_component(key) unless container.key?(key)
+          container.load_component(key)
         end
       end
     end
