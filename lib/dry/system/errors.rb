@@ -1,5 +1,5 @@
 module Dry
-  module Component
+  module System
     FileNotFoundError = Class.new(StandardError) do
       def initialize(component)
         super("could not resolve require file for #{component.identifier}")

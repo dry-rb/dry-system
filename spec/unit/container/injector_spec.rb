@@ -1,11 +1,11 @@
-require "dry/component/container"
+require "dry/system/container"
 
-RSpec.describe Dry::Component::Container, ".injector" do
+RSpec.describe Dry::System::Container, ".injector" do
   context "injector_options provided" do
     it "builds an injector with the provided options" do
       Test::Foo = Class.new
 
-      Test::Container = Class.new(Dry::Component::Container) do
+      Test::Container = Class.new(Dry::System::Container) do
         register "foo", Test::Foo.new
       end
 

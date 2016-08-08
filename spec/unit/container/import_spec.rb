@@ -1,10 +1,10 @@
-require 'dry/component/container'
+require 'dry/system/container'
 
-RSpec.describe Dry::Component::Container, '.import' do
-  subject(:app) { Class.new(Dry::Component::Container) }
+RSpec.describe Dry::System::Container, '.import' do
+  subject(:app) { Class.new(Dry::System::Container) }
 
   let(:db) do
-    Class.new(Dry::Component::Container) do
+    Class.new(Dry::System::Container) do
       register(:users, %w(jane joe))
     end
   end
@@ -37,8 +37,8 @@ RSpec.describe Dry::Component::Container, '.import' do
   end
 
   describe 'import module' do
-    it 'loads component when it was not loaded in the imported container yet' do
-      class Test::Other < Dry::Component::Container
+    it 'loads system when it was not loaded in the imported container yet' do
+      class Test::Other < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures/import_test').realpath
         end
@@ -46,7 +46,7 @@ RSpec.describe Dry::Component::Container, '.import' do
         load_paths!('lib')
       end
 
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures/test').realpath
         end

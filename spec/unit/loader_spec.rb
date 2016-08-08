@@ -1,7 +1,7 @@
-require 'dry/component/loader'
+require 'dry/system/loader'
 require 'singleton'
 
-RSpec.describe Dry::Component::Loader do
+RSpec.describe Dry::System::Loader do
   before do
     module Test
       class Bar
@@ -41,8 +41,8 @@ RSpec.describe Dry::Component::Loader do
     end
   end
 
-  let(:container) { Class.new(Dry::Component::Container) }
-  let(:loader) { Dry::Component::Loader.new(container.config) }
+  let(:container) { Class.new(Dry::System::Container) }
+  let(:loader) { Dry::System::Loader.new(container.config) }
 
   context 'from identifier as a symbol' do
     subject(:component) { loader.load(:'test.bar') }

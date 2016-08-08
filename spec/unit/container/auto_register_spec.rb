@@ -1,9 +1,9 @@
-require 'dry/component/container'
+require 'dry/system/container'
 
-RSpec.describe Dry::Component::Container, '.auto_register!' do
+RSpec.describe Dry::System::Container, '.auto_register!' do
   context 'standard loader' do
     before do
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures').realpath
         end
@@ -20,7 +20,7 @@ RSpec.describe Dry::Component::Container, '.auto_register!' do
 
   context 'standard loader with a default namespace configured' do
     before do
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures').realpath
           config.default_namespace = 'namespaced'
@@ -38,8 +38,8 @@ RSpec.describe Dry::Component::Container, '.auto_register!' do
 
   context 'with a custom loader' do
     before do
-      class Test::Loader < Dry::Component::Loader
-        class Component < Dry::Component::Loader::Component
+      class Test::Loader < Dry::System::Loader
+        class System < Dry::System::Component
           def identifier
             super + ".yay"
           end
@@ -49,12 +49,12 @@ RSpec.describe Dry::Component::Container, '.auto_register!' do
           end
         end
 
-        def load(component_path)
-          Component.new(self, component_path)
+        def load(system_path)
+          System.new(self, system_path)
         end
       end
 
-      class Test::Container < Dry::Component::Container
+      class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures').realpath
           config.loader = ::Test::Loader

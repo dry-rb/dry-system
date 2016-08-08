@@ -1,13 +1,13 @@
 # coding: utf-8
-require File.expand_path('../lib/dry/component/version', __FILE__)
+require File.expand_path('../lib/dry/system/version', __FILE__)
 
 Gem::Specification.new do |spec|
-  spec.name          = 'dry-component'
-  spec.version       = Dry::Component::VERSION
+  spec.name          = 'dry-system'
+  spec.version       = Dry::System::VERSION
   spec.authors       = ['Piotr Solnica']
   spec.email         = ['piotr.solnica@gmail.com']
   spec.summary       = 'Organize your code into reusable components'
-  spec.homepage      = 'https://github.com/dryrb/dry-component'
+  spec.homepage      = 'http://dry-rb.org/gems/dry-system'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")

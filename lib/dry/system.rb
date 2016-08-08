@@ -1,4 +1,4 @@
 module Dry
-  module Component
+  module System
   end
 end
