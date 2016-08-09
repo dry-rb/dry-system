@@ -39,18 +39,8 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
   context 'with a custom loader' do
     before do
       class Test::Loader < Dry::System::Loader
-        class Component < Dry::System::Component
-          def identifier
-            super + ".yay"
-          end
-
-          def instance(*args)
-            constant.respond_to?(:call) ? constant : constant.new(*args)
-          end
-        end
-
-        def load(system_path)
-          Component.new(system_path, options)
+        def call(*args)
+          constant.respond_to?(:call) ? constant : constant.new(*args)
         end
       end
 
@@ -65,9 +55,9 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
       end
     end
 
-    it { expect(Test::Container['foo.yay']).to be_an_instance_of(Foo) }
-    it { expect(Test::Container['bar.yay']).to eq(Bar) }
-    it { expect(Test::Container['bar.yay'].call).to eq("Welcome to my Moe's Tavern!") }
-    it { expect(Test::Container['bar.baz.yay']).to be_an_instance_of(Bar::Baz) }
+    it { expect(Test::Container['foo']).to be_an_instance_of(Foo) }
+    it { expect(Test::Container['bar']).to eq(Bar) }
+    it { expect(Test::Container['bar'].call).to eq("Welcome to my Moe's Tavern!") }
+    it { expect(Test::Container['bar.baz']).to be_an_instance_of(Bar::Baz) }
   end
 end

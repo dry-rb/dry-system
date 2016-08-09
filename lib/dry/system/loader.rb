@@ -1,28 +1,24 @@
-require 'dry/system/component'
+require 'inflecto'
 
 module Dry
   module System
     class Loader
-      PATH_SEPARATOR = '/'.freeze
+      attr_reader :path
 
-      attr_reader :default_namespace
-      attr_reader :namespace_separator
-      attr_reader :path_separator
-
-      def initialize(config)
-        @default_namespace = config.default_namespace
-        @namespace_separator = config.namespace_separator
-        @path_separator = PATH_SEPARATOR
+      def initialize(path)
+        @path = path
       end
 
-      def load(name)
-        Component.new(name, options)
+      def call(*args)
+        if constant.respond_to?(:instance) && !constant.respond_to?(:new)
+          constant.instance(*args) # a singleton
+        else
+          constant.new(*args)
+        end
       end
 
-      def options
-        { default_namespace: default_namespace,
-          namespace_separator: namespace_separator,
-          path_separator: path_separator }
+      def constant
+        Inflecto.constantize(Inflecto.classify(path))
       end
     end
   end

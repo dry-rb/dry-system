@@ -1,39 +1,45 @@
-require 'inflecto'
 require 'dry-equalizer'
+require 'dry/system/loader'
 
 module Dry
   module System
     class Component
       include Dry::Equalizer(:identifier, :path)
 
-      attr_reader :identifier, :path, :file, :options
+      PATH_SEPARATOR = '/'.freeze
+
+      attr_reader :identifier, :path, :file, :options, :loader
 
       def self.new(name, options)
-        ns, ns_sep, path_sep = options.values_at(
-          :default_namespace, :namespace_separator, :path_separator
-        )
+        ns, sep = options.values_at(:namespace, :separator)
 
         identifier =
           if ns
-            name.to_s.sub(%r[^#{ns}#{ns_sep}], '')
+            name.to_s.sub(%r[^#{ns}#{sep}], '')
           else
-            name.to_s.gsub(path_sep, ns_sep)
+            name.to_s.gsub(PATH_SEPARATOR, sep)
           end
 
-        path = name.to_s.gsub(ns_sep, path_sep)
+        path = name.to_s.gsub(sep, PATH_SEPARATOR)
+        loader = options.fetch(:loader, Loader).new(path)
 
-        super(identifier, path, options)
+        super(identifier, path, options.merge(loader: loader))
       end
 
       def initialize(identifier, path, options)
         @identifier, @path = identifier, path
         @options = options
         @file = "#{path}.rb".freeze
+        @loader = options.fetch(:loader)
         freeze
       end
 
       def separator
-        options[:namespace_separator]
+        options[:separator]
+      end
+
+      def namespace
+        options[:namespace]
       end
 
       def dependency?(name)
@@ -50,21 +56,7 @@ module Dry
       end
 
       def instance(*args)
-        if constant.respond_to?(:instance) && !constant.respond_to?(:new)
-          constant.instance(*args) # a singleton
-        else
-          constant.new(*args)
-        end
-      end
-
-      def constant
-        Inflecto.constantize(constant_name)
-      end
-
-      private
-
-      def constant_name
-        Inflecto.camelize(path)
+        loader.call(*args)
       end
     end
   end

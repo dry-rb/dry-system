@@ -6,6 +6,7 @@ require 'dry-container'
 require 'dry/system/errors'
 require 'dry/system/injector'
 require 'dry/system/loader'
+require 'dry/system/component'
 
 module Dry
   module System
@@ -59,8 +60,13 @@ module Dry
         freeze
       end
 
-      def self.loader
-        @loader ||= config.loader.new(config)
+      def self.component(key)
+        Component.new(
+          key,
+          loader: config.loader,
+          namespace: config.default_namespace,
+          separator: config.namespace_separator
+        )
       end
 
       def self.injector(options = {})
@@ -71,9 +77,9 @@ module Dry
         dir_root = root.join(dir.to_s.split('/')[0])
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
-          component_path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
+          path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
 
-          loader.load(component_path).tap do |component|
+          component(path).tap do |component|
             next if key?(component.identifier)
 
             Kernel.require component.path
@@ -130,13 +136,14 @@ module Dry
       def self.load_component(key)
         return self if key?(key)
 
-        component = loader.load(key)
-        src_key = component.root_key
+        component(key).tap do |component|
+          src_key = component.root_key
 
-        if imports.key?(src_key)
-          load_external_component(src_key, component)
-        else
-          load_local_component(key, component)
+          if imports.key?(src_key)
+            load_external_component(src_key, component)
+          else
+            load_local_component(key, component)
+          end
         end
 
         self
