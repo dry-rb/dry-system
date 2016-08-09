@@ -1,5 +1,4 @@
 require 'pathname'
-require 'inflecto'
 
 require 'dry-configurable'
 require 'dry-container'
