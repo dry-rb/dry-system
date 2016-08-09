@@ -1,28 +1,44 @@
 require 'inflecto'
+require 'dry-equalizer'
 
 module Dry
   module System
     class Component
-      attr_reader :loader
-      attr_reader :identifier, :path, :file
+      include Dry::Equalizer(:identifier, :path)
 
-      def initialize(loader, input)
-        @loader = loader
+      attr_reader :identifier, :path, :file, :options
 
-        @identifier = input.to_s.gsub(loader.path_separator, loader.namespace_separator)
+      def self.new(name, options)
+        ns, ns_sep, path_sep = options.values_at(
+          :default_namespace, :namespace_separator, :path_separator
+        )
 
-        if loader.default_namespace
-          re = /^#{Regexp.escape(loader.default_namespace)}#{Regexp.escape(loader.namespace_separator)}/
-          @identifier = @identifier.sub(re, '')
-        end
+        identifier =
+          if ns
+            name.to_s.sub(%r[^#{ns}#{ns_sep}], '')
+          else
+            name.to_s.gsub(path_sep, ns_sep)
+          end
 
-        @path = input.to_s.gsub(loader.namespace_separator, loader.path_separator)
-        @file = "#{path}.rb"
+        path = name.to_s.gsub(ns_sep, path_sep)
+
+        super(identifier, path, options)
+      end
+
+      def initialize(identifier, path, options)
+        @identifier, @path = identifier, path
+        @options = options
+        @file = "#{path}.rb".freeze
+        freeze
+      end
+
+      def separator
+        options[:namespace_separator]
       end
 
       def dependency?(name)
         *deps, _ = namespaces
-        (deps & name.split(loader.namespace_separator).map(&:to_sym)).size > 0
+        (deps & name.split(separator).map(&:to_sym)).size > 0
       end
 
       def root_key
@@ -30,7 +46,7 @@ module Dry
       end
 
       def namespaces
-        identifier.split(loader.namespace_separator).map(&:to_sym)
+        identifier.split(separator).map(&:to_sym)
       end
 
       def instance(*args)

@@ -39,7 +39,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
   context 'with a custom loader' do
     before do
       class Test::Loader < Dry::System::Loader
-        class System < Dry::System::Component
+        class Component < Dry::System::Component
           def identifier
             super + ".yay"
           end
@@ -50,7 +50,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
         end
 
         def load(system_path)
-          System.new(self, system_path)
+          Component.new(system_path, options)
         end
       end
 

@@ -15,8 +15,14 @@ module Dry
         @path_separator = PATH_SEPARATOR
       end
 
-      def load(path)
-        Component.new(self, path)
+      def load(name)
+        Component.new(name, options)
+      end
+
+      def options
+        { default_namespace: default_namespace,
+          namespace_separator: namespace_separator,
+          path_separator: path_separator }
       end
     end
   end
