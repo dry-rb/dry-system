@@ -7,19 +7,14 @@ module Dry
       include Dry::Equalizer(:identifier, :path)
 
       PATH_SEPARATOR = '/'.freeze
+      WORD_REGEX = /\w+/.freeze
 
       attr_reader :identifier, :path, :file, :options, :loader
 
       def self.new(name, options)
-        ns, sep = options.values_at(:namespace, :separator)
+        ns, sep = options.values_at(:namespace, :separator).map(&:to_s)
 
-        identifier =
-          if ns
-            name.to_s.sub(%r[^#{ns}#{sep}], '')
-          else
-            name.to_s.gsub(PATH_SEPARATOR, sep)
-          end
-
+        identifier = name.to_s.scan(WORD_REGEX).reject { |s| ns == s }.join(sep)
         path = name.to_s.gsub(sep, PATH_SEPARATOR)
         loader = options.fetch(:loader, Loader).new(path)
 
@@ -32,6 +27,12 @@ module Dry
         @file = "#{path}.rb".freeze
         @loader = options.fetch(:loader)
         freeze
+      end
+
+      def namespaced(namespace)
+        self.class.new(
+          path, options.merge(loader: loader.class, namespace: namespace)
+        )
       end
 
       def separator
@@ -51,12 +52,14 @@ module Dry
         namespaces.first
       end
 
-      def namespaces
-        identifier.split(separator).map(&:to_sym)
-      end
-
       def instance(*args)
         loader.call(*args)
+      end
+
+      private
+
+      def namespaces
+        identifier.split(separator).map(&:to_sym)
       end
     end
   end

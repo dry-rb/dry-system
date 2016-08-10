@@ -18,12 +18,6 @@ RSpec.describe Dry::System::Component do
       end
     end
 
-    describe '#namespaces' do
-      it 'returns namespace array' do
-        expect(component.namespaces).to eql(%i[foo])
-      end
-    end
-
     describe '#root_key' do
       it 'returns component key' do
         expect(component.root_key).to be(:foo)
@@ -58,9 +52,13 @@ RSpec.describe Dry::System::Component do
       end
     end
 
-    describe '#namespaces' do
-      it 'returns namespace array' do
-        expect(component.namespaces).to eql(%i[test foo])
+    describe '#namespaced' do
+      it 'returns a namespaced component' do
+        namespaced = component.namespaced(:test)
+
+        expect(namespaced.identifier).to eql('foo')
+        expect(namespaced.path).to eql('test/foo')
+        expect(namespaced.file).to eql('test/foo.rb')
       end
     end
 

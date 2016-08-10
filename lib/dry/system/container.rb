@@ -133,22 +133,6 @@ module Dry
         }
       end
 
-      def self.load_component(key)
-        return self if key?(key)
-
-        component(key).tap do |component|
-          src_key = component.root_key
-
-          if imports.key?(src_key)
-            load_external_component(src_key, component)
-          else
-            load_local_component(key, component)
-          end
-        end
-
-        self
-      end
-
       def self.require_component(component, &block)
         return if keys.include?(component.identifier)
 
@@ -194,6 +178,22 @@ module Dry
         @imports ||= {}
       end
 
+      def self.load_component(key)
+        return self if key?(key)
+
+        component(key).tap do |component|
+          src_key = component.root_key
+
+          if imports.key?(src_key)
+            load_external_component(src_key, component.namespaced(src_key))
+          else
+            load_local_component(key, component)
+          end
+        end
+
+        self
+      end
+
       def self.load_local_component(key, component)
         unless frozen?
           bootable_components
@@ -215,10 +215,7 @@ module Dry
 
       def self.load_external_component(key, component)
         container = imports[key]
-        component_key = (component.namespaces - [key]).map(&:to_s).join('.')
-
-        container.load_component(component_key)
-
+        container.load_component(component.identifier)
         import_container(key, container)
       end
       private_class_method :load_external_component
