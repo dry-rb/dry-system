@@ -4,6 +4,14 @@ RSpec.describe Dry::System::Component do
   subject(:component) { Dry::System::Component.new(name, separator: '.') }
 
   describe '.new' do
+    it 'caches components' do
+      create = -> {
+        Dry::System::Component.new('foo.bar', namespace: 'foo', separator: '.')
+      }
+
+      expect(create.()).to be(create.())
+    end
+
     it 'raises when namespace includes a separator' do
       expect { Dry::System::Component.new('foo.bar.baz', namespace: 'foo.bar', separator: '.') }
         .to raise_error(Dry::System::InvalidNamespaceError, /foo\.bar/)

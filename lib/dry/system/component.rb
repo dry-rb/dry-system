@@ -1,3 +1,5 @@
+require 'concurrent/map'
+
 require 'dry-equalizer'
 require 'dry/system/loader'
 
@@ -11,22 +13,29 @@ module Dry
 
       attr_reader :identifier, :path, :file, :options, :loader
 
-      def self.new(name, options)
-        ns, sep = options.values_at(:namespace, :separator).map(&:to_s)
+      def self.new(*args)
+        cache.fetch_or_store(args.hash) do
+          name, options = args
+          ns, sep = options.values_at(:namespace, :separator).map(&:to_s)
 
-        raise InvalidNamespaceError, ns if ns.include?(sep)
+          raise InvalidNamespaceError, ns if ns.include?(sep)
 
-        keys = name.to_s.scan(WORD_REGEX)
+          keys = name.to_s.scan(WORD_REGEX)
 
-        if keys.uniq.size != keys.size
-          raise InvalidComponentError, name, 'duplicated keys in the name'
+          if keys.uniq.size != keys.size
+            raise InvalidComponentError, name, 'duplicated keys in the name'
+          end
+
+          identifier = keys.reject { |s| ns == s }.join(sep)
+          path = name.to_s.gsub(sep, PATH_SEPARATOR)
+          loader = options.fetch(:loader, Loader).new(path)
+
+          super(identifier, path, options.merge(loader: loader))
         end
+      end
 
-        identifier = keys.reject { |s| ns == s }.join(sep)
-        path = name.to_s.gsub(sep, PATH_SEPARATOR)
-        loader = options.fetch(:loader, Loader).new(path)
-
-        super(identifier, path, options.merge(loader: loader))
+      def self.cache
+        @cache ||= Concurrent::Map.new
       end
 
       def initialize(identifier, path, options)
