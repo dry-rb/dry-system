@@ -185,16 +185,16 @@ module Dry
           src_key = component.root_key
 
           if imports.key?(src_key)
-            load_external_component(src_key, component.namespaced(src_key))
+            load_external_component(component.namespaced(src_key))
           else
-            load_local_component(key, component)
+            load_local_component(component)
           end
         end
 
         self
       end
 
-      def self.load_local_component(key, component)
+      def self.load_local_component(component)
         unless frozen?
           bootable_components
             .select { |dep| component.dependency?(dep) }
@@ -202,7 +202,7 @@ module Dry
         end
 
         require_component(component) do
-          register(key) { component.instance }
+          register(component.identifier) { component.instance }
         end
       rescue FileNotFoundError => e
         if config.default_namespace
@@ -213,10 +213,10 @@ module Dry
       end
       private_class_method :load_local_component
 
-      def self.load_external_component(key, component)
-        container = imports[key]
+      def self.load_external_component(component)
+        container = imports[component.namespace]
         container.load_component(component.identifier)
-        import_container(key, container)
+        import_container(component.namespace, container)
       end
       private_class_method :load_external_component
 
