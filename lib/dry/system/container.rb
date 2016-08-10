@@ -112,7 +112,11 @@ module Dry
       end
 
       def self.boot(name)
-        require "#{config.core_dir}/boot/#{name}"
+        require "#{boot_path}/#{name}"
+      end
+
+      def self.boot_path
+        root.join(config.core_dir).join('boot')
       end
 
       def self.booted?(name)
@@ -120,7 +124,7 @@ module Dry
       end
 
       def self.bootable_components
-        Dir[root.join(config.core_dir).join('boot/*.rb')]
+        Dir[boot_path.join('*.rb')]
           .map(&Kernel.method(:Pathname))
           .map { |file| file.basename('.*').to_s }
       end
@@ -131,18 +135,6 @@ module Dry
         }.each { |path|
           Kernel.require path.to_s
         }
-      end
-
-      def self.require_component(component, &block)
-        return if keys.include?(component.identifier)
-
-        path = load_paths.detect { |p| p.join(component.file).exist? }
-
-        raise FileNotFoundError, component unless path
-
-        Kernel.require component.path
-
-        yield(component) if block
       end
 
       def self.root
@@ -194,21 +186,17 @@ module Dry
         self
       end
 
-      def self.load_local_component(component)
-        unless frozen?
-          bootable_components
-            .select { |dep| component.dependency?(dep) }
-            .each { |dep| boot!(dep.to_sym) }
-        end
+      def self.load_local_component(component, fallback = false)
+        if component.bootable?(boot_path) || component.file_exists?(load_paths)
+          boot_dependency(component) unless frozen?
 
-        require_component(component) do
-          register(component.identifier) { component.instance }
-        end
-      rescue FileNotFoundError => e
-        if config.default_namespace
-          load_component(key(component.identifier))
+          require_component(component) do
+            register(component.identifier) { component.instance }
+          end
+        elsif !fallback
+          load_local_component(component.prepend(config.default_namespace), true)
         else
-          raise e
+          raise ComponentLoadError, component
         end
       end
       private_class_method :load_local_component
@@ -220,10 +208,24 @@ module Dry
       end
       private_class_method :load_external_component
 
-      def self.key(name)
-        "#{config.default_namespace}#{config.namespace_separator}#{name}"
+      def self.require_component(component, &block)
+        return if keys.include?(component.identifier)
+
+        path = load_paths.detect { |p| p.join(component.file).exist? }
+
+        raise FileNotFoundError, component unless path
+
+        Kernel.require component.path
+
+        yield(component) if block
       end
-      private_class_method :key
+      private_class_method :require_component
+
+      def self.boot_dependency(component)
+        boot_file = component.boot_file(boot_path)
+        boot!(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
+      end
+      private_class_method :boot_dependency
 
       def self.import_container(ns, container)
         items = container._container.each_with_object({}) { |(key, item), res|

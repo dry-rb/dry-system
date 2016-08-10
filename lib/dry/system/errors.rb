@@ -6,6 +6,13 @@ module Dry
       end
     end
 
+    ComponentLoadError = Class.new(StandardError) do
+      def initialize(component)
+        super("could not load component #{component.inspect}")
+      end
+    end
+
+
     InvalidComponentIdentifierError = Class.new(ArgumentError) do
       def initialize(name)
         super(

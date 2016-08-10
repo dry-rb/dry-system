@@ -29,6 +29,24 @@ module Dry
         freeze
       end
 
+      def bootable?(path)
+        boot_file(path).exist?
+      end
+
+      def boot_file(path)
+        path.join("#{root_key}.rb")
+      end
+
+      def file_exists?(paths)
+        paths.any? { |path| path.join(file).exist? }
+      end
+
+      def prepend(name)
+        self.class.new(
+          [name, identifier].join(separator), options.merge(loader: loader.class)
+        )
+      end
+
       def namespaced(namespace)
         self.class.new(
           path, options.merge(loader: loader.class, namespace: namespace)
@@ -41,11 +59,6 @@ module Dry
 
       def namespace
         options[:namespace]
-      end
-
-      def dependency?(name)
-        *deps, _ = namespaces
-        (deps & name.split(separator).map(&:to_sym)).size > 0
       end
 
       def root_key
