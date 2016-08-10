@@ -14,6 +14,8 @@ module Dry
       def self.new(name, options)
         ns, sep = options.values_at(:namespace, :separator).map(&:to_s)
 
+        raise InvalidNamespaceError, ns if ns.include?(sep)
+
         identifier = name.to_s.scan(WORD_REGEX).reject { |s| ns == s }.join(sep)
         path = name.to_s.gsub(sep, PATH_SEPARATOR)
         loader = options.fetch(:loader, Loader).new(path)
