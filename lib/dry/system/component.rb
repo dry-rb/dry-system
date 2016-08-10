@@ -16,7 +16,13 @@ module Dry
 
         raise InvalidNamespaceError, ns if ns.include?(sep)
 
-        identifier = name.to_s.scan(WORD_REGEX).reject { |s| ns == s }.join(sep)
+        keys = name.to_s.scan(WORD_REGEX)
+
+        if keys.uniq.size != keys.size
+          raise InvalidComponentError, name, 'duplicated keys in the name'
+        end
+
+        identifier = keys.reject { |s| ns == s }.join(sep)
         path = name.to_s.gsub(sep, PATH_SEPARATOR)
         loader = options.fetch(:loader, Loader).new(path)
 

@@ -18,6 +18,14 @@ module Dry
       end
     end
 
+    InvalidComponentError = Class.new(ArgumentError) do
+      def initialize(name, reason = nil)
+        super(
+          "Tried to create an invalid #{name.inspect} component - #{reason}"
+        )
+      end
+    end
+
     InvalidComponentIdentifierError = Class.new(ArgumentError) do
       def initialize(name)
         super(
