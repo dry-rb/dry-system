@@ -11,6 +11,9 @@ require 'dry/system/component'
 module Dry
   module System
     class Container
+      RB_EXT = '.rb'.freeze
+      EMPTY_STRING = ''.freeze
+
       extend Dry::Configurable
       extend Dry::Container::Mixin
 
@@ -77,7 +80,7 @@ module Dry
         dir_root = root.join(dir.to_s.split('/')[0])
 
         Dir["#{root}/#{dir}/**/*.rb"].each do |path|
-          path = path.to_s.gsub("#{dir_root}/", '').gsub('.rb', '')
+          path = path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
 
           component(path).tap do |component|
             next if key?(component.identifier)
