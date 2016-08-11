@@ -2,6 +2,7 @@ require 'concurrent/map'
 
 require 'dry-equalizer'
 require 'dry/system/loader'
+require 'dry/system/errors'
 
 module Dry
   module System
