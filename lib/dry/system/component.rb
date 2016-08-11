@@ -3,15 +3,12 @@ require 'concurrent/map'
 require 'dry-equalizer'
 require 'dry/system/loader'
 require 'dry/system/errors'
+require 'dry/system/constants'
 
 module Dry
   module System
     class Component
       include Dry::Equalizer(:identifier, :path)
-
-      PATH_SEPARATOR = '/'.freeze
-      DEFAULT_SEPARATOR = '.'.freeze
-      WORD_REGEX = /\w+/.freeze
 
       DEFAULT_OPTIONS = { separator: DEFAULT_SEPARATOR, namespace: nil }.freeze
 

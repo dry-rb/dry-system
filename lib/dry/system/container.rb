@@ -7,13 +7,11 @@ require 'dry/system/errors'
 require 'dry/system/injector'
 require 'dry/system/loader'
 require 'dry/system/component'
+require 'dry/system/constants'
 
 module Dry
   module System
     class Container
-      RB_EXT = '.rb'.freeze
-      EMPTY_STRING = ''.freeze
-
       extend Dry::Configurable
       extend Dry::Container::Mixin
 
