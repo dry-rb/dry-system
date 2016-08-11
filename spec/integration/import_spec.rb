@@ -27,7 +27,7 @@ RSpec.describe 'Lazy-booting external deps' do
     end
   end
 
-  context 'when top-level container provides the depedency' do
+  context 'when top-level container provides the dependency' do
     let(:user_repo) do
       Class.new { include Test::Import['core.db.repo'] }.new
     end
