@@ -9,16 +9,22 @@ module Dry
       include Dry::Equalizer(:identifier, :path)
 
       PATH_SEPARATOR = '/'.freeze
+      DEFAULT_SEPARATOR = '.'.freeze
       WORD_REGEX = /\w+/.freeze
+
+      DEFAULT_OPTIONS = { separator: DEFAULT_SEPARATOR, namespace: nil }.freeze
 
       attr_reader :identifier, :path, :file, :options, :loader
 
       def self.new(*args)
         cache.fetch_or_store(args.hash) do
           name, options = args
-          ns, sep = options.values_at(:namespace, :separator).map(&:to_s)
+          options = DEFAULT_OPTIONS.merge(options || {})
 
-          raise InvalidNamespaceError, ns if ns.include?(sep)
+          ns, sep = options.values_at(:namespace, :separator)
+
+          ns_name = ns.to_s
+          raise InvalidNamespaceError, ns_name if ns && ns_name.include?(sep)
 
           keys = name.to_s.scan(WORD_REGEX)
 
@@ -26,7 +32,7 @@ module Dry
             raise InvalidComponentError, name, 'duplicated keys in the name'
           end
 
-          identifier = keys.reject { |s| ns == s }.join(sep)
+          identifier = keys.reject { |s| ns_name == s }.join(sep)
           path = name.to_s.gsub(sep, PATH_SEPARATOR)
           loader = options.fetch(:loader, Loader).new(path)
 
