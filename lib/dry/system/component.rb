@@ -1,49 +1,102 @@
-require 'inflecto'
+require 'concurrent/map'
+
+require 'dry-equalizer'
+require 'dry/system/loader'
+require 'dry/system/errors'
 
 module Dry
   module System
     class Component
-      attr_reader :loader
-      attr_reader :identifier, :path, :file
+      include Dry::Equalizer(:identifier, :path)
 
-      def initialize(loader, input)
-        @loader = loader
+      PATH_SEPARATOR = '/'.freeze
+      DEFAULT_SEPARATOR = '.'.freeze
+      WORD_REGEX = /\w+/.freeze
 
-        @identifier = input.to_s.gsub(loader.path_separator, loader.namespace_separator)
+      DEFAULT_OPTIONS = { separator: DEFAULT_SEPARATOR, namespace: nil }.freeze
 
-        if loader.default_namespace
-          re = /^#{Regexp.escape(loader.default_namespace)}#{Regexp.escape(loader.namespace_separator)}/
-          @identifier = @identifier.sub(re, '')
+      attr_reader :identifier, :path, :file, :options, :loader
+
+      def self.new(*args)
+        cache.fetch_or_store(args.hash) do
+          name, options = args
+          options = DEFAULT_OPTIONS.merge(options || {})
+
+          ns, sep = options.values_at(:namespace, :separator)
+
+          ns_name = ns.to_s
+          raise InvalidNamespaceError, ns_name if ns && ns_name.include?(sep)
+
+          keys = name.to_s.scan(WORD_REGEX)
+
+          if keys.uniq.size != keys.size
+            raise InvalidComponentError, name, 'duplicated keys in the name'
+          end
+
+          identifier = keys.reject { |s| ns_name == s }.join(sep)
+          path = name.to_s.gsub(sep, PATH_SEPARATOR)
+          loader = options.fetch(:loader, Loader).new(path)
+
+          super(identifier, path, options.merge(loader: loader))
         end
+      end
 
-        @path = input.to_s.gsub(loader.namespace_separator, loader.path_separator)
-        @file = "#{path}.rb"
+      def self.cache
+        @cache ||= Concurrent::Map.new
+      end
+
+      def initialize(identifier, path, options)
+        @identifier, @path = identifier, path
+        @options = options
+        @file = "#{path}.rb".freeze
+        @loader = options.fetch(:loader)
+        freeze
+      end
+
+      def bootable?(path)
+        boot_file(path).exist?
+      end
+
+      def boot_file(path)
+        path.join("#{root_key}.rb")
+      end
+
+      def file_exists?(paths)
+        paths.any? { |path| path.join(file).exist? }
+      end
+
+      def prepend(name)
+        self.class.new(
+          [name, identifier].join(separator), options.merge(loader: loader.class)
+        )
+      end
+
+      def namespaced(namespace)
+        self.class.new(
+          path, options.merge(loader: loader.class, namespace: namespace)
+        )
+      end
+
+      def separator
+        options[:separator]
+      end
+
+      def namespace
+        options[:namespace]
       end
 
       def root_key
         namespaces.first
       end
 
-      def namespaces
-        identifier.split(loader.namespace_separator).map(&:to_sym)
-      end
-
       def instance(*args)
-        if constant.respond_to?(:instance) && !constant.respond_to?(:new)
-          constant.instance(*args) # a singleton
-        else
-          constant.new(*args)
-        end
-      end
-
-      def constant
-        Inflecto.constantize(constant_name)
+        loader.call(*args)
       end
 
       private
 
-      def constant_name
-        Inflecto.camelize(path)
+      def namespaces
+        identifier.split(separator).map(&:to_sym)
       end
     end
   end

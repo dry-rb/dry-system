@@ -44,7 +44,9 @@ RSpec.describe Dry::System::Container do
       end
 
       it "raises an error if a system's file can't be found" do
-        expect { container.load_component('test.missing') }.to raise_error Dry::System::FileNotFoundError
+        expect { container.load_component('test.missing') }.to raise_error(
+          Dry::System::ComponentLoadError, /test\.missing/
+        )
       end
 
       it "is a no op if a matching system is already registered" do
