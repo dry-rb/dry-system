@@ -24,21 +24,30 @@ module Dry
 
           ns, sep = options.values_at(:namespace, :separator)
 
-          ns_name = ns.to_s
-          raise InvalidNamespaceError, ns_name if ns && ns_name.include?(sep)
+          ns_name = ensure_valid_namespace(ns, sep)
+          identifier = ensure_valid_identifier(name, ns_name, sep)
 
-          keys = name.to_s.scan(WORD_REGEX)
-
-          if keys.uniq.size != keys.size
-            raise InvalidComponentError, name, 'duplicated keys in the name'
-          end
-
-          identifier = keys.reject { |s| ns_name == s }.join(sep)
           path = name.to_s.gsub(sep, PATH_SEPARATOR)
           loader = options.fetch(:loader, Loader).new(path)
 
           super(identifier, path, options.merge(loader: loader))
         end
+      end
+
+      def self.ensure_valid_namespace(ns, sep)
+        ns_name = ns.to_s
+        raise InvalidNamespaceError, ns_name if ns && ns_name.include?(sep)
+        ns_name
+      end
+
+      def self.ensure_valid_identifier(name, ns_name, sep)
+        keys = name.to_s.scan(WORD_REGEX)
+
+        if keys.uniq.size != keys.size
+          raise InvalidComponentError, name, 'duplicated keys in the name'
+        end
+
+        keys.reject { |s| ns_name == s }.join(sep)
       end
 
       def self.cache
