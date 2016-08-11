@@ -124,12 +124,6 @@ module Dry
         !booted.key?(name)
       end
 
-      def self.bootable_components
-        Dir[boot_path.join('*.rb')]
-          .map(&Kernel.method(:Pathname))
-          .map { |file| file.basename('.*').to_s }
-      end
-
       def self.require(*paths)
         paths.flat_map { |path|
           path.to_s.include?('*') ? Dir[root.join(path)] : root.join(path)
