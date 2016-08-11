@@ -10,8 +10,8 @@ module Dry
       end
 
       def call(*args)
-        if constant.respond_to?(:instance) && !constant.respond_to?(:new)
-          constant.instance(*args) # a singleton
+        if singleton?(constant)
+          constant.instance(*args)
         else
           constant.new(*args)
         end
@@ -19,6 +19,12 @@ module Dry
 
       def constant
         Inflecto.constantize(Inflecto.classify(path))
+      end
+
+      private
+
+      def singleton?(constant)
+        constant.respond_to?(:instance) && !constant.respond_to?(:new)
       end
     end
   end
