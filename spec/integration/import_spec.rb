@@ -29,23 +29,6 @@ RSpec.describe 'Lazy-booting external deps' do
 
   context 'when top-level container provides the dependency' do
     let(:user_repo) do
-      Class.new { include Test::Import['core.db.repo'] }.new
-    end
-
-    let(:system) { Test::App }
-
-    before do
-      module Test
-        App.import(Umbrella)
-        Import = App.injector
-      end
-    end
-
-    it_behaves_like 'lazy booted dependency'
-  end
-
-  context 'when top-level container requires the dependency from the imported container' do
-    let(:user_repo) do
       Class.new { include Test::Import['db.repo'] }.new
     end
 
@@ -55,6 +38,23 @@ RSpec.describe 'Lazy-booting external deps' do
       module Test
         Umbrella.import(App)
         Import = Umbrella.injector
+      end
+    end
+
+    it_behaves_like 'lazy booted dependency'
+  end
+
+  context 'when top-level container provides the dependency through import' do
+    let(:user_repo) do
+      Class.new { include Test::Import['core.db.repo'] }.new
+    end
+
+    let(:system) { Test::App }
+
+    before do
+      module Test
+        App.import(Umbrella)
+        Import = App.injector
       end
     end
 
