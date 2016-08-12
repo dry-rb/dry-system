@@ -20,7 +20,7 @@ module Dry
       setting :default_namespace
       setting :root, Pathname.pwd.freeze
       setting :core_dir, 'component'.freeze
-      setting :auto_register
+      setting :auto_register, []
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
 
@@ -55,7 +55,7 @@ module Dry
           end
 
           booter.finalize!
-          auto_register.each(&method(:auto_register!)) if auto_register?
+          Array(config.auto_register).each(&method(:auto_register!))
 
           freeze
         end
@@ -198,14 +198,6 @@ module Dry
           }
 
           _container.update(items)
-        end
-
-        def auto_register
-          Array(config.auto_register)
-        end
-
-        def auto_register?
-          !auto_register.empty?
         end
       end
     end
