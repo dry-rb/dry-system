@@ -44,4 +44,21 @@ RSpec.describe Dry::System::Loader, '#call' do
 
     it_behaves_like 'object loader'
   end
+
+  context 'with a constructor accepting args' do
+    subject(:loader) { Dry::System::Loader.new('test/bar') }
+
+    before do
+      module Test
+        Bar = Struct.new(:one, :two)
+      end
+    end
+
+    it 'passes args to the constructor' do
+      instance = loader.call(1, 2)
+
+      expect(instance.one).to be(1)
+      expect(instance.two).to be(2)
+    end
+  end
 end
