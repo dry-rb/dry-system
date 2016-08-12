@@ -18,7 +18,7 @@ module Dry
       end
 
       def constant
-        Inflecto.constantize(Inflecto.classify(path))
+        Inflecto.constantize(Inflecto.camelize(path))
       end
 
       private
