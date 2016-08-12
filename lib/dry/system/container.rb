@@ -47,8 +47,10 @@ module Dry
           self
         end
 
-        def finalize!(&_block)
-          yield(self) if block_given?
+        def finalize!(&block)
+          return self if frozen?
+
+          yield(self) if block
 
           imports.each do |ns, container|
             import_container(ns, container.finalize!)
