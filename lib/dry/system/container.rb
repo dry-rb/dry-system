@@ -83,7 +83,7 @@ module Dry
           Injector.new(self, options: options)
         end
 
-        def auto_register!(dir, &_block)
+        def auto_register!(dir, &block)
           dir_root = root.join(dir.to_s.split('/')[0])
 
           Dir["#{root}/#{dir}/**/*.rb"].each do |path|
@@ -94,7 +94,7 @@ module Dry
 
               Kernel.require component.path
 
-              if block_given?
+              if block
                 register(component.identifier, yield(component))
               else
                 register(component.identifier) { component.instance }
