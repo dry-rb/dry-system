@@ -118,15 +118,11 @@ module Dry
         end
 
         def load_paths!(*dirs)
-          dirs.map(&:to_s).each do |dir|
-            path = root.join(dir)
-
+          dirs.map(&root.method(:join)).each do |path|
             next if load_paths.include?(path)
-
             load_paths << path
             $LOAD_PATH.unshift(path.to_s)
           end
-
           self
         end
 
@@ -181,7 +177,7 @@ module Dry
         end
 
         def require_component(component, &block)
-          return if keys.include?(component.identifier)
+          return if key?(component.identifier)
 
           path = load_paths.detect { |p| p.join(component.file).exist? }
 
