@@ -6,6 +6,7 @@ require 'dry-container'
 require 'dry/system/errors'
 require 'dry/system/injector'
 require 'dry/system/loader'
+require 'dry/system/booter'
 require 'dry/system/component'
 require 'dry/system/constants'
 
@@ -21,6 +22,7 @@ module Dry
       setting :core_dir, 'component'.freeze
       setting :auto_register
       setting :loader, Dry::System::Loader
+      setting :booter, Dry::System::Booter
 
       def self.configure(&block)
         super(&block)
@@ -42,7 +44,8 @@ module Dry
       end
 
       def self.finalize(name, &block)
-        finalizers[name] = proc { block.(self) }
+        booter[name] = proc { block.(self) }
+        self
       end
 
       def self.finalize!(&_block)
@@ -52,13 +55,20 @@ module Dry
           import_container(ns, container.finalize!)
         end
 
-        Dir[root.join("#{config.core_dir}/boot/**/*.rb")].each do |path|
-          boot!(File.basename(path, '.rb').to_sym)
-        end
-
+        booter.finalize!
         auto_register.each(&method(:auto_register!)) if auto_register?
 
         freeze
+      end
+
+      def self.boot!(name)
+        booter.boot!(name)
+        self
+      end
+
+      def self.boot(name)
+        booter.boot(name)
+        self
       end
 
       def self.component(key)
@@ -96,34 +106,6 @@ module Dry
         self
       end
 
-      def self.boot!(name)
-        check_component_identifier(name)
-
-        return self unless booted?(name)
-
-        boot(name)
-
-        finalizers[name].tap do |finalizer|
-          finalizer.() if finalizer
-        end
-
-        booted[name] = true
-
-        self
-      end
-
-      def self.boot(name)
-        require "#{boot_path}/#{name}"
-      end
-
-      def self.boot_path
-        root.join(config.core_dir).join('boot')
-      end
-
-      def self.booted?(name)
-        !booted.key?(name)
-      end
-
       def self.require(*paths)
         paths.flat_map { |path|
           path.to_s.include?('*') ? Dir[root.join(path)] : root.join(path)
@@ -153,16 +135,12 @@ module Dry
         @load_paths ||= []
       end
 
-      def self.booted
-        @booted ||= {}
-      end
-
-      def self.finalizers
-        @finalizers ||= {}
-      end
-
       def self.imports
         @imports ||= {}
+      end
+
+      def self.booter
+        @booter ||= config.booter.new(root.join("#{config.core_dir}/boot"))
       end
 
       def self.load_component(key)
@@ -182,8 +160,8 @@ module Dry
       end
 
       def self.load_local_component(component, fallback = false)
-        if component.bootable?(boot_path) || component.file_exists?(load_paths)
-          boot_dependency(component) unless frozen?
+        if component.bootable?(booter.path) || component.file_exists?(load_paths)
+          booter.boot_dependency(component) unless frozen?
 
           require_component(component) do
             register(component.identifier) { component.instance }
@@ -216,12 +194,6 @@ module Dry
       end
       private_class_method :require_component
 
-      def self.boot_dependency(component)
-        boot_file = component.boot_file(boot_path)
-        boot!(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
-      end
-      private_class_method :boot_dependency
-
       def self.import_container(ns, container)
         items = container._container.each_with_object({}) { |(key, item), res|
           res[[ns, key].join(config.namespace_separator)] = item
@@ -240,17 +212,6 @@ module Dry
         !auto_register.empty?
       end
       private_class_method :auto_register?
-
-      def self.check_component_identifier(name)
-        unless name.is_a?(Symbol)
-          raise InvalidComponentIdentifierTypeError, name
-        end
-
-        unless root.join("#{config.core_dir}/boot/#{name}.rb").exist?
-          raise InvalidComponentIdentifierError, name
-        end
-      end
-      private_class_method :check_component_identifier
     end
   end
 end
