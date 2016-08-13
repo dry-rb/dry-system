@@ -132,8 +132,9 @@ module Dry
         def require_component(component, &block)
           return if key?(component.identifier)
 
-          path = load_paths.detect { |p| p.join(component.file).exist? }
-          raise FileNotFoundError, component unless path
+          unless component.file_exists?(load_paths)
+            raise FileNotFoundError, component
+          end
 
           Kernel.require(component.path) and yield
         end
