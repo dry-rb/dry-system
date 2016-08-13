@@ -1,4 +1,5 @@
 require 'dry/system/errors'
+require 'dry/system/booter/dsl'
 
 module Dry
   module System
@@ -42,14 +43,16 @@ module Dry
         return self if booted.key?(name)
 
         boot(name)
-
-        finalizers[name].tap do |finalizer|
-          finalizer.() if finalizer
-        end
-
+        call(name)
         booted[name] = true
 
         self
+      end
+
+      def call(name)
+        finalizers[name].tap do |(container, finalizer)|
+          DSL.new(container, &finalizer) if finalizer
+        end
       end
 
       def boot_dependency(component)

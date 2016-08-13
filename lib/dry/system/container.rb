@@ -47,7 +47,7 @@ module Dry
         end
 
         def finalize(name, &block)
-          booter[name] = proc { block.(self) }
+          booter[name] = [self, block]
           self
         end
 

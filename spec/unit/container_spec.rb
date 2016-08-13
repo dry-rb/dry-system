@@ -157,7 +157,7 @@ RSpec.describe Dry::System::Container do
         end
       end
 
-      Test::Container.booter[:foo].()
+      Test::Container.booter.(:foo)
 
       expect(Test::Container[:w00t]).to be(:awesome)
     end
