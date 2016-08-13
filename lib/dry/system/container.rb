@@ -129,14 +129,14 @@ module Dry
           @auto_registrar ||= config.auto_registrar.new(self)
         end
 
-        def require_component(component, &block)
+        def require_component(component)
           return if key?(component.identifier)
 
           unless component.file_exists?(load_paths)
             raise FileNotFoundError, component
           end
 
-          Kernel.require(component.path) and yield
+          Kernel.require(component.path) && yield
         end
 
         def load_component(key)
