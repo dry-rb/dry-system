@@ -13,6 +13,8 @@ module Dry
 
       attr_reader :statuses
 
+      attr_reader :triggers
+
       def self.new(container, &block)
         cache.fetch_or_store([container, block].hash) do
           super
@@ -26,6 +28,7 @@ module Dry
       def initialize(container, &block)
         @container = container
         @statuses = []
+        @triggers = {}
         instance_exec(container, &block)
       end
 
@@ -39,27 +42,15 @@ module Dry
       end
 
       def start(&block)
-        if @start
-          @start.()
-        elsif block
-          @start = block
-        end
+        trigger!(:start, &block)
       end
 
       def stop(&block)
-        if @stop
-          @stop.()
-        elsif block
-          @stop = block
-        end
+        trigger!(:stop, &block)
       end
 
       def runtime(&block)
-        if @runtime
-          @runtime.()
-        elsif block
-          @runtime = block
-        end
+        trigger!(:runtime, &block)
       end
 
       def uses(*names)
@@ -73,6 +64,14 @@ module Dry
       end
 
       private
+
+      def trigger!(name, &block)
+        if triggers.key?(name)
+          triggers[name].()
+        elsif block
+          triggers[name] = block
+        end
+      end
 
       def method_missing(meth, *args, &block)
         if container.key?(meth)
