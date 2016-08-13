@@ -1,5 +1,5 @@
 require 'dry/system/errors'
-require 'dry/system/booter/dsl'
+require 'dry/system/lifecycle'
 
 module Dry
   module System
@@ -34,6 +34,12 @@ module Dry
 
       def boot(name)
         Kernel.require(path.join(name.to_s))
+
+        call(name) do |lifecycle|
+          lifecycle.(:start)
+          yield(lifecycle) if block_given?
+        end
+
         self
       end
 
@@ -42,16 +48,19 @@ module Dry
 
         return self if booted.key?(name)
 
-        boot(name)
-        call(name)
+        boot(name) { |lifecycle| lifecycle.(:runtime) }
         booted[name] = true
 
         self
       end
 
       def call(name)
-        finalizers[name].tap do |(container, finalizer)|
-          DSL.new(container, &finalizer) if finalizer
+        container, finalizer = finalizers[name]
+
+        if finalizer
+          lifecycle = Lifecycle.new(container, &finalizer)
+          yield(lifecycle) if block_given?
+          lifecycle
         end
       end
 
