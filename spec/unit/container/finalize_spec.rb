@@ -16,15 +16,15 @@ RSpec.describe Dry::System::Container, '.finalize' do
           register(:db, Test::DB)
 
           start do
-            container[:db].establish_connection
+            db.establish_connection
           end
 
           runtime do
-            container[:db].load
+            db.load
           end
 
           stop do
-            container[:db].close_connection
+            db.close_connection
           end
         end
       end
