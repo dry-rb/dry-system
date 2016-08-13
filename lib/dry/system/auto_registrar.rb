@@ -17,16 +17,8 @@ module Dry
       end
 
       def call(dir, &block)
-        dir_root = root.join(dir.to_s.split('/')[0])
-
-        Dir["#{root}/#{dir}/**/*.rb"].each do |path|
-          path = path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
-
-          component(path).tap do |component|
-            next if key?(component.identifier)
-
-            Kernel.require component.path
-
+        components(dir).each do |component|
+          container.require_component(component) do
             if block
               register(component.identifier, yield(component))
             else
@@ -37,6 +29,20 @@ module Dry
       end
 
       private
+
+      def components(dir)
+        paths(dir).
+          map { |path| component(path) }.
+          reject { |component| key?(component.identifier) }
+      end
+
+      def paths(dir)
+        dir_root = root.join(dir.to_s.split('/')[0])
+
+        Dir["#{root}/#{dir}/**/*.rb"].map { |path|
+          path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
+        }
+      end
 
       def component(path)
         container.component(path)

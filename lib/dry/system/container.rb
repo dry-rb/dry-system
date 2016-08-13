@@ -129,6 +129,15 @@ module Dry
           @auto_registrar ||= config.auto_registrar.new(self)
         end
 
+        def require_component(component, &block)
+          return if key?(component.identifier)
+
+          path = load_paths.detect { |p| p.join(component.file).exist? }
+          raise FileNotFoundError, component unless path
+
+          Kernel.require(component.path) and yield
+        end
+
         def load_component(key)
           return self if key?(key)
 
@@ -165,18 +174,6 @@ module Dry
           container = imports[component.namespace]
           container.load_component(component.identifier)
           import_container(component.namespace, container)
-        end
-
-        def require_component(component, &block)
-          return if key?(component.identifier)
-
-          path = load_paths.detect { |p| p.join(component.file).exist? }
-
-          raise FileNotFoundError, component unless path
-
-          Kernel.require component.path
-
-          yield(component) if block
         end
 
         def import_container(ns, container)
