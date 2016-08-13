@@ -79,5 +79,7 @@ RSpec.describe Dry::System::Container, '.finalize' do
 
     expect(db).to have_received(:establish_connection).exactly(1)
     expect(db).to have_received(:load).exactly(1)
+
+    expect(system.booter.(:db).statuses).to eql(%i[start runtime])
   end
 end

@@ -31,8 +31,10 @@ module Dry
 
       def call(*triggers)
         triggers.each do |trigger|
-          __send__(trigger) unless statuses.include?(trigger)
-          statuses << trigger
+          unless statuses.include?(trigger)
+            __send__(trigger)
+            statuses << trigger
+          end
         end
       end
 
