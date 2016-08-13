@@ -75,7 +75,7 @@ module Dry
         end
 
         def auto_register!(dir, &block)
-          auto_registrar.call(dir, &block)
+          auto_registrar.(dir, &block)
           self
         end
 
