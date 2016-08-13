@@ -8,6 +8,7 @@ require 'dry/system/injector'
 require 'dry/system/loader'
 require 'dry/system/booter'
 require 'dry/system/auto_registrar'
+require 'dry/system/importer'
 require 'dry/system/component'
 require 'dry/system/constants'
 
@@ -25,6 +26,7 @@ module Dry
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
       setting :auto_registrar, Dry::System::AutoRegistrar
+      setting :importer, Dry::System::Importer
 
       class << self
         def configure(&block)
@@ -35,11 +37,11 @@ module Dry
 
         def import(other)
           case other
+          when Hash then importer.register(other)
           when Dry::Container::Namespace then super
-          when Hash then imports.update(other)
           else
             if other < System::Container
-              imports.update(other.config.name => other)
+              importer.register(other.config.name => other)
             end
           end
         end
@@ -54,10 +56,7 @@ module Dry
 
           yield(self) if block
 
-          imports.each do |ns, container|
-            import_container(ns, container.finalize!)
-          end
-
+          importer.finalize!
           booter.finalize!
           auto_registrar.finalize!
 
@@ -117,16 +116,16 @@ module Dry
           @load_paths ||= []
         end
 
-        def imports
-          @imports ||= {}
-        end
-
         def booter
           @booter ||= config.booter.new(root.join("#{config.core_dir}/boot"))
         end
 
         def auto_registrar
           @auto_registrar ||= config.auto_registrar.new(self)
+        end
+
+        def importer
+          @importer ||= config.importer.new(self)
         end
 
         def require_component(component)
@@ -143,10 +142,10 @@ module Dry
           return self if key?(key)
 
           component(key).tap do |component|
-            src_key = component.root_key
+            root_key = component.root_key
 
-            if imports.key?(src_key)
-              load_external_component(component.namespaced(src_key))
+            if importer.key?(root_key)
+              load_external_component(component.namespaced(root_key))
             else
               load_local_component(component)
             end
@@ -172,17 +171,9 @@ module Dry
         end
 
         def load_external_component(component)
-          container = imports[component.namespace]
+          container = importer[component.namespace]
           container.load_component(component.identifier)
-          import_container(component.namespace, container)
-        end
-
-        def import_container(ns, container)
-          items = container._container.each_with_object({}) { |(key, item), res|
-            res[[ns, key].join(config.namespace_separator)] = item
-          }
-
-          _container.update(items)
+          importer.(component.namespace, container)
         end
       end
     end
