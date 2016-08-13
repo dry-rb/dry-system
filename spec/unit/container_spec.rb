@@ -33,6 +33,24 @@ RSpec.describe Dry::System::Container do
       end
     end
 
+    describe '.require_component' do
+      it 'requires component file' do
+        component = container.component('test/foo')
+        required = false
+        container.require_component(component) do
+          required = true
+        end
+        expect(required).to be(true)
+      end
+
+      it 'raises when file does not exist' do
+        component = container.component('test/missing')
+        expect { container.require_component(component) }.to raise_error(
+          Dry::System::FileNotFoundError, /test\.missing/
+        )
+      end
+    end
+
     describe '.load_component' do
       it 'loads and registers systems from configured load paths' do
         container.load_component('test.foo')
