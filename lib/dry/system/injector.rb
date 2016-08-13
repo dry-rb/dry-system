@@ -25,21 +25,14 @@ module Dry
         injector[*deps]
       end
 
+      private
+
       def method_missing(name, *args, &block)
         ::Dry::System::Injector.new(container, options: options, strategy: name)
       end
 
-      def respond_to?(name, include_private = false)
-        injector.respond_to?(name, include_private)
-      end
-
-      private
-
-      def load_components(*components)
-        components = components.dup
-        aliases = components.last.is_a?(::Hash) ? components.pop : {}
-
-        (components + aliases.values).each do |key|
+      def load_components(*keys, **aliases)
+        (keys + aliases.values).each do |key|
           container.load_component(key)
         end
       end
