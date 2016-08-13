@@ -7,6 +7,7 @@ require 'dry/system/errors'
 require 'dry/system/injector'
 require 'dry/system/loader'
 require 'dry/system/booter'
+require 'dry/system/auto_registrar'
 require 'dry/system/component'
 require 'dry/system/constants'
 
@@ -23,6 +24,7 @@ module Dry
       setting :auto_register, []
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
+      setting :auto_registrar, Dry::System::AutoRegistrar
 
       class << self
         def configure(&block)
@@ -57,7 +59,7 @@ module Dry
           end
 
           booter.finalize!
-          Array(config.auto_register).each(&method(:auto_register!))
+          auto_registrar.finalize!
 
           freeze
         end
@@ -72,6 +74,11 @@ module Dry
           self
         end
 
+        def auto_register!(dir, &block)
+          auto_registrar.call(dir, &block)
+          self
+        end
+
         def component(key)
           Component.new(
             key,
@@ -83,28 +90,6 @@ module Dry
 
         def injector(options = {})
           Injector.new(self, options: options)
-        end
-
-        def auto_register!(dir, &block)
-          dir_root = root.join(dir.to_s.split('/')[0])
-
-          Dir["#{root}/#{dir}/**/*.rb"].each do |path|
-            path = path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
-
-            component(path).tap do |component|
-              next if key?(component.identifier)
-
-              Kernel.require component.path
-
-              if block
-                register(component.identifier, yield(component))
-              else
-                register(component.identifier) { component.instance }
-              end
-            end
-          end
-
-          self
         end
 
         def require(*paths)
@@ -138,6 +123,10 @@ module Dry
 
         def booter
           @booter ||= config.booter.new(root.join("#{config.core_dir}/boot"))
+        end
+
+        def auto_registrar
+          @auto_registrar ||= config.auto_registrar.new(self)
         end
 
         def load_component(key)
