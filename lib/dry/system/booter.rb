@@ -21,10 +21,6 @@ module Dry
         self
       end
 
-      def [](name)
-        @finalizers.fetch(name)
-      end
-
       def finalize!
         Dir[boot_files].each do |path|
           boot!(File.basename(path, '.rb').to_sym)
