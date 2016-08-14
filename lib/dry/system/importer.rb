@@ -28,11 +28,7 @@ module Dry
       end
 
       def call(ns, other)
-        items = other._container.each_with_object({}) { |(key, item), res|
-          res[[ns, key].join(separator)] = item
-        }
-
-        container._container.update(items)
+        container.merge(other, namespace: ns)
       end
 
       def register(other)
