@@ -17,42 +17,45 @@ module Dry
     # Abstract container class to inherit from
     #
     # Container class is treated as a global registry with all system components.
-    # Container can also import dependencies from other containers, which is useful
-    # in complex systems that are split into sub-systems.
+    # Container can also import dependencies from other containers, which is
+    # useful in complex systems that are split into sub-systems.
     #
-    # Container can be finalized, which triggers loading of all the defined components
-    # within a system, after finalization it becomes frozen. This typically happens in cases
-    # like booting a web application.
+    # Container can be finalized, which triggers loading of all the defined
+    # components within a system, after finalization it becomes frozen. This
+    # typically happens in cases like booting a web application.
     #
-    # Before finalization, Container can lazy-load components on demand. A component can be
-    # a simple class defined in a single file, or a complex component which has start/init/stop
-    # lifecycle, and it's defined in a boot file. Components which specify their dependencies using
-    # Import module can be safely required in complete isolation, and Container will resolve and load
-    # these dependencies automatically.
+    # Before finalization, Container can lazy-load components on demand. A
+    # component can be a simple class defined in a single file, or a complex
+    # component which has init/start/stop lifecycle, and it's defined in a boot
+    # file. Components which specify their dependencies using. Import module can
+    # be safely required in complete isolation, and Container will resolve and
+    # load these dependencies automatically.
     #
-    # Furthermore, Container supports auto-registering components based on dir/file naming conventions.
-    # This reduces a lot of boilerplate code as all you have to do is to put your classes under configured
-    # directories and their instances will be automatically registered within a container.
+    # Furthermore, Container supports auto-registering components based on
+    # dir/file naming conventions. This reduces a lot of boilerplate code as all
+    # you have to do is to put your classes under configured directories and
+    # their instances will be automatically registered within a container.
     #
     # Every container needs to be configured with following settings:
     #
-    #   * `:name` - a unique container identifier
-    #   * `:root` - a system root directory (defaults to `pwd`)
-    #   * `:core_dir` - directory name relative to root, where bootable components can be defined in `boot` dir
-    #                   this defaults to `component`
+    # * `:name` - a unique container identifier
+    # * `:root` - a system root directory (defaults to `pwd`)
+    # * `:core_dir` - directory name relative to root, where bootable components
+    #                 can be defined in `boot` dir this defaults to `component`
     #
     # @example
     #   class MyApp < Dry::System::Container
     #     configure do |config|
     #       config.name = :my_app
+    #
+    #       # this will auto-register classes from 'lib/components'. ie if you add
+    #       # `lib/components/repo.rb` which defines `Repo` class, then it's
+    #       # instance will be automatically available as `MyApp['repo']`
+    #       config.auto_register = %w(lib/components)
     #     end
     #
     #     # this will configure $LOAD_PATH to include your `lib` dir
     #     load_paths!('lib)
-    #
-    #     # this will auto-register classes from 'lib/components'. ie if you add `lib/components/repo.rb`
-    #     # which defines `Repo` class, then it's instance will be automatically available as `MyApp['repo']`
-    #     auto_register!('lib/components')
     #   end
     #
     # @api public
@@ -73,6 +76,15 @@ module Dry
       class << self
         # Configures the container
         #
+        # @example
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       config.root = Pathname("/path/to/app")
+        #       config.name = :my_app
+        #       config.auto_register = %w(lib/apis lib/core)
+        #     end
+        #   end
+        #
         # @return [self]
         #
         # @api public
@@ -83,6 +95,29 @@ module Dry
         end
 
         # Registers another container for import
+        #
+        # @example
+        #   # system/container.rb
+        #   class Core < Dry::System::Container
+        #     configure do |config|
+        #       config.root = Pathname("/path/to/app")
+        #       config.name = :core
+        #       config.auto_register = %w(lib/apis lib/core)
+        #     end
+        #   end
+        #
+        #   # apps/my_app/system/container.rb
+        #   require 'system/container'
+        #
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       config.root = Pathname("/path/to/app")
+        #       config.name = :core
+        #       config.auto_register = %w(lib/apis lib/core)
+        #     end
+        #
+        #     import core: Core
+        #   end
         #
         # @param other [Hash,Dry::Container::Namespace,Dry::System::Container]
         #
@@ -100,6 +135,70 @@ module Dry
 
         # Registers finalization function for a bootable component
         #
+        # By convention, boot files for components should be placed in
+        # `%{core_dir}/boot` and they will be loaded on demand when components
+        # are loaded in isolation, or during finalization process.
+        #
+        # @example
+        #   # system/container.rb
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       config.root = Pathname("/path/to/app")
+        #       config.name = :core
+        #       config.auto_register = %w(lib/apis lib/core)
+        #     end
+        #
+        #   # system/boot/db.rb
+        #   #
+        #   # Simple component registration
+        #   MyApp.finalize(:db) do |container|
+        #     require 'db'
+        #
+        #     container.register(:db, DB.new)
+        #   end
+        #
+        #   # system/boot/db.rb
+        #   #
+        #   # Component registration with lifecycle triggers
+        #   MyApp.finalize(:db) do |container|
+        #     init do
+        #       require 'db'
+        #       DB.configure(ENV['DB_URL'])
+        #       container.register(:db, DB.new)
+        #     end
+        #
+        #     start do
+        #       db.establish_connection
+        #     end
+        #
+        #     stop do
+        #       db.close_connection
+        #     end
+        #   end
+        #
+        #   # system/boot/db.rb
+        #   #
+        #   # Component registration which uses another bootable component
+        #   MyApp.finalize(:db) do |container|
+        #     uses :logger
+        #
+        #     start do
+        #       require 'db'
+        #       DB.configure(ENV['DB_URL'], logger: logger)
+        #       container.register(:db, DB.new)
+        #     end
+        #   end
+        #
+        #   # system/boot/db.rb
+        #   #
+        #   # Component registration under a namespace. This will register the
+        #   # db object under `persistence.db` key
+        #   MyApp.namespace(:persistence) do |persistence|
+        #     require 'db'
+        #     DB.configure(ENV['DB_URL'], logger: logger)
+        #     persistence.register(:db, DB.new)
+        #   end
+        #
         # @param name [Symbol] a unique identifier for a bootable component
         #
         # @see Lifecycle
@@ -114,11 +213,31 @@ module Dry
 
         # Finalizes the container
         #
-        # This triggers importing components from other containers, booting registered components
-        # and auto-registering components. It should be called only in places where you want to
-        # finalize your system as a whole, ie when booting a web application
+        # This triggers importing components from other containers, booting
+        # registered components and auto-registering components. It should be
+        # called only in places where you want to finalize your system as a
+        # whole, ie when booting a web application
         #
-        # @return [self]
+        # @example
+        #   # system/container.rb
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       config.root = Pathname("/path/to/app")
+        #       config.name = :my_app
+        #       config.auto_register = %w(lib/apis lib/core)
+        #     end
+        #   end
+        #
+        #   # You can put finalization file anywhere you want, ie system/boot.rb
+        #   MyApp.finalize!
+        #
+        #   # If you need last-moment adjustements just before the finalization
+        #   # you can pass a block and do it there
+        #   MyApp.finalize! do |container|
+        #     # stuff that only needs to happen for finalization
+        #   end
+        #
+        # @return [self] frozen container
         #
         # @api public
         def finalize!(&block)
@@ -135,7 +254,10 @@ module Dry
 
         # Boots a specific component
         #
-        # As a result, `start` and `init` lifecycle triggers are called
+        # As a result, `init` and `start` lifecycle triggers are called
+        #
+        # @example
+        #   MyApp.boot!(:persistence)
         #
         # @param name [Symbol] the name of a registered bootable component
         #
@@ -147,12 +269,15 @@ module Dry
           self
         end
 
-        # Boots a specific component but calls only `start` lifecycle trigger
+        # Boots a specific component but calls only `init` lifecycle trigger
         #
         # This way of booting is useful in places where a heavy dependency is
-        # needed but its init environment is not required
+        # needed but its started environment is not required
         #
-        # @param name [Symbol] the name of a registered bootable component
+        # @example
+        #   MyApp.boot(:persistence)
+        #
+        # @param [Symbol] name The name of a registered bootable component
         #
         # @return [self]
         #
@@ -164,7 +289,16 @@ module Dry
 
         # Sets load paths relative to the container's root dir
         #
-        # @param *dirs [Array<String>]
+        # @example
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       # ...
+        #     end
+        #
+        #     load_paths!('lib')
+        #   end
+        #
+        # @param [Array<String>] *dirs
         #
         # @return [self]
         #
@@ -180,9 +314,29 @@ module Dry
 
         # Auto-registers components from the provided directory
         #
-        # The directory must be relative to the configured root path
+        # Typically you want to configure auto_register directories, and it will
+        # work automatically. Use this method in cases where you want to have an
+        # explicit way where some components are auto-registered.
         #
-        # @param dir [String]
+        # @example
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       # ...
+        #     end
+        #
+        #     # with a dir
+        #     auto_register!('lib/core')
+        #
+        #     # with a dir and a custom registration block
+        #     auto_register!('lib/core') do |component|
+        #       # custom way of initializing a component
+        #     end
+        #   end
+        #
+        # @param [String] dir The dir name relative to the root dir
+        #
+        # @yield [Component]
+        # @see [Component]
         #
         # @return [self]
         #
@@ -197,6 +351,23 @@ module Dry
         # An injector is a useful mixin which injects dependencies into
         # automatically defined constructor.
         #
+        # @example
+        #   # Define an injection mixin
+        #   #
+        #   # system/import.rb
+        #   Import = MyApp.injector
+        #
+        #   # Use it in your auto-registered classes
+        #   #
+        #   # lib/user_repo.rb
+        #   require 'import'
+        #
+        #   class UserRepo
+        #     include Import['persistence.db']
+        #   end
+        #
+        #   MyApp['user_repo].db # instance under 'persistence.db' key
+        #
         # @param options [Hash] injector options
         #
         # @api public
@@ -205,6 +376,13 @@ module Dry
         end
 
         # Requires one or more files relative to the container's root
+        #
+        # @example
+        #   # sinle file
+        #   MyApp.require('lib/core')
+        #
+        #   # glob
+        #   MyApp.require('lib/**/*')
         #
         # @param *paths [Array<String>] one or more paths, supports globs too
         #
@@ -218,6 +396,15 @@ module Dry
         end
 
         # Returns container's root path
+        #
+        # @example
+        #   class MyApp < Dry::System::Container
+        #     configure do |config|
+        #       config.root = Pathname('/my/app')
+        #     end
+        #   end
+        #
+        #   MyApp.root # returns '/my/app' pathname
         #
         # @return [Pathname]
         #
