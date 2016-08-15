@@ -3,6 +3,13 @@ require 'dry/system/lifecycle'
 
 module Dry
   module System
+    # Default booter implementation
+    #
+    # This is currently configured by default for every System::Container.
+    # Booter objects are responsible for loading system/boot files and expose
+    # an API for calling lifecycle triggers.
+    #
+    # @api private
     class Booter
       attr_reader :path
 
@@ -10,17 +17,20 @@ module Dry
 
       attr_reader :booted
 
+      # @api private
       def initialize(path)
         @path = path
         @booted = {}
         @finalizers = {}
       end
 
+      # @api private
       def []=(name, fn)
         @finalizers[name] = fn
         self
       end
 
+      # @api private
       def finalize!
         Dir[boot_files].each do |path|
           boot!(File.basename(path, '.rb').to_sym)
@@ -28,6 +38,7 @@ module Dry
         freeze
       end
 
+      # @api private
       def boot(name)
         Kernel.require(path.join(name.to_s))
 
@@ -39,6 +50,7 @@ module Dry
         self
       end
 
+      # @api private
       def boot!(name)
         check_component_identifier(name)
 
@@ -50,6 +62,7 @@ module Dry
         self
       end
 
+      # @api private
       def call(name)
         container, finalizer = finalizers[name]
 
@@ -60,6 +73,7 @@ module Dry
         end
       end
 
+      # @api private
       def boot_dependency(component)
         boot_file = component.boot_file(path)
         boot!(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
@@ -67,10 +81,12 @@ module Dry
 
       private
 
+      # @api private
       def boot_files
         path.join('**/*.rb').to_s
       end
 
+      # @api private
       def check_component_identifier(name)
         unless name.is_a?(Symbol)
           raise InvalidComponentIdentifierTypeError, name

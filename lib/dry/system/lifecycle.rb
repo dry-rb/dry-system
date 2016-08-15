@@ -2,6 +2,14 @@ require 'concurrent/map'
 
 module Dry
   module System
+    # Lifecycle booting DSL
+    #
+    # Lifecycle objects are used in the boot files where you can register custom
+    # init/start/stop triggers
+    #
+    # @see [Container.finalize]
+    #
+    # @api private
     class Lifecycle < BasicObject
       attr_reader :container
 
@@ -15,16 +23,19 @@ module Dry
 
       attr_reader :triggers
 
+      # @api private
       def self.new(container, &block)
         cache.fetch_or_store([container, block].hash) do
           super
         end
       end
 
+      # @api private
       def self.cache
         @cache ||= ::Concurrent::Map.new
       end
 
+      # @api private
       def initialize(container, &block)
         @container = container
         @statuses = []
@@ -32,6 +43,7 @@ module Dry
         instance_exec(container, &block)
       end
 
+      # @api private
       def call(*triggers)
         triggers.each do |trigger|
           unless statuses.include?(trigger)
@@ -41,30 +53,36 @@ module Dry
         end
       end
 
+      # @api private
       def init(&block)
         trigger!(:init, &block)
       end
 
+      # @api private
       def start(&block)
         trigger!(:start, &block)
       end
 
+      # @api private
       def stop(&block)
         trigger!(:stop, &block)
       end
 
+      # @api private
       def uses(*names)
         names.each do |name|
           container.boot!(name)
         end
       end
 
+      # @api private
       def register(*args, &block)
         container.register(*args, &block)
       end
 
       private
 
+      # @api private
       def trigger!(name, &block)
         if triggers.key?(name)
           triggers[name].()
@@ -73,6 +91,7 @@ module Dry
         end
       end
 
+      # @api private
       def method_missing(meth, *args, &block)
         if container.key?(meth)
           container[meth]
