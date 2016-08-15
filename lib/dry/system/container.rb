@@ -40,7 +40,7 @@ module Dry
     #
     # * `:name` - a unique container identifier
     # * `:root` - a system root directory (defaults to `pwd`)
-    # * `:core_dir` - directory name relative to root, where bootable components
+    # * `:system_dir` - directory name relative to root, where bootable components
     #                 can be defined in `boot` dir this defaults to `component`
     #
     # @example
@@ -66,7 +66,7 @@ module Dry
       setting :name
       setting :default_namespace
       setting :root, Pathname.pwd.freeze
-      setting :core_dir, 'component'.freeze
+      setting :system_dir, 'system'.freeze
       setting :auto_register, []
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
@@ -90,7 +90,7 @@ module Dry
         # @api public
         def configure(&block)
           super(&block)
-          load_paths!(config.core_dir)
+          load_paths!(config.system_dir)
           self
         end
 
@@ -136,7 +136,7 @@ module Dry
         # Registers finalization function for a bootable component
         #
         # By convention, boot files for components should be placed in
-        # `%{core_dir}/boot` and they will be loaded on demand when components
+        # `%{system_dir}/boot` and they will be loaded on demand when components
         # are loaded in isolation, or during finalization process.
         #
         # @example
@@ -420,7 +420,7 @@ module Dry
 
         # @api private
         def booter
-          @booter ||= config.booter.new(root.join("#{config.core_dir}/boot"))
+          @booter ||= config.booter.new(root.join("#{config.system_dir}/boot"))
         end
 
         # @api private

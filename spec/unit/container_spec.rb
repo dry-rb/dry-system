@@ -139,7 +139,7 @@ RSpec.describe Dry::System::Container do
           class Test::Container < Dry::System::Container
             configure do |config|
               config.root = SPEC_ROOT.join('fixtures/other').realpath
-              config.core_dir = 'config'
+              config.system_dir = 'config'
             end
 
             load_paths!('lib')
