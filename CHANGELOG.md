@@ -1,4 +1,4 @@
-# 0.5.0 to-be-released
+# 0.5.0 2016-08-15
 
 This is a major refactoring with better internal APIs and improved support
 for multi-container setups. As part of this release `dry-component` has been renamed to `dry-system`.
@@ -7,7 +7,7 @@ for multi-container setups. As part of this release `dry-component` has been ren
 
 - Boot DSL with:
   * Lifecycle triggers: `init`, `start` and `stop` (solnic)
-  * `uses` method which auto-boots a dependency and makes it available in the booting context (solnic)
+  * `use` method which auto-boots a dependency and makes it available in the booting context (solnic)
 - When a component relies on a bootable component, and is being loaded in isolation, the component will be booted automatically (solnic)
 
 ### Changed
