@@ -69,7 +69,7 @@ module Dry
       end
 
       # @api private
-      def uses(*names)
+      def use(*names)
         names.each do |name|
           container.boot!(name)
         end

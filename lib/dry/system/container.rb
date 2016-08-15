@@ -180,7 +180,7 @@ module Dry
         #   #
         #   # Component registration which uses another bootable component
         #   MyApp.finalize(:db) do |container|
-        #     uses :logger
+        #     use :logger
         #
         #     start do
         #       require 'db'

@@ -1,5 +1,5 @@
 Test::Container.finalize(:client) do |container|
-  uses :logger
+  use :logger
 
   Client = Struct.new(:logger)
 
