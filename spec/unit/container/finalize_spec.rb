@@ -15,11 +15,11 @@ RSpec.describe Dry::System::Container, '.finalize' do
         finalize(:db) do
           register(:db, Test::DB)
 
-          start do
+          init do
             db.establish_connection
           end
 
-          runtime do
+          start do
             db.load
           end
 
@@ -31,10 +31,17 @@ RSpec.describe Dry::System::Container, '.finalize' do
     end
   end
 
+  describe '#init' do
+    it 'calls init function' do
+      system.booter.(:db).init
+      expect(db).to have_received(:establish_connection)
+    end
+  end
+
   describe '#start' do
     it 'calls start function' do
       system.booter.(:db).start
-      expect(db).to have_received(:establish_connection)
+      expect(db).to have_received(:load)
     end
   end
 
@@ -45,21 +52,14 @@ RSpec.describe Dry::System::Container, '.finalize' do
     end
   end
 
-  describe '#runtime' do
-    it 'calls runtime function' do
-      system.booter.(:db).runtime
-      expect(db).to have_received(:load)
-    end
-  end
-
-  specify 'boot triggers start' do
+  specify 'boot triggers init' do
     system.booter.boot(:db)
 
     expect(db).to have_received(:establish_connection)
     expect(db).to_not have_received(:load)
   end
 
-  specify 'boot! triggers start + runtime' do
+  specify 'boot! triggers init + start' do
     system.booter.boot!(:db)
 
     expect(db).to have_received(:establish_connection)
@@ -80,6 +80,6 @@ RSpec.describe Dry::System::Container, '.finalize' do
     expect(db).to have_received(:establish_connection).exactly(1)
     expect(db).to have_received(:load).exactly(1)
 
-    expect(system.booter.(:db).statuses).to eql(%i[start runtime])
+    expect(system.booter.(:db).statuses).to eql(%i[init start])
   end
 end

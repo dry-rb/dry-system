@@ -25,7 +25,7 @@ module Dry
     # like booting a web application.
     #
     # Before finalization, Container can lazy-load components on demand. A component can be
-    # a simple class defined in a single file, or a complex component which has start/runtime/stop
+    # a simple class defined in a single file, or a complex component which has start/init/stop
     # lifecycle, and it's defined in a boot file. Components which specify their dependencies using
     # Import module can be safely required in complete isolation, and Container will resolve and load
     # these dependencies automatically.
@@ -135,7 +135,7 @@ module Dry
 
         # Boots a specific component
         #
-        # As a result, `start` and `runtime` lifecycle triggers are called
+        # As a result, `start` and `init` lifecycle triggers are called
         #
         # @param name [Symbol] the name of a registered bootable component
         #
@@ -150,7 +150,7 @@ module Dry
         # Boots a specific component but calls only `start` lifecycle trigger
         #
         # This way of booting is useful in places where a heavy dependency is
-        # needed but its runtime environment is not required
+        # needed but its init environment is not required
         #
         # @param name [Symbol] the name of a registered bootable component
         #

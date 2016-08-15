@@ -5,11 +5,11 @@ module Dry
     class Lifecycle < BasicObject
       attr_reader :container
 
+      attr_reader :init
+
       attr_reader :start
 
       attr_reader :stop
-
-      attr_reader :runtime
 
       attr_reader :statuses
 
@@ -41,16 +41,16 @@ module Dry
         end
       end
 
+      def init(&block)
+        trigger!(:init, &block)
+      end
+
       def start(&block)
         trigger!(:start, &block)
       end
 
       def stop(&block)
         trigger!(:stop, &block)
-      end
-
-      def runtime(&block)
-        trigger!(:runtime, &block)
       end
 
       def uses(*names)

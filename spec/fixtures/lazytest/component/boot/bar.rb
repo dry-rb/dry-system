@@ -1,6 +1,6 @@
 Test::Container.namespace(:test) do |container|
   container.finalize(:bar) do
-    start do
+    init do
       module Test
         module Bar
           # I shall be booted
@@ -8,7 +8,7 @@ Test::Container.namespace(:test) do |container|
       end
     end
 
-    runtime do
+    start do
       container.register(:bar, 'I was finalized')
     end
   end

@@ -32,7 +32,7 @@ module Dry
         Kernel.require(path.join(name.to_s))
 
         call(name) do |lifecycle|
-          lifecycle.(:start)
+          lifecycle.(:init)
           yield(lifecycle) if block_given?
         end
 
@@ -44,7 +44,7 @@ module Dry
 
         return self if booted.key?(name)
 
-        boot(name) { |lifecycle| lifecycle.(:runtime) }
+        boot(name) { |lifecycle| lifecycle.(:start) }
         booted[name] = true
 
         self
