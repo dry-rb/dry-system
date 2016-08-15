@@ -1,3 +1,31 @@
+# 0.5.0 to-be-released
+
+This is a major refactoring with better internal APIs and improved support
+for multi-container setups. As part of this release `dry-component` has been renamed to `dry-system`.
+
+### Added
+
+- Boot DSL with:
+  * Lifecycle triggers: `init`, `start` and `stop` (solnic)
+  * `uses` method which auto-boots a dependency and makes it available in the booting context (solnic)
+- When a component relies on a bootable component, and is being loaded in isolation, the component will be booted automatically (solnic)
+
+### Changed
+
+- [BREAKING] `Dry::Component::Container` is now `Dry::System::Container` (solnic)
+- [BREAKING] Configurable `loader` is now a class that accepts container's config and responds to `#constant` and `#instance` (solnic)
+- [BREAKING] `core_dir` renameda to `system_dir` and defaults to `system` (solnic)
+- [BREAKING] `auto_register!` yields `Component` objects (solnic)
+
+### Internal improvements
+
+- Use new `Dry::Container#merge` which accepts `:namespace` option (AMHOL)
+- Auto-registration is handled by a `System::AutoRegistrar` object configured in a container (solnic)
+- Booting is now handled by `System::Booter` object configured in a container (solnic)
+- Importing containers is now handled by `System::Importer` object configured in a container (solnic)
+
+[Compare v0.4.3...v0.5.0](https://github.com/dry-rb/dry-component/compare/v0.4.3...v0.5.0)
+
 # 0.4.3 - 2016-08-01
 
 ### Fixed
