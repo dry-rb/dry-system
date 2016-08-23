@@ -66,6 +66,18 @@ RSpec.describe Dry::System::Container, '.finalize' do
     expect(db).to have_received(:load)
   end
 
+  specify 'boot! raises error on undefined method or variable' do
+    expect {
+      system.finalize(:db) { oops('arg') }
+      system.booter.boot!(:db)
+    }.to raise_error(NoMethodError, /oops/)
+
+    expect {
+      system.finalize(:db) { oops }
+      system.booter.boot!(:db)
+    }.to raise_error(NameError, /oops/)
+  end
+
   specify 'booter returns cached lifecycle objects' do
     expect(system.booter.(:db)).to be(system.booter.(:db))
   end
