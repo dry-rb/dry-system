@@ -1,3 +1,11 @@
+# 0.5.1 2016-08-23
+
+### Fixed
+
+- Undefined locals or method calls will raise proper exceptions in Lifecycle DSL (aradunovic)
+
+[Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-component/compare/v0.5.0...v0.5.1)
+
 # 0.5.0 2016-08-15
 
 This is a major refactoring with better internal APIs and improved support
