@@ -97,6 +97,8 @@ module Dry
           container[meth]
         elsif ::Kernel.respond_to?(meth)
           ::Kernel.public_send(meth, *args, &block)
+        else
+          super
         end
       end
     end
