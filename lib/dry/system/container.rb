@@ -41,7 +41,7 @@ module Dry
     # * `:name` - a unique container identifier
     # * `:root` - a system root directory (defaults to `pwd`)
     # * `:system_dir` - directory name relative to root, where bootable components
-    #                 can be defined in `boot` dir this defaults to `component`
+    #                 can be defined in `boot` dir this defaults to `system`
     #
     # @example
     #   class MyApp < Dry::System::Container
