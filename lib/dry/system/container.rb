@@ -451,7 +451,9 @@ module Dry
             raise FileNotFoundError, component
           end
 
-          Kernel.require(component.path) && yield
+          Kernel.require(component.path)
+
+          yield
         end
 
         # @api private

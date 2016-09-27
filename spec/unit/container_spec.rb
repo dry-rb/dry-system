@@ -34,13 +34,26 @@ RSpec.describe Dry::System::Container do
     end
 
     describe '.require_component' do
-      it 'requires component file' do
-        component = container.component('test/foo')
-        required = false
-        container.require_component(component) do
-          required = true
+
+      shared_examples_for 'requireable' do
+        it 'requires component file' do
+          component = container.component('test/foo')
+          required = false
+          container.require_component(component) do
+            required = true
+          end
+          expect(required).to be(true)
         end
-        expect(required).to be(true)
+      end
+
+      it_behaves_like 'requireable'
+
+      context 'when already required' do
+        before do
+          Kernel.require('test/foo')
+        end
+
+        it_behaves_like 'requireable'
       end
 
       it 'raises when file does not exist' do
@@ -48,6 +61,21 @@ RSpec.describe Dry::System::Container do
         expect { container.require_component(component) }.to raise_error(
           Dry::System::FileNotFoundError, /test\.missing/
         )
+      end
+
+      it 'returns for already registered components' do
+        component = container.component('test/foo')
+
+        registrar = -> {
+          container.register(component.identifier) { component.instance }
+        }
+
+        container.require_component(component, &registrar)
+
+        required = false
+        registrar = -> { required = true }
+        container.require_component(component, &registrar)
+        expect(required).to be(false)
       end
     end
 
