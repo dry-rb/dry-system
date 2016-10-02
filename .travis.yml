@@ -9,13 +9,10 @@ rvm:
   - 2.2
   - 2.3.1
   - rbx
-  - jruby-9000
-  - ruby-head
-  - jruby-head
+  - jruby-9.1.5.0
 matrix:
   allow_failures:
-    - rvm: ruby-head
-    - rvm: jruby-head
+    - rvm: rbx
 notifications:
   email: false
   webhooks:
