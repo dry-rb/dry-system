@@ -83,9 +83,6 @@ RSpec.describe Dry::System::Container do
       it 'loads and registers systems from configured load paths' do
         container.load_component('test.foo')
 
-        expect(Test.const_defined?(:Foo)).to be(true)
-        expect(Test.const_defined?(:Dep)).to be(true)
-
         expect(Test::Foo.new.dep).to be_instance_of(Test::Dep)
       end
 
