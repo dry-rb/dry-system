@@ -415,9 +415,7 @@ module Dry
 
         # @api public
         def resolve(key)
-          begin
-            load_component(key)
-          rescue ComponentLoadError; end
+          load_component(key)
 
           super(key)
         end
