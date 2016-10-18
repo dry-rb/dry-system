@@ -415,7 +415,7 @@ module Dry
 
         # @api public
         def resolve(key)
-          load_component(key)
+          load_component(key) unless frozen?
 
           super(key)
         end
