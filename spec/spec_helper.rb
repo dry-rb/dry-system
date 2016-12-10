@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 if RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.3'
-  require 'codeclimate-test-reporter'
-  CodeClimate::TestReporter.start
+  require 'simplecov'
+  SimpleCov.start
 end
 
 begin
