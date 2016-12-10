@@ -39,7 +39,6 @@ module Dry
     #
     # Every container needs to be configured with following settings:
     #
-    # * `:name` - a unique container identifier
     # * `:root` - a system root directory (defaults to `pwd`)
     # * `:system_dir` - directory name relative to root, where bootable components
     #                 can be defined in `boot` dir this defaults to `system`
@@ -47,8 +46,6 @@ module Dry
     # @example
     #   class MyApp < Dry::System::Container
     #     configure do |config|
-    #       config.name = :my_app
-    #
     #       # this will auto-register classes from 'lib/components'. ie if you add
     #       # `lib/components/repo.rb` which defines `Repo` class, then it's
     #       # instance will be automatically available as `MyApp['repo']`
@@ -64,7 +61,6 @@ module Dry
       extend Dry::Configurable
       extend Dry::Container::Mixin
 
-      setting :name
       setting :default_namespace
       setting :root, Pathname.pwd.freeze
       setting :system_dir, 'system'.freeze
@@ -83,7 +79,6 @@ module Dry
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :my_app
         #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #   end
@@ -143,7 +138,6 @@ module Dry
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :core
         #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #
@@ -222,7 +216,6 @@ module Dry
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :my_app
         #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #   end
