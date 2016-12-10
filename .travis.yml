@@ -4,6 +4,8 @@ cache: bundler
 bundler_args: --without tools
 script:
   - bundle exec rake spec
+after_success:
+  - '[ -d coverage ] && bundle exec codeclimate-test-reporter'
 rvm:
   - 2.1
   - 2.2

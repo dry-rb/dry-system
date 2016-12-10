@@ -1,10 +1,10 @@
 require 'pathname'
 
+require 'dry-auto_inject'
 require 'dry-configurable'
 require 'dry-container'
 
 require 'dry/system/errors'
-require 'dry/system/injector'
 require 'dry/system/loader'
 require 'dry/system/booter'
 require 'dry/system/auto_registrar'
@@ -372,7 +372,7 @@ module Dry
         #
         # @api public
         def injector(options = {})
-          Injector.new(self, options: options)
+          Dry::AutoInject(self, options)
         end
 
         # Requires one or more files relative to the container's root
@@ -411,6 +411,13 @@ module Dry
         # @api public
         def root
           config.root
+        end
+
+        # @api public
+        def resolve(key)
+          load_component(key) unless frozen?
+
+          super
         end
 
         # @api private
