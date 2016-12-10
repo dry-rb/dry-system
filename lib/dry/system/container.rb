@@ -417,7 +417,7 @@ module Dry
         def resolve(key)
           load_component(key) unless frozen?
 
-          super(key)
+          super
         end
 
         # @api private
