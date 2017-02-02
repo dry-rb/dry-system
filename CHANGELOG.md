@@ -1,15 +1,24 @@
+# 0.6.0 2016-02-02
+
+### Changed
+
+* Lazy load components as they are resolved, rather than on injection (timriley)
+* Perform registration even though component already required (blelump)
+
+[Compare v0.5.0...v0.6.0](https://github.com/dry-rb/dry-system/compare/v0.5.1...v0.6.0)
+
 # 0.5.1 2016-08-23
 
 ### Fixed
 
 - Undefined locals or method calls will raise proper exceptions in Lifecycle DSL (aradunovic)
 
-[Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-component/compare/v0.5.0...v0.5.1)
+[Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-system/compare/v0.5.0...v0.5.1)
 
 # 0.5.0 2016-08-15
 
 This is a major refactoring with better internal APIs and improved support
-for multi-container setups. As part of this release `dry-component` has been renamed to `dry-system`.
+for multi-container setups. As part of this release `dry-system` has been renamed to `dry-system`.
 
 ### Added
 
@@ -32,15 +41,15 @@ for multi-container setups. As part of this release `dry-component` has been ren
 - Booting is now handled by `System::Booter` object configured in a container (solnic)
 - Importing containers is now handled by `System::Importer` object configured in a container (solnic)
 
-[Compare v0.4.3...v0.5.0](https://github.com/dry-rb/dry-component/compare/v0.4.3...v0.5.0)
+[Compare v0.4.3...v0.5.0](https://github.com/dry-rb/dry-system/compare/v0.4.3...v0.5.0)
 
 # 0.4.3 - 2016-08-01
 
 ### Fixed
 
-- Return immediately from `Container.load_component` if the requested component key already exists in the container. This fixes a crash when requesting to load a manually registered component with a name that doesn't map to a filename (timriley in [#24](https://github.com/dry-rb/dry-component/pull/24))
+- Return immediately from `Container.load_component` if the requested component key already exists in the container. This fixes a crash when requesting to load a manually registered component with a name that doesn't map to a filename (timriley in [#24](https://github.com/dry-rb/dry-system/pull/24))
 
-[Compare v0.4.2...v0.4.3](https://github.com/dry-rb/dry-component/compare/v0.4.2...v0.4.3)
+[Compare v0.4.2...v0.4.3](https://github.com/dry-rb/dry-system/compare/v0.4.2...v0.4.3)
 
 # 0.4.2 - 2016-07-26
 
@@ -48,7 +57,7 @@ for multi-container setups. As part of this release `dry-component` has been ren
 
 - Ensure file components can be loaded when they're requested for the first time using their shorthand container identifier (i.e. with the container's default namespace removed) (timriley)
 
-[Compare v0.4.1...v0.4.2](https://github.com/dry-rb/dry-component/compare/v0.4.1...v0.4.2)
+[Compare v0.4.1...v0.4.2](https://github.com/dry-rb/dry-system/compare/v0.4.1...v0.4.2)
 
 # 0.4.1 - 2016-07-26 [YANKED]
 
@@ -56,13 +65,13 @@ for multi-container setups. As part of this release `dry-component` has been ren
 
 - Require the 0.4.0 release of dry-auto_inject for the features below (in 0.4.0) to work properly (timriley)
 
-[Compare v0.4.0...v0.4.1](https://github.com/dry-rb/dry-component/compare/v0.4.0...v0.4.1)
+[Compare v0.4.0...v0.4.1](https://github.com/dry-rb/dry-system/compare/v0.4.0...v0.4.1)
 
 # 0.4.0 - 2016-07-26 [YANKED]
 
 ### Added
 
-- Support for supplying a default namespace to a container, which is passed to the container's injector to allow for convenient shorthand access to registered objects in the same namespace (timriley in [#20](https://github.com/dry-rb/dry-component/pull/20))
+- Support for supplying a default namespace to a container, which is passed to the container's injector to allow for convenient shorthand access to registered objects in the same namespace (timriley in [#20](https://github.com/dry-rb/dry-system/pull/20))
 
     ```ruby
     # Set up container with default namespace
@@ -86,14 +95,14 @@ for multi-container setups. As part of this release `dry-component` has been ren
     end
     ```
 
-- Support for supplying to options directly to dry-auto_inject's `Builder` via `Dry::Component::Container#injector(options)`. This allows you to provide dry-auto_inject customizations like your own container of injection strategies (timriley in [#20](https://github.com/dry-rb/dry-component/pull/20))
-- Support for accessing all available injector strategies, not just the defaults (e.g. `MyContainer.injector.some_custom_strategy`) (timriley in [#19](https://github.com/dry-rb/dry-component/pull/19))
+- Support for supplying to options directly to dry-auto_inject's `Builder` via `Dry::Component::Container#injector(options)`. This allows you to provide dry-auto_inject customizations like your own container of injection strategies (timriley in [#20](https://github.com/dry-rb/dry-system/pull/20))
+- Support for accessing all available injector strategies, not just the defaults (e.g. `MyContainer.injector.some_custom_strategy`) (timriley in [#19](https://github.com/dry-rb/dry-system/pull/19))
 
 ### Changed
 
-- Subclasses of `Dry::Component::Container` no longer have an `Injector` constant automatically defined within them. The recommended approach is to save your own injector object to a constant, which allows you to pass options to it at the same time, e.g. `MyApp::Import = MyApp::Container.injector(my_options)` (timriley in [#19](https://github.com/dry-rb/dry-component/pull/19))
+- Subclasses of `Dry::Component::Container` no longer have an `Injector` constant automatically defined within them. The recommended approach is to save your own injector object to a constant, which allows you to pass options to it at the same time, e.g. `MyApp::Import = MyApp::Container.injector(my_options)` (timriley in [#19](https://github.com/dry-rb/dry-system/pull/19))
 
-[Compare v0.3.0...v0.4.0](https://github.com/dry-rb/dry-component/compare/v0.3.0...v0.4.0)
+[Compare v0.3.0...v0.4.0](https://github.com/dry-rb/dry-system/compare/v0.3.0...v0.4.0)
 
 # 0.3.0 - 2016-06-18
 
@@ -105,20 +114,20 @@ Removed two pieces that are moving to dry-web:
 - Removed `Dry::Component::Config` and `options` setting from `Container` (timriley)
 - Changed `Component#configure` behavior so it can be run multiple times for configuration to be applied in multiple passes (timriley)
 
-[Compare v0.2.0...v0.3.0](https://github.com/dry-rb/dry-component/compare/v0.2.0...v0.3.0)
+[Compare v0.2.0...v0.3.0](https://github.com/dry-rb/dry-system/compare/v0.2.0...v0.3.0)
 
 # 0.2.0 - 2016-06-13
 
 ### Changed
 
 - Component core directory is now `component/` by default (timriley)
-- Injector default stragegy is now whatever dry-auto_inject's default is (rather than hard-coding a particular default strategy for dry-component) (timriley)
+- Injector default stragegy is now whatever dry-auto_inject's default is (rather than hard-coding a particular default strategy for dry-system) (timriley)
 
 ### Fixed
 
 - Fixed bug where specified auto-inject strategies were not respected (timriley)
 
-[Compare v0.1.0...v0.2.0](https://github.com/dry-rb/dry-component/compare/v0.1.0...v0.2.0)
+[Compare v0.1.0...v0.2.0](https://github.com/dry-rb/dry-system/compare/v0.1.0...v0.2.0)
 
 # 0.1.0 - 2016-06-07
 
@@ -146,7 +155,7 @@ Removed two pieces that are moving to dry-web:
 * `Container.import_module` renamed to `.injector` (timriley)
 * Default injection strategy is now `kwargs`, courtesy of the new dry-auto_inject default (timriley)
 
-[Compare v0.0.2...v0.1.0](https://github.com/dry-rb/dry-component/compare/v0.0.2...v0.1.0)
+[Compare v0.0.2...v0.1.0](https://github.com/dry-rb/dry-system/compare/v0.0.2...v0.1.0)
 
 # 0.0.2 - 2015-12-24
 
@@ -159,7 +168,7 @@ Removed two pieces that are moving to dry-web:
 
 * Container name is used to determine the name of its config file (solnic)
 
-[Compare v0.0.1...v0.0.2](https://github.com/dry-rb/dry-component/compare/v0.0.1...v0.0.2)
+[Compare v0.0.1...v0.0.2](https://github.com/dry-rb/dry-system/compare/v0.0.1...v0.0.2)
 
 # 0.0.1 - 2015-12-24
 
