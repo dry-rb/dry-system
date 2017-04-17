@@ -483,14 +483,14 @@ module Dry
         private
 
         # @api private
-        def load_local_component(component, fallback = false)
+        def load_local_component(component, default_namespace_fallback = false)
           if component.bootable?(booter.path) || component.file_exists?(load_paths)
             booter.boot_dependency(component) unless frozen?
 
             require_component(component) do
               register(component.identifier) { component.instance }
             end
-          elsif !fallback
+          elsif !default_namespace_fallback
             load_local_component(component.prepend(config.default_namespace), true)
           else
             raise ComponentLoadError, component
