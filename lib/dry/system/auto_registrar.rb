@@ -6,7 +6,7 @@ module Dry
     #
     # This is currently configured by default for every System::Container.
     # Auto-registrar objects are responsible for loading files from configured
-    # auto-register paths and registering components automatically withing the
+    # auto-register paths and registering components automatically within the
     # container.
     #
     # @api private
