@@ -153,6 +153,11 @@ module Dry
       end
 
       # @api private
+      def auto_register?
+        !(options[:auto_register] == "false")
+      end
+
+      # @api private
       def root_key
         namespaces.first
       end

@@ -28,6 +28,8 @@ module Dry
       # @api private
       def call(dir, &block)
         components(dir).each do |component|
+          next if !component.auto_register?
+
           container.require_component(component) do
             if block
               register(component.identifier, yield(component))
@@ -42,23 +44,40 @@ module Dry
 
       # @api private
       def components(dir)
-        paths(dir).
-          map { |path| component(path) }.
+        files(dir).
+          map { |file_path| [file_path, file_options(file_path)] }.
+          map { |(file_path, options)| component(relative_path(dir, file_path), **options) }.
           reject { |component| key?(component.identifier) }
       end
 
       # @api private
-      def paths(dir)
-        dir_root = root.join(dir.to_s.split('/')[0])
+      def files(dir)
+        Dir["#{root}/#{dir}/**/*.rb"]
+      end
 
-        Dir["#{root}/#{dir}/**/*.rb"].map { |path|
-          path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
-        }
+      def relative_path(dir, file_path)
+        dir_root = root.join(dir.to_s.split('/')[0])
+        file_path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
+      end
+
+      VALID_LINE_RE = /^(#.*)?$/
+      MAGIC_COMMENT_RE = /^#\s+(?<name>[A-Za-z_]+):\s+(?<value>.+?)$/
+
+      def file_options(file_path)
+        {}.tap do |options|
+          File.foreach(file_path) do |line|
+            break if !line.match?(VALID_LINE_RE)
+
+            if (match = line.match(MAGIC_COMMENT_RE))
+              options[match[:name].to_sym] = match[:value]
+            end
+          end
+        end
       end
 
       # @api private
-      def component(path)
-        container.component(path)
+      def component(path, options)
+        container.component(path, options)
       end
 
       # @api private
