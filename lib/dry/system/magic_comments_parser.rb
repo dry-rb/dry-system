@@ -7,7 +7,7 @@ module Dry
       def self.call(file_name)
         {}.tap do |options|
           File.foreach(file_name) do |line|
-            break if !line.match?(VALID_LINE_RE)
+            break unless line =~ VALID_LINE_RE
 
             if (comment = line.match(COMMENT_RE))
               options[comment[:name].to_sym] = comment[:value]
