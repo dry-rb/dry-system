@@ -56,11 +56,13 @@ module Dry
         Dir["#{root}/#{dir}/**/*.rb"]
       end
 
+      # @api private
       def relative_path(dir, file_path)
         dir_root = root.join(dir.to_s.split('/')[0])
         file_path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
       end
 
+      # @api private
       def file_options(file_name)
         MagicCommentsParser.(file_name)
       end
