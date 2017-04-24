@@ -46,8 +46,8 @@ module Dry
       # @api private
       def components(dir)
         files(dir).
-          map { |file_path| [file_path, file_options(file_path)] }.
-          map { |(file_path, options)| component(relative_path(dir, file_path), **options) }.
+          map { |file_name| [file_name, file_options(file_name)] }.
+          map { |(file_name, options)| component(relative_path(dir, file_name), **options) }.
           reject { |component| key?(component.identifier) }
       end
 
@@ -61,8 +61,8 @@ module Dry
         file_path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
       end
 
-      def file_options(file_path)
-        MagicCommentsParser.(file_path)
+      def file_options(file_name)
+        MagicCommentsParser.(file_name)
       end
 
       # @api private
