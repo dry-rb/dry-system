@@ -1,4 +1,5 @@
 require 'dry/system/constants'
+require 'dry/system/magic_comments_parser'
 
 module Dry
   module System
@@ -60,19 +61,8 @@ module Dry
         file_path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
       end
 
-      VALID_LINE_RE = /^(#.*)?$/
-      MAGIC_COMMENT_RE = /^#\s+(?<name>[A-Za-z_]+):\s+(?<value>.+?)$/
-
       def file_options(file_path)
-        {}.tap do |options|
-          File.foreach(file_path) do |line|
-            break if !line.match?(VALID_LINE_RE)
-
-            if (match = line.match(MAGIC_COMMENT_RE))
-              options[match[:name].to_sym] = match[:value]
-            end
-          end
-        end
+        MagicCommentsParser.(file_path)
       end
 
       # @api private
