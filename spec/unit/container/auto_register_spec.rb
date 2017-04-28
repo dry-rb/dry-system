@@ -16,6 +16,10 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     it { expect(Test::Container['foo']).to be_an_instance_of(Foo) }
     it { expect(Test::Container['bar']).to be_an_instance_of(Bar) }
     it { expect(Test::Container['bar.baz']).to be_an_instance_of(Bar::Baz) }
+
+    it "doesn't register files with inline option 'auto_register: false'" do
+      expect(Test::Container.key?('no_register')).to eql false
+    end
   end
 
   context 'with custom registration block' do

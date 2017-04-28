@@ -1,4 +1,5 @@
 require 'dry/system/constants'
+require 'dry/system/magic_comments_parser'
 
 module Dry
   module System
@@ -28,6 +29,8 @@ module Dry
       # @api private
       def call(dir, &block)
         components(dir).each do |component|
+          next if !component.auto_register?
+
           container.require_component(component) do
             if block
               register(component.identifier, yield(component))
@@ -42,23 +45,31 @@ module Dry
 
       # @api private
       def components(dir)
-        paths(dir).
-          map { |path| component(path) }.
+        files(dir).
+          map { |file_name| [file_name, file_options(file_name)] }.
+          map { |(file_name, options)| component(relative_path(dir, file_name), **options) }.
           reject { |component| key?(component.identifier) }
       end
 
       # @api private
-      def paths(dir)
-        dir_root = root.join(dir.to_s.split('/')[0])
-
-        Dir["#{root}/#{dir}/**/*.rb"].map { |path|
-          path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
-        }
+      def files(dir)
+        Dir["#{root}/#{dir}/**/*.rb"]
       end
 
       # @api private
-      def component(path)
-        container.component(path)
+      def relative_path(dir, file_path)
+        dir_root = root.join(dir.to_s.split('/')[0])
+        file_path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
+      end
+
+      # @api private
+      def file_options(file_name)
+        MagicCommentsParser.(file_name)
+      end
+
+      # @api private
+      def component(path, options)
+        container.component(path, options)
       end
 
       # @api private

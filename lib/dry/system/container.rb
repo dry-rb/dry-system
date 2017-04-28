@@ -441,12 +441,13 @@ module Dry
         end
 
         # @api private
-        def component(key)
+        def component(key, **options)
           Component.new(
             key,
             loader: config.loader,
             namespace: config.default_namespace,
-            separator: config.namespace_separator
+            separator: config.namespace_separator,
+            **options,
           )
         end
 
