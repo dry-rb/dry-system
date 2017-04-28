@@ -154,7 +154,7 @@ module Dry
 
       # @api private
       def auto_register?
-        !(options[:auto_register] == "false")
+        !!options.fetch(:auto_register) { true }
       end
 
       # @api private

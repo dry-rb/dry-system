@@ -28,4 +28,14 @@ RSpec.describe Dry::System::MagicCommentsParser, '.call' do
   it 'does not match any comments after any lines of code' do
     expect(comments.key?(:after_code)).to eql false
   end
+
+  describe 'coercions' do
+    it 'coerces "true" to true' do
+      expect(comments[:true_comment]).to eq true
+    end
+
+    it 'coerces "false" to false' do
+      expect(comments[:false_comment]).to eq false
+    end
+  end
 end
