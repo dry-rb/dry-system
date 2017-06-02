@@ -1,5 +1,6 @@
 require 'dry/system/constants'
 require 'dry/system/magic_comments_parser'
+require 'dry/system/auto_registrar/configuration'
 
 module Dry
   module System
@@ -27,16 +28,14 @@ module Dry
       end
 
       # @api private
-      def call(dir, &block)
+      def call(dir)
+        registration_config = Configuration.new
+        yield(registration_config) if block_given?
         components(dir).each do |component|
-          next if !component.auto_register?
+          next if !component.auto_register? || registration_config.exclude.(component)
 
           container.require_component(component) do
-            if block
-              register(component.identifier, yield(component))
-            else
-              register(component.identifier) { component.instance }
-            end
+            register(component.identifier) { registration_config.instance.(component) }
           end
         end
       end
