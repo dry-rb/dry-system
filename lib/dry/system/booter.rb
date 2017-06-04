@@ -66,11 +66,11 @@ module Dry
       def call(name)
         container, finalizer = finalizers[name]
 
-        if finalizer
-          lifecycle = Lifecycle.new(container, &finalizer)
-          yield(lifecycle) if block_given?
-          lifecycle
-        end
+        raise MissmatchBetweenFileAndRegisteredComponents.new(name, registered_booted_keys) unless finalizer
+
+        lifecycle = Lifecycle.new(container, &finalizer)
+        yield(lifecycle) if block_given?
+        lifecycle
       end
 
       # @api private
@@ -80,6 +80,11 @@ module Dry
       end
 
       private
+
+      # @api private
+      def registered_booted_keys
+        finalizers.keys - booted.keys
+      end
 
       # @api private
       def boot_files
