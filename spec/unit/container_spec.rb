@@ -147,7 +147,7 @@ RSpec.describe Dry::System::Container do
         it "raises MissmatchBetweenFileAndRegisteredComponents" do
           expect{
             container.boot!(:hell)
-          }.to raise_error(Dry::System::MissmatchBetweenFileAndRegisteredComponents)
+          }.to raise_error(Dry::System::ComponentFileMismatchError)
         end
       end
     end

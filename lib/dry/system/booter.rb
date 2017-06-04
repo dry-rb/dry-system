@@ -66,7 +66,7 @@ module Dry
       def call(name)
         container, finalizer = finalizers[name]
 
-        raise MissmatchBetweenFileAndRegisteredComponents.new(name, registered_booted_keys) unless finalizer
+        raise ComponentFileMismatchError.new(name, registered_booted_keys) unless finalizer
 
         lifecycle = Lifecycle.new(container, &finalizer)
         yield(lifecycle) if block_given?

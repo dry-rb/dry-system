@@ -13,9 +13,9 @@ module Dry
     # Error raised when booter file do not match with register component
     #
     # @api public
-    MissmatchBetweenFileAndRegisteredComponents = Class.new(StandardError) do
+    ComponentFileMismatchError = Class.new(StandardError) do
       def initialize(filename, registered_booted_keys)
-        super("Missmatch between filename +#{filename}+ and registered components +#{registered_booted_keys}+")
+        super("Mismatch between filename +#{filename}+ and registered components +#{registered_booted_keys}+")
       end
     end
 
