@@ -22,7 +22,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     end
   end
 
-  context 'with custom registration block' do
+  context 'with custom configuration block' do
     before do
       class Test::Container < Dry::System::Container
         configure do |config|
@@ -33,14 +33,21 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
       end
     end
 
-    it 'yields found components' do
-      Test::Container.auto_register!('components') do |component|
-        component.identifier
+    it 'exclude specific components' do
+      Test::Container.auto_register!('components') do |config|
+        config.instance do |component|
+          component.identifier
+        end
+
+        config.exclude do |component|
+          component.path =~ /bar/
+        end
       end
 
       expect(Test::Container['foo']).to eql('foo')
-      expect(Test::Container['bar']).to eql('bar')
-      expect(Test::Container['bar.baz']).to eql('bar.baz')
+
+      expect(Test::Container.key?('bar')).to eql false
+      expect(Test::Container.key?('bar.baz')).to eql false
     end
   end
 

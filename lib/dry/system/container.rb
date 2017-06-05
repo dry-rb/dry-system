@@ -316,7 +316,8 @@ module Dry
         #
         # Typically you want to configure auto_register directories, and it will
         # work automatically. Use this method in cases where you want to have an
-        # explicit way where some components are auto-registered.
+        # explicit way where some components are auto-registered, or if you want
+        # to exclude some components from been auto-registered
         #
         # @example
         #   class MyApp < Dry::System::Container
@@ -328,15 +329,21 @@ module Dry
         #     auto_register!('lib/core')
         #
         #     # with a dir and a custom registration block
-        #     auto_register!('lib/core') do |component|
-        #       # custom way of initializing a component
+        #     auto_register!('lib/core') do |config|
+        #       config.instance do |component|
+        #         # custom way of initializing a component
+        #       end
+        #
+        #       config.exclude do |component|
+        #         # return true to exclude component from auto-registration
+        #       end
         #     end
         #   end
         #
         # @param [String] dir The dir name relative to the root dir
         #
-        # @yield [Component]
-        # @see [Component]
+        # @yield AutoRegistrar::Configuration
+        # @see AutoRegistrar::Configuration
         #
         # @return [self]
         #
