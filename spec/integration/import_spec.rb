@@ -3,15 +3,11 @@ RSpec.describe 'Lazy-booting external deps' do
     module Test
       class Umbrella < Dry::System::Container
         configure do |config|
-          config.name = :core
           config.root = SPEC_ROOT.join('fixtures/umbrella').realpath
         end
       end
 
       class App < Dry::System::Container
-        configure do |config|
-          config.name = :main
-        end
       end
     end
   end
@@ -36,7 +32,7 @@ RSpec.describe 'Lazy-booting external deps' do
 
     before do
       module Test
-        Umbrella.import(App)
+        Umbrella.import(main: App)
         Import = Umbrella.injector
       end
     end
@@ -53,7 +49,7 @@ RSpec.describe 'Lazy-booting external deps' do
 
     before do
       module Test
-        App.import(Umbrella)
+        App.import(core: Umbrella)
         Import = App.injector
       end
     end

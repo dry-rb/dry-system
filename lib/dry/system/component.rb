@@ -95,7 +95,6 @@ module Dry
       # @example
       #   class MyApp < Dry::System::Container
       #     configure do |config|
-      #       config.name = :my_app
       #       config.root = Pathname('/my/app')
       #     end
       #

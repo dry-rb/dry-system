@@ -183,16 +183,14 @@ RSpec.describe Dry::System::Container do
 
     it 'passes container to the finalizer block' do
       class Test::Container < Dry::System::Container
-        configure { |c| c.name = :awesome }
-
         finalize(:foo) do |container|
-          register(:w00t, container.config.name)
+          register(:w00t, container.name)
         end
       end
 
       Test::Container.booter.(:foo)
 
-      expect(Test::Container[:w00t]).to be(:awesome)
+      expect(Test::Container[:w00t]).to eql("Test::Container")
     end
   end
 end
