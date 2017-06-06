@@ -104,7 +104,6 @@ module Dry
         #   class Core < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :core
         #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #   end
@@ -115,14 +114,13 @@ module Dry
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :core
         #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #
         #     import core: Core
         #   end
         #
-        # @param other [Hash,Dry::Container::Namespace,Dry::System::Container]
+        # @param other [Hash,Dry::Container::Namespace]
         #
         # @api public
         def import(other)
@@ -130,9 +128,7 @@ module Dry
           when Hash then importer.register(other)
           when Dry::Container::Namespace then super
           else
-            if other < System::Container
-              importer.register(other.config.name => other)
-            end
+            raise ArgumentError, "+other+ must be a hash of names and systems, or a Dry::Container namespace"
           end
         end
 
