@@ -8,6 +8,7 @@ require 'dry/system/errors'
 require 'dry/system/loader'
 require 'dry/system/booter'
 require 'dry/system/auto_registrar'
+require 'dry/system/manual_registrar'
 require 'dry/system/importer'
 require 'dry/system/component'
 require 'dry/system/constants'
@@ -67,10 +68,12 @@ module Dry
       setting :default_namespace
       setting :root, Pathname.pwd.freeze
       setting :system_dir, 'system'.freeze
+      setting :registrations_dir, 'container'.freeze
       setting :auto_register, []
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
       setting :auto_registrar, Dry::System::AutoRegistrar
+      setting :manual_registrar, Dry::System::ManualRegistrar
       setting :importer, Dry::System::Importer
 
       class << self
@@ -247,6 +250,7 @@ module Dry
 
           importer.finalize!
           booter.finalize!
+          manual_registrar.finalize!
           auto_registrar.finalize!
 
           freeze
@@ -309,6 +313,12 @@ module Dry
             load_paths << path
             $LOAD_PATH.unshift(path.to_s)
           end
+          self
+        end
+
+        # @api public
+        def load_registrations!(name)
+          manual_registrar.(name)
           self
         end
 
@@ -443,6 +453,11 @@ module Dry
         end
 
         # @api private
+        def manual_registrar
+          @manual_registrar ||= config.manual_registrar.new(self)
+        end
+
+        # @api private
         def importer
           @importer ||= config.importer.new(self)
         end
@@ -500,6 +515,8 @@ module Dry
             end
           elsif !default_namespace_fallback
             load_local_component(component.prepend(config.default_namespace), true)
+          elsif manual_registrar.file_exists?(component)
+            manual_registrar.(component)
           else
             raise ComponentLoadError, component
           end
