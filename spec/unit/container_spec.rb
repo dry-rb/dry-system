@@ -142,6 +142,14 @@ RSpec.describe Dry::System::Container do
           'component identifier +foo+ is invalid or boot file is missing'
         )
       end
+
+      describe "missmatch betwenn finalize name and registered component" do
+        it "raises a meaningful error" do
+          expect{
+            container.boot!(:hell)
+          }.to raise_error(Dry::System::ComponentFileMismatchError)
+        end
+      end
     end
 
     context 'with the default core dir' do
