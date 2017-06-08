@@ -12,11 +12,6 @@ RSpec.describe Dry::System::Component do
       expect(create.()).to be(create.())
     end
 
-    it 'raises when namespace includes a separator' do
-      expect { Dry::System::Component.new('foo.bar.baz', namespace: 'foo.bar') }
-        .to raise_error(Dry::System::InvalidNamespaceError, /foo\.bar/)
-    end
-
     it 'raises when identifier/path has duplicated keys' do
       expect { Dry::System::Component.new('foo.bar.foo', namespace: 'foo') }
         .to raise_error(Dry::System::InvalidComponentError, /foo\.bar\.foo/)
