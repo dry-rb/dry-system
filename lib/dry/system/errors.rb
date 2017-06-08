@@ -28,15 +28,6 @@ module Dry
       end
     end
 
-    # Error raised when invalid namespace name was provided
-    #
-    # @api public
-    InvalidNamespaceError = Class.new(StandardError) do
-      def initialize(ns)
-        super("Namespace #{ns} cannot include a separator")
-      end
-    end
-
     # Error raised when resolved component couldn't be loaded
     #
     # @api public

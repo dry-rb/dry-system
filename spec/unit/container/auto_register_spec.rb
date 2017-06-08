@@ -69,6 +69,23 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     specify { expect(Test::Container['foo']).to be_a(Namespaced::Foo) }
   end
 
+  context 'standard loader with a default namespace with multiple level' do
+    before do
+      class Test::Container < Dry::System::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures').realpath
+          config.default_namespace = 'multiple.level'
+        end
+
+        load_paths!('multiple_namespaced_components')
+        auto_register!('multiple_namespaced_components')
+      end
+    end
+
+    specify { expect(Test::Container['baz']).to be_a(Multiple::Level::Baz) }
+    specify { expect(Test::Container['foz']).to be_a(Multiple::Level::Foz) }
+  end
+
   context 'with a custom loader' do
     before do
       class Test::Loader < Dry::System::Loader
