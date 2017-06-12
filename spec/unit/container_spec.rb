@@ -208,7 +208,7 @@ RSpec.describe Dry::System::Container do
     end
 
 
-    describe 'without enabled_stubs!' do
+    describe 'without enable_stubs!' do
       before do
         container.finalize!
       end
@@ -220,9 +220,9 @@ RSpec.describe Dry::System::Container do
       end
     end
 
-    describe 'with enabled_stubs!' do
+    describe 'with enable_stubs!' do
       before do
-        container.enabled_stubs!
+        container.enable_stubs!
         container.finalize!
       end
 

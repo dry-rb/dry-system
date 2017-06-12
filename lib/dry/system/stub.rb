@@ -2,8 +2,8 @@ module Dry
   module System
     class Container
       # Incuded only in the Test environment
-      # Sending the message enabled_stubs! allow you to stub finalize container
-      # in your tests.
+      # Sending the message enable_stubs! allow you to stub components after
+      # finalize your container in your tests.
       #
       # @api private
       module Stub
@@ -18,7 +18,7 @@ module Dry
       end
 
       class << self
-        def enabled_stubs!
+        def enable_stubs!
           extend ::Dry::System::Container::Stub
         end
       end
