@@ -1,13 +1,47 @@
-# 0.6.0 2016-02-02
+# 0.7.0 - 2017-06-15
+
+### Added
+
+- Added `manual_registrar` container setting (along with default `ManualRegistrar` implementation), and `registrations_dir` setting. These provide support for a well-established place for keeping files with manual container registrations (timriley)
+- AutoRegistrar parses initial lines of Ruby source files for "magic comments" when auto-registering components. An `# auto_register: false` magic comment will prevent a Ruby file from being auto-registered (timriley)
+- `Container.auto_register!`, when called with a block, yields a configuration object to control the auto-registration behavior for that path, with support for configuring 2 different aspects of auto-registration behavior (both optional):
+
+    ```ruby
+    class MyContainer < Dry::System::Container
+      auto_register!('lib') do |config|
+        config.instance do |component|
+          # custom logic for initializing a component
+        end
+
+        config.exclude do |component|
+          # return true to skip auto-registration of the component, e.g.
+          # component.path =~ /entities/
+        end
+      end
+    end
+    ```
+
+- A helpful error will be raised if a bootable component's finalize block name doesn't match its boot file name (GustavoCaso)
+
+### Changed
+
+- The `default_namespace` container setting now supports multi-level namespaces (GustavoCaso)
+- `Container.auto_register!` yields a configuration block instead of a block for returning a custom instance (see above) (GustavoCaso)
+- `Container.import` now requires an explicit local name for the imported container (e.g. `import(local_name: AnotherContainer)`) (timriley)
+
+[Compare v0.6.0...v0.7.0](https://github.com/dry-rb/dry-system/compare/v0.6.0...v0.7.0)
+
+
+# 0.6.0 - 2016-02-02
 
 ### Changed
 
 * Lazy load components as they are resolved, rather than on injection (timriley)
 * Perform registration even though component already required (blelump)
 
-[Compare v0.5.0...v0.6.0](https://github.com/dry-rb/dry-system/compare/v0.5.1...v0.6.0)
+[Compare v0.5.1...v0.6.0](https://github.com/dry-rb/dry-system/compare/v0.5.1...v0.6.0)
 
-# 0.5.1 2016-08-23
+# 0.5.1 - 2016-08-23
 
 ### Fixed
 
@@ -15,7 +49,7 @@
 
 [Compare v0.5.0...v0.5.1](https://github.com/dry-rb/dry-system/compare/v0.5.0...v0.5.1)
 
-# 0.5.0 2016-08-15
+# 0.5.0 - 2016-08-15
 
 This is a major refactoring with better internal APIs and improved support
 for multi-container setups. As part of this release `dry-system` has been renamed to `dry-system`.
