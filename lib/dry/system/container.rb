@@ -4,6 +4,8 @@ require 'dry-auto_inject'
 require 'dry-configurable'
 require 'dry-container'
 
+require 'dry/core/deprecations'
+
 require 'dry/system/errors'
 require 'dry/system/loader'
 require 'dry/system/booter'
@@ -77,6 +79,7 @@ module Dry
       setting :importer, Dry::System::Importer
 
       class << self
+        extend Dry::Core::Deprecations['Dry::System::Container']
         # Configures the container
         #
         # @example
@@ -268,6 +271,7 @@ module Dry
           booter.boot!(name)
           self
         end
+        deprecate :boot!, message: 'Use init and start instead'
 
         # Boots a specific component but calls only `init` lifecycle trigger
         #
@@ -286,6 +290,7 @@ module Dry
           booter.boot(name)
           self
         end
+        deprecate :boot, message: 'Use init instead'
 
         # Sets load paths relative to the container's root dir
         #

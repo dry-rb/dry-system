@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'inflecto', '>= 0.0.2'
   spec.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
+  spec.add_runtime_dependency 'dry-core', '>= 0.3.1'
   spec.add_runtime_dependency 'dry-equalizer', '~> 0.2'
   spec.add_runtime_dependency 'dry-container', '~> 0.6'
   spec.add_runtime_dependency 'dry-auto_inject', '>= 0.4.0'
