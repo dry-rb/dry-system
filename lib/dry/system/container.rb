@@ -66,7 +66,7 @@ module Dry
 
       setting :name
       setting :default_namespace
-      setting :root, Pathname.pwd.freeze
+      setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
       setting :system_dir, 'system'.freeze
       setting :registrations_dir, 'container'.freeze
       setting :auto_register, []

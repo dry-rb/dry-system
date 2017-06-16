@@ -1,4 +1,3 @@
-require 'pathname'
 require 'dry/system/constants'
 
 module Dry
@@ -50,7 +49,7 @@ module Dry
 
       # @api private
       def root
-        Pathname(container.root)
+        container.root
       end
     end
   end
