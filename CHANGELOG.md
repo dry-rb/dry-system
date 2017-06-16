@@ -1,3 +1,9 @@
+# 0.7.1 - 2017-06-16
+
+### Changed
+
+- Accept string values for Container's `root` config (timriley)
+
 # 0.7.0 - 2017-06-15
 
 ### Added
