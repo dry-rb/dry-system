@@ -47,7 +47,7 @@ module Dry
           options = DEFAULT_OPTIONS.merge(options || {})
 
           ns, sep = options.values_at(:namespace, :separator)
-          identifier = ensure_valid_identifier(name, ns, sep)
+          identifier = extract_identifier(name, ns, sep)
 
           path = name.to_s.gsub(sep, PATH_SEPARATOR)
           loader = options.fetch(:loader, Loader).new(path)
@@ -57,14 +57,18 @@ module Dry
       end
 
       # @api private
-      def self.ensure_valid_identifier(name, ns, sep)
-        keys = name.to_s.scan(WORD_REGEX)
+      def self.extract_identifier(name, ns, sep)
+        name_s = name.to_s
+        identifier = ns ? remove_namespace_from_path(name_s, ns) : name_s
 
-        if keys.uniq.size != keys.size
-          raise InvalidComponentError, name, 'duplicated keys in the name'
-        end
+        identifier.scan(WORD_REGEX).join(sep)
+      end
 
-        keys.reject { |s| ns.to_s.include?(s) }.join(sep)
+      # @api private
+      def self.remove_namespace_from_path(name, ns)
+        match_value = name.match(/^(?<remove_namespace>#{ns}).(?<identifier>.*)/)
+        raise InvalidComponentError.new(name, "namespace +#{ns}+ not found in path") unless match_value
+        match_value[:identifier]
       end
 
       # @api private

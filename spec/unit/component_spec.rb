@@ -12,9 +12,19 @@ RSpec.describe Dry::System::Component do
       expect(create.()).to be(create.())
     end
 
-    it 'raises when identifier/path has duplicated keys' do
-      expect { Dry::System::Component.new('foo.bar.foo', namespace: 'foo') }
-        .to raise_error(Dry::System::InvalidComponentError, /foo\.bar\.foo/)
+    it 'allows to have the same key multiple times in the identifier/path' do
+      component = Dry::System::Component.new('foo.bar.foo', namespace: 'foo')
+      expect(component.identifier).to eql('bar.foo')
+    end
+
+    it 'removes only the initial part from the identifier/path' do
+      component = Dry::System::Component.new('foo.bar.foo.user.foo.bar', namespace: 'foo.bar.foo')
+      expect(component.identifier).to eql('user.foo.bar')
+    end
+
+    it 'raises when namepsace is not present  in path' do
+      expect { Dry::System::Component.new('foo.bar.foo', namespace: 'baz') }
+        .to raise_error(Dry::System::InvalidComponentError, /baz/)
     end
   end
 
