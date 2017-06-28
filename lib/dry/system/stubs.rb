@@ -8,12 +8,7 @@ module Dry
       # @api private
       module Stubs
         def finalize!(&block)
-          yield(self) if block
-
-          importer.finalize!
-          booter.finalize!
-          manual_registrar.finalize!
-          auto_registrar.finalize!
+          super(freezable: false, &block)
         end
       end
 
