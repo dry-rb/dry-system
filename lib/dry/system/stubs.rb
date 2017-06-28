@@ -8,7 +8,7 @@ module Dry
       # @api private
       module Stubs
         def finalize!(&block)
-          super(freezable: false, &block)
+          super(freeze: false, &block)
         end
       end
 
