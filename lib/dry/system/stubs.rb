@@ -6,7 +6,7 @@ module Dry
       # finalize your container in your tests.
       #
       # @api private
-      module Stub
+      module Stubs
         def finalize!(&block)
           yield(self) if block
 
@@ -19,7 +19,7 @@ module Dry
 
       class << self
         def enable_stubs!
-          extend ::Dry::System::Container::Stub
+          extend ::Dry::System::Container::Stubs
         end
       end
     end
