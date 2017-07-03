@@ -207,7 +207,6 @@ RSpec.describe Dry::System::Container do
       end
     end
 
-
     describe 'without enable_stubs!' do
       before do
         container.finalize!
@@ -226,13 +225,13 @@ RSpec.describe Dry::System::Container do
         container.finalize!
       end
 
-      it 'allow to stub the container it self' do
+      it 'allows to stub the container it self' do
         expect(container['mock']).to eq false
         allow(container).to receive(:[]).with('mock').and_return(true)
         expect(container['mock']).to eq true
       end
 
-      it 'allow to stub components' do
+      it 'allows to stub components' do
         car = container['stubbing.car']
         expect(car.wheels_count).to eq 4
         allow(car).to receive(:wheels_count).and_return(5)
