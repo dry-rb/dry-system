@@ -12,10 +12,8 @@ module Dry
         end
       end
 
-      class << self
-        def enable_stubs!
-          extend ::Dry::System::Container::Stubs
-        end
+      def self.enable_stubs!
+        extend ::Dry::System::Container::Stubs
       end
     end
   end
