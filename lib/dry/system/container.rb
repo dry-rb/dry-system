@@ -260,18 +260,18 @@ module Dry
         # As a result, `init` and `start` lifecycle triggers are called
         #
         # @example
-        #   MyApp.boot!(:persistence)
+        #   MyApp.start(:persistence)
         #
         # @param name [Symbol] the name of a registered bootable component
         #
         # @return [self]
         #
         # @api public
-        def boot!(name)
+        def start(name)
           booter.boot!(name)
           self
         end
-        deprecate :boot!, message: 'Use init and start instead'
+        deprecate :boot!, :start
 
         # Boots a specific component but calls only `init` lifecycle trigger
         #
@@ -279,18 +279,18 @@ module Dry
         # needed but its started environment is not required
         #
         # @example
-        #   MyApp.boot(:persistence)
+        #   MyApp.init(:persistence)
         #
         # @param [Symbol] name The name of a registered bootable component
         #
         # @return [self]
         #
         # @api public
-        def boot(name)
+        def init(name)
           booter.boot(name)
           self
         end
-        deprecate :boot, message: 'Use init instead'
+        deprecate :boot, :init
 
         # Sets load paths relative to the container's root dir
         #
