@@ -100,7 +100,7 @@ RSpec.describe Dry::System::Container do
     end
   end
 
-  describe '.boot' do
+  describe '.init' do
     before do
       class Test::Container < Dry::System::Container
         configure do |config|
@@ -112,17 +112,17 @@ RSpec.describe Dry::System::Container do
     end
 
     it 'lazy-boot a given system' do
-      container.boot(:bar)
+      container.init(:bar)
 
       expect(Test.const_defined?(:Bar)).to be(true)
       expect(container.key?('test.bar')).to be(false)
     end
   end
 
-  describe '.boot!' do
+  describe '.start' do
     shared_examples_for 'a booted system' do
       it 'boots a given system and finalizes it' do
-        container.boot!(:bar)
+        container.start(:bar)
 
         expect(Test.const_defined?(:Bar)).to be(true)
         expect(container['test.bar']).to eql('I was finalized')
@@ -130,13 +130,13 @@ RSpec.describe Dry::System::Container do
 
       it 'expects a symbol identifier matching file name' do
         expect {
-          container.boot!('bar')
+          container.start('bar')
         }.to raise_error(ArgumentError, 'component identifier "bar" must be a symbol')
       end
 
       it 'expects identifier to point to an existing boot file' do
         expect {
-          container.boot!(:foo)
+          container.start(:foo)
         }.to raise_error(
           ArgumentError,
           'component identifier +foo+ is invalid or boot file is missing'
@@ -146,7 +146,7 @@ RSpec.describe Dry::System::Container do
       describe "missmatch betwenn finalize name and registered component" do
         it "raises a meaningful error" do
           expect{
-            container.boot!(:hell)
+            container.start(:hell)
           }.to raise_error(Dry::System::ComponentFileMismatchError)
         end
       end

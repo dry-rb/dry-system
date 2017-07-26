@@ -10,7 +10,7 @@ RSpec.describe 'boot files' do
   end
 
   it 'auto-boots dependency of a bootable component' do
-    system.boot!(:client)
+    system.start(:client)
 
     expect(system[:client]).to be_a(Client)
     expect(system[:client].logger).to be_a(Logger)
