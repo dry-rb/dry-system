@@ -195,4 +195,48 @@ RSpec.describe Dry::System::Container do
       expect(Test::Container[:w00t]).to be(:awesome)
     end
   end
+
+  context 'Allow to stub container' do
+    before do
+      class Test::Container < Dry::System::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures/stubbing').realpath
+        end
+        load_paths!('lib')
+        auto_register!('lib')
+      end
+    end
+
+    describe 'without enable_stubs!' do
+      before do
+        container.finalize!
+      end
+
+      it 'raises error when trying to stub freeze container' do
+        expect {
+          allow(container).to receive(:[]).with('mock').and_return(true)
+        }.to raise_error(RuntimeError, /frozen/)
+      end
+    end
+
+    describe 'with enable_stubs!' do
+      before do
+        container.enable_stubs!
+        container.finalize!
+      end
+
+      it 'allows to stub the container it self' do
+        expect(container['mock']).to eq false
+        allow(container).to receive(:[]).with('mock').and_return(true)
+        expect(container['mock']).to eq true
+      end
+
+      it 'allows to stub components' do
+        car = container['stubbing.car']
+        expect(car.wheels_count).to eq 4
+        allow(car).to receive(:wheels_count).and_return(5)
+        expect(car.wheels_count).to eq 5
+      end
+    end
+  end
 end

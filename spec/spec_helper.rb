@@ -15,6 +15,7 @@ Dir[SPEC_ROOT.join('support/*.rb').to_s].each { |f| require f }
 Dir[SPEC_ROOT.join('shared/*.rb').to_s].each { |f| require f }
 
 require 'dry/system/container'
+require 'dry/system/stubs'
 
 module TestNamespace
   def remove_constants

@@ -242,7 +242,7 @@ module Dry
         # @return [self] frozen container
         #
         # @api public
-        def finalize!(&block)
+        def finalize!(freeze: true, &block)
           return self if frozen?
 
           yield(self) if block
@@ -252,7 +252,7 @@ module Dry
           manual_registrar.finalize!
           auto_registrar.finalize!
 
-          freeze
+          self.freeze if freeze
         end
 
         # Boots a specific component
