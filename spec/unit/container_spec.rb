@@ -1,4 +1,5 @@
 require 'dry/system/container'
+require 'dry/system/stubs'
 
 RSpec.describe Dry::System::Container do
   subject(:container) { Test::Container }
@@ -196,46 +197,40 @@ RSpec.describe Dry::System::Container do
     end
   end
 
-  context 'Allow to stub container' do
+  describe '.stub' do
+    let(:stubbed_car) do
+      instance_double(Test::Car, wheels_count: 5)
+    end
+
     before do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join('fixtures/stubbing').realpath
         end
+
         load_paths!('lib')
         auto_register!('lib')
       end
     end
 
-    describe 'without enable_stubs!' do
-      before do
-        container.finalize!
-      end
-
-      it 'raises error when trying to stub freeze container' do
-        expect {
-          allow(container).to receive(:[]).with('mock').and_return(true)
-        }.to raise_error(RuntimeError, /frozen/)
+    describe 'with stubs disabled' do
+      it 'raises error when trying to stub frozen container' do
+        expect { container.stub('test.car', stubbed_car) }.to raise_error(NoMethodError, /stub/)
       end
     end
 
-    describe 'with enable_stubs!' do
+    describe 'with stubs enabled' do
       before do
         container.enable_stubs!
         container.finalize!
       end
 
-      it 'allows to stub the container it self' do
-        expect(container['mock']).to eq false
-        allow(container).to receive(:[]).with('mock').and_return(true)
-        expect(container['mock']).to eq true
-      end
-
       it 'allows to stub components' do
-        car = container['stubbing.car']
-        expect(car.wheels_count).to eq 4
-        allow(car).to receive(:wheels_count).and_return(5)
-        expect(car.wheels_count).to eq 5
+        expect(container['test.car'].wheels_count).to be(4)
+
+        container.stub('test.car', stubbed_car)
+
+        expect(container['test.car'].wheels_count).to be(5)
       end
     end
   end

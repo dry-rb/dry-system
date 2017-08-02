@@ -1,4 +1,4 @@
-module Stubbing
+module Test
   class Car
     def wheels_count
       4
