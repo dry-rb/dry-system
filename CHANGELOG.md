@@ -1,3 +1,17 @@
+# 0.7.2 - 2017-08-02
+
+### Added
+
+* `Container.enabled_stubs!` for test environments which enables stubbing components (GustavoCaso)
+
+### Changed
+
+* Component identifiers can now include same name more than once ie `foo.stuff.foo` (GustavoCaso)
+* `Container#boot!` was renamed to `Container#start` (davydovanton)
+* `Container#boot` was renamed to `Container#init` (davydovanton)
+
+[Compare v0.7.1...v0.7.2](https://github.com/dry-rb/dry-system/compare/v0.7.1...v0.7.2)
+
 # 0.7.1 - 2017-06-16
 
 ### Changed
