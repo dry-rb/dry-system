@@ -53,28 +53,28 @@ RSpec.describe Dry::System::Container, '.finalize' do
   end
 
   specify 'boot triggers init' do
-    system.booter.boot(:db)
+    system.booter.init(:db)
 
     expect(db).to have_received(:establish_connection)
     expect(db).to_not have_received(:load)
   end
 
-  specify 'boot! triggers init + start' do
-    system.booter.boot!(:db)
+  specify 'start triggers init + start' do
+    system.booter.start(:db)
 
     expect(db).to have_received(:establish_connection)
     expect(db).to have_received(:load)
   end
 
-  specify 'boot! raises error on undefined method or variable' do
+  specify 'start raises error on undefined method or variable' do
     expect {
       system.finalize(:db) { oops('arg') }
-      system.booter.boot!(:db)
+      system.booter.start(:db)
     }.to raise_error(NoMethodError, /oops/)
 
     expect {
       system.finalize(:db) { oops }
-      system.booter.boot!(:db)
+      system.booter.start(:db)
     }.to raise_error(NameError, /oops/)
   end
 
@@ -83,11 +83,11 @@ RSpec.describe Dry::System::Container, '.finalize' do
   end
 
   specify 'lifecycle triggers are called only once' do
-    system.booter.boot!(:db)
-    system.booter.boot!(:db)
+    system.booter.start(:db)
+    system.booter.start(:db)
 
-    system.booter.boot(:db)
-    system.booter.boot(:db)
+    system.booter.init(:db)
+    system.booter.init(:db)
 
     expect(db).to have_received(:establish_connection).exactly(1)
     expect(db).to have_received(:load).exactly(1)

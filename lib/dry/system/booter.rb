@@ -33,13 +33,13 @@ module Dry
       # @api private
       def finalize!
         Dir[boot_files].each do |path|
-          boot!(File.basename(path, '.rb').to_sym)
+          start(File.basename(path, '.rb').to_sym)
         end
         freeze
       end
 
       # @api private
-      def boot(name)
+      def init(name)
         Kernel.require(path.join(name.to_s))
 
         call(name) do |lifecycle|
@@ -51,12 +51,12 @@ module Dry
       end
 
       # @api private
-      def boot!(name)
+      def start(name)
         check_component_identifier(name)
 
         return self if booted.key?(name)
 
-        boot(name) { |lifecycle| lifecycle.(:start) }
+        init(name) { |lifecycle| lifecycle.(:start) }
         booted[name] = true
 
         self
@@ -76,7 +76,7 @@ module Dry
       # @api private
       def boot_dependency(component)
         boot_file = component.boot_file(path)
-        boot!(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
+        start(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
       end
 
       private

@@ -268,7 +268,7 @@ module Dry
         #
         # @api public
         def start(name)
-          booter.boot!(name)
+          booter.start(name)
           self
         end
         deprecate :boot!, :start
@@ -287,7 +287,7 @@ module Dry
         #
         # @api public
         def init(name)
-          booter.boot(name)
+          booter.init(name)
           self
         end
         deprecate :boot, :init
