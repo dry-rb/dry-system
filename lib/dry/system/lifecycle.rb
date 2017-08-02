@@ -71,7 +71,7 @@ module Dry
       # @api private
       def use(*names)
         names.each do |name|
-          container.boot!(name)
+          container.start(name)
         end
       end
 
