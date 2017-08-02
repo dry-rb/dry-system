@@ -2,7 +2,7 @@
 
 ### Added
 
-* `Container.enabled_stubs!` for test environments which enables stubbing components (GustavoCaso)
+* `Container.enable_stubs!` for test environments which enables stubbing components (GustavoCaso)
 
 ### Changed
 
