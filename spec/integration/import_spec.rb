@@ -1,3 +1,5 @@
+require 'dry/system/stubs'
+
 RSpec.describe 'Lazy-booting external deps' do
   before do
     module Test
@@ -42,6 +44,14 @@ RSpec.describe 'Lazy-booting external deps' do
     end
 
     it_behaves_like 'lazy booted dependency'
+
+    context 'when stubs are enabled' do
+      before do
+        system.enable_stubs!
+      end
+
+      it_behaves_like 'lazy booted dependency'
+    end
   end
 
   context 'when top-level container provides the dependency through import' do
@@ -59,5 +69,13 @@ RSpec.describe 'Lazy-booting external deps' do
     end
 
     it_behaves_like 'lazy booted dependency'
+
+    context 'when stubs are enabled' do
+      before do
+        system.enable_stubs!
+      end
+
+      it_behaves_like 'lazy booted dependency'
+    end
   end
 end

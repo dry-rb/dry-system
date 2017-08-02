@@ -222,10 +222,17 @@ RSpec.describe Dry::System::Container do
     describe 'with stubs enabled' do
       before do
         container.enable_stubs!
+      end
+
+      it 'lazy-loads a component' do
+        expect(container[:db]).to be_instance_of(Test::DB)
         container.finalize!
+        expect(container[:db]).to be_instance_of(Test::DB)
       end
 
       it 'allows to stub components' do
+        container.finalize!
+
         expect(container['test.car'].wheels_count).to be(4)
 
         container.stub('test.car', stubbed_car)

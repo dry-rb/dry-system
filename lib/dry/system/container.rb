@@ -80,6 +80,7 @@ module Dry
 
       class << self
         extend Dry::Core::Deprecations['Dry::System::Container']
+
         # Configures the container
         #
         # @example
@@ -213,6 +214,15 @@ module Dry
           self
         end
 
+        # Return if a container was finalized
+        #
+        # @return [TrueClass, FalseClass]
+        #
+        # @api public
+        def finalized?
+          @__finalized__.equal?(true)
+        end
+
         # Finalizes the container
         #
         # This triggers importing components from other containers, booting
@@ -243,7 +253,7 @@ module Dry
         #
         # @api public
         def finalize!(freeze: true, &block)
-          return self if frozen?
+          return self if finalized?
 
           yield(self) if block
 
@@ -251,6 +261,8 @@ module Dry
           booter.finalize!
           manual_registrar.finalize!
           auto_registrar.finalize!
+
+          @__finalized__ = true
 
           self.freeze if freeze
         end
@@ -433,7 +445,7 @@ module Dry
 
         # @api public
         def resolve(key)
-          load_component(key) unless frozen?
+          load_component(key) unless finalized?
 
           super
         end
@@ -509,7 +521,7 @@ module Dry
         # @api private
         def load_local_component(component, default_namespace_fallback = false)
           if component.bootable?(booter.path) || component.file_exists?(load_paths)
-            booter.boot_dependency(component) unless frozen?
+            booter.boot_dependency(component) unless finalized?
 
             require_component(component) do
               register(component.identifier) { component.instance }
