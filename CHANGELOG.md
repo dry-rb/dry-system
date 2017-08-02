@@ -1,3 +1,10 @@
+# 0.7.3 - 2017-08-02
+
+### Fixed
+
+* `Container.enable_stubs!` calls super too, which actually adds `stub` API (solnic)
+* Issues with lazy-loading and import in stub mode are gone (solnic)
+
 # 0.7.2 - 2017-08-02
 
 ### Added
