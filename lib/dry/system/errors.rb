@@ -14,8 +14,8 @@ module Dry
     #
     # @api public
     ComponentFileMismatchError = Class.new(StandardError) do
-      def initialize(filename, registered_booted_keys)
-        super("Mismatch between filename +#{filename}+ and registered components +#{registered_booted_keys}+")
+      def initialize(component)
+        super("Boot file for component #{component.identifier.inspect} not found. Container boot files under #{component.boot_path}: #{component.container_boot_files.inspect}")
       end
     end
 

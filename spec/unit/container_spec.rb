@@ -129,12 +129,6 @@ RSpec.describe Dry::System::Container do
         expect(container['test.bar']).to eql('I was finalized')
       end
 
-      it 'expects a symbol identifier matching file name' do
-        expect {
-          container.start('bar')
-        }.to raise_error(ArgumentError, 'component identifier "bar" must be a symbol')
-      end
-
       it 'expects identifier to point to an existing boot file' do
         expect {
           container.start(:foo)
@@ -144,11 +138,11 @@ RSpec.describe Dry::System::Container do
         )
       end
 
-      describe "missmatch betwenn finalize name and registered component" do
+      describe "mismatch betwenn finalize name and registered component" do
         it "raises a meaningful error" do
           expect{
             container.start(:hell)
-          }.to raise_error(Dry::System::ComponentFileMismatchError)
+          }.to raise_error(Dry::System::InvalidComponentIdentifierError)
         end
       end
     end
@@ -180,20 +174,6 @@ RSpec.describe Dry::System::Container do
           end
         end
       end
-    end
-
-    it 'passes container to the finalizer block' do
-      class Test::Container < Dry::System::Container
-        configure { |c| c.name = :awesome }
-
-        finalize(:foo) do |container|
-          register(:w00t, container.config.name)
-        end
-      end
-
-      Test::Container.booter.(:foo)
-
-      expect(Test::Container[:w00t]).to be(:awesome)
     end
   end
 

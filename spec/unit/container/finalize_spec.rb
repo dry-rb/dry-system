@@ -68,13 +68,13 @@ RSpec.describe Dry::System::Container, '.finalize' do
 
   specify 'start raises error on undefined method or variable' do
     expect {
-      system.finalize(:db) { oops('arg') }
-      system.booter.start(:db)
+      system.finalize(:broken) { oops('arg') }
+      system.booter.start(:broken)
     }.to raise_error(NoMethodError, /oops/)
 
     expect {
-      system.finalize(:db) { oops }
-      system.booter.start(:db)
+      system.finalize(:broken) { oops }
+      system.booter.start(:broken)
     }.to raise_error(NameError, /oops/)
   end
 

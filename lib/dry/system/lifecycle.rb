@@ -23,9 +23,11 @@ module Dry
 
       attr_reader :triggers
 
+      attr_reader :opts
+
       # @api private
-      def self.new(container, &block)
-        cache.fetch_or_store([container, block].hash) do
+      def self.new(container, opts = {}, &block)
+        cache.fetch_or_store([container, opts, block].hash) do
           super
         end
       end
@@ -36,10 +38,11 @@ module Dry
       end
 
       # @api private
-      def initialize(container, &block)
+      def initialize(container, opts, &block)
         @container = container
         @statuses = []
         @triggers = {}
+        @opts = opts
         instance_exec(container, &block)
       end
 
