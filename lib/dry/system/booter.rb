@@ -1,6 +1,7 @@
 require 'dry/system/components/bootable'
 require 'dry/system/errors'
 require 'dry/system/lifecycle'
+require 'dry/system/booter/component_registry'
 
 module Dry
   module System
@@ -23,39 +24,6 @@ module Dry
       attr_reader :components
 
       attr_reader :listeners
-
-      class ComponentRegistry
-        include Enumerable
-
-        attr_reader :components
-
-        def initialize
-          @components = []
-        end
-
-        def each(&block)
-          components.each(&block)
-        end
-
-        def register(component)
-          @components << component
-        end
-
-        def exists?(name)
-          components.any? { |component| component.identifier == name }
-        end
-
-        def [](name)
-          component = components.detect { |component| component.identifier == name }
-
-          if component
-            component.ensure_valid_boot_file
-            component
-          else
-            raise InvalidComponentIdentifierError, name
-          end
-        end
-      end
 
       # @api private
       def initialize(path)
