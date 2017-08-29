@@ -1,3 +1,11 @@
+# 0.8.0 - to-be-released
+
+### Added
+
+* Support for external bootable components (solnic)
+
+[Compare v0.7.3...v0.8.0](https://github.com/dry-rb/dry-system/compare/v0.7.3...v0.8.0)
+
 # 0.7.3 - 2017-08-02
 
 ### Fixed
