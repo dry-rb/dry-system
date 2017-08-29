@@ -1,5 +1,7 @@
+require 'dry/system/components/bootable'
 require 'dry/system/errors'
 require 'dry/system/lifecycle'
+require 'dry/system/booter/component_registry'
 
 module Dry
   module System
@@ -11,95 +13,156 @@ module Dry
     #
     # @api private
     class Booter
+      class LifecycleContainer
+        include Container::Mixin
+      end
+
       attr_reader :path
 
-      attr_reader :finalizers
-
       attr_reader :booted
+
+      attr_reader :components
+
+      attr_reader :listeners
 
       # @api private
       def initialize(path)
         @path = path
-        @booted = {}
-        @finalizers = {}
+        @booted = []
+        @components = ComponentRegistry.new
+        @listeners = Hash.new { |h, k| h[k] = {} }
       end
 
       # @api private
-      def []=(name, fn)
-        @finalizers[name] = fn
+      def register_component(*args)
+        if args.size > 1
+          name, container, opts, fn = args
+          components.register(Components::Bootable.new(name, fn, opts.merge(container: container)))
+        else
+          components.register(args[0])
+        end
+
+        self
+      end
+
+      # @api private
+      def load_component(path)
+        identifier = Pathname(path).basename('.rb').to_s.to_sym
+
+        unless components.exists?(identifier)
+          require path
+        end
+
         self
       end
 
       # @api private
       def finalize!
-        Dir[boot_files].each do |path|
-          start(File.basename(path, '.rb').to_sym)
+        boot_files.each do |path|
+          load_component(path)
+        end
+
+        components.each do |component|
+          start(component)
         end
         freeze
       end
 
       # @api private
-      def init(name)
-        Kernel.require(path.join(name.to_s))
+      def init(name_or_component)
+        with_component(name_or_component) do |component|
+          call(component) do |lifecycle, container|
+            lifecycle.(:init)
 
-        call(name) do |lifecycle|
-          lifecycle.(:init)
-          yield(lifecycle) if block_given?
+            if listener = listeners[component.key][:init]
+              listener.()
+            end
+
+            yield(lifecycle, container) if block_given?
+          end
+
+          self
         end
+      end
+
+      # @api private
+      def start(name_or_component)
+        with_component(name_or_component) do |component|
+          return self if booted.include?(component)
+
+          init(name_or_component) do |lifecycle, container|
+            lifecycle.(:start)
+
+            if lifecycle.container != container
+              container.register(component.key, lifecycle.container[component.identifier])
+            end
+          end
+
+          booted << component
+
+          self
+        end
+      end
+
+      # @api private
+      def call(name_or_component)
+        with_component(name_or_component) do |component|
+          lf_container = component.external? ? lifecycle_container : component.container
+
+          unless component
+            raise ComponentFileMismatchError.new(name, registered_booted_keys)
+          end
+
+          lifecycle = Lifecycle.new(lf_container, &component)
+          yield(lifecycle, component.container) if block_given?
+          lifecycle
+        end
+      end
+
+      # @api private
+      def lifecycle_container
+        LifecycleContainer.new
+      end
+
+      # @api private
+      def on(spec, &block)
+        identifier, step = spec.to_a.flatten(1)
+        listeners[identifier][step] = block
 
         self
       end
 
       # @api private
-      def start(name)
-        check_component_identifier(name)
+      def with_component(id_or_component)
+        component =
+          case id_or_component
+          when Symbol
+            require_boot_file(id_or_component) unless components.exists?(id_or_component)
+            components[id_or_component]
+          when Components::Bootable
+            id_or_component
+          end
 
-        return self if booted.key?(name)
+        raise InvalidComponentError, id_or_component unless component
 
-        init(name) { |lifecycle| lifecycle.(:start) }
-        booted[name] = true
-
-        self
+        yield(component)
       end
 
       # @api private
-      def call(name)
-        container, finalizer = finalizers[name]
+      def require_boot_file(identifier)
+        boot_file = boot_files.detect { |path| Pathname(path).basename('.rb').to_s == identifier.to_s }
+        require boot_file if boot_file
+      end
 
-        raise ComponentFileMismatchError.new(name, registered_booted_keys) unless finalizer
-
-        lifecycle = Lifecycle.new(container, &finalizer)
-        yield(lifecycle) if block_given?
-        lifecycle
+      # @api private
+      def boot_files
+        Dir["#{path}/**/*.rb"]
       end
 
       # @api private
       def boot_dependency(component)
         boot_file = component.boot_file(path)
         start(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
-      end
-
-      private
-
-      # @api private
-      def registered_booted_keys
-        finalizers.keys - booted.keys
-      end
-
-      # @api private
-      def boot_files
-        path.join('**/*.rb').to_s
-      end
-
-      # @api private
-      def check_component_identifier(name)
-        unless name.is_a?(Symbol)
-          raise InvalidComponentIdentifierTypeError, name
-        end
-
-        unless path.join("#{name}.rb").exist?
-          raise InvalidComponentIdentifierError, name
-        end
       end
     end
   end

@@ -44,5 +44,7 @@ RSpec.configure do |config|
 
     Test.remove_constants
     Object.send(:remove_const, :Test)
+
+    Dry::System.instance_variable_set('@__providers__', Dry::System::ProviderRegistry.new)
   end
 end

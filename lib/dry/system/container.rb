@@ -6,6 +6,7 @@ require 'dry-container'
 
 require 'dry/core/deprecations'
 
+require 'dry/system'
 require 'dry/system/errors'
 require 'dry/system/loader'
 require 'dry/system/booter'
@@ -209,8 +210,8 @@ module Dry
         # @return [self]
         #
         # @api public
-        def finalize(name, &block)
-          booter[name] = [self, block]
+        def finalize(name, opts = {}, &block)
+          booter.register_component(name, self, opts, block)
           self
         end
 
@@ -405,6 +406,18 @@ module Dry
           Dry::AutoInject(self, options)
         end
 
+        # @api public
+        def register_external(identifier, provider:, key: nil, &block)
+          booter.register_component(
+            System.providers[provider].component(key || identifier, key: identifier, container: self)
+          )
+        end
+
+        # @api public
+        def on(spec, &block)
+          booter.on(spec, &block)
+        end
+
         # Requires one or more files relative to the container's root
         #
         # @example
@@ -457,7 +470,12 @@ module Dry
 
         # @api private
         def booter
-          @booter ||= config.booter.new(root.join("#{config.system_dir}/boot"))
+          @booter ||= config.booter.new(boot_path)
+        end
+
+        # @api private
+        def boot_path
+          root.join("#{config.system_dir}/boot")
         end
 
         # @api private
