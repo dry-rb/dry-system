@@ -1,10 +1,12 @@
-Test::Umbrella.namespace(:db) do |container|
-  module Db
-    class Repo
+Test::Umbrella.boot(:db, namespace: 'db') do
+  init do
+    module Db
+      class Repo
+      end
     end
   end
 
-  container.finalize(:db) do
-    container.register(:repo, Db::Repo.new)
+  start do
+    register(:repo, Db::Repo.new)
   end
 end

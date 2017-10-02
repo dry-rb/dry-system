@@ -1,4 +1,5 @@
-require 'dry/system/components/external'
+require 'concurrent/map'
+require 'dry/system/components/bootable'
 
 module Dry
   module System
@@ -12,7 +13,7 @@ module Dry
       def initialize(identifier, options)
         @identifier = identifier
         @options = options
-        @components = {}
+        @components = Concurrent::Map.new
       end
 
       def boot_path
@@ -24,7 +25,7 @@ module Dry
       end
 
       def register_component(name, fn)
-        components[name] = Components::External.new(name, fn)
+        components[name] = Components::Bootable.new(name, &fn)
       end
 
       def boot_file(name)
@@ -32,8 +33,13 @@ module Dry
       end
 
       def component(name, options = {})
-        require boot_file(name)
         components.fetch(name).with(options)
+      end
+
+      def load_components
+        boot_files.each { |f| require f }
+        freeze
+        self
       end
     end
   end

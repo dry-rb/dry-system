@@ -1,3 +1,3 @@
-Test::Container.finalize :heaven do |container|
-  container.register('heaven', 'string')
+Test::Container.boot(:heaven) do
+  register('heaven', 'string')
 end

@@ -1,11 +1,13 @@
-Test::Container.namespace(:test) do |container|
-  module Test
-    module Bar
-      # I shall be booted
+Test::Container.boot(:bar, namespace: 'test') do |container|
+  init do
+    module Test
+      module Bar
+        # I shall be booted
+      end
     end
   end
 
-  container.finalize(:bar) do
-    container.register(:bar, 'I was finalized')
+  start do
+    register(:bar, 'I was finalized')
   end
 end

@@ -1,4 +1,4 @@
-RSpec.describe Dry::System::Container, '.finalize' do
+RSpec.describe Dry::System::Container, '.boot' do
   subject(:system) { Test::App }
 
   let(:db) { spy(:db) }
@@ -12,7 +12,7 @@ RSpec.describe Dry::System::Container, '.finalize' do
           config.root = SPEC_ROOT.join('fixtures/test')
         end
 
-        finalize(:db) do
+        boot(:db) do
           register(:db, Test::DB)
 
           init do
@@ -68,13 +68,13 @@ RSpec.describe Dry::System::Container, '.finalize' do
 
   specify 'start raises error on undefined method or variable' do
     expect {
-      system.finalize(:broken) { oops('arg') }
-      system.booter.start(:broken)
+      system.boot(:broken_1) { oops('arg') }
+      system.booter.start(:broken_1)
     }.to raise_error(NoMethodError, /oops/)
 
     expect {
-      system.finalize(:broken) { oops }
-      system.booter.start(:broken)
+      system.boot(:broken_2) { oops }
+      system.booter.start(:broken_2)
     }.to raise_error(NameError, /oops/)
   end
 
@@ -93,5 +93,34 @@ RSpec.describe Dry::System::Container, '.finalize' do
     expect(db).to have_received(:load).exactly(1)
 
     expect(system.booter.(:db).statuses).to eql(%i[init start])
+  end
+
+  it 'raises when a duplicated identifier was used' do
+    system.boot(:logger) { }
+
+    expect {
+      system.boot(:logger) { }
+    }.to raise_error(Dry::System::DuplicatedComponentKeyError, /logger/)
+  end
+
+  it 'allow setting namespace to true' do
+    system.boot(:api, namespace: true) do
+      start do
+        register(:client, 'connected')
+      end
+    end
+
+    expect(system['api.client']).to eql('connected')
+  end
+
+  it 'raises when namespace value is not valid' do
+    system.boot(:api, namespace: 312) do
+      start do
+        register(:client, 'connected')
+      end
+    end
+
+    expect { system['api.client'] }.
+      to raise_error(RuntimeError, /\+namespace\+ boot option must be true, string or symbol/)
   end
 end

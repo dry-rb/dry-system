@@ -6,5 +6,7 @@ module Dry
     PATH_SEPARATOR = '/'.freeze
     DEFAULT_SEPARATOR = '.'.freeze
     WORD_REGEX = /\w+/.freeze
+
+    DuplicatedComponentKeyError = Class.new(ArgumentError)
   end
 end

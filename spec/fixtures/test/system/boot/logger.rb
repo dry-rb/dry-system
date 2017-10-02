@@ -1,5 +1,9 @@
-Test::Container.finalize(:logger) do |container|
-  require 'logger'
+Test::Container.boot(:logger) do |container|
+  init do
+    require 'logger'
+  end
 
-  container.register(:logger, Logger.new(container.root.join('log/test.log')))
+  start do
+    register(:logger, Logger.new(container.root.join('log/test.log')))
+  end
 end

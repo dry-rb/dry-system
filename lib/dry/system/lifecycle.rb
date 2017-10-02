@@ -43,7 +43,7 @@ module Dry
         @statuses = []
         @triggers = {}
         @opts = opts
-        instance_exec(container, &block)
+        instance_exec(target, &block)
       end
 
       # @api private
@@ -54,6 +54,16 @@ module Dry
             statuses << trigger
           end
         end
+      end
+
+      # @api private
+      def configure(&block)
+        component.configure(&block)
+      end
+
+      # @api private
+      def config
+        component.config
       end
 
       # @api private
@@ -74,7 +84,7 @@ module Dry
       # @api private
       def use(*names)
         names.each do |name|
-          container.start(name)
+          target.start(name)
         end
       end
 
@@ -83,12 +93,22 @@ module Dry
         container.register(*args, &block)
       end
 
+      # @api private
+      def component
+        opts[:component]
+      end
+
+      # @api private
+      def target
+        component.container
+      end
+
       private
 
       # @api private
       def trigger!(name, &block)
         if triggers.key?(name)
-          triggers[name].()
+          triggers[name].(target)
         elsif block
           triggers[name] = block
         end
@@ -96,7 +116,9 @@ module Dry
 
       # @api private
       def method_missing(meth, *args, &block)
-        if container.key?(meth)
+        if target.key?(meth)
+          target[meth]
+        elsif container.key?(meth)
           container[meth]
         elsif ::Kernel.respond_to?(meth)
           ::Kernel.public_send(meth, *args, &block)

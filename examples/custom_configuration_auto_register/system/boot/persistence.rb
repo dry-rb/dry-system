@@ -1,4 +1,4 @@
-App.finalize(:persistence) do |persistence|
+App.boot(:persistence) do |persistence|
   init do
     require 'sequel'
   end
