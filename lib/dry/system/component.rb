@@ -67,8 +67,8 @@ module Dry
       # @api private
       def self.remove_namespace_from_path(name, ns)
         match_value = name.match(/^(?<remove_namespace>#{ns}).(?<identifier>.*)/)
-        raise InvalidComponentError.new(name, "namespace +#{ns}+ not found in path") unless match_value
-        match_value[:identifier]
+
+        match_value ? match_value[:identifier] : name
       end
 
       # @api private

@@ -69,6 +69,24 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     specify { expect(Test::Container['foo']).to be_a(Namespaced::Foo) }
   end
 
+  context 'standard loader with default namespace but boot files without' do
+    before do
+      class Test::Container < Dry::System::Container
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures').realpath
+          config.default_namespace = 'namespace'
+        end
+
+        load_paths!('components')
+        auto_register!('components')
+      end
+    end
+
+    specify { expect(Test::Container['foo']).to be_an_instance_of(Foo) }
+    specify { expect(Test::Container['bar']).to be_an_instance_of(Bar) }
+    specify { expect(Test::Container['bar.baz']).to be_an_instance_of(Bar::Baz) }
+  end
+
   context 'standard loader with a default namespace with multiple level' do
     before do
       class Test::Container < Dry::System::Container

@@ -22,9 +22,9 @@ RSpec.describe Dry::System::Component do
       expect(component.identifier).to eql('user.foo.bar')
     end
 
-    it 'raises when namepsace is not present  in path' do
-      expect { Dry::System::Component.new('foo.bar.foo', namespace: 'baz') }
-        .to raise_error(Dry::System::InvalidComponentError, /baz/)
+    it 'returns the identifier if namespace is not present' do
+      component = Dry::System::Component.new('foo', namespace: 'admin')
+      expect(component.identifier).to eql('foo')
     end
   end
 
