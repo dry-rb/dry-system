@@ -7,11 +7,9 @@ script:
 after_success:
   - '[ -d coverage ] && bundle exec codeclimate-test-reporter'
 rvm:
-  - 2.1
-  - 2.2
-  - 2.3.1
+  - 2.3.4
   - 2.4.1
-  - jruby-9.1.5.0
+  - jruby-9.1.13.0
 notifications:
   email: false
   webhooks:
