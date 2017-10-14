@@ -1,4 +1,5 @@
 require 'dry/system/lifecycle'
+require 'dry/system/settings'
 require 'dry/system/components/config'
 
 module Dry
@@ -88,8 +89,23 @@ module Dry
         end
 
         def configure(&block)
-          @config = Config.new(&block)
-          self
+          @config = settings.new(Config.new(&block)) if settings
+        end
+
+        def settings(&block)
+          if block
+            @settings = Settings::DSL.new(identifier, &block).call
+          else
+            @settings
+          end
+        end
+
+        def config
+          if @config
+            @config
+          else
+            configure
+          end
         end
 
         def container

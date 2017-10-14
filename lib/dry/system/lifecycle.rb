@@ -1,5 +1,7 @@
 require 'concurrent/map'
 
+require 'dry/system/settings'
+
 module Dry
   module System
     # Lifecycle booting DSL
@@ -40,6 +42,7 @@ module Dry
       # @api private
       def initialize(container, opts, &block)
         @container = container
+        @settings = nil
         @statuses = []
         @triggers = {}
         @opts = opts
@@ -54,6 +57,11 @@ module Dry
             statuses << trigger
           end
         end
+      end
+
+      # @api private
+      def settings(&block)
+        component.settings(&block)
       end
 
       # @api private

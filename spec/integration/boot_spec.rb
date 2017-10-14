@@ -20,45 +20,35 @@ RSpec.describe Dry::System::Container, '.boot' do
     end
   end
 
-  context 'inline booting' do
+  context 'using predefined settings for configuration' do
     before do
       class Test::Container < Dry::System::Container
       end
     end
 
-    it 'allows setting up configuration and lifycycle steps' do
-      system.boot(:db) do
-        configure do |config|
-          config.host = 'localhost'
-          config.user = 'root'
-          config.pass = 'secret'
-          config.database = 'test'
-          config.scheme = 'postgresql'
-        end
-
-        init do
-          module Test
-            class Db < OpenStruct
-            end
-          end
+    it 'uses defaults' do
+      system.boot(:api) do
+        settings do
+          key :token, type(String).default('xxx')
         end
 
         start do
-          register(:conn, Test::Db.new(config.to_hash))
+          register(:client, OpenStruct.new(config.to_hash))
         end
       end
 
-      system.start(:db)
+      system.start(:api)
 
-      conn = system[:conn]
+      client = system[:client]
 
-      expect(conn).to be_instance_of(Test::Db)
+      expect(client.token).to eql('xxx')
+    end
+  end
 
-      expect(conn.host).to eql('localhost')
-      expect(conn.user).to eql('root')
-      expect(conn.pass).to eql('secret')
-      expect(conn.database).to eql('test')
-      expect(conn.scheme).to eql('postgresql')
+  context 'inline booting' do
+    before do
+      class Test::Container < Dry::System::Container
+      end
     end
 
     it 'allows lazy-booting' do
