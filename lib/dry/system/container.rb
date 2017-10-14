@@ -225,8 +225,6 @@ module Dry
           self
 
           components[name] = component
-
-          self
         end
         deprecate :finalize, :boot
 
