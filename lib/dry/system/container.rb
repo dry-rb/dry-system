@@ -78,6 +78,7 @@ module Dry
       setting :auto_registrar, Dry::System::AutoRegistrar
       setting :manual_registrar, Dry::System::ManualRegistrar
       setting :importer, Dry::System::Importer
+      setting(:components, {}, reader: true) { |v| v.dup }
 
       class << self
         extend Dry::Core::Deprecations['Dry::System::Container']
@@ -155,7 +156,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Simple component registration
-        #   MyApp.finalize(:db) do |container|
+        #   MyApp.boot(:db) do |container|
         #     require 'db'
         #
         #     container.register(:db, DB.new)
@@ -164,7 +165,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Component registration with lifecycle triggers
-        #   MyApp.finalize(:db) do |container|
+        #   MyApp.boot(:db) do |container|
         #     init do
         #       require 'db'
         #       DB.configure(ENV['DB_URL'])
@@ -183,7 +184,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Component registration which uses another bootable component
-        #   MyApp.finalize(:db) do |container|
+        #   MyApp.boot(:db) do |container|
         #     use :logger
         #
         #     start do
@@ -210,9 +211,41 @@ module Dry
         # @return [self]
         #
         # @api public
-        def finalize(name, opts = {}, &block)
-          booter.register_component(name, self, opts, block)
+        def boot(name, opts = {}, &block)
+          if components.key?(name)
+            raise DuplicatedComponentKeyError, "Bootable component #{name.inspect} was already registered"
+          end
+
+          component =
+            if opts[:from]
+              boot_external(name, opts, &block)
+            else
+              boot_local(name, opts, &block)
+            end
           self
+
+          components[name] = component
+        end
+        deprecate :finalize, :boot
+
+        # @api private
+        def boot_external(identifier, from:, key: nil, namespace: nil, &block)
+          component = System.providers[from].component(
+            key || identifier, key: identifier, namespace: namespace, finalize: block, container: self
+          )
+
+          booter.register_component(component)
+
+          component
+        end
+
+        # @api private
+        def boot_local(name, namespace: nil, &block)
+          component = Components::Bootable.new(name, container: self, namespace: namespace, &block)
+
+          booter.register_component(component)
+
+          component
         end
 
         # Return if a container was finalized
@@ -284,7 +317,6 @@ module Dry
           booter.start(name)
           self
         end
-        deprecate :boot!, :start
 
         # Boots a specific component but calls only `init` lifecycle trigger
         #
@@ -303,7 +335,6 @@ module Dry
           booter.init(name)
           self
         end
-        deprecate :boot, :init
 
         # Sets load paths relative to the container's root dir
         #
@@ -406,18 +437,6 @@ module Dry
           Dry::AutoInject(self, options)
         end
 
-        # @api public
-        def register_external(identifier, provider:, key: nil, &block)
-          booter.register_component(
-            System.providers[provider].component(key || identifier, key: identifier, container: self)
-          )
-        end
-
-        # @api public
-        def on(spec, &block)
-          booter.on(spec, &block)
-        end
-
         # Requires one or more files relative to the container's root
         #
         # @example
@@ -494,14 +513,18 @@ module Dry
         end
 
         # @api private
-        def component(key, **options)
-          Component.new(
-            key,
-            loader: config.loader,
-            namespace: config.default_namespace,
-            separator: config.namespace_separator,
-            **options,
-          )
+        def component(identifier, **options)
+          if (component = booter.components.detect { |c| c.identifier == identifier })
+            component
+          else
+            Component.new(
+              identifier,
+              loader: config.loader,
+              namespace: config.default_namespace,
+              separator: config.namespace_separator,
+              **options,
+            )
+          end
         end
 
         # @api private
@@ -522,12 +545,18 @@ module Dry
           return self if key?(key)
 
           component(key).tap do |component|
-            root_key = component.root_key
-
-            if importer.key?(root_key)
-              load_external_component(component.namespaced(root_key))
+            if component.boot?
+              booter.start(component)
             else
-              load_local_component(component)
+              root_key = component.root_key
+
+              if (bootable_dep = component(root_key)).boot?
+                booter.start(bootable_dep)
+              elsif importer.key?(root_key)
+                load_imported_component(component.namespaced(root_key))
+              else
+                load_local_component(component)
+              end
             end
           end
 
@@ -554,7 +583,7 @@ module Dry
         end
 
         # @api private
-        def load_external_component(component)
+        def load_imported_component(component)
           container = importer[component.namespace]
           container.load_component(component.identifier)
           importer.(component.namespace, container)

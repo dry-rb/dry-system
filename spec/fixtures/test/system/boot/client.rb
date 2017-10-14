@@ -1,7 +1,7 @@
-Test::Container.finalize(:client) do |container|
+Test::Container.boot(:client) do
   use :logger
 
   Client = Struct.new(:logger)
 
-  container.register(:client, Client.new(logger))
+  register(:client, Client.new(logger))
 end

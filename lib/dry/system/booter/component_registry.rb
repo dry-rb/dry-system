@@ -26,7 +26,6 @@ module Dry
           component = components.detect { |component| component.identifier == name }
 
           if component
-            component.ensure_valid_boot_file
             component
           else
             raise InvalidComponentIdentifierError, name

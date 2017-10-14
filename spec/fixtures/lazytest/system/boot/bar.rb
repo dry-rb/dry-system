@@ -1,5 +1,5 @@
 Test::Container.namespace(:test) do |container|
-  container.finalize(:bar) do
+  container.boot(:bar) do
     init do
       module Test
         module Bar

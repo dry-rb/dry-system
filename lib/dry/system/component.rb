@@ -41,8 +41,8 @@ module Dry
       attr_reader :loader
 
       # @api private
-      def self.new(*args)
-        cache.fetch_or_store(args.hash) do
+      def self.new(*args, &block)
+        cache.fetch_or_store([*args, block].hash) do
           name, options = args
           options = DEFAULT_OPTIONS.merge(options || {})
 
@@ -106,6 +106,11 @@ module Dry
       # @api public
       def instance(*args)
         loader.call(*args)
+      end
+
+      # @api private
+      def boot?
+        false
       end
 
       # @api private

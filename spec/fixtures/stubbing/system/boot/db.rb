@@ -1,4 +1,4 @@
-Test::Container.finalize :db do |container|
+Test::Container.boot(:db) do |container|
   module Test
     class DB
     end

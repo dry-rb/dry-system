@@ -7,11 +7,26 @@ Dry::System.register_component(:logger, provider: :external_components) do
         class << self
           attr_accessor :default_level
         end
+
+        self.default_level = :scream
+
+        attr_reader :log_level
+
+        def initialize(log_level = Logger.default_level)
+          @log_level = log_level
+        end
       end
     end
   end
 
   start do
-    register(:logger, ExternalComponents::Logger.new)
+    logger =
+      if config
+        ExternalComponents::Logger.new(config.log_level)
+      else
+        ExternalComponents::Logger.new
+      end
+
+    register(:logger, logger)
   end
 end

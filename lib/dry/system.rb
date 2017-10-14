@@ -8,6 +8,7 @@ module Dry
     # @api public
     def self.register_provider(identifier, options)
       providers.register(identifier, options)
+      providers[identifier].load_components
       self
     end
 

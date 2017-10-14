@@ -13,35 +13,22 @@ module Dry
     #
     # @api private
     class Booter
-      class LifecycleContainer
-        include Container::Mixin
-      end
-
       attr_reader :path
 
       attr_reader :booted
 
       attr_reader :components
 
-      attr_reader :listeners
-
       # @api private
       def initialize(path)
         @path = path
         @booted = []
         @components = ComponentRegistry.new
-        @listeners = Hash.new { |h, k| h[k] = {} }
       end
 
       # @api private
-      def register_component(*args)
-        if args.size > 1
-          name, container, opts, fn = args
-          components.register(Components::Bootable.new(name, fn, opts.merge(container: container)))
-        else
-          components.register(args[0])
-        end
-
+      def register_component(component)
+        components.register(component)
         self
       end
 
@@ -65,20 +52,16 @@ module Dry
         components.each do |component|
           start(component)
         end
+
         freeze
       end
 
       # @api private
       def init(name_or_component)
         with_component(name_or_component) do |component|
-          call(component) do |lifecycle, container|
-            lifecycle.(:init)
-
-            if listener = listeners[component.key][:init]
-              listener.()
-            end
-
-            yield(lifecycle, container) if block_given?
+          call(component) do
+            component.init
+            yield if block_given?
           end
 
           self
@@ -90,15 +73,11 @@ module Dry
         with_component(name_or_component) do |component|
           return self if booted.include?(component)
 
-          init(name_or_component) do |lifecycle, container|
-            lifecycle.(:start)
-
-            if lifecycle.container != container
-              container.register(component.key, lifecycle.container[component.identifier])
-            end
+          init(name_or_component) do
+            component.start
           end
 
-          booted << component
+          booted << component.finalize
 
           self
         end
@@ -107,29 +86,19 @@ module Dry
       # @api private
       def call(name_or_component)
         with_component(name_or_component) do |component|
-          lf_container = component.external? ? lifecycle_container : component.container
-
           unless component
             raise ComponentFileMismatchError.new(name, registered_booted_keys)
           end
 
-          lifecycle = Lifecycle.new(lf_container, &component)
-          yield(lifecycle, component.container) if block_given?
-          lifecycle
+          yield(component) if block_given?
+
+          component
         end
       end
 
       # @api private
-      def lifecycle_container
-        LifecycleContainer.new
-      end
-
-      # @api private
-      def on(spec, &block)
-        identifier, step = spec.to_a.flatten(1)
-        listeners[identifier][step] = block
-
-        self
+      def lifecycle_container(container)
+        LifecycleContainer.new(container)
       end
 
       # @api private
