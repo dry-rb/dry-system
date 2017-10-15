@@ -74,44 +74,6 @@ module Dry
           instance_exec(&finalize)
         end
 
-        # Return block that will be evaluated in the lifecycle context
-        #
-        # @return [Proc]
-        #
-        # @api private
-        def block
-          options.fetch(:block)
-        end
-
-        # Return lifecycle object used for this component
-        #
-        # @return [Lifecycle]
-        #
-        # @api private
-        def lifecycle
-          @lifecycle ||= Lifecycle.new(lf_container, component: self, &block)
-        end
-
-        # Return configured container for the lifecycle object
-        #
-        # @return [Dry::Container]
-        #
-        # @api private
-        def lf_container
-          container = Dry::Container.new
-
-          case namespace
-          when String, Symbol
-            container.namespace(namespace) { |c| return c }
-          when true
-            container.namespace(identifier) { |c| return c }
-          when nil
-            container
-          else
-            raise RuntimeError, "+namespace+ boot option must be true, string or symbol #{namespace.inspect} given."
-          end
-        end
-
         # Execute `init` step
         #
         # @return [Bootable]
@@ -141,30 +103,6 @@ module Dry
         # @api public
         def stop
           lifecycle.(:stop)
-          self
-        end
-
-        # Automatically called by the booter object after starting a component
-        #
-        # @return [Bootable]
-        #
-        # @api private
-        def finalize
-          lifecycle.container.each do |key, item|
-            container.register(key, item) unless container.key?(key)
-          end
-          self
-        end
-
-        # Trigger a callback
-        #
-        # @return [Bootable]
-        #
-        # @api private
-        def trigger(key, event)
-          triggers[key][event].each do |fn|
-            container.instance_exec(lifecycle.container, &fn)
-          end
           self
         end
 
@@ -213,22 +151,46 @@ module Dry
           end
         end
 
-        # Set config object
+        # Return a list of lifecycle steps that were executed
         #
-        # @return [Dry::Struct]
+        # @return [Array<Symbol>]
         #
-        # @api private
-        def configure!
-          @config = settings.new(Config.new(&@config_block)) if settings
+        # @api public
+        def statuses
+          lifecycle.statuses
         end
 
         # Return system's container used by this component
         #
         # @return [Dry::Struct]
         #
-        # @api private
+        # @api public
         def container
           options.fetch(:container)
+        end
+
+        # Automatically called by the booter object after starting a component
+        #
+        # @return [Bootable]
+        #
+        # @api private
+        def finalize
+          lifecycle.container.each do |key, item|
+            container.register(key, item) unless container.key?(key)
+          end
+          self
+        end
+
+        # Trigger a callback
+        #
+        # @return [Bootable]
+        #
+        # @api private
+        def trigger(key, event)
+          triggers[key][event].each do |fn|
+            container.instance_exec(lifecycle.container, &fn)
+          end
+          self
         end
 
         # Return a new instance with updated options
@@ -238,15 +200,6 @@ module Dry
         # @api private
         def with(new_options)
           self.class.new(identifier, options.merge(new_options))
-        end
-
-        # Return a list of lifecycle steps that were executed
-        #
-        # @return [Array<Symbol>]
-        #
-        # @api public
-        def statuses
-          lifecycle.statuses
         end
 
         # Return true
@@ -284,6 +237,55 @@ module Dry
         # @api private
         def container_boot_files
           Dir[container.boot_path.join('**/*.rb')]
+        end
+
+        private
+
+        # Return lifecycle object used for this component
+        #
+        # @return [Lifecycle]
+        #
+        # @api private
+        def lifecycle
+          @lifecycle ||= Lifecycle.new(lf_container, component: self, &block)
+        end
+
+        # Return configured container for the lifecycle object
+        #
+        # @return [Dry::Container]
+        #
+        # @api private
+        def lf_container
+          container = Dry::Container.new
+
+          case namespace
+          when String, Symbol
+            container.namespace(namespace) { |c| return c }
+          when true
+            container.namespace(identifier) { |c| return c }
+          when nil
+            container
+          else
+            raise RuntimeError, "+namespace+ boot option must be true, string or symbol #{namespace.inspect} given."
+          end
+        end
+
+        # Set config object
+        #
+        # @return [Dry::Struct]
+        #
+        # @api private
+        def configure!
+          @config = settings.new(Config.new(&@config_block)) if settings
+        end
+
+        # Return block that will be evaluated in the lifecycle context
+        #
+        # @return [Proc]
+        #
+        # @api private
+        def block
+          options.fetch(:block)
         end
       end
     end
