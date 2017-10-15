@@ -3,8 +3,11 @@ require 'dry/system/components'
 RSpec.describe 'Settings component' do
   subject(:system) do
     Class.new(Dry::System::Container) do
+      setting :env
+
       configure do |config|
         config.root = SPEC_ROOT.join('fixtures').join('settings_test')
+        config.env = :test
       end
 
       boot(:settings, from: :system_components) do
@@ -12,10 +15,6 @@ RSpec.describe 'Settings component' do
           key :database_url, type(String).constrained(filled: true)
           key :session_secret, type(String).constrained(filled: true)
         end
-      end
-
-      def self.env
-        :test
       end
     end
   end

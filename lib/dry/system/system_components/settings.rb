@@ -4,6 +4,6 @@ Dry::System.register_component(:settings, provider: :system_components) do
   end
 
   start do
-    register(:settings, settings.load(target.root, target.env))
+    register(:settings, settings.load(target.root, target.config.env))
   end
 end
