@@ -4,7 +4,7 @@ module Dry
       class Config
         def self.new(&block)
           config = super
-          yield(config)
+          yield(config) if block_given?
           config
         end
 

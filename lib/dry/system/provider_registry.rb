@@ -3,18 +3,18 @@ module Dry
     class ProviderRegistry
       include Enumerable
 
-      attr_reader :providers
+      attr_reader :items
 
       def initialize
-        @providers = []
+        @items = []
       end
 
       def each(&block)
-        providers.each(&block)
+        items.each(&block)
       end
 
       def register(identifier, options)
-        providers << Provider.new(identifier, options)
+        items << Provider.new(identifier, options)
       end
 
       def [](identifier)
