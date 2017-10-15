@@ -9,8 +9,8 @@ RSpec.describe 'External Components' do
         boot(:logger, from: :external_components)
 
         boot(:my_logger, from: :external_components, key: :logger) do
-          settings do
-            key :log_level, type(Symbol).default(:debug)
+          configure do |config|
+            config.log_level = :debug
           end
 
           after(:start) do |external_container|

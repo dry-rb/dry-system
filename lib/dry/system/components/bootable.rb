@@ -16,8 +16,6 @@ module Dry
 
         attr_reader :triggers
 
-        attr_reader :config
-
         attr_reader :namespace
 
         def initialize(identifier, options = {}, &block)
@@ -89,7 +87,7 @@ module Dry
         end
 
         def configure(&block)
-          @config = settings.new(Config.new(&block)) if settings
+          @config_block = block
         end
 
         def settings(&block)
@@ -104,8 +102,12 @@ module Dry
           if @config
             @config
           else
-            configure
+            configure!
           end
+        end
+
+        def configure!
+          @config = settings.new(Config.new(&@config_block)) if settings
         end
 
         def container
