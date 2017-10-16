@@ -10,7 +10,7 @@ RSpec.describe 'Settings component' do
         config.env = :test
       end
 
-      boot(:settings, from: :system_components) do
+      boot(:settings, from: :system) do
         settings do
           key :database_url, Types::String.constrained(filled: true)
           key :session_secret, Types::String.constrained(filled: true)

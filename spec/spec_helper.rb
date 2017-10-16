@@ -50,6 +50,6 @@ RSpec.configure do |config|
     Test.remove_constants
     Object.send(:remove_const, :Test)
 
-    Dry::System.providers.items.delete_if { |p| p.identifier != :system_components }
+    Dry::System.providers.items.delete_if { |p| p.identifier != :system }
   end
 end

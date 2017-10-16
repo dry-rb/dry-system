@@ -30,7 +30,7 @@ module Dry
       #
       # @example using built-in system components
       #   class App < Dry::System::Container
-      #     boot(:settings, from: :system_components) do
+      #     boot(:settings, from: :system) do
       #       settings do
       #         key :database_url, Types::String.constrained(filled: true)
       #         key :session_secret, Types::String.constrained(filled: true)
