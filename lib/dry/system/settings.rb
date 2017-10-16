@@ -7,10 +7,6 @@ require "dry/system/settings/file_loader"
 module Dry
   module System
     module Settings
-      module Types
-        include Dry::Types.module
-      end
-
       class DSL < BasicObject
         attr_reader :identifier
 
@@ -32,10 +28,6 @@ module Dry
 
         def key(name, type)
           schema[name] = type
-        end
-
-        def type(id)
-          Types::Strict.const_get(id.to_s)
         end
       end
 

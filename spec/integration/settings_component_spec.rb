@@ -12,8 +12,8 @@ RSpec.describe 'Settings component' do
 
       boot(:settings, from: :system_components) do
         settings do
-          key :database_url, type(String).constrained(filled: true)
-          key :session_secret, type(String).constrained(filled: true)
+          key :database_url, Types::String.constrained(filled: true)
+          key :session_secret, Types::String.constrained(filled: true)
         end
       end
     end

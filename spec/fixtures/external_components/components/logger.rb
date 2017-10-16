@@ -2,7 +2,7 @@ require "dry/system"
 
 Dry::System.register_component(:logger, provider: :external_components) do
   settings do
-    key :log_level, type(Symbol).default(:scream)
+    key :log_level, Types::Symbol.default(:scream)
   end
 
   init do

@@ -25,6 +25,11 @@ module TestNamespace
   end
 end
 
+# for specs that rely on `settings` DSL
+module Types
+  include Dry::Types.module
+end
+
 RSpec.configure do |config|
   config.disable_monkey_patching!
 
