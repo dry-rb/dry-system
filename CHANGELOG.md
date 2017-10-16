@@ -1,8 +1,17 @@
-# 0.8.0 - to-be-released
+# 0.8.0 - 2017-10-16
 
 ### Added
 
 * Support for external bootable components (solnic)
+* Built-in `:system` components including `:settings` component (solnic)
+
+### Fixed
+
+* Lazy-loading components work when a container has `default_namespace` configured (GustavoCaso)
+
+### Changed
+
+* [BREAKING] Improved boot DSL with support for namespacing and lifecycle before/after callbacks (solnic)
 
 [Compare v0.7.3...v0.8.0](https://github.com/dry-rb/dry-system/compare/v0.7.3...v0.8.0)
 
