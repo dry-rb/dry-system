@@ -11,9 +11,13 @@ RSpec.describe 'Settings component' do
       end
 
       boot(:settings, from: :system) do
+        before(:init) do
+          require "types"
+        end
+
         settings do
-          key :database_url, Types::String.constrained(filled: true)
-          key :session_secret, Types::String.constrained(filled: true)
+          key :database_url, SettingsTest::Types::String.constrained(filled: true)
+          key :session_secret, SettingsTest::Types::String.constrained(filled: true)
         end
       end
     end

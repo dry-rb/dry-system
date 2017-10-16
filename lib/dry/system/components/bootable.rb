@@ -80,6 +80,7 @@ module Dry
         #
         # @api public
         def init
+          trigger(:before, :init)
           lifecycle.(:init)
           trigger(:after, :init)
           self
@@ -91,6 +92,7 @@ module Dry
         #
         # @api public
         def start
+          trigger(:before, :start)
           lifecycle.(:start)
           trigger(:after, :start)
           self
@@ -103,6 +105,16 @@ module Dry
         # @api public
         def stop
           lifecycle.(:stop)
+          self
+        end
+
+        # Specify a before callback
+        #
+        # @return [Bootable]
+        #
+        # @api public
+        def before(event, &block)
+          triggers[:before][event] << block
           self
         end
 
@@ -132,7 +144,9 @@ module Dry
         # @api public
         def settings(&block)
           if block
-            @settings = Settings::DSL.new(identifier, &block).call
+            @settings_block = block
+          elsif @settings_block
+            @settings = Settings::DSL.new(identifier, &@settings_block).call
           else
             @settings
           end
