@@ -65,17 +65,33 @@ RSpec.describe 'External Components' do
   end
 
   context 'with customized booting' do
-    it 'exposes :init lifecycle step' do
+    it 'allows aliasing external components' do
       container.boot(:error_logger, from: :external_components, key: :logger) do
-        after(:init) do
-          ExternalComponents::Logger.default_level = :error
+        after(:start) do |c|
+          register(:error_logger, c[:logger])
         end
       end
 
       container.finalize!
 
-      expect(container[:logger]).to be_instance_of(ExternalComponents::Logger)
-      expect(container[:logger].class.default_level).to be(:error)
+      expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
+    end
+
+    it 'allows calling :init manually' do
+      container.boot(:error_logger, from: :external_components, key: :logger) do
+        after(:init) do
+          ExternalComponents::Logger.default_level = :error
+        end
+
+        after(:start) do |c|
+          register(:error_logger, c[:logger])
+        end
+      end
+
+      container.init(:error_logger)
+
+      expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
+      expect(container[:error_logger].class.default_level).to be(:error)
     end
   end
 

@@ -60,7 +60,7 @@ module Dry
       def init(name_or_component)
         with_component(name_or_component) do |component|
           call(component) do
-            component.init
+            component.init.finalize
             yield if block_given?
           end
 

@@ -207,6 +207,15 @@ module Dry
           self
         end
 
+        # Return a new instance with updated name and options
+        #
+        # @return [Dry::Struct]
+        #
+        # @api private
+        def new(identifier, new_options = EMPTY_HASH)
+          self.class.new(identifier, options.merge(new_options))
+        end
+
         # Return a new instance with updated options
         #
         # @return [Dry::Struct]

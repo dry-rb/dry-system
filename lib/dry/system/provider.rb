@@ -33,7 +33,8 @@ module Dry
       end
 
       def component(name, options = {})
-        components.fetch(name).with(options)
+        identifier = options[:key] || name
+        components.fetch(identifier).new(name, options)
       end
 
       def load_components

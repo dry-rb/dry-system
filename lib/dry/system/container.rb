@@ -231,7 +231,7 @@ module Dry
         # @api private
         def boot_external(identifier, from:, key: nil, namespace: nil, &block)
           component = System.providers[from].component(
-            key || identifier, key: identifier, namespace: namespace, finalize: block, container: self
+            identifier, key: key, namespace: namespace, finalize: block, container: self
           )
 
           booter.register_component(component)
@@ -240,8 +240,8 @@ module Dry
         end
 
         # @api private
-        def boot_local(name, namespace: nil, &block)
-          component = Components::Bootable.new(name, container: self, namespace: namespace, &block)
+        def boot_local(identifier, namespace: nil, &block)
+          component = Components::Bootable.new(identifier, container: self, namespace: namespace, &block)
 
           booter.register_component(component)
 
