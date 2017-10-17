@@ -1,3 +1,12 @@
+# 0.8.0 - 2017-10-17
+
+### Fixed
+
+* Aliasing an external component works correctly (solnic)
+* Manually calling `:init` will also finalize a component (solnic)
+
+[Compare v0.8.0...v0.8.1](https://github.com/dry-rb/dry-system/compare/v0.8.0...v0.8.1)
+
 # 0.8.0 - 2017-10-16
 
 ### Added
