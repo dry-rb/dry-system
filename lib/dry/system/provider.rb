@@ -1,4 +1,5 @@
 require 'concurrent/map'
+require 'dry/system/constants'
 require 'dry/system/components/bootable'
 
 module Dry
@@ -21,7 +22,7 @@ module Dry
       end
 
       def boot_files
-        Dir[boot_path.join('**/*.rb')]
+        Dir[boot_path.join("**/#{RB_GLOB}")]
       end
 
       def register_component(name, fn)
@@ -29,7 +30,7 @@ module Dry
       end
 
       def boot_file(name)
-        boot_files.detect { |path| Pathname(path).basename('.rb').to_s == name.to_s }
+        boot_files.detect { |path| Pathname(path).basename(RB_EXT).to_s == name.to_s }
       end
 
       def component(name, options = {})

@@ -80,7 +80,7 @@ module Dry
       def initialize(identifier, path, options)
         @identifier, @path = identifier, path
         @options = options
-        @file = "#{path}.rb".freeze
+        @file = "#{path}#{RB_EXT}".freeze
         @loader = options.fetch(:loader)
         freeze
       end

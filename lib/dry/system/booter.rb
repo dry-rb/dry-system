@@ -47,7 +47,7 @@ module Dry
 
       # @api private
       def load_component(path)
-        identifier = Pathname(path).basename('.rb').to_s.to_sym
+        identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
 
         unless components.exists?(identifier)
           require path
@@ -132,13 +132,13 @@ module Dry
 
       # @api private
       def require_boot_file(identifier)
-        boot_file = boot_files.detect { |path| Pathname(path).basename('.rb').to_s == identifier.to_s }
+        boot_file = boot_files.detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
         require boot_file if boot_file
       end
 
       # @api private
       def boot_files
-        Dir["#{path}/**/*.rb"]
+        Dir["#{path}/**/#{RB_GLOB}"]
       end
 
       # @api private

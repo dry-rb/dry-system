@@ -52,7 +52,7 @@ module Dry
 
       # @api private
       def files(dir)
-        Dir["#{root}/#{dir}/**/*.rb"]
+        Dir["#{root}/#{dir}/**/#{RB_GLOB}"]
       end
 
       # @api private
