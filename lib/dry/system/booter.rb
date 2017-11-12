@@ -1,5 +1,6 @@
 require 'dry/system/components/bootable'
 require 'dry/system/errors'
+require 'dry/system/constants'
 require 'dry/system/lifecycle'
 require 'dry/system/booter/component_registry'
 
@@ -24,6 +25,18 @@ module Dry
         @path = path
         @booted = []
         @components = ComponentRegistry.new
+      end
+
+      # @api private
+      def bootable?(component)
+        boot_file(component).exist?
+      end
+
+      # @api private
+      def boot_file(name)
+        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
+
+        path.join("#{name}#{RB_EXT}")
       end
 
       # @api private
@@ -130,7 +143,7 @@ module Dry
 
       # @api private
       def boot_dependency(component)
-        boot_file = component.boot_file(path)
+        boot_file = boot_file(component)
         start(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
       end
     end

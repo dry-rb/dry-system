@@ -114,16 +114,6 @@ module Dry
       end
 
       # @api private
-      def bootable?(path)
-        boot_file(path).exist?
-      end
-
-      # @api private
-      def boot_file(path)
-        path.join("#{root_key}.rb")
-      end
-
-      # @api private
       def file_exists?(paths)
         paths.any? { |path| path.join(file).exist? }
       end
