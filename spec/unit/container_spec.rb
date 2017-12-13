@@ -19,15 +19,15 @@ RSpec.describe Dry::System::Container do
       end
     end
 
-    describe '.require' do
+    describe '.require_from_root' do
       it 'requires a single file' do
-        container.require(Pathname('lib/test/models'))
+        container.require_from_root(Pathname('lib/test/models'))
 
         expect(Test.const_defined?(:Models)).to be(true)
       end
 
       it 'requires many files when glob pattern is passed' do
-        container.require(Pathname('lib/test/models/*.rb'))
+        container.require_from_root(Pathname('lib/test/models/*.rb'))
 
         expect(Test::Models.const_defined?(:User)).to be(true)
         expect(Test::Models.const_defined?(:Book)).to be(true)
@@ -35,7 +35,6 @@ RSpec.describe Dry::System::Container do
     end
 
     describe '.require_component' do
-
       shared_examples_for 'requireable' do
         it 'requires component file' do
           component = container.component('test/foo')
@@ -51,7 +50,7 @@ RSpec.describe Dry::System::Container do
 
       context 'when already required' do
         before do
-          Kernel.require('test/foo')
+          require 'test/foo'
         end
 
         it_behaves_like 'requireable'

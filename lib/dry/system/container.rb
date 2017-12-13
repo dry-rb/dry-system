@@ -441,19 +441,19 @@ module Dry
         #
         # @example
         #   # sinle file
-        #   MyApp.require('lib/core')
+        #   MyApp.require_from_root('lib/core')
         #
         #   # glob
-        #   MyApp.require('lib/**/*')
+        #   MyApp.require_from_root('lib/**/*')
         #
         # @param *paths [Array<String>] one or more paths, supports globs too
         #
         # @api public
-        def require(*paths)
+        def require_from_root(*paths)
           paths.flat_map { |path|
             path.to_s.include?('*') ? Dir[root.join(path)] : root.join(path)
           }.each { |path|
-            Kernel.require path.to_s
+            require path.to_s
           }
         end
 
@@ -535,7 +535,7 @@ module Dry
             raise FileNotFoundError, component
           end
 
-          Kernel.require(component.path)
+          require component.path
 
           yield
         end
