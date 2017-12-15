@@ -18,6 +18,8 @@ module Dry
                            production: Logger::INFO
                          }
 
+          system.setting :logger_class, ::Logger, reader: true
+
           system.after(:configure, &:set_logger)
 
           super
@@ -36,11 +38,17 @@ module Dry
           elsif config.logger
             register(:logger, config.logger)
           else
-            config.logger = ::Logger.new(log_file_path)
-            config.logger.level = config.log_levels.fetch(config.env, Logger::ERROR)
+            config.logger = logger = config.logger_class.new(log_file_path)
+            config.logger.level = log_level
+
             register(:logger, config.logger)
             self
           end
+        end
+
+        # @api private
+        def log_level
+          config.log_levels.fetch(config.env, Logger::ERROR)
         end
 
         # @api private
