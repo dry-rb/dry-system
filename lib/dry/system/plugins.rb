@@ -18,9 +18,14 @@ module Dry
 
         # @api private
         def apply_to(system, options)
-          system.extend(options.any? ? mod.new(options) : mod)
+          system.extend(stateful? ? mod.new(options) : mod)
           system.instance_eval(&block) if block
           system
+        end
+
+        # @api private
+        def stateful?
+          mod < Module
         end
       end
 
@@ -52,9 +57,23 @@ module Dry
       #
       # @api public
       def use(name, options = {})
-        Plugins.registry[name].apply_to(self, options)
+        unless enabled_plugins.include?(name)
+          Plugins.registry[name].apply_to(self, options)
+          enabled_plugins << name
+        end
         self
       end
+
+      # @api private
+      def enabled_plugins
+        @__enabled_plugins__ ||= []
+      end
+
+      require 'dry/system/plugins/logging'
+      register(:logging, Plugins::Logging)
+
+      require 'dry/system/plugins/env'
+      register(:env, Plugins::Env)
     end
   end
 end

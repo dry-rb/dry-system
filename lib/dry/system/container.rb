@@ -81,7 +81,6 @@ module Dry
       setting :manual_registrar, Dry::System::ManualRegistrar
       setting :importer, Dry::System::Importer
       setting(:components, {}, reader: true) { |v| v.dup }
-      setting :logger
 
       class << self
         extend Dry::Core::Deprecations['Dry::System::Container']
@@ -103,27 +102,8 @@ module Dry
         def configure(&block)
           super(&block)
           load_paths!(config.system_dir)
+          hooks[:configure].each { |hook| instance_eval(&hook) }
           self
-        end
-
-        # Configure logger
-        #
-        # This is invoked automatically when a container is being configured
-        #
-        # @return [self]
-        #
-        # @api private
-        def configure_logger
-          if key?(:logger)
-            self
-          elsif config.logger
-            register(:logger, config.logger)
-          else
-            config.logger = Monitor::Logger.new(config.root.join(config.log_dir).realpath.join("#{config.env}.log"))
-            config.logger.level = config.log_levels.fetch(config.env, Logger::ERROR)
-            register(:logger, config.logger)
-            self
-          end
         end
 
         # Registers another container for import
@@ -584,6 +564,16 @@ module Dry
           end
 
           self
+        end
+
+        # @api private
+        def after(event, &block)
+          hooks[event] << block
+        end
+
+        # @api private
+        def hooks
+          @__hooks__ ||= Hash.new { |h, k| h[k] = [] }
         end
 
         private
