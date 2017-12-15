@@ -20,7 +20,7 @@ module Dry
 
           system.setting :logger_class, ::Logger, reader: true
 
-          system.after(:configure, &:set_logger)
+          system.after(:configure, &:register_logger)
 
           super
         end
@@ -32,7 +32,7 @@ module Dry
         # @return [self]
         #
         # @api private
-        def set_logger
+        def register_logger
           if key?(:logger)
             self
           elsif config.logger
