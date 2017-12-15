@@ -6,8 +6,6 @@ module Dry
       module Logging
         # @api private
         def self.extended(system)
-          system.use :env
-
           system.setting :logger, reader: true
 
           system.setting :log_dir, 'log'.freeze

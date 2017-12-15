@@ -16,6 +16,7 @@ RSpec.describe 'Plugins / Logging' do
   context 'with default logger settings' do
     subject(:system) do
       Class.new(Dry::System::Container) do
+        use :env
         use :logging
       end
     end
