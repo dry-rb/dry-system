@@ -576,6 +576,19 @@ module Dry
           @__hooks__ ||= Hash.new { |h, k| h[k] = [] }
         end
 
+        # @api private
+        def inherited(klass)
+          new_hooks = Container.hooks.dup
+
+          hooks.each do |event, blocks|
+            new_hooks[event].concat(blocks)
+            new_hooks[event].concat(klass.hooks[event])
+          end
+
+          klass.instance_variable_set(:@__hooks__, new_hooks)
+          super
+        end
+
         private
 
         # @api private

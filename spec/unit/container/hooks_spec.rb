@@ -13,5 +13,22 @@ RSpec.describe Dry::System::Container do
 
       expect(system[:test]).to be(true)
     end
+
+    it 'inherits hooks from superclass' do
+      system.after(:configure) do
+        register(:test_1, true)
+      end
+
+      descendant = Class.new(system) do
+        after(:configure) do
+          register(:test_2, true)
+        end
+      end
+
+      descendant.configure { }
+
+      expect(descendant[:test_1]).to be(true)
+      expect(descendant[:test_2]).to be(true)
+    end
   end
 end
