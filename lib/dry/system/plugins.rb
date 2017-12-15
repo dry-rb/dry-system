@@ -65,6 +65,12 @@ module Dry
       end
 
       # @api private
+      def inherited(klass)
+        klass.instance_variable_set(:@__enabled_plugins__, enabled_plugins.dup)
+        super
+      end
+
+      # @api private
       def enabled_plugins
         @__enabled_plugins__ ||= []
       end

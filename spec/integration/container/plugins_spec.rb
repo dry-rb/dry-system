@@ -41,6 +41,30 @@ RSpec.describe Dry::System::Container, '.use' do
       end
     end
 
+    context 'inheritance' do
+      before do
+        Dry::System::Plugins.register(:test_plugin, plugin) do
+          setting(:trace, [], &:dup)
+
+          after(:configure) do
+            config.trace << :works
+          end
+        end
+      end
+
+      it 'enables plugin for a class and its descendant' do
+        system.use(:test_plugin)
+
+        descendant = Class.new(system)
+
+        system.configure {}
+        descendant.configure {}
+
+        expect(system.config.trace).to eql([:works])
+        expect(descendant.config.trace).to eql([:works])
+      end
+    end
+
     context 'calling multiple times' do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
