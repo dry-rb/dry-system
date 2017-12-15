@@ -57,8 +57,16 @@ module Dry
       #
       # @api public
       def use(name, options = {})
-        Plugins.registry[name].apply_to(self, options)
+        unless enabled_plugins.include?(name)
+          Plugins.registry[name].apply_to(self, options)
+          enabled_plugins << name
+        end
         self
+      end
+
+      # @api private
+      def enabled_plugins
+        @__enabled_plugins__ ||= []
       end
 
       require 'dry/system/plugins/logging'

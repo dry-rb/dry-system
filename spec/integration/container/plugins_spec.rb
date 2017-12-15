@@ -40,6 +40,24 @@ RSpec.describe Dry::System::Container, '.use' do
         expect(system.config.foo).to eql("bar")
       end
     end
+
+    context 'calling multiple times' do
+      before do
+        Dry::System::Plugins.register(:test_plugin, plugin) do
+          setting :trace, []
+
+          after(:configure) do
+            config.trace << :works
+          end
+        end
+      end
+
+      it 'enables the plugin only once' do
+        system.use(:test_plugin).use(:test_plugin).configure {}
+
+        expect(system.config.trace).to eql([:works])
+      end
+    end
   end
 
   context 'with a stateful plugin' do
