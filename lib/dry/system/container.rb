@@ -103,6 +103,7 @@ module Dry
         def configure(&block)
           super(&block)
           load_paths!(config.system_dir)
+          hooks[:configure].each { |hook| instance_eval(&hook) }
           self
         end
 
@@ -584,6 +585,16 @@ module Dry
           end
 
           self
+        end
+
+        # @api private
+        def after(event, &block)
+          hooks[event] << block
+        end
+
+        # @api private
+        def hooks
+          @__hooks__ ||= Hash.new { |h, k| h[k] = [] }
         end
 
         private
