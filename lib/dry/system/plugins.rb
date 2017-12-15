@@ -61,6 +61,9 @@ module Dry
         self
       end
 
+      require 'dry/system/plugins/logging'
+      register(:logging, Plugins::Logging)
+
       require 'dry/system/plugins/env'
       register(:env, Plugins::Env)
     end
