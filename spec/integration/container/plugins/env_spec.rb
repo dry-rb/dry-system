@@ -21,7 +21,7 @@ RSpec.describe 'Plugins / Env' do
     end
 
     describe '.env' do
-      it 'returns :development' do
+      it 'returns :test' do
         expect(system.env).to be(:test)
       end
     end
