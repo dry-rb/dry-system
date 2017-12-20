@@ -1,4 +1,4 @@
-require 'inflecto'
+require 'dry/inflector'
 
 module Dry
   module System
@@ -27,9 +27,14 @@ module Dry
       #   @return [String] Path to component's file
       attr_reader :path
 
+      # @!attribute [r] inflector
+      #   @return [Object] Inflector backend
+      attr_reader :inflector
+
       # @api private
-      def initialize(path)
+      def initialize(path, inflector = Dry::Inflector.new)
         @path = path
+        @inflector = inflector
       end
 
       # Returns component's instance
@@ -55,7 +60,7 @@ module Dry
       #
       # @api public
       def constant
-        Inflecto.constantize(Inflecto.camelize(path))
+        inflector.constantize(inflector.camelize(path))
       end
 
       private
