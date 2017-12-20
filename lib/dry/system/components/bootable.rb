@@ -1,6 +1,7 @@
 require 'dry/system/lifecycle'
 require 'dry/system/settings'
 require 'dry/system/components/config'
+require 'dry/system/constants'
 
 module Dry
   module System
@@ -241,7 +242,7 @@ module Dry
         # @api private
         def boot_file
           container_boot_files.
-            detect { |path| Pathname(path).basename('.rb').to_s == identifier.to_s }
+            detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
         end
 
         # Return path to boot dir
@@ -259,7 +260,7 @@ module Dry
         #
         # @api private
         def container_boot_files
-          Dir[container.boot_path.join('**/*.rb')]
+          Dir[container.boot_path.join("**/#{RB_GLOB}")]
         end
 
         private

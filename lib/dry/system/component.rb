@@ -80,7 +80,7 @@ module Dry
       def initialize(identifier, path, options)
         @identifier, @path = identifier, path
         @options = options
-        @file = "#{path}.rb".freeze
+        @file = "#{path}#{RB_EXT}".freeze
         @loader = options.fetch(:loader)
         freeze
       end
@@ -111,16 +111,6 @@ module Dry
       # @api private
       def boot?
         false
-      end
-
-      # @api private
-      def bootable?(path)
-        boot_file(path).exist?
-      end
-
-      # @api private
-      def boot_file(path)
-        path.join("#{root_key}.rb")
       end
 
       # @api private

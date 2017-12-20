@@ -1,5 +1,6 @@
 require 'dry/system/components/bootable'
 require 'dry/system/errors'
+require 'dry/system/constants'
 require 'dry/system/lifecycle'
 require 'dry/system/booter/component_registry'
 
@@ -27,6 +28,18 @@ module Dry
       end
 
       # @api private
+      def bootable?(component)
+        boot_file(component).exist?
+      end
+
+      # @api private
+      def boot_file(name)
+        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
+
+        path.join("#{name}#{RB_EXT}")
+      end
+
+      # @api private
       def register_component(component)
         components.register(component)
         self
@@ -34,7 +47,7 @@ module Dry
 
       # @api private
       def load_component(path)
-        identifier = Pathname(path).basename('.rb').to_s.to_sym
+        identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
 
         unless components.exists?(identifier)
           require path
@@ -119,18 +132,18 @@ module Dry
 
       # @api private
       def require_boot_file(identifier)
-        boot_file = boot_files.detect { |path| Pathname(path).basename('.rb').to_s == identifier.to_s }
+        boot_file = boot_files.detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
         require boot_file if boot_file
       end
 
       # @api private
       def boot_files
-        Dir["#{path}/**/*.rb"]
+        Dir["#{path}/**/#{RB_GLOB}"]
       end
 
       # @api private
       def boot_dependency(component)
-        boot_file = component.boot_file(path)
+        boot_file = boot_file(component)
         start(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
       end
     end
