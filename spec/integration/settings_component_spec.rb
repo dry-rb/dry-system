@@ -12,7 +12,7 @@ RSpec.describe 'Settings component' do
 
       boot(:settings, from: :system) do
         before(:init) do
-          require "types"
+          require_from_root "types"
         end
 
         settings do
