@@ -86,6 +86,9 @@ module Dry
 
       require 'dry/system/plugins/notifications'
       register(:notifications, Plugins::Notifications)
+
+      require 'dry/system/plugins/monitoring'
+      register(:monitoring, Plugins::Monitoring)
     end
   end
 end
