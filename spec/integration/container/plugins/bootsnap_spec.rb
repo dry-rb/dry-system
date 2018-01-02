@@ -20,6 +20,8 @@ RSpec.describe 'Plugins / Bootsnap' do
 
   describe '.require_from_root' do
     it 'loads file' do
+      pending "bootsnap is not available" unless system.bootsnap_available?
+
       system.require_from_root('lib/test/models')
 
       expect(Object.const_defined?('Test::Models')).to be(true)

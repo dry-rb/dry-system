@@ -20,10 +20,16 @@ module Dry
 
         # Set up bootsnap for faster booting
         #
-        # @api private
+        # @api public
         def setup_bootsnap
+          return unless bootsnap_available?
           require 'bootsnap' unless Object.const_defined?(:Bootsnap)
           ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join('tmp/cache').to_s))
+        end
+
+        # @api private
+        def bootsnap_available?
+          RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.3.0" && RUBY_VERSION < "2.5.0"
         end
       end
     end
