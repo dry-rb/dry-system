@@ -19,9 +19,7 @@ RSpec.describe 'Plugins / Bootsnap' do
   end
 
   describe '.require_from_root' do
-    it 'loads file' do
-      pending "TODO: this spec is too problematic, needs to be run in isolation"
-
+    xit 'loads file' do
       system.require_from_root('lib/test/models')
 
       expect(Object.const_defined?('Test::Models')).to be(true)
