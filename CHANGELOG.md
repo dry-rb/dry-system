@@ -3,9 +3,12 @@
 ### Added
 
 * Plugin API (solnic)
+* `:env` plugin which adds support for setting `env` config value (solnic)
+* `:logging` plugin which adds a default logger (solnic)
 * `:decorate` plugin for decorating registered objects (solnic)
 * `:notifications` plugin adding pub/sub bus to containers (solnic)
 * `:monitoring` plugin which adds `monitor` method for monitoring object method calls (solnic)
+* `:bootsnap` plugin which adds support for bootsnap (solnic)
 
 ### Changed
 
