@@ -75,6 +75,9 @@ module Dry
         @__enabled_plugins__ ||= []
       end
 
+      require 'dry/system/plugins/bootsnap'
+      register(:bootsnap, Plugins::Bootsnap)
+
       require 'dry/system/plugins/logging'
       register(:logging, Plugins::Logging)
 
