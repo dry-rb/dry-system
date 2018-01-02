@@ -1,3 +1,22 @@
+# 0.9.0 - 2018-01-02
+
+### Added
+
+* Plugin API (solnic)
+* `:decorate` plugin for decorating registered objects (solnic)
+* `:notifications` plugin adding pub/sub bus to containers (solnic)
+* `:monitoring` plugin which adds `monitor` method for monitoring object method calls (solnic)
+
+### Changed
+
+* [BREAKING] renamed `Container.{require=>require_from_root}` (GustavoCaso)
+
+### Internal
+
+* `#bootable?` and `#boot_file` methods were moved from `Component` to `Booter` (GustavoCaso)
+
+[Compare v0.8.1...v0.9.0](https://github.com/dry-rb/dry-system/compare/v0.8.1...v0.9.0)
+
 # 0.8.1 - 2017-10-17
 
 ### Fixed
