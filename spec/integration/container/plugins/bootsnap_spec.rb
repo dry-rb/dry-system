@@ -14,10 +14,6 @@ RSpec.describe 'Plugins / Bootsnap' do
     system.root.join('tmp/cache/bootsnap-load-path-cache')
   end
 
-  before do
-    system.setup_bootsnap
-  end
-
   after do
     FileUtils.rm_r(system.root.join('tmp/cache'))
   end

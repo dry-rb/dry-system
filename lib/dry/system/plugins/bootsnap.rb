@@ -15,6 +15,7 @@ module Dry
           super
           system.use(:env)
           system.setting :bootsnap, DEFAULT_OPTIONS
+          system.after(:configure, &:setup_bootsnap)
         end
 
         # Set up bootsnap for faster booting
@@ -22,9 +23,7 @@ module Dry
         # @api private
         def setup_bootsnap
           require 'bootsnap' unless Object.const_defined?(:Bootsnap)
-          ::Bootsnap.setup(
-            config.bootsnap.merge(development_mode: env == :development, cache_dir: root.join('tmp/cache').to_s)
-          )
+          ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join('tmp/cache').to_s))
         end
       end
     end
