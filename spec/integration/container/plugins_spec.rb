@@ -38,11 +38,14 @@ RSpec.describe Dry::System::Container, '.use' do
       end
 
       it 'raises exception' do
-        expect { system.use(:test_plugin) }.
-          to raise_error(
-               Dry::System::PluginDependencyMissing,
-               'dry-system plugin :test_plugin failed to load its dependencies: cannot load such file -- this-does-not-exist'
-             )
+        msg =
+          if RUBY_ENGINE == 'jruby'
+            'dry-system plugin :test_plugin failed to load its dependencies: no such file to load -- this-does-not-exist'
+          else
+            'dry-system plugin :test_plugin failed to load its dependencies: cannot load such file -- this-does-not-exist'
+          end
+
+        expect { system.use(:test_plugin) }.to raise_error(Dry::System::PluginDependencyMissing, msg)
       end
     end
   end
