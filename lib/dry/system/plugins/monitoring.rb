@@ -19,6 +19,11 @@ module Dry
         end
 
         # @api private
+        def self.dependencies
+          'dry/events/publisher'
+        end
+
+        # @api private
         def monitor(key, options = EMPTY_HASH, &block)
           notifications = self[:notifications]
 

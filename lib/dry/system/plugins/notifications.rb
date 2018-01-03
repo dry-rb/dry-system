@@ -9,9 +9,13 @@ module Dry
         end
 
         # @api private
+        def self.dependencies
+          'dry/monitor/notifications'
+        end
+
+        # @api private
         def register_notifications
           return self if key?(:notifications)
-          require 'dry/monitor/notifications' unless Object.const_defined?('Dry::Monitor::Notifications')
           register(:notifications, Monitor::Notifications.new(config.name))
         end
       end

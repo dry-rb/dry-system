@@ -3,8 +3,8 @@ require 'delegate'
 module Dry
   module System
     module Plugins
-      # @api public
       module Monitoring
+        # @api private
         class Proxy < SimpleDelegator
           # @api private
           def self.for(target, key:, methods: [], &block)

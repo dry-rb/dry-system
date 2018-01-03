@@ -1,3 +1,5 @@
+require 'dry/system/constants'
+
 module Dry
   module System
     module Plugins
@@ -24,8 +26,25 @@ module Dry
         end
 
         # @api private
+        def load_dependencies
+          Array(dependencies).each do |f|
+            begin
+              require f unless Plugins.loaded_dependencies.include?(f)
+              Plugins.loaded_dependencies << f
+            rescue LoadError => e
+              raise PluginDependencyMissing.new(name, e.message)
+            end
+          end
+        end
+
+        # @api private
         def stateful?
           mod < Module
+        end
+
+        # @api private
+        def dependencies
+          mod.respond_to?(:dependencies) ? Array(mod.dependencies) : EMPTY_ARRAY
         end
       end
 
@@ -46,6 +65,11 @@ module Dry
         @__registry__ ||= {}
       end
 
+      # @api private
+      def self.loaded_dependencies
+        @__loaded_dependencies__ ||= []
+      end
+
       # Enable a plugin
       #
       # Plugin identifier
@@ -58,7 +82,10 @@ module Dry
       # @api public
       def use(name, options = {})
         unless enabled_plugins.include?(name)
-          Plugins.registry[name].apply_to(self, options)
+          plugin = Plugins.registry[name]
+          plugin.load_dependencies
+          plugin.apply_to(self, options)
+
           enabled_plugins << name
         end
         self

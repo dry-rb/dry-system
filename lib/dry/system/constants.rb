@@ -11,5 +11,16 @@ module Dry
     WORD_REGEX = /\w+/.freeze
 
     DuplicatedComponentKeyError = Class.new(ArgumentError)
+
+    # Exception raise when a plugin dependency failed to load
+    #
+    # @api public
+    PluginDependencyMissing = Class.new(StandardError) do
+      # @api private
+      def initialize(plugin, message)
+        super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{message}")
+      end
+    end
+
   end
 end

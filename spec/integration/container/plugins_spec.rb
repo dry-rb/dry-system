@@ -7,6 +7,46 @@ RSpec.describe Dry::System::Container, '.use' do
     Dry::System::Plugins.registry.delete(:test_plugin)
   end
 
+  context 'with a plugin which has dependencies' do
+    before do
+      Dry::System::Plugins.register(:test_plugin, plugin)
+    end
+
+    context 'when dependency is available' do
+      let(:plugin) do
+        Module.new do
+          def self.dependencies
+            SPEC_ROOT.join('fixtures/test/lib/test/dep')
+          end
+        end
+      end
+
+      it 'auto-requires dependency' do
+        system.use(:test_plugin)
+
+        expect(Object.const_defined?('Test::Dep')).to be(true)
+      end
+    end
+
+    context 'when dependency is not available' do
+      let(:plugin) do
+        Module.new do
+          def self.dependencies
+            'this-does-not-exist'
+          end
+        end
+      end
+
+      it 'raises exception' do
+        expect { system.use(:test_plugin) }.
+          to raise_error(
+               Dry::System::PluginDependencyMissing,
+               'dry-system plugin :test_plugin failed to load its dependencies: cannot load such file -- this-does-not-exist'
+             )
+      end
+    end
+  end
+
   context 'with a stateless plugin' do
     let(:plugin) do
       Module.new do

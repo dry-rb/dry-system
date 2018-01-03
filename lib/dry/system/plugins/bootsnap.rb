@@ -18,12 +18,16 @@ module Dry
           system.after(:configure, &:setup_bootsnap)
         end
 
+        # @api private
+        def self.dependencies
+          'bootsnap'
+        end
+
         # Set up bootsnap for faster booting
         #
         # @api public
         def setup_bootsnap
           return unless bootsnap_available?
-          require 'bootsnap' unless Object.const_defined?(:Bootsnap)
           ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join('tmp/cache').to_s))
         end
 
