@@ -1,3 +1,11 @@
+# 0.9.1 - 2018-01-03
+
+### Fixed
+
+* Plugin dependencies are now auto-required and a meaningful error is raised when a dep failed to load (solnic)
+
+[Compare v0.9.0...v0.9.1](https://github.com/dry-rb/dry-system/compare/v0.9.0...v0.9.1)
+
 # 0.9.0 - 2018-01-02
 
 ### Added
