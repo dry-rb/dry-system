@@ -23,7 +23,7 @@ module Dry
 
               attr_reader :__notifications__
 
-              monitored_methods(methods.empty? ? target.public_methods - Object.public_instance_methods : methods)
+              monitored_methods(monitored_methods)
 
               monitored_methods.each do |meth|
                 define_method(meth) do |*args, &block|
