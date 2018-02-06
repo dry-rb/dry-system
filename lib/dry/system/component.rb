@@ -66,7 +66,7 @@ module Dry
 
       # @api private
       def self.remove_namespace_from_path(name, ns)
-        match_value = name.match(/^(?<remove_namespace>#{ns}).(?<identifier>.*)/)
+        match_value = name.match(/^^(?<remove_namespace>#{ns})(?<separator>[\.\/])(?<identifier>.*)/)
 
         match_value ? match_value[:identifier] : name
       end

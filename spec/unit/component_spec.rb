@@ -26,6 +26,11 @@ RSpec.describe Dry::System::Component do
       component = Dry::System::Component.new('foo', namespace: 'admin')
       expect(component.identifier).to eql('foo')
     end
+
+    it 'allows namespace to collide with the identifier' do
+      component = Dry::System::Component.new(:mailer, namespace: "mail", separator: ".")
+      expect(component.identifier).to eql('mailer')
+    end
   end
 
   context 'when name is a symbol' do
