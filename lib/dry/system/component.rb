@@ -59,14 +59,14 @@ module Dry
       # @api private
       def self.extract_identifier(name, ns, sep)
         name_s = name.to_s
-        identifier = ns ? remove_namespace_from_path(name_s, ns) : name_s
+        identifier = ns ? remove_namespace_from_name(name_s, ns) : name_s
 
         identifier.scan(WORD_REGEX).join(sep)
       end
 
       # @api private
-      def self.remove_namespace_from_path(name, ns)
-        match_value = name.match(/^(?<remove_namespace>#{ns}).(?<identifier>.*)/)
+      def self.remove_namespace_from_name(name, ns)
+        match_value = name.match(/^(?<remove_namespace>#{ns})(?<separator>\W)(?<identifier>.*)/)
 
         match_value ? match_value[:identifier] : name
       end
