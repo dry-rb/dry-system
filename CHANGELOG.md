@@ -1,3 +1,11 @@
+# 0.9.2 - 2018-02-07
+
+### Fixed
+
+* Default namespace no longer breaks resolving dependencies with identifier that includes part of the namespace (ie `mail.mailer`) (GustavoCaso)
+
+[Compare v0.9.1...v0.9.2](https://github.com/dry-rb/dry-system/compare/v0.9.1...v0.9.2)
+
 # 0.9.1 - 2018-01-03
 
 ### Fixed
