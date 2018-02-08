@@ -12,24 +12,58 @@ RSpec.describe Dry::System::Component do
       expect(create.()).to be(create.())
     end
 
-    it 'allows to have the same key multiple times in the identifier/path' do
-      component = Dry::System::Component.new('foo.bar.foo', namespace: 'foo')
-      expect(component.identifier).to eql('bar.foo')
+    describe '.identifier' do
+      it 'allows to have the same key multiple times in the identifier/path' do
+        component = Dry::System::Component.new('foo.bar.foo', namespace: 'foo')
+        expect(component.identifier).to eql('bar.foo')
+      end
+
+      it 'removes only the initial part from the identifier/path' do
+        component = Dry::System::Component.new('foo.bar.foo.user.foo.bar', namespace: 'foo.bar.foo')
+        expect(component.identifier).to eql('user.foo.bar')
+      end
+
+      it 'returns the identifier if namespace is not present' do
+        component = Dry::System::Component.new('foo', namespace: 'admin')
+        expect(component.identifier).to eql('foo')
+      end
+
+      it 'allows namespace to collide with the identifier' do
+        component = Dry::System::Component.new(:mailer, namespace: "mail", separator: ".")
+        expect(component.identifier).to eql('mailer')
+      end
     end
 
-    it 'removes only the initial part from the identifier/path' do
-      component = Dry::System::Component.new('foo.bar.foo.user.foo.bar', namespace: 'foo.bar.foo')
-      expect(component.identifier).to eql('user.foo.bar')
-    end
+    describe '.path' do
+      it 'returns the correct path when no namespace is set' do
+        component = Dry::System::Component.new('foo.bar.foo')
+        expect(component.path).to eql('foo/bar/foo')
+      end
 
-    it 'returns the identifier if namespace is not present' do
-      component = Dry::System::Component.new('foo', namespace: 'admin')
-      expect(component.identifier).to eql('foo')
-    end
+      it 'returns the path correctly using custom separator' do
+        component = Dry::System::Component.new('foo-bar-foo', separator: '-')
+        expect(component.path).to eql('foo/bar/foo')
+      end
 
-    it 'allows namespace to collide with the identifier' do
-      component = Dry::System::Component.new(:mailer, namespace: "mail", separator: ".")
-      expect(component.identifier).to eql('mailer')
+      it 'returns the path correctly using custom separator and namespace' do
+        component = Dry::System::Component.new('foo-bar-foo', namespace: 'foo', separator: '-')
+        expect(component.path).to eql('foo/bar/foo')
+      end
+
+      it 'returns the correct path' do
+        component = Dry::System::Component.new('foo.bar.foo', namespace: 'foo')
+        expect(component.path).to eql('foo/bar/foo')
+      end
+
+      it 'returns the correct path for complex identifier and namespace' do
+        component = Dry::System::Component.new('foo.bar.foo.user.foo.bar', namespace: 'foo.bar.foo')
+        expect(component.path).to eql('foo/bar/foo/user/foo/bar')
+      end
+
+      it 'returns the correct path when the namespace is not present in the identifier' do
+        component = Dry::System::Component.new(:mailer, namespace: "mail")
+        expect(component.path).to eql('mail/mailer')
+      end
     end
   end
 
