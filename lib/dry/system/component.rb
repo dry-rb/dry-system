@@ -49,11 +49,17 @@ module Dry
           ns, sep = options.values_at(:namespace, :separator)
           identifier = extract_identifier(name, ns, sep)
 
-          path = name.to_s.gsub(sep, PATH_SEPARATOR)
+          path = extract_path(identifier, ns, sep)
           loader = options.fetch(:loader, Loader).new(path)
 
           super(identifier, path, options.merge(loader: loader))
         end
+      end
+
+      def self.extract_path(identifier, ns, sep)
+        path = ns ? [ns, identifier].join(sep) : identifier
+
+        path.gsub(sep, PATH_SEPARATOR)
       end
 
       # @api private
