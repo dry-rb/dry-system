@@ -41,7 +41,7 @@ module Dry
       #
       # Provided optional args are passed to object's constructor
       #
-      # @param [Array] *args Optional constructor args
+      # @param [Array] args Optional constructor args
       #
       # @return [Object]
       #

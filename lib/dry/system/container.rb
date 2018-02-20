@@ -350,7 +350,7 @@ module Dry
         #     load_paths!('lib')
         #   end
         #
-        # @param [Array<String>] *dirs
+        # @param [Array<String>] dirs
         #
         # @return [self]
         #
@@ -449,7 +449,7 @@ module Dry
         #   # glob
         #   MyApp.require_from_root('lib/**/*')
         #
-        # @param *paths [Array<String>] one or more paths, supports globs too
+        # @param paths [Array<String>] one or more paths, supports globs too
         #
         # @api public
         def require_from_root(*paths)
