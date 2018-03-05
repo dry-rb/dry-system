@@ -31,7 +31,7 @@ module Dry
       def call(name)
         name = name.respond_to?(:root_key) ? name.root_key.to_s : name
 
-        require(root.join(config.registrations_dir, name))
+        require(root.join(config.registrations_dir, name).to_s)
       end
 
       def file_exists?(name)
