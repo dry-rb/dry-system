@@ -4,8 +4,8 @@ module Dry
       # Default auto_registrar configuration
       #
       # This is currently configured by default for every System::Container.
-      # Configuration allows to define custom initializtion logic as well
-      # as exclusion, for each component that is been register by Dry::System
+      # Configuration allows to define custom initialization as well as exclusion
+      # logic, for each component that is being registered by Dry::System
       # auto-registration.
       #
       # @api private
