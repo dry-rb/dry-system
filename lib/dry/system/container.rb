@@ -32,7 +32,7 @@ module Dry
     # Before finalization, Container can lazy-load components on demand. A
     # component can be a simple class defined in a single file, or a complex
     # component which has init/start/stop lifecycle, and it's defined in a boot
-    # file. Components which specify their dependencies using. Import module can
+    # file. Components which specify their dependencies using Import module can
     # be safely required in complete isolation, and Container will resolve and
     # load these dependencies automatically.
     #
@@ -60,7 +60,7 @@ module Dry
     #     end
     #
     #     # this will configure $LOAD_PATH to include your `lib` dir
-    #     load_paths!('lib)
+    #     load_paths!('lib')
     #   end
     #
     # @api public
@@ -129,7 +129,7 @@ module Dry
         #     import core: Core
         #   end
         #
-        # @param other [Hash,Dry::Container::Namespace]
+        # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
         def import(other)
@@ -280,7 +280,7 @@ module Dry
         #   # You can put finalization file anywhere you want, ie system/boot.rb
         #   MyApp.finalize!
         #
-        #   # If you need last-moment adjustements just before the finalization
+        #   # If you need last-moment adjustments just before the finalization
         #   # you can pass a block and do it there
         #   MyApp.finalize! do |container|
         #     # stuff that only needs to happen for finalization
@@ -375,7 +375,7 @@ module Dry
         # Typically you want to configure auto_register directories, and it will
         # work automatically. Use this method in cases where you want to have an
         # explicit way where some components are auto-registered, or if you want
-        # to exclude some components from been auto-registered
+        # to exclude some components from being auto-registered
         #
         # @example
         #   class MyApp < Dry::System::Container
@@ -443,7 +443,7 @@ module Dry
         # Requires one or more files relative to the container's root
         #
         # @example
-        #   # sinle file
+        #   # single file
         #   MyApp.require_from_root('lib/core')
         #
         #   # glob
