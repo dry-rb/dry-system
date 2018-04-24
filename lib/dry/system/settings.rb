@@ -32,8 +32,6 @@ module Dry
       end
 
       class Configuration < Dry::Struct
-        constructor_type :strict_with_defaults
-
         def self.setting(*args)
           attribute(*args)
         end
