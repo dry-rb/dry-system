@@ -39,4 +39,49 @@ RSpec.describe 'Settings component' do
     expect(settings.database_url).to eql('sqlite::memory')
     expect(settings.session_secret).to eql('super-secret')
   end
+
+  context 'with default values' do
+    subject(:system) do
+      Class.new(Dry::System::Container) do
+        setting :env
+
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures').join('settings_test')
+          config.env = :test
+        end
+
+        boot(:settings, from: :system) do
+          before(:init) do
+            require_from_root "types"
+          end
+
+          settings do
+            key :number_of_workers, SettingsTest::Types::Coercible::Integer.default(14)
+          end
+        end
+      end
+    end
+
+    let(:settings) do
+      system[:settings]
+    end
+
+    it 'uses the default value' do
+      expect(settings.number_of_workers).to eql(14)
+    end
+
+    context 'ENV variables take precedence before defaults' do
+      before do
+        ENV['NUMBER_OF_WORKERS'] = '4'
+      end
+
+      after do
+        ENV.delete('NUMBER_OF_WORKERS')
+      end
+
+      it 'uses the ENV value' do
+        expect(settings.number_of_workers).to eql(4)
+      end
+    end
+  end
 end
