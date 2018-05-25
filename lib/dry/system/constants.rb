@@ -11,6 +11,7 @@ module Dry
     WORD_REGEX = /\w+/.freeze
 
     DuplicatedComponentKeyError = Class.new(ArgumentError)
+    InvalidSettingValueError = Class.new(ArgumentError)
 
     # Exception raise when a plugin dependency failed to load
     #

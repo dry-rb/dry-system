@@ -3,6 +3,7 @@ require "dry/types"
 require "dry/struct"
 
 require "dry/system/settings/file_loader"
+require "dry/system/constants"
 
 module Dry
   module System
@@ -45,6 +46,10 @@ module Dry
           end
 
           new(attributes)
+        rescue Dry::Struct::Error => e
+          # We remove [Configuration.new] since is an internal class and could mislead users
+          part_to_avoid = (e.message.index(']')+2)...-1
+          raise InvalidSettingValueError.new(e.message[part_to_avoid])
         end
 
         def self.load_files(root, env)
