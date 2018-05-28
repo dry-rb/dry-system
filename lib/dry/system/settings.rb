@@ -39,23 +39,30 @@ module Dry
 
         def self.load(root, env)
           env_data = load_files(root, env)
+          errors = {}
 
           attributes = schema.each_with_object({}) do |(key, type), h|
             value = ENV.fetch(key.to_s.upcase) { env_data[key.to_s.upcase] }
+            check_for_error(key, type, value, errors)
             h[key] = value if value
           end
 
+          raise InvalidSettingValueError.new(errors) unless errors.empty?
+
           new(attributes)
-        rescue Dry::Struct::Error => e
-          # We remove [Configuration.new] since is an internal class and could mislead users
-          part_to_avoid = (e.message.index(']')+2)...-1
-          raise InvalidSettingValueError.new(e.message[part_to_avoid])
         end
 
         def self.load_files(root, env)
           FileLoader.new.(root, env)
         end
         private_class_method :load_files
+
+        def self.check_for_error(key, type, value, errors)
+          result = value ? type.try(value) : type.try(Undefined)
+          if result.failure?
+            errors[key] = result
+          end
+        end
       end
     end
   end

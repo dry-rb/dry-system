@@ -11,7 +11,25 @@ module Dry
     WORD_REGEX = /\w+/.freeze
 
     DuplicatedComponentKeyError = Class.new(ArgumentError)
-    InvalidSettingValueError = Class.new(ArgumentError)
+    InvalidSettingValueError = Class.new(ArgumentError) do
+      # @api private
+      def initialize(attributes)
+        message = <<~EOF
+          Invalid setting values for:
+
+          #{attributes_errors(attributes).join("\n")}
+        EOF
+        super(message)
+      end
+
+      private
+
+      def attributes_errors(attributes)
+        attributes.map do |key, error|
+          "#{key} #{error}"
+        end
+      end
+    end
 
     # Exception raise when a plugin dependency failed to load
     #

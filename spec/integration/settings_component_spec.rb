@@ -57,6 +57,7 @@ RSpec.describe 'Settings component' do
 
           settings do
             key :integer_value, SettingsTest::Types::Strict::Integer
+            key :coercible_value, SettingsTest::Types::Coercible::Integer
           end
         end
       end
@@ -64,16 +65,26 @@ RSpec.describe 'Settings component' do
 
     before do
       ENV['INTEGER_VALUE'] = 'foo'
+      ENV['COERCIBLE_VALUE'] = 'foo'
     end
 
     after do
       ENV.delete('INTEGER_VALUE')
+      ENV.delete('COERCIBLE_VALUE')
     end
 
     it 'raises InvalidSettingsError with meaningful message' do
       expect {
         settings.integer_value
-      }.to raise_error(Dry::System::InvalidSettingValueError, /has invalid type for :integer_value/)
+      }.to raise_error(
+        Dry::System::InvalidSettingValueError,
+        <<~EOF
+          Invalid setting values for:
+
+          integer_value type?(Integer, "foo")
+          coercible_value invalid value for Integer(): "foo"
+        EOF
+      )
     end
   end
 
