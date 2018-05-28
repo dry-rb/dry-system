@@ -41,7 +41,7 @@ module Dry
 
           attributes = schema.each_with_object({}) do |(key, type), h|
             value = ENV.fetch(key.to_s.upcase) { env_data[key.to_s.upcase] }
-            h[key] = value
+            h[key] = value if value
           end
 
           new(attributes)
