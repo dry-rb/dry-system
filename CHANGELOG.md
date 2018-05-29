@@ -1,3 +1,11 @@
+# 0.10.0 - to-be-released
+
+### Changed
+
+* `dry-struct` was updated to `~> 0.5` (flash-gordon)
+
+[Compare v0.9.2...master](https://github.com/dry-rb/dry-system/compare/v0.9.2...master)
+
 # 0.9.2 - 2018-02-08
 
 ### Fixed
