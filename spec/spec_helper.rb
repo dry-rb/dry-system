@@ -16,6 +16,7 @@ Dir[SPEC_ROOT.join('shared/*.rb').to_s].each { |f| require f }
 
 require 'dry/system/container'
 require 'dry/system/stubs'
+require 'dry/events'
 
 module TestNamespace
   def remove_constants
@@ -40,12 +41,8 @@ RSpec.configure do |config|
   end
 
   config.after do
-    ($LOAD_PATH - @load_paths).each do |path|
-      $LOAD_PATH.delete(path)
-    end
-    ($LOADED_FEATURES - @loaded_features).each do |file|
-      $LOADED_FEATURES.delete(file)
-    end
+    $LOAD_PATH.replace(@load_paths)
+    $LOADED_FEATURES.replace(@loaded_features)
 
     Test.remove_constants
     Object.send(:remove_const, :Test)
