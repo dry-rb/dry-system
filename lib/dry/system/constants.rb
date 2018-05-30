@@ -25,9 +25,7 @@ module Dry
       private
 
       def attributes_errors(attributes)
-        attributes.map do |key, error|
-          "#{key} #{error}"
-        end
+        attributes.map { |key, error| "#{key} #{error}" }
       end
     end
 
