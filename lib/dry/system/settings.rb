@@ -40,11 +40,14 @@ module Dry
         def self.load(root, env)
           env_data = load_files(root, env)
           errors = {}
+          attributes = {}
 
-          attributes = schema.each_with_object({}) do |(key, type), h|
+          schema.each do |key, type|
             value = ENV.fetch(key.to_s.upcase) { env_data[key.to_s.upcase] }
-            check_for_error(key, type, value, errors)
-            h[key] = value if value
+            result = check_value_against_type?(type, value)
+
+            errors[key] = result if result.failure?
+            attributes[key] = value if value
           end
 
           raise InvalidSettingsError.new(errors) unless errors.empty?
@@ -57,11 +60,8 @@ module Dry
         end
         private_class_method :load_files
 
-        def self.check_for_error(key, type, value, errors)
-          result = value ? type.try(value) : type.try(Undefined)
-          if result.failure?
-            errors[key] = result
-          end
+        def self.check_value_against_type?(type, value)
+          value ? type.try(value) : type.try(Undefined)
         end
       end
     end
