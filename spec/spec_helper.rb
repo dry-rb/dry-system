@@ -46,6 +46,7 @@ RSpec.configure do |config|
 
     Test.remove_constants
     Object.send(:remove_const, :Test)
+    Object.send(:remove_const, :Namespaced) if defined? Namespaced
 
     Dry::System.providers.items.delete_if { |p| p.identifier != :system }
   end
