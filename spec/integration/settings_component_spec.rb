@@ -77,12 +77,12 @@ RSpec.describe 'Settings component' do
       expect {
         settings.integer_value
       }.to raise_error(
-        Dry::System::InvalidSettingValueError,
+        Dry::System::InvalidSettingsError,
         <<~EOF
-          Invalid setting values for:
+          Could not initialize settings. The following settings were invalid:
 
-          integer_value type?(Integer, "foo")
-          coercible_value invalid value for Integer(): "foo"
+          integer_value: type?(Integer, "foo")
+          coercible_value: invalid value for Integer(): "foo"
         EOF
       )
     end

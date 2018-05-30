@@ -47,7 +47,7 @@ module Dry
             h[key] = value if value
           end
 
-          raise InvalidSettingValueError.new(errors) unless errors.empty?
+          raise InvalidSettingsError.new(errors) unless errors.empty?
 
           new(attributes)
         end

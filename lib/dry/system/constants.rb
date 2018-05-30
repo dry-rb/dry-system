@@ -11,11 +11,11 @@ module Dry
     WORD_REGEX = /\w+/.freeze
 
     DuplicatedComponentKeyError = Class.new(ArgumentError)
-    InvalidSettingValueError = Class.new(ArgumentError) do
+    InvalidSettingsError = Class.new(ArgumentError) do
       # @api private
       def initialize(attributes)
         message = <<~EOF
-          Invalid setting values for:
+          Could not initialize settings. The following settings were invalid:
 
           #{attributes_errors(attributes).join("\n")}
         EOF
@@ -25,7 +25,7 @@ module Dry
       private
 
       def attributes_errors(attributes)
-        attributes.map { |key, error| "#{key} #{error}" }
+        attributes.map { |key, error| "#{key}: #{error}" }
       end
     end
 
