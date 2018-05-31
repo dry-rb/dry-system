@@ -3,6 +3,7 @@ require "dry/types"
 require "dry/struct"
 
 require "dry/system/settings/file_loader"
+require "dry/system/constants"
 
 module Dry
   module System
@@ -38,11 +39,18 @@ module Dry
 
         def self.load(root, env)
           env_data = load_files(root, env)
+          attributes = {}
+          errors = {}
 
-          attributes = schema.each_with_object({}) do |(key, type), h|
+          schema.each do |key, type|
             value = ENV.fetch(key.to_s.upcase) { env_data[key.to_s.upcase] }
-            h[key] = value if value
+            type_check = type.try(value || Undefined)
+
+            attributes[key] = value if value
+            errors[key] = type_check if type_check.failure?
           end
+
+          raise InvalidSettingsError.new(errors) unless errors.empty?
 
           new(attributes)
         end

@@ -40,7 +40,55 @@ RSpec.describe 'Settings component' do
     expect(settings.session_secret).to eql('super-secret')
   end
 
-  context 'with default values' do
+  context 'Invalid setting value' do
+    subject(:system) do
+      Class.new(Dry::System::Container) do
+        setting :env
+
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures').join('settings_test')
+          config.env = :test
+        end
+
+        boot(:settings, from: :system) do
+          before(:init) do
+            require_from_root "types"
+          end
+
+          settings do
+            key :integer_value, SettingsTest::Types::Strict::Integer
+            key :coercible_value, SettingsTest::Types::Coercible::Integer
+          end
+        end
+      end
+    end
+
+    before do
+      ENV['INTEGER_VALUE'] = 'foo'
+      ENV['COERCIBLE_VALUE'] = 'foo'
+    end
+
+    after do
+      ENV.delete('INTEGER_VALUE')
+      ENV.delete('COERCIBLE_VALUE')
+    end
+
+    it 'raises InvalidSettingsError with meaningful message' do
+      expect {
+        settings.integer_value
+      }.to raise_error(
+        Dry::System::InvalidSettingsError,
+        <<~EOF
+          Could not initialize settings. The following settings were invalid:
+
+          integer_value: type?(Integer, "foo")
+          coercible_value: invalid value for Integer(): "foo"
+        EOF
+      )
+    end
+  end
+
+  context 'With default values' do
     subject(:system) do
       Class.new(Dry::System::Container) do
         setting :env
@@ -60,10 +108,6 @@ RSpec.describe 'Settings component' do
           end
         end
       end
-    end
-
-    let(:settings) do
-      system[:settings]
     end
 
     it 'uses the default value' do
