@@ -1,6 +1,7 @@
 require 'concurrent/map'
 
 require 'dry-equalizer'
+require 'dry/inflector'
 require 'dry/system/loader'
 require 'dry/system/errors'
 require 'dry/system/constants'
@@ -18,7 +19,11 @@ module Dry
     class Component
       include Dry::Equalizer(:identifier, :path)
 
-      DEFAULT_OPTIONS = { separator: DEFAULT_SEPARATOR, namespace: nil }.freeze
+      DEFAULT_OPTIONS = {
+        separator: DEFAULT_SEPARATOR,
+        namespace: nil,
+        inflector: Dry::Inflector.new
+      }.freeze
 
       # @!attribute [r] identifier
       #   @return [String] component's unique identifier
@@ -44,13 +49,13 @@ module Dry
       def self.new(*args, &block)
         cache.fetch_or_store([*args, block].hash) do
           name, options = args
-          options = DEFAULT_OPTIONS.merge(options || {})
+          options = DEFAULT_OPTIONS.merge(options || EMPTY_HASH)
 
-          ns, sep = options.values_at(:namespace, :separator)
+          ns, sep, inflector = options.values_at(:namespace, :separator, :inflector)
           identifier = extract_identifier(name, ns, sep)
 
           path = name.to_s.gsub(sep, PATH_SEPARATOR)
-          loader = options.fetch(:loader, Loader).new(path)
+          loader = options.fetch(:loader, Loader).new(path, inflector)
 
           super(identifier, path, options.merge(loader: loader))
         end

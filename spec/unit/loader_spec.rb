@@ -1,3 +1,4 @@
+require 'dry/inflector'
 require 'dry/system/loader'
 require 'singleton'
 
@@ -60,5 +61,19 @@ RSpec.describe Dry::System::Loader, '#call' do
       expect(instance.one).to be(1)
       expect(instance.two).to be(2)
     end
+  end
+
+  context 'with a custom inflector' do
+    let(:inflector) { Dry::Inflector.new { |i| i.acronym('API') } }
+
+    subject(:loader) { Dry::System::Loader.new('test/api_bar', inflector) }
+
+    let(:constant) { Test::APIBar }
+
+    before do
+      Test::APIBar = Class.new
+    end
+
+    it_behaves_like 'object loader'
   end
 end

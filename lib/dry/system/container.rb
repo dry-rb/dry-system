@@ -3,6 +3,7 @@ require 'pathname'
 require 'dry-auto_inject'
 require 'dry-configurable'
 require 'dry-container'
+require 'dry/inflector'
 
 require 'dry/core/deprecations'
 
@@ -75,6 +76,7 @@ module Dry
       setting :system_dir, 'system'.freeze
       setting :registrations_dir, 'container'.freeze
       setting :auto_register, []
+      setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
       setting :auto_registrar, Dry::System::AutoRegistrar
@@ -525,6 +527,7 @@ module Dry
               loader: config.loader,
               namespace: config.default_namespace,
               separator: config.namespace_separator,
+              inflector: config.inflector,
               **options,
             )
           end
