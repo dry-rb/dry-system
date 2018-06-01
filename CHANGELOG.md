@@ -1,13 +1,24 @@
 # 0.10.0 - to-be-released
 
+### Added
+* You can now set a custom inflector on the container level. As a result, the `Loader`'s constructor accepts two arguments: `path` and `inflector`, update your custom loaders accordingly (flash-gordon)
+
+  ```ruby
+  class MyContainer < Dry::System::Container
+    configure do |config|
+      config.inflector = Dry::Inflector.new do |inflections|
+        inflections.acronym('API')
+      end
+    end
+  end
+  ```
+
 ### Changed
 
 * A helpful error will be raised if an invalid setting value is provided (GustavoCaso)
 * When using setting plugin, will use default values from types (GustavoCaso)
 * Minimal supported ruby version was bump to `2.3` (flash-gordon)
 * `dry-struct` was updated to `~> 0.5` (flash-gordon)
-* Fixed typos in comments (szajbus)
-* Fixed yard documentation comments (mensfeld)
 
 [Compare v0.9.2...master](https://github.com/dry-rb/dry-system/compare/v0.9.2...master)
 
