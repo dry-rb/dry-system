@@ -1,4 +1,4 @@
-# 0.10.0 - to-be-released
+# 0.10.0 - 2018-06-07
 
 ### Added
 * You can now set a custom inflector on the container level. As a result, the `Loader`'s constructor accepts two arguments: `path` and `inflector`, update your custom loaders accordingly (flash-gordon)
