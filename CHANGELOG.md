@@ -17,7 +17,7 @@
 
 * A helpful error will be raised if an invalid setting value is provided (GustavoCaso)
 * When using setting plugin, will use default values from types (GustavoCaso)
-* Minimal supported ruby version was bump to `2.3` (flash-gordon)
+* Minimal supported ruby version was bumped to `2.3` (flash-gordon)
 * `dry-struct` was updated to `~> 0.5` (flash-gordon)
 
 [Compare v0.9.2...v0.10.0](https://github.com/dry-rb/dry-system/compare/v0.9.2...v0.10.0)
