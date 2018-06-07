@@ -20,7 +20,7 @@
 * Minimal supported ruby version was bump to `2.3` (flash-gordon)
 * `dry-struct` was updated to `~> 0.5` (flash-gordon)
 
-[Compare v0.9.2...master](https://github.com/dry-rb/dry-system/compare/v0.9.2...master)
+[Compare v0.9.2...v0.10.0](https://github.com/dry-rb/dry-system/compare/v0.9.2...v0.10.0)
 
 # 0.9.2 - 2018-02-08
 
