@@ -339,6 +339,21 @@ module Dry
           self
         end
 
+        # Stop a specific component but calls only `stop` lifecycle trigger
+        #
+        # @example
+        #   MyApp.stop(:persistence)
+        #
+        # @param [Symbol] name The name of a registered bootable component
+        #
+        # @return [self]
+        #
+        # @api public
+        def stop(name)
+          booter.stop(name)
+          self
+        end
+
         # Sets load paths relative to the container's root dir
         #
         # @example
