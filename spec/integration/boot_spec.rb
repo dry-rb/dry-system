@@ -73,7 +73,7 @@ RSpec.describe Dry::System::Container, '.boot' do
       expect(conn).to be_established
     end
 
-    it 'allows stop component' do
+    it 'allows component to be stopped' do
       system.boot(:db) do
         init do
           module Test
@@ -98,7 +98,7 @@ RSpec.describe Dry::System::Container, '.boot' do
       expect(conn.established).to eq false
     end
 
-    it 'raises an error when trying to stop a component that has not bee started' do
+    it 'raises an error when trying to stop a component that has not been started' do
       system.boot(:db) do
         init do
           module Test
