@@ -99,7 +99,7 @@ module Dry
       # @api private
       def stop(name_or_component)
         call(name_or_component) do |component|
-          raise ComponentNotStaredError.new(name_or_component) unless booted.include?(component)
+          raise ComponentNotStartedError.new(name_or_component) unless booted.include?(component)
           component.stop
           yield if block_given?
         end

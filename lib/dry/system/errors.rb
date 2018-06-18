@@ -62,9 +62,9 @@ module Dry
     # Error raised when trying to stop a component that hasn't started yet
     #
     # @api public
-    ComponentNotStaredError = Class.new(StandardError) do
-      def initialize(companent_name)
-        super("You can not stop a component that has not been started yet. Please use `start` method to start the component. system.start[:#{companent_name}]")
+    ComponentNotStartedError = Class.new(StandardError) do
+      def initialize(component_name)
+        super("You can not stop a component +#{component_name}+ has not been started.")
       end
     end
   end

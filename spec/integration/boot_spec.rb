@@ -118,7 +118,7 @@ RSpec.describe Dry::System::Container, '.boot' do
 
       expect {
         system.stop(:db)
-      }.to raise_error(Dry::System::ComponentNotStaredError)
+      }.to raise_error(Dry::System::ComponentNotStartedError)
     end
   end
 end
