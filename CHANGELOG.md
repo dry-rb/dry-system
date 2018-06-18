@@ -1,3 +1,9 @@
+# 0.11.0 - to-be-released
+
+### Added
+
+* Support for stopping components `Container.stop(component)` (GustavoCaso)
+
 # 0.10.0 - 2018-06-07
 
 ### Added
