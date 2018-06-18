@@ -64,7 +64,7 @@ module Dry
     # @api public
     ComponentNotStartedError = Class.new(StandardError) do
       def initialize(component_name)
-        super("You can not stop a component +#{component_name}+ has not been started.")
+        super("component +#{component_name}+ has not been started")
       end
     end
   end
