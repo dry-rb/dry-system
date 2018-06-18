@@ -97,6 +97,15 @@ module Dry
       end
 
       # @api private
+      def stop(name_or_component)
+        call(name_or_component) do |component|
+          raise ComponentNotStartedError.new(name_or_component) unless booted.include?(component)
+          component.stop
+          yield if block_given?
+        end
+      end
+
+      # @api private
       def call(name_or_component)
         with_component(name_or_component) do |component|
           unless component

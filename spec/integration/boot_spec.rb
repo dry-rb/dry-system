@@ -63,11 +63,62 @@ RSpec.describe Dry::System::Container, '.boot' do
         start do
           register('db.conn', Test::Db.new(established?: true))
         end
-      end
 
+        stop do
+          db.conn.established = false
+        end
+      end
       conn = system['db.conn']
 
       expect(conn).to be_established
+    end
+
+    it 'allows component to be stopped' do
+      system.boot(:db) do
+        init do
+          module Test
+            class Db < OpenStruct
+            end
+          end
+        end
+
+        start do
+          register('db.conn', Test::Db.new(established: true))
+        end
+
+        stop do |container|
+          container['db.conn'].established = false
+        end
+      end
+      system.start(:db)
+
+      conn = system['db.conn']
+      system.stop(:db)
+
+      expect(conn.established).to eq false
+    end
+
+    it 'raises an error when trying to stop a component that has not been started' do
+      system.boot(:db) do
+        init do
+          module Test
+            class Db < OpenStruct
+            end
+          end
+        end
+
+        start do
+          register('db.conn', Test::Db.new(established: true))
+        end
+
+        stop do |container|
+          container['db.conn'].established = false
+        end
+      end
+
+      expect {
+        system.stop(:db)
+      }.to raise_error(Dry::System::ComponentNotStartedError)
     end
   end
 end

@@ -58,5 +58,14 @@ module Dry
         super("component identifier #{name.inspect} must be a symbol")
       end
     end
+
+    # Error raised when trying to stop a component that hasn't started yet
+    #
+    # @api public
+    ComponentNotStartedError = Class.new(StandardError) do
+      def initialize(component_name)
+        super("component +#{component_name}+ has not been started")
+      end
+    end
   end
 end
