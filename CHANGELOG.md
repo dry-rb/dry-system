@@ -1,8 +1,14 @@
-# 0.11.0 - to-be-released
+# 0.10.1 - 2018-07-05
 
 ### Added
 
-* Support for stopping components `Container.stop(component)` (GustavoCaso)
+* Support for stopping bootable components with `Container.stop(component_name)` (GustavoCaso)
+
+### Fixed
+
+* When using a non-finalized container, you can now resolve multiple different container objects registered using the same root key as a bootable component (timriley)
+
+[Compare v0.10.0...v0.10.1](https://github.com/dry-rb/dry-system/compare/v0.10.0...v0.10.1)
 
 # 0.10.0 - 2018-06-07
 
