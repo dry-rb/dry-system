@@ -575,7 +575,9 @@ module Dry
                 booter.start(bootable_dep)
               elsif importer.key?(root_key)
                 load_imported_component(component.namespaced(root_key))
-              else
+              end
+
+              if !key?(key)
                 load_local_component(component)
               end
             end
