@@ -67,5 +67,14 @@ module Dry
         super("component +#{component_name}+ has not been started")
       end
     end
+
+    # Error raised when trying to stop a component that hasn't started yet
+    #
+    # @api public
+    InvalidBootConditionTypeError = Class.new(StandardError) do
+      def initialize(component_name)
+        super("undefined method `call' for component's condition +#{component_name}+")
+      end
+    end
   end
 end

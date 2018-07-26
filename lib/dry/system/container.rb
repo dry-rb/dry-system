@@ -201,6 +201,17 @@ module Dry
         #
         #   # system/boot/db.rb
         #   #
+        #   # Optional component registration
+        #   MyApp.boot(:db, when: -> { !ENV['DB_URL'].empty? }) do |container|
+        #     start do
+        #       require 'db'
+        #       DB.configure(ENV['DB_URL'], logger: logger)
+        #       container.register(:db, DB.new)
+        #     end
+        #   end
+        #
+        #   # system/boot/db.rb
+        #   #
         #   # Component registration under a namespace. This will register the
         #   # db object under `persistence.db` key
         #   MyApp.namespace(:persistence) do |persistence|
@@ -217,6 +228,13 @@ module Dry
         #
         # @api public
         def boot(name, opts = {}, &block)
+          boot_condition = opts.delete(:when)
+
+          if boot_condition
+            raise(InvalidBootConditionTypeError, name) unless boot_condition.respond_to?(:call)
+            return unless boot_condition.call
+          end
+
           if components.key?(name)
             raise DuplicatedComponentKeyError, "Bootable component #{name.inspect} was already registered"
           end

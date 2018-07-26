@@ -155,6 +155,29 @@ RSpec.describe Dry::System::Container, '.boot' do
     expect(system['api.client']).to eql('connected')
   end
 
+  it 'allow conditions for booting' do
+    system.boot(:disabled_client, when: -> { false }) do
+      start { register(:disabled_client, 'connected') }
+    end
+
+    system.boot(:enabled_client, when: -> { true }) do
+      start { register(:enabled_client, 'connected') }
+    end
+
+    expect(system['enabled_client']).to eql('connected')
+
+    expect { system['disabled_client'] }.
+      to raise_error(Dry::System::ComponentLoadError, /could not load component/)
+  end
+
+  it 'raises when booting condition has wrong type' do
+    expect do
+      system.boot(:disabled_client, when: true) do
+        start { register(:disabled_client, 'connected') }
+      end
+    end.to raise_error(Dry::System::InvalidBootConditionTypeError, /undefined method/)
+  end
+
   it 'raises when namespace value is not valid' do
     system.boot(:api, namespace: 312) do
       start do
