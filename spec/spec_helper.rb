@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'pathname'
+
 if RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.3'
   require 'simplecov'
   SimpleCov.start
