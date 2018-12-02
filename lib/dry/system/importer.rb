@@ -27,6 +27,7 @@ module Dry
         registry.each do |name, container|
           call(name, container.finalize!)
         end
+        self
       end
 
       # @api private
