@@ -10,7 +10,6 @@ module Dry
         def self.extended(system)
           super
 
-          system.use(:decorate)
           system.use(:notifications)
 
           system.after(:configure) do
@@ -36,7 +35,7 @@ module Dry
               end
             end
 
-            decorate(key, decorator: proxy.new(target, notifications))
+            decorate(key, with: proxy.new(target, notifications))
           end
         end
       end
