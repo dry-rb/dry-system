@@ -2,6 +2,43 @@ require 'ostruct'
 
 RSpec.describe Dry::System::Container, '.boot' do
   subject(:system) { Test::Container }
+  let(:setup_db) do
+    system.boot(:db) do
+      init do
+        module Test
+          class Db < OpenStruct
+          end
+        end
+      end
+
+      start do
+        register('db.conn', Test::Db.new(established: true))
+      end
+
+      stop do |container|
+        container['db.conn'].established = false
+      end
+    end
+  end
+
+  let(:setup_client) do
+    system.boot(:client) do
+      init do
+        module Test
+          class Client < OpenStruct
+          end
+        end
+      end
+
+      start do
+        register('client.conn', Test::Client.new(connected: true))
+      end
+
+      stop do |container|
+        container['client.conn'].connected = false
+      end
+    end
+  end
 
   context 'with a boot file' do
     before do
@@ -74,22 +111,7 @@ RSpec.describe Dry::System::Container, '.boot' do
     end
 
     it 'allows component to be stopped' do
-      system.boot(:db) do
-        init do
-          module Test
-            class Db < OpenStruct
-            end
-          end
-        end
-
-        start do
-          register('db.conn', Test::Db.new(established: true))
-        end
-
-        stop do |container|
-          container['db.conn'].established = false
-        end
-      end
+      setup_db
       system.start(:db)
 
       conn = system['db.conn']
@@ -99,26 +121,39 @@ RSpec.describe Dry::System::Container, '.boot' do
     end
 
     it 'raises an error when trying to stop a component that has not been started' do
-      system.boot(:db) do
-        init do
-          module Test
-            class Db < OpenStruct
-            end
-          end
-        end
-
-        start do
-          register('db.conn', Test::Db.new(established: true))
-        end
-
-        stop do |container|
-          container['db.conn'].established = false
-        end
-      end
+      setup_db
 
       expect {
         system.stop(:db)
       }.to raise_error(Dry::System::ComponentNotStartedError)
+    end
+
+    describe '#shutdown!' do
+      it 'allows container to stop all started components' do
+        setup_db
+        setup_client
+
+        db = system['db.conn']
+        client = system['client.conn']
+        system.shutdown!
+
+        expect(db.established).to eq false
+        expect(client.connected).to eq false
+      end
+
+      it 'skips components that has not been started' do
+        setup_db
+        setup_client
+
+        db = system['db.conn']
+        system.shutdown!
+
+        expect {
+          system.shutdown!
+        }.to_not raise_error
+
+        expect(db.established).to eq false
+      end
     end
   end
 end

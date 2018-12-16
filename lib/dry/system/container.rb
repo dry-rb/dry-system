@@ -358,6 +358,11 @@ module Dry
           self
         end
 
+        def shutdown!
+          booter.shutdown
+          self
+        end
+
         # Sets load paths relative to the container's root dir
         #
         # @example
