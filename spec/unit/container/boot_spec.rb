@@ -2,9 +2,11 @@ RSpec.describe Dry::System::Container, '.boot' do
   subject(:system) { Test::App }
 
   let(:db) { spy(:db) }
+  let(:client) { spy(:client) }
 
   before do
     Test.const_set(:DB, db)
+    Test.const_set(:Client, client)
 
     module Test
       class App < Dry::System::Container
@@ -27,6 +29,22 @@ RSpec.describe Dry::System::Container, '.boot' do
             db.close_connection
           end
         end
+
+        boot(:client) do
+          register(:client, Test::Client)
+
+          init do
+            client.establish_connection
+          end
+
+          start do
+            client.load
+          end
+
+          stop do
+            client.close_connection
+          end
+        end
       end
     end
   end
@@ -43,12 +61,36 @@ RSpec.describe Dry::System::Container, '.boot' do
       system.booter.(:db).start
       expect(db).to have_received(:load)
     end
+
+    it 'store booted component' do
+      system.booter.start(:db)
+      expect(system.booter.booted.map(&:identifier)).to include(:db)
+    end
   end
 
   describe '#stop' do
     it 'calls stop function' do
       system.booter.(:db).stop
       expect(db).to have_received(:close_connection)
+    end
+
+    it 'remove booted component' do
+      system.booter.start(:db)
+      expect(system.booter.booted).to_not be_empty
+
+      system.booter.stop(:db)
+      expect(system.booter.booted).to be_empty
+    end
+  end
+
+  describe '#shutdown' do
+    it 'calls stop function for every component' do
+      system.booter.start(:db)
+      system.booter.start(:client)
+      system.booter.shutdown
+
+      expect(db).to have_received(:close_connection)
+      expect(client).to have_received(:close_connection)
     end
   end
 
