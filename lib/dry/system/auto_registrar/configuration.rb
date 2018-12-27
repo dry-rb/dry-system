@@ -12,11 +12,11 @@ module Dry
       class Configuration
         DEFAULT_INSTANCE = -> component { component.instance }.freeze
         FALSE_PROC = -> * { false }.freeze
+        FALSE_DEFAULT = false
 
         def self.setting(name)
           define_method(name) do |&block|
             ivar = "@#{name}"
-
             if block
               instance_variable_set(ivar, block)
             else
@@ -28,10 +28,13 @@ module Dry
         setting :exclude
         setting :instance
 
+        attr_accessor :memoize
+
         # @api private
         def initialize
           @instance = DEFAULT_INSTANCE
           @exclude = FALSE_PROC
+          @memoize = FALSE_DEFAULT
         end
       end
     end
