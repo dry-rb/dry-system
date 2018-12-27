@@ -98,6 +98,35 @@ RSpec.describe Dry::System::Container do
         expect { container.load_component("test.no_matching_file") }.not_to raise_error
       end
     end
+
+    describe '.require_path' do
+      before do
+        module Test
+          class FileLoader
+          end
+
+          class Container < Dry::System::Container
+            configure do |config|
+              config.root = SPEC_ROOT.join('fixtures/require_path').realpath
+            end
+
+            load_paths!('lib')
+
+            class << self
+              def require_path(path)
+                Test::FileLoader.(path)
+              end
+            end
+          end
+        end
+      end
+
+      it 'defines an extension point for subclasses to use alternatives to Kernel#require' do
+        expect(Test::FileLoader).to receive(:call).with('test/foo').and_return(true)
+
+        container.load_component('test.foo')
+      end
+    end
   end
 
   describe '.init' do
