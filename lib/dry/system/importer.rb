@@ -18,7 +18,7 @@ module Dry
       # @api private
       def initialize(container)
         @container = container
-        @separator = container.config.namespace_separator
+        @separator = container.namespace_separator
         @registry = {}
       end
 
