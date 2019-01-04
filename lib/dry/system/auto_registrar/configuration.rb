@@ -12,7 +12,6 @@ module Dry
       class Configuration
         DEFAULT_INSTANCE = -> component { component.instance }.freeze
         FALSE_PROC = -> * { false }.freeze
-        FALSE_DEFAULT = false
 
         def self.setting(name)
           define_method(name) do |&block|
@@ -34,7 +33,7 @@ module Dry
         def initialize
           @instance = DEFAULT_INSTANCE
           @exclude = FALSE_PROC
-          @memoize = FALSE_DEFAULT
+          @memoize = false
         end
       end
     end
