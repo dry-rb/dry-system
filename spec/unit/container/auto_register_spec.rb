@@ -51,6 +51,50 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     end
   end
 
+  describe 'auto registration options' do
+    let(:container) do
+      Class.new(Dry::System::Container) do
+        configure do |config|
+          config.root = SPEC_ROOT.join('fixtures').realpath
+        end
+
+        load_paths!('components')
+      end
+    end
+
+    context 'with default registration options' do
+      it "does not memoize results" do
+        container.auto_register!('components')
+
+        expect(container['foo']).to be_an_instance_of(Foo)
+        expect(container['foo']).to_not be(container['foo'])
+      end
+    end
+
+    context 'with explicit overrides' do
+      context 'with memoization enabled' do
+        it "memoizes results" do
+          container.auto_register!('components') do |config|
+            config.memoize = true
+          end
+
+          expect(container['foo']).to be_an_instance_of(Foo)
+          expect(container['foo']).to be(container['foo'])
+        end
+      end
+
+      context 'with memoization disabled' do
+        it "does not memoize results" do
+          container.auto_register!('components') do |config|
+            config.memoize = false
+          end
+          expect(container['foo']).to be_an_instance_of(Foo)
+          expect(container['foo']).to_not be(container['foo'])
+        end
+      end
+    end
+  end
+
   context 'standard loader with a default namespace configured' do
     before do
       class Test::Container < Dry::System::Container
