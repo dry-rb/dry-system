@@ -67,7 +67,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
         container.auto_register!('components')
 
         expect(container['foo']).to be_an_instance_of(Foo)
-        expect(container['foo']).to_not eql(container['foo'])
+        expect(container['foo']).to_not be(container['foo'])
       end
     end
 
@@ -79,7 +79,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
           end
 
           expect(container['foo']).to be_an_instance_of(Foo)
-          expect(container['foo']).to eql(container['foo'])
+          expect(container['foo']).to be(container['foo'])
         end
       end
 
@@ -89,7 +89,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
             config.memoize = false
           end
           expect(container['foo']).to be_an_instance_of(Foo)
-          expect(container['foo']).to_not eql(container['foo'])
+          expect(container['foo']).to_not be(container['foo'])
         end
       end
     end
