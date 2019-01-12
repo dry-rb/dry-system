@@ -71,7 +71,6 @@ module Dry
       extend Dry::System::Plugins
 
       setting :name
-      setting :namespace_separator, namespace_separator
       setting :default_namespace
       setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
       setting :system_dir, 'system'.freeze
