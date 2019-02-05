@@ -1,11 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'dry/struct'
-
-module Types
-  include Dry::Types.module
-end
 
 begin
   require 'pry-byebug'
