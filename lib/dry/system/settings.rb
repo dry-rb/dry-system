@@ -42,11 +42,11 @@ module Dry
           attributes = {}
           errors = {}
 
-          schema.each do |key, type|
-            value = ENV.fetch(key.to_s.upcase) { env_data[key.to_s.upcase] }
-            type_check = type.try(value || Undefined)
+          schema.each do |key|
+            value = ENV.fetch(key.name.to_s.upcase) { env_data[key.name.to_s.upcase] }
+            type_check = key.try(value || Undefined)
 
-            attributes[key] = value if value
+            attributes[key.name] = value if value
             errors[key] = type_check if type_check.failure?
           end
 
