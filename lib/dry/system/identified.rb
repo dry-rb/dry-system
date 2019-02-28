@@ -75,7 +75,7 @@ module Dry
 
       # @api private
       def root_key
-        identifier_without_namespace.first if identifier_without_namespace.size > 1
+        identifier_without_namespace.first
       end
 
       # @api private

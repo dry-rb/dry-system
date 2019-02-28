@@ -13,7 +13,7 @@ RSpec.describe Dry::System::Identified do
 
     specify { expect(identified.identifier).to eq(:foo) }
     specify { expect(identified.namespace).to be(nil) }
-    specify { expect(identified.root_key).to be(nil) }
+    specify { expect(identified.root_key).to be(:foo) }
   end
 
   context 'compound identifier' do
