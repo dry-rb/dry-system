@@ -66,7 +66,7 @@ module Dry
           files(dir).map do |file_name|
             identifier = identifier_for(dir, file_name).map(&:to_sym)
 
-            Identified.new(identifier, namespace: default_namespace, **file_options(file_name))
+            Identifier.new(identifier, namespace: default_namespace, **file_options(file_name))
           end
         end
 

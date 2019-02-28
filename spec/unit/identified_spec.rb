@@ -1,7 +1,7 @@
 require 'dry/system/identified'
 
-RSpec.describe Dry::System::Identified do
-  subject(:identified) { Dry::System::Identified.new(identifier, namespace: namespace) }
+RSpec.describe Dry::System::Identifier do
+  subject(:identified) { Dry::System::Identifier.new(identifier, namespace: namespace) }
 
   let(:full_identifier) { [] }
   let(:identifier) { full_identifier }
@@ -78,15 +78,15 @@ RSpec.describe Dry::System::Identified do
 
   describe '#prepend' do
     specify do
-      expect(Dry::System::Identified.new([:bar], namespace: [:foo]).prepend(:foo))
-        .to eq(Dry::System::Identified.new([:foo, :bar], namespace: [:foo]))
+      expect(Dry::System::Identifier.new([:bar], namespace: [:foo]).prepend(:foo))
+        .to eq(Dry::System::Identifier.new([:foo, :bar], namespace: [:foo]))
     end
   end
 
   describe '#namespaced' do
     specify do
-      expect(Dry::System::Identified.new([:bar], namespace: nil).namespaced(:foo))
-        .to eq(Dry::System::Identified.new([:foo, :bar], namespace: [:foo]))
+      expect(Dry::System::Identifier.new([:bar], namespace: nil).namespaced(:foo))
+        .to eq(Dry::System::Identifier.new([:foo, :bar], namespace: [:foo]))
     end
   end
 end

@@ -3,13 +3,13 @@ require 'dry/system/constants'
 
 module Dry
   module System
-    # Identifieds are objects providing information about auto-registered files.
+    # Identifiers are objects providing information about auto-registered files.
     # They are created on-demand when a key is requested that is not yet resolved.
     # They expose an API to query this information and use a configurable
     # loader object to initialize class instances.
     #
     # @api public
-    class Identified
+    class Identifier
       include Dry::Equalizer(:identifier, :namespace, :options)
 
       # @!attribute [r] options

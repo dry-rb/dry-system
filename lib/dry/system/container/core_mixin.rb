@@ -145,7 +145,7 @@ module Dry
         def load_identified(key)
           return self if key?(key)
 
-          load_missing(Identified.new(key, namespace: config.default_namespace))
+          load_missing(Identifier.new(key, namespace: config.default_namespace))
         end
 
         def load_missing(identified)
