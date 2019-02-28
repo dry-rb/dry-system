@@ -1,4 +1,5 @@
 require 'dry/inflector'
+require 'dry-configurable'
 
 module Dry
   module System
@@ -17,56 +18,62 @@ module Dry
     #   class MyApp < Dry::System::Container
     #     configure do |config|
     #       # ...
-    #       config.loader MyLoader
+    #       config.loader MyLoader.new
     #     end
     #   end
     #
     # @api public
     class Loader
-      # @!attribute [r] path
-      #   @return [String] Path to component's file
-      attr_reader :path
+      extend Dry::Configurable
+
+      setting :inflector, Dry::Inflector.new
 
       # @!attribute [r] inflector
       #   @return [Object] Inflector backend
       attr_reader :inflector
 
+      attr_reader :path
+
+      attr_reader :args
+
       # @api private
-      def initialize(path, inflector = Dry::Inflector.new)
+      def initialize(path, *args, inflector: self.class.config.inflector, &block)
         @path = path
+        @args = args
         @inflector = inflector
+
+        call(&block) if block_given?
       end
 
-      # Returns component's instance
-      #
-      # Provided optional args are passed to object's constructor
-      #
-      # @param [Array] args Optional constructor args
-      #
-      # @return [Object]
-      #
-      # @api public
-      def call(*args)
-        if singleton?(constant)
+      def require_file
+        require(path)
+      end
+
+      def call(&block)
+        require_file
+
+        block.call(self) if block_given?
+
+        self
+      end
+
+      def instance(*args)
+        if singleton?
           constant.instance(*args)
         else
           constant.new(*args)
         end
       end
 
-      # Return component's class constant
-      #
-      # @return [Class]
-      #
-      # @api public
-      def constant
-        inflector.constantize(inflector.camelize(path))
-      end
-
       private
 
       # @api private
-      def singleton?(constant)
+      def constant
+        @constant ||= inflector.constantize(inflector.camelize(path))
+      end
+
+      # @api private
+      def singleton?
         constant.respond_to?(:instance) && !constant.respond_to?(:new)
       end
     end

@@ -3,13 +3,15 @@ require 'dry/system/loader'
 require 'singleton'
 
 RSpec.describe Dry::System::Loader, '#call' do
-  shared_examples_for 'object loader' do
-    let(:instance) { loader.call }
+  let(:inflector) { Dry::Inflector.new }
+  let(:path) { '' }
+  subject(:loader) { Dry::System::Loader.new(path, inflector: inflector) }
 
+  shared_examples_for 'object loader' do
     context 'not singleton' do
       it 'returns a new instance of the constant' do
-        expect(instance).to be_instance_of(constant)
-        expect(instance).not_to be(loader.call)
+        expect(loader.instance).to be_a(constant)
+        expect(loader.instance).not_to be(loader.instance)
       end
     end
 
@@ -17,14 +19,13 @@ RSpec.describe Dry::System::Loader, '#call' do
       before { constant.send(:include, Singleton) }
 
       it 'returns singleton instance' do
-        expect(instance).to be(constant.instance)
+        expect(loader.instance).to be(constant.instance)
       end
     end
   end
 
   context 'with a singular name' do
-    subject(:loader) { Dry::System::Loader.new('test/bar') }
-
+    let(:path) { 'test/bar' }
     let(:constant) { Test::Bar }
 
     before do
@@ -35,8 +36,7 @@ RSpec.describe Dry::System::Loader, '#call' do
   end
 
   context 'with a plural name' do
-    subject(:loader) { Dry::System::Loader.new('test/bars') }
-
+    let(:path) { 'test/bars' }
     let(:constant) { Test::Bars }
 
     before do
@@ -47,7 +47,8 @@ RSpec.describe Dry::System::Loader, '#call' do
   end
 
   context 'with a constructor accepting args' do
-    subject(:loader) { Dry::System::Loader.new('test/bar') }
+    let(:path) { 'test/bar' }
+    let(:constant) { Test::Bar }
 
     before do
       module Test
@@ -56,7 +57,7 @@ RSpec.describe Dry::System::Loader, '#call' do
     end
 
     it 'passes args to the constructor' do
-      instance = loader.call(1, 2)
+      instance = loader.instance(1, 2)
 
       expect(instance.one).to be(1)
       expect(instance.two).to be(2)
@@ -65,9 +66,7 @@ RSpec.describe Dry::System::Loader, '#call' do
 
   context 'with a custom inflector' do
     let(:inflector) { Dry::Inflector.new { |i| i.acronym('API') } }
-
-    subject(:loader) { Dry::System::Loader.new('test/api_bar', inflector) }
-
+    let(:path) { 'test/api_bar' }
     let(:constant) { Test::APIBar }
 
     before do

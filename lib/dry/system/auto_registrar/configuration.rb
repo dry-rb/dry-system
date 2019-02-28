@@ -1,6 +1,6 @@
 module Dry
   module System
-    class AutoRegistrar
+    module AutoRegistrar
       # Default auto_registrar configuration
       #
       # This is currently configured by default for every System::Container.
@@ -10,7 +10,7 @@ module Dry
       #
       # @api private
       class Configuration
-        DEFAULT_INSTANCE = -> component { component.instance }.freeze
+        DEFAULT_INSTANCE = ->(component, loader) { loader.instance }.freeze
         FALSE_PROC = -> * { false }.freeze
 
         def self.setting(name)

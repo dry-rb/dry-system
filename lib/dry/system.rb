@@ -1,28 +1,43 @@
-require 'dry/system/provider'
-require 'dry/system/provider_registry'
+require 'dry-equalizer'
 
 module Dry
   module System
-    # Register external component provider
-    #
-    # @api public
-    def self.register_provider(identifier, options)
-      providers.register(identifier, options)
-      providers[identifier].load_components
-      self
-    end
+    TO_SYM_ARRAY = ->(arr) { (arr.is_a?(Array) ? arr : arr.to_s.split(BOTH_SEPARATORS)).map(&:to_sym) }
 
-    # Register an external component that can be booted within other systems
+    # Register external system of component providers
     #
     # @api public
-    def self.register_component(identifier, provider:, &block)
-      providers[provider].register_component(identifier, block)
+    def self.register_system(system)
+      systems[system.config.identifier] = system
+      system.load_providers
       self
     end
 
     # @api private
-    def self.providers
-      @__providers__ ||= ProviderRegistry.new
+    def self.systems
+      @__systems__ ||= {}
+    end
+
+    def self.finalize!
+      auto_register_systems.each do |system|
+        if system.config.auto_register
+          register_system(system)
+        end
+      end
+
+      systems.each do |identifier, system|
+        system.load_providers
+      end
+    end
+
+    def self.auto_register_system(system)
+      auto_register_systems << system
+    end
+
+    # @api private
+    def self.auto_register_systems
+      @__auto_register_systems__ ||= []
     end
   end
 end
+

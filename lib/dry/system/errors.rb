@@ -1,5 +1,34 @@
 module Dry
   module System
+    DuplicatedComponentKeyError = Class.new(ArgumentError)
+    InvalidSettingsError = Class.new(ArgumentError) do
+      # @api private
+      def initialize(attributes)
+        message = <<~EOF
+          Could not initialize settings. The following settings were invalid:
+
+          #{attributes_errors(attributes).join("\n")}
+        EOF
+        super(message)
+      end
+
+      private
+
+      def attributes_errors(attributes)
+        attributes.map { |key, error| "#{key}: #{error}" }
+      end
+    end
+
+    # Exception raise when a plugin dependency failed to load
+    #
+    # @api public
+    PluginDependencyMissing = Class.new(StandardError) do
+      # @api private
+      def initialize(plugin, message)
+        super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{message}")
+      end
+    end
+
     # Error raised when the container tries to load a component with missing
     # file
     #
@@ -47,6 +76,12 @@ module Dry
         super(
           "component identifier +#{name}+ is invalid or boot file is missing"
         )
+      end
+    end
+
+    InvalidPluginError = Class.new(ArgumentError) do
+      def initialize(plugin)
+        super("plugin +#{plugin.inspect} is not a valid Dry::System plugin.")
       end
     end
 

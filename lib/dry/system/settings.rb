@@ -1,8 +1,6 @@
 require "dry/core/class_builder"
 require "dry/types"
 require "dry/struct"
-
-require "dry/system/settings/file_loader"
 require "dry/system/constants"
 
 module Dry
@@ -20,9 +18,9 @@ module Dry
         end
 
         def call
-          Core::ClassBuilder.new(name: 'Configuration', parent: Settings::Configuration).call do |klass|
+          ::Dry::Core::ClassBuilder.new(name: 'Configuration', parent: Settings::Configuration).call do |klass|
             schema.each do |key, type|
-              klass.setting(key, type)
+              klass.attribute(key, type)
             end
           end
         end
@@ -33,17 +31,12 @@ module Dry
       end
 
       class Configuration < Dry::Struct
-        def self.setting(*args)
-          attribute(*args)
-        end
-
-        def self.load(root, env)
-          env_data = load_files(root, env)
+        def self.load(env)
           attributes = {}
           errors = {}
 
           schema.each do |key, type|
-            value = ENV.fetch(key.to_s.upcase) { env_data[key.to_s.upcase] }
+            value = ENV.fetch(key.to_s.upcase) { env[key.to_s.upcase] }
             type_check = type.try(value || Undefined)
 
             attributes[key] = value if value
@@ -54,11 +47,6 @@ module Dry
 
           new(attributes)
         end
-
-        def self.load_files(root, env)
-          FileLoader.new.(root, env)
-        end
-        private_class_method :load_files
       end
     end
   end

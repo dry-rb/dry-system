@@ -34,6 +34,8 @@ module Types
 end
 
 RSpec.configure do |config|
+  config.alias_example_to :demonstrate
+
   config.disable_monkey_patching!
 
   config.before do
@@ -50,6 +52,6 @@ RSpec.configure do |config|
     Object.send(:remove_const, :Test)
     Object.send(:remove_const, :Namespaced) if defined? Namespaced
 
-    Dry::System.providers.items.delete_if { |p| p.identifier != :system }
+    Dry::System.systems.delete_if { |k,p| k != :system }
   end
 end
