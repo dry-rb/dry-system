@@ -30,7 +30,7 @@ end
 
 # for specs that rely on `settings` DSL
 module Types
-  include Dry::Types.module
+  include Dry::Types()
 end
 
 RSpec.configure do |config|
