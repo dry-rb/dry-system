@@ -1,10 +1,11 @@
-# 0.11.0 - to-be-released
+# 0.11.0 - 2019-03-22
 
 ### Changed
 
 * [BREAKING] `:decorate` plugin was moved from dry-system to dry-container (available in 0.7.0+). To upgrade remove `use :decorate` and change `decorate` calls from `decorate(key, decorator: something)` to `decorate(key, with: something)` (flash-gordon)
+* [internal] Compatibility with dry-struct 0.7.0 and dry-types 0.15.0
 
-[Compare v0.10.1...master](https://github.com/dry-rb/dry-system/compare/v0.10.1...master)
+[Compare v0.10.1...v0.11.0](https://github.com/dry-rb/dry-system/compare/v0.10.1...v0.11.0)
 
 # 0.10.1 - 2018-07-05
 
