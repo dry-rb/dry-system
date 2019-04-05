@@ -4,7 +4,7 @@
 [inchpages]: http://inch-ci.org/github/dry-rb/dry-system
 [chat]: https://dry-rb.zulipchat.com
 
-# dry-schema [![Join the chat at https://dry-rb.zulipchat.com](https://img.shields.io/badge/dry--rb-join%20chat-%23346b7a.svg)][chat]
+# dry-system [![Join the chat at https://dry-rb.zulipchat.com](https://img.shields.io/badge/dry--rb-join%20chat-%23346b7a.svg)][chat]
 
 
 [![Gem Version](https://badge.fury.io/rb/dry-system.svg)][gem]
