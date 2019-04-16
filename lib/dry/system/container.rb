@@ -227,7 +227,6 @@ module Dry
             else
               boot_local(name, opts, &block)
             end
-          self
 
           components[name] = component
         end
@@ -381,6 +380,7 @@ module Dry
         def load_paths!(*dirs)
           dirs.map(&root.method(:join)).each do |path|
             next if load_paths.include?(path)
+
             load_paths << path
             $LOAD_PATH.unshift(path.to_s)
           end
