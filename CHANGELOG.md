@@ -1,3 +1,11 @@
+# 0.12.0 to-be-released
+
+### Changed
+
+* Compatibility with dry-struct 1.0 and dry-types 1.0 (flash-gordon)
+
+[Compare v0.11.0...master](https://github.com/dry-rb/dry-system/compare/v0.11.0...master)
+
 # 0.11.0 - 2019-03-22
 
 ### Changed
