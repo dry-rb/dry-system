@@ -81,7 +81,7 @@ RSpec.describe 'Settings component' do
         <<~EOF
           Could not initialize settings. The following settings were invalid:
 
-          integer_value: type?(Integer, "foo")
+          integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
           coercible_value: invalid value for Integer(): "foo"
         EOF
       )

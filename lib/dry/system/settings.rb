@@ -37,7 +37,7 @@ module Dry
           attribute(*args)
         end
 
-        def self.load(root, env)
+        def self.init(root, env)
           env_data = load_files(root, env)
           attributes = {}
           errors = {}
