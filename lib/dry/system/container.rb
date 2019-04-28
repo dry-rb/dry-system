@@ -202,7 +202,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Optional component registration
-        #   MyApp.boot(:db, when: -> { !ENV['DB_URL'].empty? }) do |container|
+        #   MyApp.boot(:db, when_condition: -> { !ENV['DB_URL'].empty? }) do |container|
         #     start do
         #       require 'db'
         #       DB.configure(ENV['DB_URL'], logger: logger)
@@ -227,12 +227,13 @@ module Dry
         # @return [self]
         #
         # @api public
-        def boot(name, opts = {}, &block)
-          boot_condition = opts.delete(:when)
-
-          if boot_condition
-            raise(InvalidBootConditionTypeError, name) unless boot_condition.respond_to?(:call)
-            return unless boot_condition.call
+        def boot(name, when_condition: nil, **opts, &block)
+          if when_condition
+            begin
+              return unless when_condition.call
+            rescue NoMethodError => e
+              e.name == :call ? raise(InvalidBootConditionError, name) : raise
+            end
           end
 
           if components.key?(name)

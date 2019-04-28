@@ -71,7 +71,7 @@ module Dry
     # Error raised when trying to stop a component that hasn't started yet
     #
     # @api public
-    InvalidBootConditionTypeError = Class.new(StandardError) do
+    InvalidBootConditionError = Class.new(StandardError) do
       def initialize(component_name)
         super("undefined method `call' for component's condition +#{component_name}+")
       end

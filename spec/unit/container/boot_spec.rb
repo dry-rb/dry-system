@@ -145,7 +145,7 @@ RSpec.describe Dry::System::Container, '.boot' do
     }.to raise_error(Dry::System::DuplicatedComponentKeyError, /logger/)
   end
 
-  it 'allow setting namespace to true' do
+  it 'allows setting namespace to true' do
     system.boot(:api, namespace: true) do
       start do
         register(:client, 'connected')
@@ -155,27 +155,35 @@ RSpec.describe Dry::System::Container, '.boot' do
     expect(system['api.client']).to eql('connected')
   end
 
-  it 'allow conditions for booting' do
-    system.boot(:disabled_client, when: -> { false }) do
+  it 'allows conditions for booting' do
+    system.boot(:disabled_client, when_condition: -> { false }) do
       start { register(:disabled_client, 'connected') }
     end
 
-    system.boot(:enabled_client, when: -> { true }) do
+    system.boot(:enabled_client, when_condition: -> { true }) do
       start { register(:enabled_client, 'connected') }
     end
 
     expect(system['enabled_client']).to eql('connected')
 
-    expect { system['disabled_client'] }.
-      to raise_error(Dry::System::ComponentLoadError, /could not load component/)
+    expect { system['disabled_client'] }
+      .to raise_error(Dry::System::ComponentLoadError, /could not load component/)
   end
 
   it 'raises when booting condition has wrong type' do
     expect do
-      system.boot(:disabled_client, when: true) do
+      system.boot(:disabled_client, when_condition: true) do
         start { register(:disabled_client, 'connected') }
       end
-    end.to raise_error(Dry::System::InvalidBootConditionTypeError, /undefined method/)
+    end.to raise_error(Dry::System::InvalidBootConditionError, /undefined method/)
+  end
+
+  it 'raises when booting condition raises' do
+    expect do
+      system.boot(:disabled_client, when_condition: -> { raise }) do
+        start { register(:disabled_client, 'connected') }
+      end
+    end.to raise_error(RuntimeError)
   end
 
   it 'raises when namespace value is not valid' do
