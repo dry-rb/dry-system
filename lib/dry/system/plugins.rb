@@ -116,6 +116,9 @@ module Dry
 
       require 'dry/system/plugins/monitoring'
       register(:monitoring, Plugins::Monitoring)
+
+      require 'dry/system/plugins/dependency_graph'
+      register(:dependency_graph, Plugins::DependencyGraph)
     end
   end
 end
