@@ -5,11 +5,21 @@ module Dry
         class Stratagies
           extend Dry::Container::Mixin
 
+          def self.with_notifications(value)
+            @notifications = value
+            self
+          end
+
+          def self.__notifications__
+            @notifications
+          end
+
           class Kwargs < Dry::AutoInject::Strategies::Kwargs
           private
 
             def define_initialize(klass)
-              puts "HERE #{dependency_map.to_h} : #{klass}"
+              notifications = ::Dry::System::Plugins::DependencyGraph::Stratagies.__notifications__
+              notifications.instrument(:resolved_dependency, dependency_map: dependency_map.to_h, target_class: klass)
               super(klass)
             end
           end

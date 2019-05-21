@@ -3,15 +3,16 @@ require_relative 'system/container'
 require 'dry/events'
 require 'dry/monitor/notifications'
 
-App.finalize!
-
-p App.keys
-
-$events = []
-
 App[:notifications].subscribe(:resolved_dependency) do |event|
-  p event
+  puts "Event #{event.id}, payload: #{event.to_h}"
 end
+
+App[:notifications].subscribe(:registered_dependency) do |event|
+  puts "Event #{event.id}, payload: #{event.to_h}"
+end
+
+App.finalize!
+p App.keys
 
 App['service_with_dependency']
 user_repo = App['user_repo']

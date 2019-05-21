@@ -11,17 +11,27 @@ module Dry
           super
 
           system.use(:notifications)
-          system.strategies(Stratagies)
 
           system.after(:configure) do
             self[:notifications].register_event(:resolved_dependency)
             self[:notifications].register_event(:registered_dependency)
+
+            system.strategies(Stratagies.with_notifications(system[:notifications]))
           end
         end
 
         # @api private
         def self.dependencies
           'dry/events/publisher'
+        end
+
+        def register(key, contents = nil, options = {}, &block)
+          unless key.to_sym == :notifications
+            notifications = self[:notifications]
+            notifications.instrument(:registered_dependency, key: key)
+          end
+
+          super
         end
       end
     end
