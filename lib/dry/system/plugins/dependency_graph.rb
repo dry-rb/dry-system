@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/constants'
 require 'dry/system/plugins/dependency_graph/strategies'
 
@@ -27,6 +29,7 @@ module Dry
           'dry/events/publisher'
         end
 
+        # @api private
         def register(key, contents = nil, options = {}, &block)
           unless config.ignored_dependencies.include?(key.to_sym)
             notifications = self[:notifications]
