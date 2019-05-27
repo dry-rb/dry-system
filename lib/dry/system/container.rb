@@ -17,7 +17,6 @@ require 'dry/system/importer'
 require 'dry/system/component'
 require 'dry/system/constants'
 require 'dry/system/plugins'
-require 'dry/system/injector_stratagy'
 
 module Dry
   module System
