@@ -12,6 +12,8 @@ module Dry
 
           system.use(:notifications)
 
+          system.setting :ignored_dependencies, [:notifications]
+
           system.after(:configure) do
             self[:notifications].register_event(:resolved_dependency)
             self[:notifications].register_event(:registered_dependency)
@@ -26,7 +28,7 @@ module Dry
         end
 
         def register(key, contents = nil, options = {}, &block)
-          unless key.to_sym == :notifications
+          unless config.ignored_dependencies.include?(key.to_sym)
             notifications = self[:notifications]
             notifications.instrument(:registered_dependency, key: key)
           end

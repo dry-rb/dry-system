@@ -37,7 +37,6 @@ module Dry
 
       # @api private
       def key?(name)
-        puts "HERE #{name}"
         registry.key?(name)
       end
 
