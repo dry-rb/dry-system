@@ -1,18 +1,18 @@
-require "dry/system/container"
+require 'dry/system/container'
 
-RSpec.describe Dry::System::Container, ".injector" do
-  context "default injector" do
+RSpec.describe Dry::System::Container, '.injector' do
+  context 'default injector' do
     it 'works correct' do
       Test::Foo = Class.new
 
       Test::Container = Class.new(Dry::System::Container) do
-        register "foo", Test::Foo.new
+        register 'foo', Test::Foo.new
       end
 
       Test::Inject = Test::Container.injector
 
       injected_class = Class.new do
-        include Test::Inject["foo"]
+        include Test::Inject['foo']
       end
 
       obj = injected_class.new
@@ -24,12 +24,12 @@ RSpec.describe Dry::System::Container, ".injector" do
     end
   end
 
-  context "injector_options provided" do
-    it "builds an injector with the provided options" do
+  context 'injector_options provided' do
+    it 'builds an injector with the provided options' do
       Test::Foo = Class.new
 
       Test::Container = Class.new(Dry::System::Container) do
-        register "foo", Test::Foo.new
+        register 'foo', Test::Foo.new
       end
 
       Test::Inject = Test::Container.injector(strategies: {
@@ -38,7 +38,7 @@ RSpec.describe Dry::System::Container, ".injector" do
       })
 
       injected_class = Class.new do
-        include Test::Inject.australian["foo"]
+        include Test::Inject.australian['foo']
       end
 
       obj = injected_class.new

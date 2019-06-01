@@ -147,7 +147,7 @@ module Dry
           when Hash then importer.register(other)
           when Dry::Container::Namespace then super
           else
-            raise ArgumentError, "+other+ must be a hash of names and systems, or a Dry::Container namespace"
+            raise ArgumentError, '+other+ must be a hash of names and systems, or a Dry::Container namespace'
           end
         end
 
