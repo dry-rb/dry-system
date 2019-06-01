@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Plugins / Dependency Graph' do
   before do
     require SPEC_ROOT.join('fixtures/external_components/lib/external_components')
@@ -24,8 +26,13 @@ RSpec.describe 'Plugins / Dependency Graph' do
   let(:service) { Class.new { include Test::Import['logger'] }.new }
 
   before do
-    container[:notifications].subscribe(:resolved_dependency) { |e| events << e }
-    container[:notifications].subscribe(:registered_dependency) { |e| events << e }
+    container[:notifications].subscribe(:resolved_dependency) do |e|
+      events << e
+    end
+
+    container[:notifications].subscribe(:registered_dependency) do |e|
+      events << e
+    end
 
     container.register(:service, service)
     container.finalize!
@@ -46,10 +53,10 @@ RSpec.describe 'Plugins / Dependency Graph' do
 
     expect(events.map(&:payload)).to eq([
       { dependency_map: { logger: 'logger' }, target_class: service.class },
-      { key: "logger" },
+      { key: 'logger' },
       { key: :service },
       { key: :client },
-      { key: "mailer" }
+      { key: 'mailer' }
     ])
   end
 end
