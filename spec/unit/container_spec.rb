@@ -170,7 +170,7 @@ RSpec.describe Dry::System::Container do
 
       describe 'mismatch betwenn finalize name and registered component' do
         it 'raises a meaningful error' do
-          expect{
+          expect {
             container.start(:hell)
           }.to raise_error(Dry::System::InvalidComponentIdentifierError)
         end
