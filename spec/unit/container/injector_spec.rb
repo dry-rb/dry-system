@@ -36,7 +36,7 @@ RSpec.describe Dry::System::Container, '.injector' do
 
       Test::Inject = Test::Container.injector(strategies: {
                                                 default: Dry::AutoInject::Strategies::Args,
-        australian: Dry::AutoInject::Strategies::Args
+                                                australian: Dry::AutoInject::Strategies::Args
                                               })
 
       injected_class = Class.new do
