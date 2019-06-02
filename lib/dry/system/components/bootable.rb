@@ -161,11 +161,7 @@ module Dry
         #
         # @api public
         def config
-          if @config
-            @config
-          else
-            configure!
-          end
+          @config || configure!
         end
 
         # Return a list of lifecycle steps that were executed
