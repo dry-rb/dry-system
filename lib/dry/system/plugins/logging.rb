@@ -13,10 +13,10 @@ module Dry
           system.setting :log_dir, 'log'
 
           system.setting :log_levels, {
-                           development: Logger::DEBUG,
+            development: Logger::DEBUG,
                            test: Logger::DEBUG,
                            production: Logger::ERROR
-                         }
+          }
 
           system.setting :logger_class, ::Logger, reader: true
 

@@ -35,9 +35,9 @@ RSpec.describe Dry::System::Container, '.injector' do
       end
 
       Test::Inject = Test::Container.injector(strategies: {
-        default: Dry::AutoInject::Strategies::Args,
+                                                default: Dry::AutoInject::Strategies::Args,
         australian: Dry::AutoInject::Strategies::Args
-      })
+                                              })
 
       injected_class = Class.new do
         include Test::Inject.australian['foo']
