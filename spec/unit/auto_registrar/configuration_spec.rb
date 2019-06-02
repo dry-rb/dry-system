@@ -19,7 +19,7 @@ RSpec.describe Dry::System::AutoRegistrar::Configuration do
 
   describe 'add custom proc object to configuration' do
     it 'execute proc that was previously save' do
-      proc = Proc.new { |value| value + 1 }
+      proc = proc { |value| value + 1 }
       subject.instance(&proc)
       result = subject.instance.(5)
       expect(result).to eq 6
