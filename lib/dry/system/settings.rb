@@ -52,7 +52,7 @@ module Dry
             errors[key] = type_check if type_check.failure?
           end
 
-          raise InvalidSettingsError.new(errors) unless errors.empty?
+          raise InvalidSettingsError, errors unless errors.empty?
 
           new(attributes)
         end

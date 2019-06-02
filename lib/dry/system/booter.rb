@@ -108,7 +108,7 @@ module Dry
       # @api private
       def stop(name_or_component)
         call(name_or_component) do |component|
-          raise ComponentNotStartedError.new(name_or_component) unless booted.include?(component)
+          raise ComponentNotStartedError, name_or_component unless booted.include?(component)
 
           component.stop
           booted.delete(component)
