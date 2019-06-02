@@ -6,10 +6,10 @@ module Dry
   module System
     include Dry::Core::Constants
 
-    RB_EXT = '.rb'.freeze
-    RB_GLOB = '*.rb'.freeze
-    PATH_SEPARATOR = '/'.freeze
-    DEFAULT_SEPARATOR = '.'.freeze
+    RB_EXT = '.rb'
+    RB_GLOB = '*.rb'
+    PATH_SEPARATOR = '/'
+    DEFAULT_SEPARATOR = '.'
     WORD_REGEX = /\w+/.freeze
 
     DuplicatedComponentKeyError = Class.new(ArgumentError)

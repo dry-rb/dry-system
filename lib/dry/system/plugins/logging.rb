@@ -10,7 +10,7 @@ module Dry
         def self.extended(system)
           system.setting :logger, reader: true
 
-          system.setting :log_dir, 'log'.freeze
+          system.setting :log_dir, 'log'
 
           system.setting :log_levels, {
                            development: Logger::DEBUG,

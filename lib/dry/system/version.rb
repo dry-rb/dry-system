@@ -2,6 +2,6 @@
 
 module Dry
   module System
-    VERSION = '0.12.0'.freeze
+    VERSION = '0.12.0'
   end
 end

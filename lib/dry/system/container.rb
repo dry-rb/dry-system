@@ -75,8 +75,8 @@ module Dry
       setting :name
       setting :default_namespace
       setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
-      setting :system_dir, 'system'.freeze
-      setting :registrations_dir, 'container'.freeze
+      setting :system_dir, 'system'
+      setting :registrations_dir, 'container'
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
