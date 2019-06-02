@@ -620,7 +620,7 @@ module Dry
 
         # @api private
         def hooks
-          @__hooks__ ||= Hash.new { |h, k| h[k] = [] }
+          @hooks ||= Hash.new { |h, k| h[k] = [] }
         end
 
         # @api private
@@ -632,7 +632,7 @@ module Dry
             new_hooks[event].concat(klass.hooks[event])
           end
 
-          klass.instance_variable_set(:@__hooks__, new_hooks)
+          klass.instance_variable_set(:@hooks, new_hooks)
           super
         end
 

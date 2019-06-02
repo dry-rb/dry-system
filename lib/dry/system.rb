@@ -24,7 +24,7 @@ module Dry
 
     # @api private
     def self.providers
-      @__providers__ ||= ProviderRegistry.new
+      @providers ||= ProviderRegistry.new
     end
   end
 end
