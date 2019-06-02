@@ -1,9 +1,11 @@
-require "dry/core/class_builder"
-require "dry/types"
-require "dry/struct"
+# frozen_string_literal: true
 
-require "dry/system/settings/file_loader"
-require "dry/system/constants"
+require 'dry/core/class_builder'
+require 'dry/types'
+require 'dry/struct'
+
+require 'dry/system/settings/file_loader'
+require 'dry/system/constants'
 
 module Dry
   module System
@@ -20,7 +22,7 @@ module Dry
         end
 
         def call
-          Core::ClassBuilder.new(name: 'Configuration', parent: Settings::Configuration).call do |klass|
+          Core::ClassBuilder.new(name: 'Configuration', parent: Configuration).call do |klass|
             schema.each do |key, type|
               klass.setting(key, type)
             end
@@ -50,7 +52,7 @@ module Dry
             errors[key] = type_check if type_check.failure?
           end
 
-          raise InvalidSettingsError.new(errors) unless errors.empty?
+          raise InvalidSettingsError, errors unless errors.empty?
 
           new(attributes)
         end

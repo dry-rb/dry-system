@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/magic_comments_parser'
 
 RSpec.describe Dry::System::MagicCommentsParser, '.call' do

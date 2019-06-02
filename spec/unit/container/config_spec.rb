@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'dry/system/container'
 
 RSpec.describe Dry::System::Container, '.config' do
   subject(:config) { Test::Container.config }
-  let(:configuration) { proc { } }
+  let(:configuration) { proc {} }
 
   before do
     class Test::Container < Dry::System::Container

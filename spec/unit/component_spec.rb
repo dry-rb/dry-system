@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/component'
 
 RSpec.describe Dry::System::Component do
@@ -5,7 +7,7 @@ RSpec.describe Dry::System::Component do
 
   describe '.new' do
     it 'caches components' do
-      create = -> {
+      create = lambda {
         Dry::System::Component.new('foo.bar', namespace: 'foo')
       }
 
@@ -28,7 +30,7 @@ RSpec.describe Dry::System::Component do
     end
 
     it 'allows namespace to collide with the identifier' do
-      component = Dry::System::Component.new(:mailer, namespace: "mail", separator: ".")
+      component = Dry::System::Component.new(:mailer, namespace: 'mail', separator: '.')
       expect(component.identifier).to eql('mailer')
     end
   end

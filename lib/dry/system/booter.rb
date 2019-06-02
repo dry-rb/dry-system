@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/components/bootable'
 require 'dry/system/errors'
 require 'dry/system/constants'
@@ -49,9 +51,7 @@ module Dry
       def load_component(path)
         identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
 
-        unless components.exists?(identifier)
-          require path
-        end
+        require path unless components.exists?(identifier)
 
         self
       end
@@ -108,7 +108,7 @@ module Dry
       # @api private
       def stop(name_or_component)
         call(name_or_component) do |component|
-          raise ComponentNotStartedError.new(name_or_component) unless booted.include?(component)
+          raise ComponentNotStartedError, name_or_component unless booted.include?(component)
 
           component.stop
           booted.delete(component)
@@ -120,9 +120,7 @@ module Dry
       # @api private
       def call(name_or_component)
         with_component(name_or_component) do |component|
-          unless component
-            raise ComponentFileMismatchError.new(name, registered_booted_keys)
-          end
+          raise ComponentFileMismatchError.new(name, registered_booted_keys) unless component
 
           yield(component) if block_given?
 
@@ -153,7 +151,10 @@ module Dry
 
       # @api private
       def require_boot_file(identifier)
-        boot_file = boot_files.detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
+        boot_file = boot_files.detect { |path|
+          Pathname(path).basename(RB_EXT).to_s == identifier.to_s
+        }
+
         require boot_file if boot_file
       end
 

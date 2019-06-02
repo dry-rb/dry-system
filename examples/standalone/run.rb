@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/setup'
 require_relative 'system/container'
 require 'dry/events'
@@ -18,4 +20,3 @@ App['service_with_dependency']
 user_repo = App['user_repo']
 
 puts user_repo.db.inspect
-

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dry
   module System
     class MagicCommentsParser
@@ -6,7 +8,7 @@ module Dry
 
       COERCIONS = {
         'true' => true,
-        'false' => false,
+        'false' => false
       }.freeze
 
       def self.call(file_name)
@@ -20,8 +22,6 @@ module Dry
           end
         end
       end
-
-      private
 
       def self.coerce(value)
         COERCIONS.fetch(value) { value }

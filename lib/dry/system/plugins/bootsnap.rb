@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dry
   module System
     module Plugins
@@ -28,12 +30,13 @@ module Dry
         # @api public
         def setup_bootsnap
           return unless bootsnap_available?
+
           ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join('tmp/cache').to_s))
         end
 
         # @api private
         def bootsnap_available?
-          RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.3.0" && RUBY_VERSION < "2.5.0"
+          RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.3.0' && RUBY_VERSION < '2.5.0'
         end
       end
     end

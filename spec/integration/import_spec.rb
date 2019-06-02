@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/stubs'
 
 RSpec.describe 'Lazy-booting external deps' do

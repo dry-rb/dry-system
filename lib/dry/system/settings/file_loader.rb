@@ -1,4 +1,6 @@
-require "dry/system/settings/file_parser"
+# frozen_string_literal: true
+
+require 'dry/system/settings/file_parser'
 
 module Dry
   module System
@@ -18,7 +20,7 @@ module Dry
 
         def files(root, env)
           [
-            root.join(".env"),
+            root.join('.env'),
             root.join(".env.#{env}")
           ].compact
         end

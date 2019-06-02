@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::System::Container, '.use' do
   subject(:system) do
     Class.new(Dry::System::Container)
@@ -73,14 +75,14 @@ RSpec.describe Dry::System::Container, '.use' do
     context 'plugin with a block' do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
-          setting :foo, "bar"
+          setting :foo, 'bar'
         end
       end
 
       it 'enables a plugin which evaluates its block' do
         system.use(:test_plugin)
         expect(system).to be_plugin_enabled
-        expect(system.config.foo).to eql("bar")
+        expect(system.config.foo).to eql('bar')
       end
     end
 
@@ -145,8 +147,8 @@ RSpec.describe Dry::System::Container, '.use' do
     end
 
     it 'enables a plugin' do
-      system.use(:test_plugin, value: "bar")
-      expect(system.plugin_test).to eql("bar")
+      system.use(:test_plugin, value: 'bar')
+      expect(system.plugin_test).to eql('bar')
     end
   end
 end

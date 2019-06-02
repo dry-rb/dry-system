@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::System::Container do
   subject(:system) do
     Class.new(Dry::System::Container) do
@@ -13,12 +15,11 @@ RSpec.describe Dry::System::Container do
         end
 
         def say(word, &block)
-          block.call if block
+          block&.call
           word
         end
 
-        def other
-        end
+        def other; end
       end
     end
 
@@ -42,12 +43,12 @@ RSpec.describe Dry::System::Container do
       block_result = []
       block = proc { block_result << true }
 
-      result = object.say("hi", &block)
+      result = object.say('hi', &block)
 
       expect(block_result).to eql([true])
-      expect(result).to eql("hi")
+      expect(result).to eql('hi')
 
-      expect(captured).to eql([[:monitoring, :object, :say, ["hi"]]])
+      expect(captured).to eql([[:monitoring, :object, :say, ['hi']]])
     end
 
     it 'monitors specified object method calls' do
@@ -59,10 +60,10 @@ RSpec.describe Dry::System::Container do
 
       object = system[:object]
 
-      object.say("hi")
+      object.say('hi')
       object.other
 
-      expect(captured).to eql([[:monitoring, :object, :say, ["hi"]]])
+      expect(captured).to eql([[:monitoring, :object, :say, ['hi']]])
     end
   end
 end

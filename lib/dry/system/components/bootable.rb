@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/lifecycle'
 require 'dry/system/settings'
 require 'dry/system/components/config'
@@ -65,10 +67,12 @@ module Dry
         #   @return [Symbol,String] default namespace for the container keys
         attr_reader :namespace
 
+        TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
+
         # @api private
         def initialize(identifier, options = {}, &block)
           @identifier = identifier
-          @triggers = { before: Hash.new { |h, k| h[k] = [] }, after: Hash.new { |h, k| h[k] = [] } }
+          @triggers = { before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup }
           @options = block ? options.merge(block: block) : options
           @namespace = options[:namespace]
           finalize = options[:finalize] || DEFAULT_FINALIZE
@@ -159,11 +163,7 @@ module Dry
         #
         # @api public
         def config
-          if @config
-            @config
-          else
-            configure!
-          end
+          @config || configure!
         end
 
         # Return a list of lifecycle steps that were executed
@@ -241,8 +241,8 @@ module Dry
         #
         # @api private
         def boot_file
-          container_boot_files.
-            detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
+          container_boot_files
+            .detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
         end
 
         # Return path to boot dir
@@ -290,7 +290,9 @@ module Dry
           when nil
             container
           else
-            raise RuntimeError, "+namespace+ boot option must be true, string or symbol #{namespace.inspect} given."
+            raise <<-STR
+              +namespace+ boot option must be true, string or symbol #{namespace.inspect} given.
+            STR
           end
         end
 

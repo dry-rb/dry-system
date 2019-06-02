@@ -1,4 +1,6 @@
-require "dry/system"
+# frozen_string_literal: true
+
+require 'dry/system'
 
 Dry::System.register_component(:logger, provider: :external_components) do
   settings do

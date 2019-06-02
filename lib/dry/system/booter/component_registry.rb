@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dry
   module System
     class Booter
@@ -25,11 +27,7 @@ module Dry
         def [](name)
           component = components.detect { |component| component.identifier == name }
 
-          if component
-            component
-          else
-            raise InvalidComponentIdentifierError, name
-          end
+          component || raise(InvalidComponentIdentifierError, name)
         end
       end
     end

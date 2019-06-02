@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/inflector'
 require 'dry/system/loader'
 require 'singleton'
@@ -28,7 +30,7 @@ RSpec.describe Dry::System::Loader, '#call' do
     let(:constant) { Test::Bar }
 
     before do
-      module Test;class Bar;end;end
+      module Test; class Bar; end; end
     end
 
     it_behaves_like 'object loader'
@@ -40,7 +42,7 @@ RSpec.describe Dry::System::Loader, '#call' do
     let(:constant) { Test::Bars }
 
     before do
-      module Test;class Bars;end;end
+      module Test; class Bars; end; end
     end
 
     it_behaves_like 'object loader'

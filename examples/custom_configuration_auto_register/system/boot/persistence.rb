@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 App.boot(:persistence) do |persistence|
   init do
     require 'sequel'

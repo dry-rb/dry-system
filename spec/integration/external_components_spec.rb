@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'External Components' do
   subject(:container) do
     module Test

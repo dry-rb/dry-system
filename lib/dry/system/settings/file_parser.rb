@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Dry
   module System
     module Settings
       class FileParser
         # Regex extracted from dotenv gem
         # https://github.com/bkeepers/dotenv/blob/master/lib/dotenv/parser.rb#L14
-        LINE = %r(
+        LINE = /
           \A
           \s*
           (?:export\s+)?    # optional export
@@ -20,7 +22,7 @@ module Dry
           \s*
           (?:\#.*)?         # optional comment
           \z
-        )x
+        /x.freeze
 
         def call(file)
           File.readlines(file).each_with_object({}) do |line, hash|
@@ -35,7 +37,7 @@ module Dry
         def parse_line(line, hash)
           if (match = line.match(LINE))
             key, value = match.captures
-            hash[key] = parse_value(value || "")
+            hash[key] = parse_value(value || '')
           end
           hash
         end

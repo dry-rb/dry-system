@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::System::Container do
   subject(:system) do
     Class.new(Dry::System::Container)
@@ -9,7 +11,7 @@ RSpec.describe Dry::System::Container do
         register(:test, true)
       end
 
-      system.configure { }
+      system.configure {}
 
       expect(system[:test]).to be(true)
     end
@@ -25,7 +27,7 @@ RSpec.describe Dry::System::Container do
         end
       end
 
-      descendant.configure { }
+      descendant.configure {}
 
       expect(descendant[:test_1]).to be(true)
       expect(descendant[:test_2]).to be(true)

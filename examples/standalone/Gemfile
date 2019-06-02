@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
+gem 'dry-events'
+gem 'dry-monitor'
 gem 'dry-system', path: '../..'
 gem 'sequel'
 gem 'sqlite3'
-gem 'dry-events'
-gem 'dry-monitor'

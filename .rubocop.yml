@@ -55,5 +55,19 @@ Style/AccessModifierDeclarations:
   Enabled: false
 
 Style/BlockDelimiters:
-  EnforcedStyle: semantic
+  Enabled: false
 
+Layout/IndentFirstArrayElement:
+  EnforcedStyle: consistent
+
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
+Lint/HandleExceptions:
+  Exclude:
+    - 'spec/spec_helper.rb'
+
+Naming/FileName:
+  Exclude:
+    - 'lib/dry-*.rb'

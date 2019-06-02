@@ -1,4 +1,6 @@
-require "dry/system"
+# frozen_string_literal: true
+
+require 'dry/system'
 
 Dry::System.register_component(:logger, provider: :alt) do
   init do

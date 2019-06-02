@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 require 'dry-auto_inject'
@@ -73,8 +75,8 @@ module Dry
       setting :name
       setting :default_namespace
       setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
-      setting :system_dir, 'system'.freeze
-      setting :registrations_dir, 'container'.freeze
+      setting :system_dir, 'system'
+      setting :registrations_dir, 'container'
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
@@ -82,7 +84,7 @@ module Dry
       setting :auto_registrar, Dry::System::AutoRegistrar
       setting :manual_registrar, Dry::System::ManualRegistrar
       setting :importer, Dry::System::Importer
-      setting(:components, {}, reader: true) { |v| v.dup }
+      setting(:components, {}, reader: true, &:dup)
 
       class << self
         def strategies(value = nil)
@@ -147,7 +149,9 @@ module Dry
           when Hash then importer.register(other)
           when Dry::Container::Namespace then super
           else
-            raise ArgumentError, '+other+ must be a hash of names and systems, or a Dry::Container namespace'
+            raise ArgumentError, <<-STR
+              +other+ must be a hash of names and systems, or a Dry::Container namespace
+            STR
           end
         end
 
@@ -226,7 +230,9 @@ module Dry
         # @api public
         def boot(name, opts = {}, &block)
           if components.key?(name)
-            raise DuplicatedComponentKeyError, "Bootable component #{name.inspect} was already registered"
+            raise DuplicatedComponentKeyError, <<-STR
+              Bootable component #{name.inspect} was already registered
+            STR
           end
 
           component =
@@ -253,7 +259,9 @@ module Dry
 
         # @api private
         def boot_local(identifier, namespace: nil, &block)
-          component = Components::Bootable.new(identifier, container: self, namespace: namespace, &block)
+          component = Components::Bootable.new(
+            identifier, container: self, namespace: namespace, &block
+          )
 
           booter.register_component(component)
 
@@ -467,7 +475,7 @@ module Dry
         # @param options [Hash] injector options
         #
         # @api public
-        def injector(options = { strategies: self.strategies })
+        def injector(options = { strategies: strategies })
           Dry::AutoInject(self, options)
         end
 
@@ -557,7 +565,7 @@ module Dry
               namespace: config.default_namespace,
               separator: config.namespace_separator,
               inflector: config.inflector,
-              **options,
+              **options
             )
           end
         end
@@ -566,9 +574,7 @@ module Dry
         def require_component(component)
           return if key?(component.identifier)
 
-          unless component.file_exists?(load_paths)
-            raise FileNotFoundError, component
-          end
+          raise FileNotFoundError, component unless component.file_exists?(load_paths)
 
           require_path(component.path)
 
@@ -602,9 +608,7 @@ module Dry
                 load_imported_component(component.namespaced(root_key))
               end
 
-              if !key?(key)
-                load_local_component(component)
-              end
+              load_local_component(component) unless key?(key)
             end
           end
 
@@ -618,7 +622,7 @@ module Dry
 
         # @api private
         def hooks
-          @__hooks__ ||= Hash.new { |h, k| h[k] = [] }
+          @hooks ||= Hash.new { |h, k| h[k] = [] }
         end
 
         # @api private
@@ -630,7 +634,7 @@ module Dry
             new_hooks[event].concat(klass.hooks[event])
           end
 
-          klass.instance_variable_set(:@__hooks__, new_hooks)
+          klass.instance_variable_set(:@hooks, new_hooks)
           super
         end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dry
   module System
     # Error raised when the container tries to load a component with missing
@@ -15,7 +17,13 @@ module Dry
     # @api public
     ComponentFileMismatchError = Class.new(StandardError) do
       def initialize(component)
-        super("Boot file for component #{component.identifier.inspect} not found. Container boot files under #{component.boot_path}: #{component.container_boot_files.inspect}")
+        path = component.boot_path
+        files = component.container_boot_files
+
+        super(<<-STR)
+          Boot file for component #{component.identifier.inspect} not found.
+          Container boot files under #{path}: #{files.inspect}")
+        STR
       end
     end
 

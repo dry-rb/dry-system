@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/constants'
 
 module Dry
@@ -62,12 +64,12 @@ module Dry
 
       # @api private
       def self.registry
-        @__registry__ ||= {}
+        @registry ||= {}
       end
 
       # @api private
       def self.loaded_dependencies
-        @__loaded_dependencies__ ||= []
+        @loaded_dependencies ||= []
       end
 
       # Enable a plugin
@@ -93,13 +95,13 @@ module Dry
 
       # @api private
       def inherited(klass)
-        klass.instance_variable_set(:@__enabled_plugins__, enabled_plugins.dup)
+        klass.instance_variable_set(:@enabled_plugins, enabled_plugins.dup)
         super
       end
 
       # @api private
       def enabled_plugins
-        @__enabled_plugins__ ||= []
+        @enabled_plugins ||= []
       end
 
       require 'dry/system/plugins/bootsnap'

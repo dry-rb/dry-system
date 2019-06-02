@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/constants'
 require 'dry/system/magic_comments_parser'
 require 'dry/system/auto_registrar/configuration'
@@ -35,7 +37,9 @@ module Dry
           next if !component.auto_register? || registration_config.exclude.(component)
 
           container.require_component(component) do
-            register(component.identifier, memoize: registration_config.memoize) { registration_config.instance.(component) }
+            register(component.identifier, memoize: registration_config.memoize) {
+              registration_config.instance.(component)
+            }
           end
         end
       end
@@ -44,10 +48,10 @@ module Dry
 
       # @api private
       def components(dir)
-        files(dir).
-          map { |file_name| [file_name, file_options(file_name)] }.
-          map { |(file_name, options)| component(relative_path(dir, file_name), **options) }.
-          reject { |component| key?(component.identifier) }
+        files(dir)
+          .map { |file_name| [file_name, file_options(file_name)] }
+          .map { |(file_name, options)| component(relative_path(dir, file_name), **options) }
+          .reject { |component| key?(component.identifier) }
       end
 
       # @api private

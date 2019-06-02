@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/components'
 
 RSpec.describe 'Settings component' do
@@ -12,7 +14,7 @@ RSpec.describe 'Settings component' do
 
       boot(:settings, from: :system) do
         before(:init) do
-          require_from_root "types"
+          require_from_root 'types'
         end
 
         settings do
@@ -52,7 +54,7 @@ RSpec.describe 'Settings component' do
 
         boot(:settings, from: :system) do
           before(:init) do
-            require_from_root "types"
+            require_from_root 'types'
           end
 
           settings do
@@ -100,7 +102,7 @@ RSpec.describe 'Settings component' do
 
         boot(:settings, from: :system) do
           before(:init) do
-            require_from_root "types"
+            require_from_root 'types'
           end
 
           settings do

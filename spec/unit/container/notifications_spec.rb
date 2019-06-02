@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::System::Container do
   subject(:system) do
     Class.new(Dry::System::Container) do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 
 RSpec.describe Dry::System::Container, '.boot' do
@@ -66,7 +68,7 @@ RSpec.describe Dry::System::Container, '.boot' do
     it 'uses defaults' do
       system.boot(:api) do
         settings do
-          key :token, Types::String.default('xxx'.freeze)
+          key :token, Types::String.default('xxx')
         end
 
         start do

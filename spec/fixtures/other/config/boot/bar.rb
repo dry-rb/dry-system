@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Test::Container.boot(:bar, namespace: 'test') do |container|
   init do
     module Test
