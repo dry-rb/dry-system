@@ -21,8 +21,6 @@ module Dry
         end
       end
 
-      private
-
       def self.coerce(value)
         COERCIONS.fetch(value) { value }
       end
