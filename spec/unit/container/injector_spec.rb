@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/container'
 
 RSpec.describe Dry::System::Container, '.injector' do

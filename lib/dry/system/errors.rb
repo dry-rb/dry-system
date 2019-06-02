@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dry
   module System
     # Error raised when the container tries to load a component with missing

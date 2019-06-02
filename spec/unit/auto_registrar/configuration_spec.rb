@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/auto_registrar/configuration'
 
 RSpec.describe Dry::System::AutoRegistrar::Configuration do

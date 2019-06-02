@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/components/bootable'
 require 'dry/system/errors'
 require 'dry/system/constants'

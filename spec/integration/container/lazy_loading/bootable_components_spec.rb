@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Lazy loading bootable components' do
   describe 'Booting component when resolving another components with bootable component as root key' do
     before do

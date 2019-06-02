@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/container'
 
 class App < Dry::System::Container

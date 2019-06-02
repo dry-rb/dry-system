@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/components'
 
 RSpec.describe 'Settings component' do

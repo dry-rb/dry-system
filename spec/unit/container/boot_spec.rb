@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::System::Container, '.boot' do
   subject(:system) { Test::App }
 

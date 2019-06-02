@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/lifecycle'
 require 'dry/system/settings'
 require 'dry/system/components/config'

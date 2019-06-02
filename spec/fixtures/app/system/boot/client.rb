@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Test::Container.boot(:client) do |container|
   module Test
     class Client

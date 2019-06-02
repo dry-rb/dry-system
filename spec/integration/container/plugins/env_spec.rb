@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Plugins / Env' do
   context 'with default settings' do
     subject(:system) do

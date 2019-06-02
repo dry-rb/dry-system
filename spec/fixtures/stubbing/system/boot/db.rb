@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Test::Container.boot(:db) do |container|
   module Test
     class DB

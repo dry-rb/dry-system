@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Test::Container.namespace(:test) do |container|
   module Test
     module Bar

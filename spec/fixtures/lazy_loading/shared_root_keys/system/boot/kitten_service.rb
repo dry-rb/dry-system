@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Test::Container.boot(:kitten_service, namespace: true) do |container|
   init do
     module KittenService

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dry/system/constants'
 require 'dry/system/magic_comments_parser'
 require 'dry/system/auto_registrar/configuration'

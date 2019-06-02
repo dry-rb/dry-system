@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Test::Container.boot(:logger) do |container|
   init do
     require 'logger'

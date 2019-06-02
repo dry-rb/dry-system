@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Plugins / Bootsnap' do
   subject(:system) do
     Class.new(Dry::System::Container) do

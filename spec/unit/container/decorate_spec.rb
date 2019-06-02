@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'delegate'
 
 RSpec.describe Dry::System::Container do
