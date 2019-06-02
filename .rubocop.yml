@@ -67,3 +67,7 @@ Style/ClassAndModuleChildren:
 Lint/HandleExceptions:
   Exclude:
     - 'spec/spec_helper.rb'
+
+Naming/FileName:
+  Exclude:
+    - 'lib/dry-*.rb'
