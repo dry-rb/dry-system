@@ -602,7 +602,7 @@ module Dry
                 load_imported_component(component.namespaced(root_key))
               end
 
-              load_local_component(component) if !key?(key)
+              load_local_component(component) unless key?(key)
             end
           end
 
