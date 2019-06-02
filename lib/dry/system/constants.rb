@@ -16,11 +16,11 @@ module Dry
     InvalidSettingsError = Class.new(ArgumentError) do
       # @api private
       def initialize(attributes)
-        message = <<~EOF
+        message = <<~STR
           Could not initialize settings. The following settings were invalid:
 
           #{attributes_errors(attributes).join("\n")}
-        EOF
+        STR
         super(message)
       end
 
