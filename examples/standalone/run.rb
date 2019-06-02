@@ -20,4 +20,3 @@ App['service_with_dependency']
 user_repo = App['user_repo']
 
 puts user_repo.db.inspect
-
