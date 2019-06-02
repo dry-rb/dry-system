@@ -140,10 +140,10 @@ RSpec.describe Dry::System::Container, '.boot' do
   end
 
   it 'raises when a duplicated identifier was used' do
-    system.boot(:logger) { }
+    system.boot(:logger) {}
 
     expect {
-      system.boot(:logger) { }
+      system.boot(:logger) {}
     }.to raise_error(Dry::System::DuplicatedComponentKeyError, /logger/)
   end
 
