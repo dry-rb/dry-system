@@ -11,7 +11,6 @@ end
 begin
   require 'byebug'
 rescue LoadError; end
-
 SPEC_ROOT = Pathname(__FILE__).dirname
 
 Dir[SPEC_ROOT.join('support/*.rb').to_s].each { |f| require f }
