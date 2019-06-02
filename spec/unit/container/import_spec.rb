@@ -7,7 +7,7 @@ RSpec.describe Dry::System::Container, '.import' do
 
   let(:db) do
     Class.new(Dry::System::Container) do
-      register(:users, %w(jane joe))
+      register(:users, %w[jane joe])
     end
   end
 
@@ -18,7 +18,7 @@ RSpec.describe Dry::System::Container, '.import' do
 
     app.finalize!
 
-    expect(app['persistence.users']).to eql(%w(jane joe))
+    expect(app['persistence.users']).to eql(%w[jane joe])
   end
 
   describe 'import module' do
