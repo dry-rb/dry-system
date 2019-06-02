@@ -15,7 +15,7 @@ RSpec.describe Dry::System::Container do
         end
 
         def say(word, &block)
-          block.call if block
+          block&.call
           word
         end
 
