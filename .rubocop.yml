@@ -63,3 +63,7 @@ Layout/IndentFirstArrayElement:
 Style/ClassAndModuleChildren:
   Exclude:
     - 'spec/**/*_spec.rb'
+
+Lint/HandleExceptions:
+  Exclude:
+    - 'spec/spec_helper.rb'
