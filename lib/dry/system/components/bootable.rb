@@ -288,7 +288,7 @@ module Dry
           when nil
             container
           else
-            raise RuntimeError, "+namespace+ boot option must be true, string or symbol #{namespace.inspect} given."
+            raise "+namespace+ boot option must be true, string or symbol #{namespace.inspect} given."
           end
         end
 
