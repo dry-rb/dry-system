@@ -16,10 +16,10 @@ RSpec.describe 'Lazy loading bootable components' do
 
     context 'Single container' do
       it 'boots the component and can resolve multiple other components registered using the same root key' do
-        expect(Test::Container["kitten_service.fetch_kitten"]).to be
-        expect(Test::Container.keys).to include("kitten_service.client", "kitten_service.fetch_kitten")
-        expect(Test::Container["kitten_service.submit_kitten"]).to be
-        expect(Test::Container.keys).to include("kitten_service.client", "kitten_service.fetch_kitten", "kitten_service.submit_kitten")
+        expect(Test::Container['kitten_service.fetch_kitten']).to be
+        expect(Test::Container.keys).to include('kitten_service.client', 'kitten_service.fetch_kitten')
+        expect(Test::Container['kitten_service.submit_kitten']).to be
+        expect(Test::Container.keys).to include('kitten_service.client', 'kitten_service.fetch_kitten', 'kitten_service.submit_kitten')
       end
     end
 
@@ -33,10 +33,10 @@ RSpec.describe 'Lazy loading bootable components' do
       end
 
       it 'boots the component and can resolve multiple other components registered using the same root key' do
-        expect(Test::AnotherContainer["core.kitten_service.fetch_kitten"]).to be
-        expect(Test::AnotherContainer.keys).to include("core.kitten_service.client", "core.kitten_service.fetch_kitten")
-        expect(Test::AnotherContainer["core.kitten_service.submit_kitten"]).to be
-        expect(Test::AnotherContainer.keys).to include("core.kitten_service.client", "core.kitten_service.fetch_kitten", "core.kitten_service.submit_kitten")
+        expect(Test::AnotherContainer['core.kitten_service.fetch_kitten']).to be
+        expect(Test::AnotherContainer.keys).to include('core.kitten_service.client', 'core.kitten_service.fetch_kitten')
+        expect(Test::AnotherContainer['core.kitten_service.submit_kitten']).to be
+        expect(Test::AnotherContainer.keys).to include('core.kitten_service.client', 'core.kitten_service.fetch_kitten', 'core.kitten_service.submit_kitten')
       end
     end
   end

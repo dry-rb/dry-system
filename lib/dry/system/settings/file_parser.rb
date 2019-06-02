@@ -37,7 +37,7 @@ module Dry
         def parse_line(line, hash)
           if (match = line.match(LINE))
             key, value = match.captures
-            hash[key] = parse_value(value || "")
+            hash[key] = parse_value(value || '')
           end
           hash
         end

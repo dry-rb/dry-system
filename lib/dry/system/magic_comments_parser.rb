@@ -8,7 +8,7 @@ module Dry
 
       COERCIONS = {
         'true' => true,
-        'false' => false,
+        'false' => false
       }.freeze
 
       def self.call(file_name)

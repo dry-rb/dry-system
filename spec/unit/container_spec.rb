@@ -94,10 +94,10 @@ RSpec.describe Dry::System::Container do
         )
       end
 
-      it "is a no op if a matching system is already registered" do
-        container.register "test.no_matching_file", Object.new
+      it 'is a no op if a matching system is already registered' do
+        container.register 'test.no_matching_file', Object.new
 
-        expect { container.load_component("test.no_matching_file") }.not_to raise_error
+        expect { container.load_component('test.no_matching_file') }.not_to raise_error
       end
     end
 
@@ -168,8 +168,8 @@ RSpec.describe Dry::System::Container do
         )
       end
 
-      describe "mismatch betwenn finalize name and registered component" do
-        it "raises a meaningful error" do
+      describe 'mismatch betwenn finalize name and registered component' do
+        it 'raises a meaningful error' do
           expect{
             container.start(:hell)
           }.to raise_error(Dry::System::InvalidComponentIdentifierError)

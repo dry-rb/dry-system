@@ -15,6 +15,6 @@ RSpec.describe 'Lazy-loading manual registration files' do
 
   it 'loads a manual registration file if the component could not be found' do
     expect(Test::Container['foo.special']).to be_a(Test::Foo)
-    expect(Test::Container['foo.special'].name).to eq "special"
+    expect(Test::Container['foo.special'].name).to eq 'special'
   end
 end

@@ -40,6 +40,5 @@ module Dry
         super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{message}")
       end
     end
-
   end
 end

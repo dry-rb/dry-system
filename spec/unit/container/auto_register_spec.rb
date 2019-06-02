@@ -65,7 +65,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     end
 
     context 'with default registration options' do
-      it "does not memoize results" do
+      it 'does not memoize results' do
         container.auto_register!('components')
 
         expect(container['foo']).to be_an_instance_of(Foo)
@@ -75,7 +75,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
 
     context 'with explicit overrides' do
       context 'with memoization enabled' do
-        it "memoizes results" do
+        it 'memoizes results' do
           container.auto_register!('components') do |config|
             config.memoize = true
           end
@@ -86,7 +86,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
       end
 
       context 'with memoization disabled' do
-        it "does not memoize results" do
+        it 'does not memoize results' do
           container.auto_register!('components') do |config|
             config.memoize = false
           end

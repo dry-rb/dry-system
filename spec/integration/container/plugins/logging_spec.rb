@@ -24,9 +24,9 @@ RSpec.describe 'Plugins / Logging' do
     end
 
     it 'logs to development.log' do
-      logger.info "info message"
+      logger.info 'info message'
 
-      expect(log_file_content).to include("info message")
+      expect(log_file_content).to include('info message')
     end
   end
 end

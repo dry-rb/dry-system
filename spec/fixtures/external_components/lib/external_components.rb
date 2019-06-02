@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system"
+require 'dry/system'
 
 Dry::System.register_provider(
   :external_components,

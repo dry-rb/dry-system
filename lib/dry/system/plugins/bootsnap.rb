@@ -35,7 +35,7 @@ module Dry
 
         # @api private
         def bootsnap_available?
-          RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.3.0" && RUBY_VERSION < "2.5.0"
+          RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.3.0' && RUBY_VERSION < '2.5.0'
         end
       end
     end

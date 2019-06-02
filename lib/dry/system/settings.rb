@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "dry/core/class_builder"
-require "dry/types"
-require "dry/struct"
+require 'dry/core/class_builder'
+require 'dry/types'
+require 'dry/struct'
 
-require "dry/system/settings/file_loader"
-require "dry/system/constants"
+require 'dry/system/settings/file_loader'
+require 'dry/system/constants'
 
 module Dry
   module System

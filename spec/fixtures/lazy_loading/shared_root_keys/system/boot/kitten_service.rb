@@ -9,6 +9,6 @@ Test::Container.boot(:kitten_service, namespace: true) do |container|
   end
 
   start do
-    register "client", KittenService::Client.new
+    register 'client', KittenService::Client.new
   end
 end
