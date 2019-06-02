@@ -85,6 +85,14 @@ module Dry
       setting(:components, {}, reader: true) { |v| v.dup }
 
       class << self
+        def strategies(value = nil)
+          if value
+            @strategies = value
+          else
+            @strategies ||= Dry::AutoInject::Strategies
+          end
+        end
+
         extend Dry::Core::Deprecations['Dry::System::Container']
 
         # Configures the container
@@ -139,7 +147,7 @@ module Dry
           when Hash then importer.register(other)
           when Dry::Container::Namespace then super
           else
-            raise ArgumentError, "+other+ must be a hash of names and systems, or a Dry::Container namespace"
+            raise ArgumentError, '+other+ must be a hash of names and systems, or a Dry::Container namespace'
           end
         end
 
@@ -459,7 +467,7 @@ module Dry
         # @param options [Hash] injector options
         #
         # @api public
-        def injector(options = {})
+        def injector(options = { strategies: self.strategies })
           Dry::AutoInject(self, options)
         end
 
