@@ -22,7 +22,7 @@ module Dry
         end
 
         def call
-          Core::ClassBuilder.new(name: 'Configuration', parent: Settings::Configuration).call do |klass|
+          Core::ClassBuilder.new(name: 'Configuration', parent: Configuration).call do |klass|
             schema.each do |key, type|
               klass.setting(key, type)
             end

@@ -67,10 +67,12 @@ module Dry
         #   @return [Symbol,String] default namespace for the container keys
         attr_reader :namespace
 
+        TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
+
         # @api private
         def initialize(identifier, options = {}, &block)
           @identifier = identifier
-          @triggers = { before: Hash.new { |h, k| h[k] = [] }, after: Hash.new { |h, k| h[k] = [] } }
+          @triggers = { before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup }
           @options = block ? options.merge(block: block) : options
           @namespace = options[:namespace]
           finalize = options[:finalize] || DEFAULT_FINALIZE
@@ -288,7 +290,9 @@ module Dry
           when nil
             container
           else
-            raise "+namespace+ boot option must be true, string or symbol #{namespace.inspect} given."
+            raise <<-STR
+              +namespace+ boot option must be true, string or symbol #{namespace.inspect} given.
+            STR
           end
         end
 

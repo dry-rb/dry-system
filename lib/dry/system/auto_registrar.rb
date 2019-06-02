@@ -37,7 +37,9 @@ module Dry
           next if !component.auto_register? || registration_config.exclude.(component)
 
           container.require_component(component) do
-            register(component.identifier, memoize: registration_config.memoize) { registration_config.instance.(component) }
+            register(component.identifier, memoize: registration_config.memoize) {
+              registration_config.instance.(component)
+            }
           end
         end
       end

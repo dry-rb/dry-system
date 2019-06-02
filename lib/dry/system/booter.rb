@@ -151,7 +151,10 @@ module Dry
 
       # @api private
       def require_boot_file(identifier)
-        boot_file = boot_files.detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
+        boot_file = boot_files.detect { |path|
+          Pathname(path).basename(RB_EXT).to_s == identifier.to_s
+        }
+
         require boot_file if boot_file
       end
 

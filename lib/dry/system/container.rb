@@ -149,7 +149,9 @@ module Dry
           when Hash then importer.register(other)
           when Dry::Container::Namespace then super
           else
-            raise ArgumentError, '+other+ must be a hash of names and systems, or a Dry::Container namespace'
+            raise ArgumentError, <<-STR
+              +other+ must be a hash of names and systems, or a Dry::Container namespace
+            STR
           end
         end
 
@@ -228,7 +230,9 @@ module Dry
         # @api public
         def boot(name, opts = {}, &block)
           if components.key?(name)
-            raise DuplicatedComponentKeyError, "Bootable component #{name.inspect} was already registered"
+            raise DuplicatedComponentKeyError, <<-STR
+              Bootable component #{name.inspect} was already registered
+            STR
           end
 
           component =
@@ -255,7 +259,9 @@ module Dry
 
         # @api private
         def boot_local(identifier, namespace: nil, &block)
-          component = Components::Bootable.new(identifier, container: self, namespace: namespace, &block)
+          component = Components::Bootable.new(
+            identifier, container: self, namespace: namespace, &block
+          )
 
           booter.register_component(component)
 
