@@ -46,10 +46,10 @@ module Dry
 
       # @api private
       def components(dir)
-        files(dir).
-          map { |file_name| [file_name, file_options(file_name)] }.
-          map { |(file_name, options)| component(relative_path(dir, file_name), **options) }.
-          reject { |component| key?(component.identifier) }
+        files(dir)
+          .map { |file_name| [file_name, file_options(file_name)] }
+          .map { |(file_name, options)| component(relative_path(dir, file_name), **options) }
+          .reject { |component| key?(component.identifier) }
       end
 
       # @api private

@@ -164,7 +164,7 @@ RSpec.describe Dry::System::Container, '.boot' do
       end
     end
 
-    expect { system['api.client'] }.
-      to raise_error(RuntimeError, /\+namespace\+ boot option must be true, string or symbol/)
+    expect { system['api.client'] }
+      .to raise_error(RuntimeError, /\+namespace\+ boot option must be true, string or symbol/)
   end
 end

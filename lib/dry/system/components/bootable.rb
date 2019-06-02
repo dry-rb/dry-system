@@ -243,8 +243,8 @@ module Dry
         #
         # @api private
         def boot_file
-          container_boot_files.
-            detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
+          container_boot_files
+            .detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
         end
 
         # Return path to boot dir
