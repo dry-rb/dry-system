@@ -559,7 +559,7 @@ module Dry
               namespace: config.default_namespace,
               separator: config.namespace_separator,
               inflector: config.inflector,
-              **options,
+              **options
             )
           end
         end
