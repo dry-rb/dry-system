@@ -568,9 +568,7 @@ module Dry
         def require_component(component)
           return if key?(component.identifier)
 
-          unless component.file_exists?(load_paths)
-            raise FileNotFoundError, component
-          end
+          raise FileNotFoundError, component unless component.file_exists?(load_paths)
 
           require_path(component.path)
 
@@ -604,9 +602,7 @@ module Dry
                 load_imported_component(component.namespaced(root_key))
               end
 
-              if !key?(key)
-                load_local_component(component)
-              end
+              load_local_component(component) if !key?(key)
             end
           end
 

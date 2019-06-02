@@ -51,9 +51,7 @@ module Dry
       def load_component(path)
         identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
 
-        unless components.exists?(identifier)
-          require path
-        end
+        require path unless components.exists?(identifier)
 
         self
       end
@@ -122,9 +120,7 @@ module Dry
       # @api private
       def call(name_or_component)
         with_component(name_or_component) do |component|
-          unless component
-            raise ComponentFileMismatchError.new(name, registered_booted_keys)
-          end
+          raise ComponentFileMismatchError.new(name, registered_booted_keys) unless component
 
           yield(component) if block_given?
 
