@@ -85,7 +85,8 @@ module Dry
 
       # @api private
       def initialize(identifier, path, options)
-        @identifier, @path = identifier, path
+        @identifier = identifier
+        @path = path
         @options = options
         @file = "#{path}#{RB_EXT}"
         @loader = options.fetch(:loader)
