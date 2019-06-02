@@ -30,6 +30,7 @@ module Dry
         # @api public
         def setup_bootsnap
           return unless bootsnap_available?
+
           ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join('tmp/cache').to_s))
         end
 

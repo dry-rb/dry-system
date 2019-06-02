@@ -18,6 +18,7 @@ module Dry
         # @api private
         def register_notifications
           return self if key?(:notifications)
+
           register(:notifications, Monitor::Notifications.new(config.name))
         end
       end
