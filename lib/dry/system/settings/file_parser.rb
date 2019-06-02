@@ -22,7 +22,7 @@ module Dry
           \s*
           (?:\#.*)?         # optional comment
           \z
-        )x
+        )x.freeze
 
         def call(file)
           File.readlines(file).each_with_object({}) do |line, hash|
