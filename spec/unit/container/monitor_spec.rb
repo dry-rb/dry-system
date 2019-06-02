@@ -19,8 +19,7 @@ RSpec.describe Dry::System::Container do
           word
         end
 
-        def other
-        end
+        def other; end
       end
     end
 
