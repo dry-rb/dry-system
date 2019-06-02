@@ -6,7 +6,7 @@ module Dry
       class FileParser
         # Regex extracted from dotenv gem
         # https://github.com/bkeepers/dotenv/blob/master/lib/dotenv/parser.rb#L14
-        LINE = %r{
+        LINE = /
           \A
           \s*
           (?:export\s+)?    # optional export
@@ -22,7 +22,7 @@ module Dry
           \s*
           (?:\#.*)?         # optional comment
           \z
-        }x.freeze
+        /x.freeze
 
         def call(file)
           File.readlines(file).each_with_object({}) do |line, hash|
