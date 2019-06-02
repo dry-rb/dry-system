@@ -7,10 +7,7 @@ class App < Dry::System::Container
 
   auto_register!('lib') do |config|
     config.memoize = true
-    config.instance do |component|
-      # some custom initialization logic
-      component.instance
-    end
+    config.instance(&:instance)
 
     config.exclude do |component|
       component.path =~ /entities/

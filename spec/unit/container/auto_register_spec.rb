@@ -37,9 +37,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
 
     it 'exclude specific components' do
       Test::Container.auto_register!('components') do |config|
-        config.instance do |component|
-          component.identifier
-        end
+        config.instance(&:identifier)
 
         config.exclude do |component|
           component.path =~ /bar/

@@ -84,7 +84,7 @@ module Dry
       setting :auto_registrar, Dry::System::AutoRegistrar
       setting :manual_registrar, Dry::System::ManualRegistrar
       setting :importer, Dry::System::Importer
-      setting(:components, {}, reader: true) { |v| v.dup }
+      setting(:components, {}, reader: true, &:dup)
 
       class << self
         def strategies(value = nil)
