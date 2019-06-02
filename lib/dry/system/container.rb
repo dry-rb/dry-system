@@ -469,7 +469,7 @@ module Dry
         # @param options [Hash] injector options
         #
         # @api public
-        def injector(options = { strategies: self.strategies })
+        def injector(options = { strategies: strategies })
           Dry::AutoInject(self, options)
         end
 
