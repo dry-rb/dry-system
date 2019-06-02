@@ -55,7 +55,7 @@ Style/AccessModifierDeclarations:
   Enabled: false
 
 Style/BlockDelimiters:
-  EnforcedStyle: semantic
+  Enabled: false
 
 Layout/IndentFirstArrayElement:
   EnforcedStyle: consistent
