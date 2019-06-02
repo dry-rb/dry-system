@@ -60,3 +60,6 @@ Style/BlockDelimiters:
 Layout/IndentFirstArrayElement:
   EnforcedStyle: consistent
 
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'spec/**/*_spec.rb'
