@@ -68,7 +68,7 @@ RSpec.describe Dry::System::Container do
       it 'returns for already registered components' do
         component = container.component('test/foo')
 
-        registrar = -> {
+        registrar = lambda {
           container.register(component.identifier) { component.instance }
         }
 

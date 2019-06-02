@@ -7,7 +7,7 @@ RSpec.describe Dry::System::Component do
 
   describe '.new' do
     it 'caches components' do
-      create = -> {
+      create = lambda {
         Dry::System::Component.new('foo.bar', namespace: 'foo')
       }
 
