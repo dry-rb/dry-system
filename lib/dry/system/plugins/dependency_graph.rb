@@ -35,7 +35,7 @@ module Dry
 
           unless config.ignored_dependencies.include?(key.to_sym)
             self[:notifications].instrument(
-              :registered_dependency, key: key, class_name: self[key].class
+              :registered_dependency, key: key, class: self[key].class
             )
           end
 
