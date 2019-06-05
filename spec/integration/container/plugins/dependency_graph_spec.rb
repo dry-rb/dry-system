@@ -53,10 +53,10 @@ RSpec.describe 'Plugins / Dependency Graph' do
 
     expect(events.map(&:payload)).to eq([
       { dependency_map: { logger: 'logger' }, target_class: service.class },
-      { key: 'logger', class_name: ExternalComponents::Logger },
-      { key: :service, class_name: container[:service].class },
-      { key: :client, class_name: Test::Client },
-      { key: 'mailer', class_name: ExternalComponents::Mailer }
+      { key: 'logger', class: ExternalComponents::Logger },
+      { key: :service, class: container[:service].class },
+      { key: :client, class: Test::Client },
+      { key: 'mailer', class: ExternalComponents::Mailer }
     ])
   end
 end
