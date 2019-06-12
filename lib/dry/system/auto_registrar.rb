@@ -56,7 +56,7 @@ module Dry
 
       # @api private
       def files(dir)
-        Dir["#{root}/#{dir}/**/#{RB_GLOB}"]
+        ::Dir["#{root}/#{dir}/**/#{RB_GLOB}"].sort
       end
 
       # @api private

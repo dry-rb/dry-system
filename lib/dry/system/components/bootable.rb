@@ -260,7 +260,7 @@ module Dry
         #
         # @api private
         def container_boot_files
-          Dir[container.boot_path.join("**/#{RB_GLOB}")]
+          ::Dir[container.boot_path.join("**/#{RB_GLOB}")].sort
         end
 
         private

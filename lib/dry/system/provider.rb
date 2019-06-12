@@ -24,7 +24,7 @@ module Dry
       end
 
       def boot_files
-        Dir[boot_path.join("**/#{RB_GLOB}")]
+        ::Dir[boot_path.join("**/#{RB_GLOB}")].sort
       end
 
       def register_component(name, fn)

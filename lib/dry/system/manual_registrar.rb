@@ -24,7 +24,7 @@ module Dry
 
       # @api private
       def finalize!
-        Dir[registrations_dir.join(RB_GLOB)].each do |file|
+        ::Dir[registrations_dir.join(RB_GLOB)].sort.each do |file|
           call(File.basename(file, RB_EXT))
         end
       end
