@@ -12,5 +12,5 @@ gem 'dry-monitor'
 gem 'codeclimate-test-reporter', platforms: :mri
 
 group :tools do
-  gem 'byebug', platforms: :mri
+  gem 'pry-byebug', platforms: :mri
 end
