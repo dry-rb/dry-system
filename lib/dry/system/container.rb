@@ -493,7 +493,7 @@ module Dry
         # @api public
         def require_from_root(*paths)
           paths.flat_map { |path|
-            path.to_s.include?('*') ? Dir[root.join(path)] : root.join(path)
+            path.to_s.include?('*') ? ::Dir[root.join(path)].sort : root.join(path)
           }.each { |path|
             require path.to_s
           }

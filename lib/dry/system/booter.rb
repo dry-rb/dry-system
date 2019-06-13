@@ -160,7 +160,7 @@ module Dry
 
       # @api private
       def boot_files
-        Dir["#{path}/**/#{RB_GLOB}"]
+        ::Dir["#{path}/**/#{RB_GLOB}"].sort
       end
 
       # @api private
