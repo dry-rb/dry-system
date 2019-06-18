@@ -668,9 +668,11 @@ module Dry
 
         # @api private
         def load_local_component(component, default_namespace_fallback = false, &block)
-          if booter.bootable?(component) || component.file_exists?(load_paths)
-            booter.boot_dependency(component) unless finalized?
+          booter.boot_dependency(component) unless finalized?
 
+          if registered?(component.identifier)
+            return
+          elsif component.file_exists?(load_paths)
             require_component(component) do
               register(component.identifier) { component.instance }
             end
