@@ -38,3 +38,6 @@ Gemfile.lock
 
 ## Specific to RubyMine
 .idea
+
+# rubocop config can be downloaded locally via `codeclimate prepare`
+.rubocop.yml
