@@ -126,7 +126,7 @@ module Dry
 
       # @api private
       def method_missing(meth, *args, &block)
-        if target.key?(meth)
+        if target.registered?(meth)
           target[meth]
         elsif container.key?(meth)
           container[meth]

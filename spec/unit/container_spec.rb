@@ -146,7 +146,7 @@ RSpec.describe Dry::System::Container do
       container.init(:bar)
 
       expect(Test.const_defined?(:Bar)).to be(true)
-      expect(container.key?('test.bar')).to be(false)
+      expect(container.registered?('test.bar')).to be(false)
     end
   end
 
@@ -249,6 +249,63 @@ RSpec.describe Dry::System::Container do
 
         expect(container['test.car'].wheels_count).to be(5)
       end
+    end
+  end
+
+  describe '.key?' do
+    before do
+      class Test::FalseyContainer < Dry::System::Container
+        register(:else) { :else }
+        register(:false) { false }
+        register(:nil) { nil }
+      end
+
+      class Test::Container < Dry::System::Container
+        config.root = SPEC_ROOT.join('fixtures/test').realpath
+        load_paths!('lib')
+
+        importer.registry.update(falses: Test::FalseyContainer)
+      end
+    end
+
+    it 'tries to load component' do
+      expect(container.key?('test.dep')).to be(true)
+    end
+
+    it 'returns false for non-existing component' do
+      expect(container.key?('test.missing')).to be(false)
+    end
+
+    it 'returns true if registered value is false or nil' do
+      expect(container.key?('falses.false')).to be(true)
+      expect(container.key?('falses.nil')).to be(true)
+    end
+  end
+
+  describe '.resolve' do
+    before do
+      class Test::Container < Dry::System::Container
+        config.root = SPEC_ROOT.join('fixtures/test').realpath
+      end
+    end
+
+    it 'runs a fallback block when a component cannot be resolved' do
+      expect(container.resolve('missing') { :fallback }).to be(:fallback)
+    end
+  end
+
+  describe '.registered?' do
+    before do
+      class Test::Container < Dry::System::Container
+        config.root = SPEC_ROOT.join('fixtures/test').realpath
+        load_paths!('lib')
+      end
+    end
+
+    it 'checks if a component is registered' do
+      expect(container.registered?('test.dep')).to be(false)
+      container.resolve('test.dep')
+      expect(container.registered?('test.dep')).to be(true)
     end
   end
 end

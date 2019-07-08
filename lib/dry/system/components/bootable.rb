@@ -191,7 +191,7 @@ module Dry
         # @api private
         def finalize
           lifecycle.container.each do |key, item|
-            container.register(key, item) unless container.key?(key)
+            container.register(key, item) unless container.registered?(key)
           end
           self
         end

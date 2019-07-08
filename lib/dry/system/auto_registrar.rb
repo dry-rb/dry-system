@@ -51,7 +51,7 @@ module Dry
         files(dir)
           .map { |file_name| [file_name, file_options(file_name)] }
           .map { |(file_name, options)| component(relative_path(dir, file_name), **options) }
-          .reject { |component| key?(component.identifier) }
+          .reject { |component| registered?(component.identifier) }
       end
 
       # @api private
@@ -81,8 +81,8 @@ module Dry
       end
 
       # @api private
-      def key?(name)
-        container.key?(name)
+      def registered?(name)
+        container.registered?(name)
       end
 
       # @api private
