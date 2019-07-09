@@ -2,7 +2,7 @@
 
 ### Changed
 
-* Compatibility with dry-struct 1.0 and dry-types 1.0 (flash-gordon)
+- Compatibility with dry-struct 1.0 and dry-types 1.0 (flash-gordon)
 
 [Compare v0.11.0...v0.12.0](https://github.com/dry-rb/dry-system/compare/v0.11.0...v0.12.0)
 
@@ -10,8 +10,8 @@
 
 ### Changed
 
-* [BREAKING] `:decorate` plugin was moved from dry-system to dry-container (available in 0.7.0+). To upgrade remove `use :decorate` and change `decorate` calls from `decorate(key, decorator: something)` to `decorate(key, with: something)` (flash-gordon)
-* [internal] Compatibility with dry-struct 0.7.0 and dry-types 0.15.0
+- [BREAKING] `:decorate` plugin was moved from dry-system to dry-container (available in 0.7.0+). To upgrade remove `use :decorate` and change `decorate` calls from `decorate(key, decorator: something)` to `decorate(key, with: something)` (flash-gordon)
+- [internal] Compatibility with dry-struct 0.7.0 and dry-types 0.15.0
 
 [Compare v0.10.1...v0.11.0](https://github.com/dry-rb/dry-system/compare/v0.10.1...v0.11.0)
 
@@ -19,18 +19,19 @@
 
 ### Added
 
-* Support for stopping bootable components with `Container.stop(component_name)` (GustavoCaso)
+- Support for stopping bootable components with `Container.stop(component_name)` (GustavoCaso)
 
 ### Fixed
 
-* When using a non-finalized container, you can now resolve multiple different container objects registered using the same root key as a bootable component (timriley)
+- When using a non-finalized container, you can now resolve multiple different container objects registered using the same root key as a bootable component (timriley)
 
 [Compare v0.10.0...v0.10.1](https://github.com/dry-rb/dry-system/compare/v0.10.0...v0.10.1)
 
 # 0.10.0 - 2018-06-07
 
 ### Added
-* You can now set a custom inflector on the container level. As a result, the `Loader`'s constructor accepts two arguments: `path` and `inflector`, update your custom loaders accordingly (flash-gordon)
+
+- You can now set a custom inflector on the container level. As a result, the `Loader`'s constructor accepts two arguments: `path` and `inflector`, update your custom loaders accordingly (flash-gordon)
 
   ```ruby
   class MyContainer < Dry::System::Container
@@ -44,10 +45,10 @@
 
 ### Changed
 
-* A helpful error will be raised if an invalid setting value is provided (GustavoCaso)
-* When using setting plugin, will use default values from types (GustavoCaso)
-* Minimal supported ruby version was bumped to `2.3` (flash-gordon)
-* `dry-struct` was updated to `~> 0.5` (flash-gordon)
+- A helpful error will be raised if an invalid setting value is provided (GustavoCaso)
+- When using setting plugin, will use default values from types (GustavoCaso)
+- Minimal supported ruby version was bumped to `2.3` (flash-gordon)
+- `dry-struct` was updated to `~> 0.5` (flash-gordon)
 
 [Compare v0.9.2...v0.10.0](https://github.com/dry-rb/dry-system/compare/v0.9.2...v0.10.0)
 
@@ -55,7 +56,7 @@
 
 ### Fixed
 
-* Default namespace no longer breaks resolving dependencies with identifier that includes part of the namespace (ie `mail.mailer`) (GustavoCaso)
+- Default namespace no longer breaks resolving dependencies with identifier that includes part of the namespace (ie `mail.mailer`) (GustavoCaso)
 
 [Compare v0.9.1...v0.9.2](https://github.com/dry-rb/dry-system/compare/v0.9.1...v0.9.2)
 
@@ -63,7 +64,7 @@
 
 ### Fixed
 
-* Plugin dependencies are now auto-required and a meaningful error is raised when a dep failed to load (solnic)
+- Plugin dependencies are now auto-required and a meaningful error is raised when a dep failed to load (solnic)
 
 [Compare v0.9.0...v0.9.1](https://github.com/dry-rb/dry-system/compare/v0.9.0...v0.9.1)
 
@@ -71,21 +72,21 @@
 
 ### Added
 
-* Plugin API (solnic)
-* `:env` plugin which adds support for setting `env` config value (solnic)
-* `:logging` plugin which adds a default logger (solnic)
-* `:decorate` plugin for decorating registered objects (solnic)
-* `:notifications` plugin adding pub/sub bus to containers (solnic)
-* `:monitoring` plugin which adds `monitor` method for monitoring object method calls (solnic)
-* `:bootsnap` plugin which adds support for bootsnap (solnic)
+- Plugin API (solnic)
+- `:env` plugin which adds support for setting `env` config value (solnic)
+- `:logging` plugin which adds a default logger (solnic)
+- `:decorate` plugin for decorating registered objects (solnic)
+- `:notifications` plugin adding pub/sub bus to containers (solnic)
+- `:monitoring` plugin which adds `monitor` method for monitoring object method calls (solnic)
+- `:bootsnap` plugin which adds support for bootsnap (solnic)
 
 ### Changed
 
-* [BREAKING] renamed `Container.{require=>require_from_root}` (GustavoCaso)
+- [BREAKING] renamed `Container.{require=>require_from_root}` (GustavoCaso)
 
 ### Internal
 
-* `#bootable?` and `#boot_file` methods were moved from `Component` to `Booter` (GustavoCaso)
+- `#bootable?` and `#boot_file` methods were moved from `Component` to `Booter` (GustavoCaso)
 
 [Compare v0.8.1...v0.9.0](https://github.com/dry-rb/dry-system/compare/v0.8.1...v0.9.0)
 
@@ -93,8 +94,8 @@
 
 ### Fixed
 
-* Aliasing an external component works correctly (solnic)
-* Manually calling `:init` will also finalize a component (solnic)
+- Aliasing an external component works correctly (solnic)
+- Manually calling `:init` will also finalize a component (solnic)
 
 [Compare v0.8.0...v0.8.1](https://github.com/dry-rb/dry-system/compare/v0.8.0...v0.8.1)
 
@@ -102,16 +103,16 @@
 
 ### Added
 
-* Support for external bootable components (solnic)
-* Built-in `:system` components including `:settings` component (solnic)
+- Support for external bootable components (solnic)
+- Built-in `:system` components including `:settings` component (solnic)
 
 ### Fixed
 
-* Lazy-loading components work when a container has `default_namespace` configured (GustavoCaso)
+- Lazy-loading components work when a container has `default_namespace` configured (GustavoCaso)
 
 ### Changed
 
-* [BREAKING] Improved boot DSL with support for namespacing and lifecycle before/after callbacks (solnic)
+- [BREAKING] Improved boot DSL with support for namespacing and lifecycle before/after callbacks (solnic)
 
 [Compare v0.7.3...v0.8.0](https://github.com/dry-rb/dry-system/compare/v0.7.3...v0.8.0)
 
@@ -119,20 +120,20 @@
 
 ### Fixed
 
-* `Container.enable_stubs!` calls super too, which actually adds `stub` API (solnic)
-* Issues with lazy-loading and import in stub mode are gone (solnic)
+- `Container.enable_stubs!` calls super too, which actually adds `stub` API (solnic)
+- Issues with lazy-loading and import in stub mode are gone (solnic)
 
 # 0.7.2 - 2017-08-02
 
 ### Added
 
-* `Container.enable_stubs!` for test environments which enables stubbing components (GustavoCaso)
+- `Container.enable_stubs!` for test environments which enables stubbing components (GustavoCaso)
 
 ### Changed
 
-* Component identifiers can now include same name more than once ie `foo.stuff.foo` (GustavoCaso)
-* `Container#boot!` was renamed to `Container#start` (davydovanton)
-* `Container#boot` was renamed to `Container#init` (davydovanton)
+- Component identifiers can now include same name more than once ie `foo.stuff.foo` (GustavoCaso)
+- `Container#boot!` was renamed to `Container#start` (davydovanton)
+- `Container#boot` was renamed to `Container#init` (davydovanton)
 
 [Compare v0.7.1...v0.7.2](https://github.com/dry-rb/dry-system/compare/v0.7.1...v0.7.2)
 
@@ -150,20 +151,20 @@
 - AutoRegistrar parses initial lines of Ruby source files for "magic comments" when auto-registering components. An `# auto_register: false` magic comment will prevent a Ruby file from being auto-registered (timriley)
 - `Container.auto_register!`, when called with a block, yields a configuration object to control the auto-registration behavior for that path, with support for configuring 2 different aspects of auto-registration behavior (both optional):
 
-    ```ruby
-    class MyContainer < Dry::System::Container
-      auto_register!('lib') do |config|
-        config.instance do |component|
-          # custom logic for initializing a component
-        end
+  ```ruby
+  class MyContainer < Dry::System::Container
+    auto_register!('lib') do |config|
+      config.instance do |component|
+        # custom logic for initializing a component
+      end
 
-        config.exclude do |component|
-          # return true to skip auto-registration of the component, e.g.
-          # component.path =~ /entities/
-        end
+      config.exclude do |component|
+        # return true to skip auto-registration of the component, e.g.
+        # component.path =~ /entities/
       end
     end
-    ```
+  end
+  ```
 
 - A helpful error will be raised if a bootable component's finalize block name doesn't match its boot file name (GustavoCaso)
 
@@ -175,13 +176,12 @@
 
 [Compare v0.6.0...v0.7.0](https://github.com/dry-rb/dry-system/compare/v0.6.0...v0.7.0)
 
-
 # 0.6.0 - 2016-02-02
 
 ### Changed
 
-* Lazy load components as they are resolved, rather than on injection (timriley)
-* Perform registration even though component already required (blelump)
+- Lazy load components as they are resolved, rather than on injection (timriley)
+- Perform registration even though component already required (blelump)
 
 [Compare v0.5.1...v0.6.0](https://github.com/dry-rb/dry-system/compare/v0.5.1...v0.6.0)
 
@@ -201,8 +201,8 @@ for multi-container setups. As part of this release `dry-system` has been rename
 ### Added
 
 - Boot DSL with:
-  * Lifecycle triggers: `init`, `start` and `stop` (solnic)
-  * `use` method which auto-boots a dependency and makes it available in the booting context (solnic)
+  - Lifecycle triggers: `init`, `start` and `stop` (solnic)
+  - `use` method which auto-boots a dependency and makes it available in the booting context (solnic)
 - When a component relies on a bootable component, and is being loaded in isolation, the component will be booted automatically (solnic)
 
 ### Changed
@@ -251,27 +251,27 @@ for multi-container setups. As part of this release `dry-system` has been rename
 
 - Support for supplying a default namespace to a container, which is passed to the container's injector to allow for convenient shorthand access to registered objects in the same namespace (timriley in [#20](https://github.com/dry-rb/dry-system/pull/20))
 
-    ```ruby
-    # Set up container with default namespace
-    module Admin
-      class Container < Dry::Component::Container
-        configure do |config|
-          config.root = Pathname.new(__dir__).join("../..")
-          config.default_namespace = "admin"
-        end
-      end
-
-      Import = Container.injector
-    end
-
-    module Admin
-      class CreateUser
-        # "users.repository" will resolve an Admin::Users::Repository instance,
-        # where previously you had to identify it as "admin.users.repository"
-        include Admin::Import["users.repository"]
+  ```ruby
+  # Set up container with default namespace
+  module Admin
+    class Container < Dry::Component::Container
+      configure do |config|
+        config.root = Pathname.new(__dir__).join("../..")
+        config.default_namespace = "admin"
       end
     end
-    ```
+
+    Import = Container.injector
+  end
+
+  module Admin
+    class CreateUser
+      # "users.repository" will resolve an Admin::Users::Repository instance,
+      # where previously you had to identify it as "admin.users.repository"
+      include Admin::Import["users.repository"]
+    end
+  end
+  ```
 
 - Support for supplying to options directly to dry-auto_inject's `Builder` via `Dry::Component::Container#injector(options)`. This allows you to provide dry-auto_inject customizations like your own container of injection strategies (timriley in [#20](https://github.com/dry-rb/dry-system/pull/20))
 - Support for accessing all available injector strategies, not just the defaults (e.g. `MyContainer.injector.some_custom_strategy`) (timriley in [#19](https://github.com/dry-rb/dry-system/pull/19))
@@ -311,27 +311,27 @@ Removed two pieces that are moving to dry-web:
 
 ### Added
 
-* Provide a dependency injector as an `Inject` constant inside any subclass of `Dry::Component::Container`. This injector supports all of `dry-auto_inject`'s default injection strategies, and will lazily load any dependencies as they are injected. It also supports arbitrarily switching strategies, so they can be used in different classes as required (e.g. `include MyComponent::Inject.args["dep"]`) (timriley)
-* Support aliased dependency names when calling the injector object (e.g. `MyComponent::Inject[foo: "my_app.foo", bar: "another.thing"]`) (timriley)
-* Allow a custom dependency loader to be set on a container via its config (AMHOL)
+- Provide a dependency injector as an `Inject` constant inside any subclass of `Dry::Component::Container`. This injector supports all of `dry-auto_inject`'s default injection strategies, and will lazily load any dependencies as they are injected. It also supports arbitrarily switching strategies, so they can be used in different classes as required (e.g. `include MyComponent::Inject.args["dep"]`) (timriley)
+- Support aliased dependency names when calling the injector object (e.g. `MyComponent::Inject[foo: "my_app.foo", bar: "another.thing"]`) (timriley)
+- Allow a custom dependency loader to be set on a container via its config (AMHOL)
 
-    ```ruby
-    class MyContainer < Dry::Component::Container
-      configure do |config|
-        # other config
-        config.loader = MyLoader
-      end
+  ```ruby
+  class MyContainer < Dry::Component::Container
+    configure do |config|
+      # other config
+      config.loader = MyLoader
     end
-    ```
+  end
+  ```
 
 ### Changed
 
-* `Container.boot` now only makes a simple `require` for the boot file (solnic)
-* Container object is passed to `Container.finalize` blocks (solnic)
-* Allow `Pathname` objects passed to `Container.require` (solnic)
-* Support lazily loading missing dependencies from imported containers (solnic)
-* `Container.import_module` renamed to `.injector` (timriley)
-* Default injection strategy is now `kwargs`, courtesy of the new dry-auto_inject default (timriley)
+- `Container.boot` now only makes a simple `require` for the boot file (solnic)
+- Container object is passed to `Container.finalize` blocks (solnic)
+- Allow `Pathname` objects passed to `Container.require` (solnic)
+- Support lazily loading missing dependencies from imported containers (solnic)
+- `Container.import_module` renamed to `.injector` (timriley)
+- Default injection strategy is now `kwargs`, courtesy of the new dry-auto_inject default (timriley)
 
 [Compare v0.0.2...v0.1.0](https://github.com/dry-rb/dry-system/compare/v0.0.2...v0.1.0)
 
@@ -339,12 +339,12 @@ Removed two pieces that are moving to dry-web:
 
 ### Added
 
-* Containers have a `name` setting (solnic)
-* Containers can be imported into one another (solnic)
+- Containers have a `name` setting (solnic)
+- Containers can be imported into one another (solnic)
 
 ### Changed
 
-* Container name is used to determine the name of its config file (solnic)
+- Container name is used to determine the name of its config file (solnic)
 
 [Compare v0.0.1...v0.0.2](https://github.com/dry-rb/dry-system/compare/v0.0.1...v0.0.2)
 
