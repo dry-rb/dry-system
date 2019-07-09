@@ -1,3 +1,18 @@
+# 0.13.0 - unreleased
+
+### Changed
+
+- [BREAKING] `Container.key?` triggers lazy-loading for not finalized containers. If component wasn't found it returns `false` without raising an error. This is a breaking change, if you seek the previous behavior, use `Container.registered?` (flash-gordon)
+
+### Added
+
+- `Container.resolve` accepts and optional block parameter which will be called if component cannot be found. This makes dry-system consistent with dry-container 0.7.2 (flash-gordon)
+  ```ruby
+  App.resolve('missing.dep') { :fallback } # => :fallback
+  ```
+
+[Compare v0.12.0...master](https://github.com/dry-rb/dry-system/compare/v0.12.0...master)
+
 # 0.12.0 - 2019-04-24
 
 ### Changed
