@@ -8,7 +8,6 @@ gemspec
 
 gem 'bootsnap'
 gem 'dry-monitor'
-gem 'dry-container', github: 'dry-container'
 
 gem 'codeclimate-test-reporter', platforms: :mri
 
