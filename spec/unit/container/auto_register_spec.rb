@@ -20,7 +20,7 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     it { expect(Test::Container['bar.baz']).to be_an_instance_of(Bar::Baz) }
 
     it "doesn't register files with inline option 'auto_register: false'" do
-      expect(Test::Container.key?('no_register')).to eql false
+      expect(Test::Container.registered?('no_register')).to eql false
     end
   end
 
@@ -46,8 +46,8 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
 
       expect(Test::Container['foo']).to eql('foo')
 
-      expect(Test::Container.key?('bar')).to eql false
-      expect(Test::Container.key?('bar.baz')).to eql false
+      expect(Test::Container.registered?('bar')).to eql false
+      expect(Test::Container.registered?('bar.baz')).to eql false
     end
   end
 

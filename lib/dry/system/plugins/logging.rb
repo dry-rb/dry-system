@@ -32,7 +32,7 @@ module Dry
         #
         # @api private
         def register_logger
-          if key?(:logger)
+          if registered?(:logger)
             self
           elsif config.logger
             register(:logger, config.logger)

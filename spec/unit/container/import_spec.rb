@@ -14,7 +14,7 @@ RSpec.describe Dry::System::Container, '.import' do
   it 'imports one container into another' do
     app.import(persistence: db)
 
-    expect(app.key?('persistence.users')).to be(false)
+    expect(app.registered?('persistence.users')).to be(false)
 
     app.finalize!
 

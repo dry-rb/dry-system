@@ -518,10 +518,35 @@ module Dry
         end
 
         # @api public
-        def resolve(key)
-          load_component(key) unless finalized?
+        def resolve(key, &block)
+          load_component(key, &block) unless finalized?
 
           super
+        end
+
+        alias_method :registered?, :key?
+        #
+        # @!method registered?(key)
+        #   Whether a +key+ is registered (doesn't trigger loading)
+        #   @param [String,Symbol] key Identifier
+        #   @return [Boolean]
+        #   @api public
+        #
+
+        # Check if identifier is registered.
+        # If not, try to load the component
+        #
+        # @param [String,Symbol] key Identifier
+        # @return [Boolean]
+        #
+        # @api public
+        def key?(key)
+          if finalized?
+            registered?(key)
+          else
+            registered?(key) || resolve(key) { return false }
+            true
+          end
         end
 
         # @api private
@@ -572,7 +597,7 @@ module Dry
 
         # @api private
         def require_component(component)
-          return if key?(component.identifier)
+          return if registered?(component.identifier)
 
           raise FileNotFoundError, component unless component.file_exists?(load_paths)
 
@@ -593,8 +618,8 @@ module Dry
         end
 
         # @api private
-        def load_component(key)
-          return self if key?(key)
+        def load_component(key, &block)
+          return self if registered?(key)
 
           component(key).tap do |component|
             if component.boot?
@@ -608,7 +633,7 @@ module Dry
                 load_imported_component(component.namespaced(root_key))
               end
 
-              load_local_component(component) unless key?(key)
+              load_local_component(component, &block) unless registered?(key)
             end
           end
 
@@ -641,7 +666,7 @@ module Dry
         private
 
         # @api private
-        def load_local_component(component, default_namespace_fallback = false)
+        def load_local_component(component, default_namespace_fallback = false, &block)
           if booter.bootable?(component) || component.file_exists?(load_paths)
             booter.boot_dependency(component) unless finalized?
 
@@ -649,9 +674,11 @@ module Dry
               register(component.identifier) { component.instance }
             end
           elsif !default_namespace_fallback
-            load_local_component(component.prepend(config.default_namespace), true)
+            load_local_component(component.prepend(config.default_namespace), true, &block)
           elsif manual_registrar.file_exists?(component)
             manual_registrar.(component)
+          elsif block_given?
+            yield
           else
             raise ComponentLoadError, component
           end
