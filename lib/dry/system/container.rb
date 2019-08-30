@@ -14,6 +14,7 @@ require 'dry/system/errors'
 require 'dry/system/loader'
 require 'dry/system/booter'
 require 'dry/system/auto_registrar'
+require 'dry/system/auto_inject'
 require 'dry/system/manual_registrar'
 require 'dry/system/importer'
 require 'dry/system/component'
@@ -455,6 +456,9 @@ module Dry
         # An injector is a useful mixin which injects dependencies into
         # automatically defined constructor.
         #
+        # Also, it's possible to use `allow` method for build injector
+        # with specific pattern.
+        #
         # @example
         #   # Define an injection mixin
         #   #
@@ -472,11 +476,33 @@ module Dry
         #
         #   MyApp['user_repo].db # instance under 'persistence.db' key
         #
+        # @example with allow pattern
+        #   # Define an injection mixin
+        #   #
+        #   # system/import.rb
+        #   Import = MyApp.injector
+        #   PersistanceImport = Import.allow(/\Apersistence\.\w+/)
+        #
+        #   # Use it in your auto-registered classes
+        #   #
+        #   # lib/user_repo.rb
+        #   require 'import'
+        #
+        #   class UserRepo
+        #     include PersistanceImport['persistence.db'] # okay
+        #   end
+        #
+        #   class WrongInjection
+        #     include PersistanceImport['operations.service'] # will raise error
+        #   end
+        #
+        #   MyApp['user_repo].db # instance under 'persistence.db' key
+        #
         # @param options [Hash] injector options
         #
         # @api public
         def injector(options = { strategies: strategies })
-          Dry::AutoInject(self, options)
+          Dry::System::AutoInject::Builder.new(self, options)
         end
 
         # Requires one or more files relative to the container's root

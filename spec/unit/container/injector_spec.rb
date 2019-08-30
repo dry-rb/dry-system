@@ -3,7 +3,7 @@
 require 'dry/system/container'
 
 RSpec.describe Dry::System::Container, '.injector' do
-  context 'default injector' do
+  context 'with default injector' do
     it 'works correct' do
       Test::Foo = Class.new
 
@@ -23,6 +23,37 @@ RSpec.describe Dry::System::Container, '.injector' do
       another = Object.new
       obj = injected_class.new(foo: another)
       expect(obj.foo).to eq another
+    end
+  end
+
+  context 'with allow option' do
+    it 'works correct' do
+      Test::Foo = Class.new
+
+      Test::Container = Class.new(Dry::System::Container) do
+        register 'foo', Test::Foo.new
+      end
+
+      Test::Inject = Test::Container.injector.allow(/\Afo\w+/)
+
+      injected_class = Class.new do
+        include Test::Inject['foo']
+      end
+
+      obj = injected_class.new
+      expect(obj.foo).to be_a Test::Foo
+
+      another = Object.new
+      obj = injected_class.new(foo: another)
+      expect(obj.foo).to eq another
+
+      Test::ForbiddenInject = Test::Inject.allow(/\Aoperations\.\w+/)
+
+      expect do
+        Class.new do
+          include Test::ForbiddenInject['foo']
+        end
+      end.to raise_error Dry::System::AutoInject::ForbiddenInjectionError
     end
   end
 
