@@ -5,19 +5,8 @@ module Dry
     module Plugins
       module DependencyGraph
         # @api private
-        class Stratagies
+        class Strategies
           extend Dry::Container::Mixin
-
-          # @api private
-          def self.with_notifications(value)
-            @notifications = value
-            self
-          end
-
-          # @api private
-          def self.__notifications__
-            @notifications
-          end
 
           # @api private
           class Kwargs < Dry::AutoInject::Strategies::Kwargs
@@ -25,8 +14,7 @@ module Dry
 
             # @api private
             def define_initialize(klass)
-              notifications = ::Dry::System::Plugins::DependencyGraph::Stratagies.__notifications__
-              notifications.instrument(
+              @container['notifications'].instrument(
                 :resolved_dependency, dependency_map: dependency_map.to_h, target_class: klass
               )
               super(klass)

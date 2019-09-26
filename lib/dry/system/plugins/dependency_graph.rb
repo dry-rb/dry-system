@@ -20,7 +20,7 @@ module Dry
             self[:notifications].register_event(:resolved_dependency)
             self[:notifications].register_event(:registered_dependency)
 
-            system.strategies(Stratagies.with_notifications(system[:notifications]))
+            strategies(Strategies)
           end
         end
 
