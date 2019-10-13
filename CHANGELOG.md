@@ -1,4 +1,4 @@
-# 0.13.0 - unreleased
+# 0.13.0 - 2019-10-13
 
 ### Changed
 
@@ -11,7 +11,7 @@
   App.resolve('missing.dep') { :fallback } # => :fallback
   ```
 
-[Compare v0.12.0...master](https://github.com/dry-rb/dry-system/compare/v0.12.0...master)
+[Compare v0.12.0...v0.13.0](https://github.com/dry-rb/dry-system/compare/v0.12.0...v0.13.0)
 
 # 0.12.0 - 2019-04-24
 
