@@ -13,4 +13,5 @@ gem 'codeclimate-test-reporter', platforms: :mri
 
 group :tools do
   gem 'pry-byebug', platforms: :mri
+  gem 'ossy', git: 'https://github.com/solnic/ossy.git', branch: 'master'
 end
