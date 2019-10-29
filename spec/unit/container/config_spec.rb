@@ -36,5 +36,13 @@ RSpec.describe Dry::System::Container, '.config' do
         expect(root).to eq Pathname('/tmp')
       end
     end
+
+    context 'proc provided' do
+      let(:configuration) { proc { |config| config.root = -> { '/tmp' } } }
+
+      it 'calls the proc and coerces the result to pathname' do
+        expect(Test::Container.root).to eq Pathname('/tmp')
+      end
+    end
   end
 end

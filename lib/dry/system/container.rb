@@ -74,7 +74,10 @@ module Dry
 
       setting :name
       setting :default_namespace
-      setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
+      setting(:root, Pathname.pwd.freeze) do |path|
+        path = path.is_a?(Proc) ? path.call : path
+        Pathname(path)
+      end
       setting :system_dir, 'system'
       setting :registrations_dir, 'container'
       setting :auto_register, []
