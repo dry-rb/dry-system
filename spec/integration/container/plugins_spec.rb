@@ -5,24 +5,82 @@ RSpec.describe Dry::System::Container, '.use' do
     Class.new(Dry::System::Container)
   end
 
+  before do
+    # Store globals
+    Test::PluginRegistry = Dry::System::Plugins.registry.dup
+    Test::LoadedDependencies = Dry::System::Plugins.loaded_dependencies.dup
+  end
+
   after do
-    Dry::System::Plugins.registry.delete(:test_plugin)
+    # Restore globals
+    Dry::System::Plugins.instance_eval do
+      @registry = Test::PluginRegistry
+      @loaded_dependencies = Test::LoadedDependencies
+    end
   end
 
   context 'with a plugin which has dependencies' do
+    let(:plugin) do
+      Module.new do
+        def self.dependencies
+          SPEC_ROOT.join('fixtures/test/lib/test/dep')
+        end
+      end
+    end
+
     before do
       Dry::System::Plugins.register(:test_plugin, plugin)
     end
 
-    context 'when dependency is available' do
-      let(:plugin) do
-        Module.new do
-          def self.dependencies
-            SPEC_ROOT.join('fixtures/test/lib/test/dep')
-          end
+    context 'when another plugin has the same dependency' do
+      context 'and dependencies are defined with the same type' do
+        before do
+          Dry::System::Plugins.register(:test_plugin_2, plugin)
+        end
+
+        it 'loads plugin and does not duplicate loaded_dependencies' do
+          system.use(:test_plugin)
+          system.use(:test_plugin_2)
+
+          expect(Object.const_defined?('Test::Dep')).to be(true)
+
+          expect(
+            Dry::System::Plugins.loaded_dependencies.count { |dep|
+              dep == SPEC_ROOT.join('fixtures/test/lib/test/dep').to_s
+            }
+          ).to be(1)
         end
       end
 
+      context 'and dependencies are not defined with the same type' do
+        let(:plugin_2) do
+          Module.new do
+            def self.dependencies
+              SPEC_ROOT.join('fixtures/test/lib/test/dep').to_s
+            end
+          end
+        end
+
+        before do
+          Dry::System::Plugins.register(:test_plugin_2, plugin_2)
+        end
+
+        it 'loads plugin and does not duplicate loaded_dependencies' do
+          system.use(:test_plugin)
+          system.use(:test_plugin_2)
+
+          expect(Object.const_defined?('Test::Dep')).to be(true)
+
+          expect(
+            Dry::System::Plugins.loaded_dependencies.count { |dep|
+              dep == SPEC_ROOT.join('fixtures/test/lib/test/dep').to_s
+            }
+          ).to be(1)
+        end
+      end
+    end
+
+    context 'when dependency is available' do
       it 'auto-requires dependency' do
         system.use(:test_plugin)
 

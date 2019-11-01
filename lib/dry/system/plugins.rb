@@ -31,8 +31,10 @@ module Dry
         def load_dependencies
           Array(dependencies).each do |f|
             begin
-              require f unless Plugins.loaded_dependencies.include?(f)
-              Plugins.loaded_dependencies << f
+              next if Plugins.loaded_dependencies.include?(f.to_s)
+
+              require f
+              Plugins.loaded_dependencies << f.to_s
             rescue LoadError => e
               raise PluginDependencyMissing.new(name, e.message)
             end
