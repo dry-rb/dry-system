@@ -36,8 +36,9 @@ module Dry
     # @api public
     PluginDependencyMissing = Class.new(StandardError) do
       # @api private
-      def initialize(plugin, message)
-        super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{message}")
+      def initialize(plugin, message, gem = nil)
+        details = gem ? "#{message} - add #{gem} to your Gemfile" : message
+        super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{details}")
       end
     end
   end
