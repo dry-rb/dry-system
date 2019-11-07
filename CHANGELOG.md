@@ -1,3 +1,12 @@
+# 0.13.1 - 2019-11-07
+
+### Fixed
+
+- Fixed keyword warnings reported by Ruby 2.7 (flash-gordon)
+- Duplicates in `Dry::System::Plugins.loaded_dependencies` (AMHOL)
+
+[Compare v0.13.0...v0.13.1](https://github.com/dry-rb/dry-system/compare/v0.13.0...v0.13.1)
+
 # 0.13.0 - 2019-10-13
 
 ### Changed
