@@ -228,7 +228,7 @@ module Dry
         # @return [self]
         #
         # @api public
-        def boot(name, opts = {}, &block)
+        def boot(name, **opts, &block)
           if components.key?(name)
             raise DuplicatedComponentKeyError, <<-STR
               Bootable component #{name.inspect} was already registered
@@ -237,9 +237,9 @@ module Dry
 
           component =
             if opts[:from]
-              boot_external(name, opts, &block)
+              boot_external(name, **opts, &block)
             else
-              boot_local(name, opts, &block)
+              boot_local(name, **opts, &block)
             end
 
           components[name] = component

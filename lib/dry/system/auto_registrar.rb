@@ -72,7 +72,7 @@ module Dry
 
       # @api private
       def component(path, options)
-        container.component(path, options)
+        container.component(path, **options)
       end
 
       # @api private
