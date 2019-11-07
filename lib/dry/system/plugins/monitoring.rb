@@ -25,11 +25,11 @@ module Dry
         end
 
         # @api private
-        def monitor(key, options = EMPTY_HASH, &block)
+        def monitor(key, **options, &block)
           notifications = self[:notifications]
 
           resolve(key).tap do |target|
-            proxy = Proxy.for(target, options.merge(key: key))
+            proxy = Proxy.for(target, **options, key: key)
 
             if block
               proxy.monitored_methods.each do |meth|
