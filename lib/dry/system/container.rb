@@ -660,6 +660,7 @@ module Dry
           end
 
           klass.instance_variable_set(:@hooks, new_hooks)
+          klass.instance_variable_set(:@__finalized__, false)
           super
         end
 
