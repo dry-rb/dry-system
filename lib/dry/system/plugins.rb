@@ -28,17 +28,22 @@ module Dry
         end
 
         # @api private
-        def load_dependencies
-          Array(dependencies).each do |f|
-            begin
-              next if Plugins.loaded_dependencies.include?(f.to_s)
-
-              require f
-              Plugins.loaded_dependencies << f.to_s
-            rescue LoadError => e
-              raise PluginDependencyMissing.new(name, e.message)
+        def load_dependencies(dependencies = mod_dependencies, gem = nil)
+          Array(dependencies).each do |dependency|
+            if dependency.is_a?(Array) || dependency.is_a?(Hash)
+              dependency.each { |value| load_dependencies(*Array(value).reverse) }
+            elsif !Plugins.loaded_dependencies.include?(dependency.to_s)
+              load_dependency(dependency, gem)
             end
           end
+        end
+
+        # @api private
+        def load_dependency(dependency, gem)
+          require dependency
+          Plugins.loaded_dependencies << dependency.to_s
+        rescue LoadError => e
+          raise PluginDependencyMissing.new(name, e.message, gem)
         end
 
         # @api private
@@ -47,8 +52,10 @@ module Dry
         end
 
         # @api private
-        def dependencies
-          mod.respond_to?(:dependencies) ? Array(mod.dependencies) : EMPTY_ARRAY
+        def mod_dependencies
+          return EMPTY_ARRAY unless mod.respond_to?(:dependencies)
+
+          mod.dependencies.is_a?(Array) ? mod.dependencies : [mod.dependencies]
         end
       end
 

@@ -22,7 +22,7 @@ module Dry
 
         # @api private
         def self.dependencies
-          'bootsnap'
+          { bootsnap: 'bootsnap' }
         end
 
         # Set up bootsnap for faster booting

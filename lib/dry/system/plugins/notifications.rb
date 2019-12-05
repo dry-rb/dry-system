@@ -12,7 +12,7 @@ module Dry
 
         # @api private
         def self.dependencies
-          'dry/monitor/notifications'
+          { 'dry-monitor': 'dry/monitor/notifications' }
         end
 
         # @api private
