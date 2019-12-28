@@ -115,6 +115,7 @@ module Dry
       def instance(*args)
         loader.call(*args)
       end
+      ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
       # @api private
       def boot?

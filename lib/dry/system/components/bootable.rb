@@ -51,10 +51,6 @@ module Dry
         #   @return [Symbol] component's unique identifier
         attr_reader :identifier
 
-        # @!attribute [r] finalize
-        #   @return [Proc] Finalization proc
-        attr_reader :finalize
-
         # @!attribute [r] options
         #   @return [Hash] component's options
         attr_reader :options
@@ -71,6 +67,8 @@ module Dry
 
         # @api private
         def initialize(identifier, options = {}, &block)
+          @config = nil
+          @config_block = nil
           @identifier = identifier
           @triggers = { before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup }
           @options = block ? options.merge(block: block) : options
