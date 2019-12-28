@@ -1,3 +1,11 @@
+# 0.13.2 - 2019-12-28
+
+### Fixed
+
+- More keyword warnings (flash-gordon)
+
+[Compare v0.13.1...v0.13.2](https://github.com/dry-rb/dry-system/compare/v0.13.1...v0.13.2)
+
 # 0.13.1 - 2019-11-07
 
 ### Fixed
