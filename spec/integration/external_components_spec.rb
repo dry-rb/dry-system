@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe 'External Components' do
+  before do
+    Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
+  end
   subject(:container) do
     module Test
       class Container < Dry::System::Container

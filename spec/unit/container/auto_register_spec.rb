@@ -3,6 +3,11 @@
 require 'dry/system/container'
 
 RSpec.describe Dry::System::Container, '.auto_register!' do
+  before do
+    Object.send(:remove_const, :Foo) if defined? Foo
+    Object.send(:remove_const, :Bar) if defined? Bar
+  end
+
   context 'standard loader' do
     before do
       class Test::Container < Dry::System::Container

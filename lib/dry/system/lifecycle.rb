@@ -17,12 +17,6 @@ module Dry
     class Lifecycle < BasicObject
       attr_reader :container
 
-      attr_reader :init
-
-      attr_reader :start
-
-      attr_reader :stop
-
       attr_reader :statuses
 
       attr_reader :triggers
