@@ -15,3 +15,7 @@ group :tools do
   gem 'pry-byebug', platforms: :mri
   gem 'ossy', git: 'https://github.com/solnic/ossy.git', branch: 'master'
 end
+
+group :test do
+  gem 'warning'
+end

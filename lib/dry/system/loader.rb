@@ -55,6 +55,7 @@ module Dry
           constant.new(*args)
         end
       end
+      ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
 
       # Return component's class constant
       #

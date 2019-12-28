@@ -9,6 +9,9 @@ if ENV['COVERAGE'] == 'true'
   end
 end
 
+require 'warning'
+# Warning.process { |w| raise RuntimeError, w } unless ENV['NO_WARNING']
+
 begin
   require 'byebug'
   require 'pry-byebug'
