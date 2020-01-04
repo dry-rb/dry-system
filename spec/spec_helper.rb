@@ -1,13 +1,8 @@
 # frozen_string_literal: true
 
-require 'pathname'
+require_relative 'support/coverage'
 
-if ENV['COVERAGE'] == 'true'
-  require 'simplecov'
-  SimpleCov.start do
-    add_filter '/spec/'
-  end
-end
+require 'pathname'
 
 require 'warning'
 # Warning.process { |w| raise RuntimeError, w } unless ENV['NO_WARNING']
