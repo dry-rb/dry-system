@@ -1,2 +1,19 @@
 name: dry-system
 codacy_id: 3a0e30d0ae2542c7ba047ba5f923c0bb
+gemspec:
+  authors: ["Piotr Solnica"]
+  email: ["piotr.solnica@gmail.com"]
+  summary: "Organize your code into reusable components"
+  development_dependencies:
+    - bundler
+    - rake
+    - rspec
+  runtime_dependencies:
+    - [concurrent-ruby, "~> 1.0"]
+    - [dry-auto_inject, ">= 0.4.0"]
+    - [dry-configurable, "~> 0.7"]
+    - [dry-container, "~> 0.7", ">= 0.7.2"]
+    - [dry-core, "~> 0.3", ">= 0.3.1"]
+    - [dry-equalizer, "~> 0.2"]
+    - [dry-inflector, "~> 0.1", ">= 0.1.2"]
+    - [dry-struct, "~> 1.0"]
