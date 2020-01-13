@@ -12,6 +12,7 @@ module Dry
     DEFAULT_SEPARATOR = '.'
     WORD_REGEX = /\w+/.freeze
 
+    ComponentsDirMissing = Class.new(StandardError)
     DuplicatedComponentKeyError = Class.new(ArgumentError)
     InvalidSettingsError = Class.new(ArgumentError) do
       # @api private
