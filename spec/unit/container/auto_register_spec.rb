@@ -177,4 +177,39 @@ RSpec.describe Dry::System::Container, '.auto_register!' do
     it { expect(Test::Container['bar'].call).to eq("Welcome to my Moe's Tavern!") }
     it { expect(Test::Container['bar.baz']).to be_an_instance_of(Bar::Baz) }
   end
+
+  context 'when component directory is missing' do
+    context 'in config' do
+      before do
+        class Test::Container < Dry::System::Container
+          configure do |config|
+            config.root = SPEC_ROOT.join('fixtures').realpath
+            config.auto_register = %w[unknown_dir]
+          end
+        end
+      end
+
+      it 'warns about it' do
+        expect {
+          Test::Container.finalize!
+        }.to raise_error Dry::System::ComponentsDirMissing, %r{fixtures/unknown_dir}
+      end
+    end
+
+    context 'in auto_register! call' do
+      before do
+        class Test::Container < Dry::System::Container
+          configure do |config|
+            config.root = SPEC_ROOT.join('fixtures').realpath
+          end
+        end
+      end
+
+      it 'warns about it' do
+        expect {
+          Test::Container.auto_register!('unknown_dir')
+        }.to raise_error Dry::System::ComponentsDirMissing, %r{fixtures/unknown_dir}
+      end
+    end
+  end
 end

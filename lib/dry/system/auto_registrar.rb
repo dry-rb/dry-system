@@ -56,7 +56,13 @@ module Dry
 
       # @api private
       def files(dir)
-        ::Dir["#{root}/#{dir}/**/#{RB_GLOB}"].sort
+        components_dir = File.join(root, dir)
+
+        unless ::Dir.exist?(components_dir)
+          raise ComponentsDirMissing, "Components dir '#{components_dir}' not found"
+        end
+
+        ::Dir["#{components_dir}/**/#{RB_GLOB}"].sort
       end
 
       # @api private
