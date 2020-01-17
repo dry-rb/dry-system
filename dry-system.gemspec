@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "Organize your code into reusable components"
   spec.description   = spec.summary
   spec.homepage      = 'https://dry-rb.org/gems/dry-system'
-  spec.files         = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'dry-system.gemspec', 'lib/**/*']
+  spec.files         = Dir["CHANGELOG.md", "LICENSE", "README.md", "dry-system.gemspec", "lib/**/*"]
   spec.require_paths = ['lib']
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
