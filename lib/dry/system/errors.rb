@@ -75,5 +75,14 @@ module Dry
         super("component +#{component_name}+ has not been started")
       end
     end
+
+    # Error raised when trying to use a plugin that does not exist.
+    #
+    # @api public
+    PluginNotFoundError = Class.new(StandardError) do
+      def initialize(plugin_name)
+        super("Plugin #{plugin_name.inspect} does not exist")
+      end
+    end
   end
 end
