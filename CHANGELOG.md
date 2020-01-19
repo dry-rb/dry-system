@@ -1,6 +1,11 @@
 ## unreleased 
 
 
+### Fixed
+
+- Misspelled plugin name raises meaningful error (issue #132) (@cgeorgii)
+- Fail fast if auto_registrar config contains incorrect path (@cutalion)
+
 
 [Compare v0.13.2...master](https://github.com/dry-rb/dry-system/compare/v0.13.2...master)
 
