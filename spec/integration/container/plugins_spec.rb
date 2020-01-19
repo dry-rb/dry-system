@@ -236,4 +236,11 @@ RSpec.describe Dry::System::Container, '.use' do
       expect(system.plugin_test).to eql('bar')
     end
   end
+
+  context 'misspeled plugin name' do
+    it 'raises meaningful error' do
+      expect { system.use :wrong_name }
+        .to raise_error(Dry::System::PluginNotFoundError, 'Plugin :wrong_name does not exist')
+    end
+  end
 end

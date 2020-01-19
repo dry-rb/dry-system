@@ -81,7 +81,8 @@ module Dry
         @loaded_dependencies ||= []
       end
 
-      # Enable a plugin
+      # Enables a plugin if not already enabled.
+      # Raises error if plugin cannot be found in the plugin registry.
       #
       # Plugin identifier
       #
@@ -92,13 +93,14 @@ module Dry
       #
       # @api public
       def use(name, options = {})
-        unless enabled_plugins.include?(name)
-          plugin = Plugins.registry[name]
-          plugin.load_dependencies
-          plugin.apply_to(self, options)
+        return self if enabled_plugins.include?(name)
+        raise PluginNotFoundError, name unless (plugin = Plugins.registry[name])
 
-          enabled_plugins << name
-        end
+        plugin.load_dependencies
+        plugin.apply_to(self, options)
+
+        enabled_plugins << name
+
         self
       end
 
