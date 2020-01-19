@@ -1,6 +1,9 @@
 ---
 - version: unreleased
-  date: 
+  date:
+  fixed:
+    - "Misspelled plugin name raises meaningful error (issue #132) (@cgeorgii)"
+    - "Fail fast if auto_registrar config contains incorrect path (@cutalion)"
 - version: 0.13.2
   date: '2019-12-28'
   fixed:
