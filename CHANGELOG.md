@@ -1,4 +1,4 @@
-## unreleased 
+## 0.14.0 2020-01-21
 
 
 ### Fixed
@@ -7,7 +7,7 @@
 - Fail fast if auto_registrar config contains incorrect path (@cutalion)
 
 
-[Compare v0.13.2...master](https://github.com/dry-rb/dry-system/compare/v0.13.2...master)
+[Compare v0.13.2...v0.14.0](https://github.com/dry-rb/dry-system/compare/v0.13.2...v0.14.0)
 
 ## 0.13.2 2019-12-28
 
