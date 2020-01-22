@@ -1,9 +1,17 @@
 ---
+- version: 0.14.1
+  summary: 
+  date: '2020-01-22'
+  fixed: 
+  added: 
+  changed:
+  - Use `Kernel.require` explicitly to avoid issues with monkey-patched `require`
+    from ActiveSupport (@solnic)
 - version: 0.14.0
   date: '2020-01-21'
   fixed:
-    - "Misspelled plugin name raises meaningful error (issue #132) (@cgeorgii)"
-    - "Fail fast if auto_registrar config contains incorrect path (@cutalion)"
+  - 'Misspelled plugin name raises meaningful error (issue #132) (@cgeorgii)'
+  - Fail fast if auto_registrar config contains incorrect path (@cutalion)
 - version: 0.13.2
   date: '2019-12-28'
   fixed:
