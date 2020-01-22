@@ -1,3 +1,12 @@
+## 0.14.1 2020-01-22
+
+
+### Changed
+
+- Use `Kernel.require` explicitly to avoid issues with monkey-patched `require` from ActiveSupport (@solnic)
+
+[Compare v0.14.0...v0.14.1](https://github.com/dry-rb/dry-system/compare/v0.14.0...v0.14.1)
+
 ## 0.14.0 2020-01-21
 
 
