@@ -41,7 +41,7 @@ module Dry
       end
 
       def load_components
-        boot_files.each { |f| require f }
+        boot_files.each { |f| Kernel.require f }
         freeze
         self
       end
