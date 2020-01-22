@@ -40,7 +40,7 @@ module Dry
 
         # @api private
         def load_dependency(dependency, gem)
-          require dependency
+          Kernel.require dependency
           Plugins.loaded_dependencies << dependency.to_s
         rescue LoadError => e
           raise PluginDependencyMissing.new(name, e.message, gem)
