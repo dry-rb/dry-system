@@ -495,7 +495,7 @@ module Dry
           paths.flat_map { |path|
             path.to_s.include?('*') ? ::Dir[root.join(path)].sort : root.join(path)
           }.each { |path|
-            require path.to_s
+            Kernel.require path.to_s
           }
         end
 
