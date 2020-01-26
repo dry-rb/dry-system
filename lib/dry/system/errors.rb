@@ -84,5 +84,36 @@ module Dry
         super("Plugin #{plugin_name.inspect} does not exist")
       end
     end
+
+    ComponentsDirMissing = Class.new(StandardError)
+    DuplicatedComponentKeyError = Class.new(ArgumentError)
+    InvalidSettingsError = Class.new(ArgumentError) do
+      # @api private
+      def initialize(attributes)
+        message = <<~STR
+          Could not initialize settings. The following settings were invalid:
+
+          #{attributes_errors(attributes).join("\n")}
+        STR
+        super(message)
+      end
+
+      private
+
+      def attributes_errors(attributes)
+        attributes.map { |key, error| "#{key.name}: #{error}" }
+      end
+    end
+
+    # Exception raise when a plugin dependency failed to load
+    #
+    # @api public
+    PluginDependencyMissing = Class.new(StandardError) do
+      # @api private
+      def initialize(plugin, message, gem = nil)
+        details = gem ? "#{message} - add #{gem} to your Gemfile" : message
+        super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{details}")
+      end
+    end
   end
 end
