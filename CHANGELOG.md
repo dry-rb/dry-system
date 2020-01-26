@@ -1,3 +1,12 @@
+## unreleased 
+
+
+### Changed
+
+- Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
+
+[Compare v0.14.1...master](https://github.com/dry-rb/dry-system/compare/v0.14.1...master)
+
 ## 0.14.1 2020-01-22
 
 
