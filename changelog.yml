@@ -1,4 +1,11 @@
 ---
+- version: unreleased
+  summary: 
+  date: 
+  fixed: 
+  added: 
+  changed:
+  - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
 - version: 0.14.1
   summary: 
   date: '2020-01-22'
