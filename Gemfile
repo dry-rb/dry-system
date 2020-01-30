@@ -12,7 +12,3 @@ gem 'dry-monitor'
 group :tools do
   gem 'pry-byebug', platforms: :mri
 end
-
-group :test do
-  gem 'warning'
-end
