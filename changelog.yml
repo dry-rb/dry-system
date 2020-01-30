@@ -3,9 +3,18 @@
   summary: 
   date: 
   fixed: 
-  added: 
+  added: |
+    New hook - `before(:configure)` which a plugin should use it needs to declare new settings (@solnic)
+
+    ```ruby
+    # in your plugin code
+    before(:configure) { setting :my_new_setting }
+
+    after(:configure) { config.my_new_setting = "awesome" }
+    ```
   changed:
   - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
+  - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 - version: 0.14.1
   summary: 
   date: '2020-01-22'
