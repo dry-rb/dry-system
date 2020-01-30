@@ -1,7 +1,7 @@
 ---
-- version: unreleased
+- version: v0.15.0
   summary: 
-  date: 
+  date: '2020-01-30'
   fixed: 
   added: |
     New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
