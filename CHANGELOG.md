@@ -1,4 +1,4 @@
-## v0.15.0 2020-01-30
+## 0.15.0 2020-01-30
 
 
 ### Added
@@ -18,7 +18,7 @@ after(:configure) { config.my_new_setting = "awesome" }
 - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
 - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 
-[Compare v0.14.1...vv0.15.0](https://github.com/dry-rb/dry-system/compare/v0.14.1...vv0.15.0)
+[Compare v0.14.1...v0.15.0](https://github.com/dry-rb/dry-system/compare/v0.14.1...v0.15.0)
 
 ## 0.14.1 2020-01-22
 
