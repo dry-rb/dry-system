@@ -94,6 +94,7 @@ module Dry
       # @api public
       def use(name, options = {})
         return self if enabled_plugins.include?(name)
+
         raise PluginNotFoundError, name unless (plugin = Plugins.registry[name])
 
         plugin.load_dependencies

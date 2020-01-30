@@ -174,7 +174,9 @@ RSpec.describe Dry::System::Container, '.use' do
     context 'inheritance' do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
-          setting(:trace, [], &:dup)
+          before(:configure) do
+            setting(:trace, [], &:dup)
+          end
 
           after(:configure) do
             config.trace << :works

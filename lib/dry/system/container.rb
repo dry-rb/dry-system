@@ -112,9 +112,10 @@ module Dry
         #
         # @api public
         def configure(&block)
+          hooks[:before_configure].each { |hook| instance_eval(&hook) }
           super(&block)
           load_paths!(config.system_dir)
-          hooks[:configure].each { |hook| instance_eval(&hook) }
+          hooks[:after_configure].each { |hook| instance_eval(&hook) }
           self
         end
 
@@ -642,7 +643,11 @@ module Dry
 
         # @api private
         def after(event, &block)
-          hooks[event] << block
+          hooks[:"after_#{event}"] << block
+        end
+
+        def before(event, &block)
+          hooks[:"before_#{event}"] << block
         end
 
         # @api private
