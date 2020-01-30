@@ -3,7 +3,7 @@
 
 ### Added
 
-- New hook - `before(:configure)` which a plugin should use it needs to declare new settings (@solnic)
+- New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
 
 ```ruby
 # in your plugin code
