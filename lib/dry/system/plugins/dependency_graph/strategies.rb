@@ -21,7 +21,34 @@ module Dry
             end
           end
 
+          # @api private
+          class Args < Dry::AutoInject::Strategies::Args
+            private
+
+            # @api private
+            def define_initialize(klass)
+              @container['notifications'].instrument(
+                :resolved_dependency, dependency_map: dependency_map.to_h, target_class: klass
+              )
+              super(klass)
+            end
+          end
+
+          class Hash < Dry::AutoInject::Strategies::Args
+            private
+
+            # @api private
+            def define_initialize(klass)
+              @container['notifications'].instrument(
+                :resolved_dependency, dependency_map: dependency_map.to_h, target_class: klass
+              )
+              super(klass)
+            end
+          end
+
           register :kwargs, Kwargs
+          register :args, Args
+          register :hash, Hash
           register :default, Kwargs
         end
       end
