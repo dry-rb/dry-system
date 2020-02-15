@@ -97,6 +97,17 @@ module Dry
 
         extend Dry::Core::Deprecations['Dry::System::Container']
 
+        # Define a new configuration setting
+        #
+        # @see https://dry-rb.org/gems/dry-configurable
+        #
+        # @api public
+        def setting(name, *args, &block)
+          super(name, *args, &block)
+          config.settings << _settings[name]
+          self
+        end
+
         # Configures the container
         #
         # @example

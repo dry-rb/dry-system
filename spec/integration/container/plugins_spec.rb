@@ -175,7 +175,7 @@ RSpec.describe Dry::System::Container, '.use' do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
           before(:configure) do
-            setting(:trace, [], &:dup)
+            setting(:trace, [])
           end
 
           after(:configure) do
