@@ -1,4 +1,13 @@
 ---
+- version: unreleased
+  summary: 
+  date: 
+  fixed: 
+  added: 
+  changed:
+  - Plugins can now define their own settings which are available in the `before(:configure)`
+    hook (@solnic)
+  - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 - version: 0.15.0
   summary: 
   date: '2020-01-30'
