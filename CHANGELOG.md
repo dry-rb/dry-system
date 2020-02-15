@@ -1,4 +1,4 @@
-## unreleased 
+## 0.16.0 2020-02-15
 
 
 ### Changed
@@ -6,7 +6,7 @@
 - Plugins can now define their own settings which are available in the `before(:configure)` hook (@solnic)
 - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 
-[Compare v0.15.0...master](https://github.com/dry-rb/dry-system/compare/v0.15.0...master)
+[Compare v0.15.0...v0.16.0](https://github.com/dry-rb/dry-system/compare/v0.15.0...v0.16.0)
 
 ## 0.15.0 2020-01-30
 
