@@ -1,14 +1,23 @@
 ---
+- version: 0.17.0
+  summary: 
+  date: '2020-02-19'
+  fixed:
+  - 'Works with the latest dry-configurable version (issue #141) (@solnic)'
+  added: 
+  changed:
+  - Depends on dry-configurable `=> 0.11.1` now (@solnic)
 - version: 0.16.0
-  summary:
+  summary: 
   date: '2020-02-15'
   changed:
-  - Plugins can now define their own settings which are available in the `before(:configure)` hook (@solnic)
+  - Plugins can now define their own settings which are available in the `before(:configure)`
+    hook (@solnic)
   - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 - version: 0.15.0
-  summary:
+  summary: 
   date: '2020-01-30'
-  fixed:
+  fixed: 
   added: |
     New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
 
@@ -22,10 +31,10 @@
   - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
   - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 - version: 0.14.1
-  summary:
+  summary: 
   date: '2020-01-22'
-  fixed:
-  added:
+  fixed: 
+  added: 
   changed:
   - Use `Kernel.require` explicitly to avoid issues with monkey-patched `require`
     from ActiveSupport (@solnic)
