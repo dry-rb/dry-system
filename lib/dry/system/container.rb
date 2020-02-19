@@ -104,7 +104,8 @@ module Dry
         # @api public
         def setting(name, *args, &block)
           super(name, *args, &block)
-          config.settings << _settings[name]
+          # TODO: dry-configurable needs a public API for this
+          config._settings << _settings[name]
           self
         end
 
