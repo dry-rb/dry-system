@@ -1,3 +1,16 @@
+## 0.17.0 2020-02-19
+
+
+### Fixed
+
+- Works with the latest dry-configurable version (issue #141) (@solnic)
+
+### Changed
+
+- Depends on dry-configurable `=> 0.11.1` now (@solnic)
+
+[Compare v0.16.0...v0.17.0](https://github.com/dry-rb/dry-system/compare/v0.16.0...v0.17.0)
+
 ## 0.16.0 2020-02-15
 
 
