@@ -308,4 +308,18 @@ RSpec.describe Dry::System::Container do
       expect(container.registered?('test.dep')).to be(true)
     end
   end
+
+  describe '.injector' do
+    subject(:container) { Test::InjectorContainer }
+
+    before do
+      class Test::InjectorContainer < Dry::System::Container
+      end
+      Test::InjectorContainer.finalize!
+    end
+
+    it 'checks if a component is registered' do
+      expect { container.injector }.not_to raise_error
+    end
+  end
 end

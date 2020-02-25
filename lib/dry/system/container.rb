@@ -90,8 +90,10 @@ module Dry
         def strategies(value = nil)
           if value
             @strategies = value
+          elsif defined?(@strategies) && @strategies
+            @strategies
           else
-            @strategies ||= Dry::AutoInject::Strategies
+            Dry::AutoInject::Strategies
           end
         end
 
