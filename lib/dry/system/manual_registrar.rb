@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'dry/system/constants'
+require "dry/system/constants"
 
 module Dry
   module System

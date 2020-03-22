@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 Test::Container.boot(:heaven) do
-  register('heaven', 'string')
+  register("heaven", "string")
 end

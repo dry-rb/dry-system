@@ -7,8 +7,8 @@ module Dry
       COMMENT_RE = /^#\s+(?<name>[A-Za-z]{1}[A-Za-z0-9_]+):\s+(?<value>.+?)$/.freeze
 
       COERCIONS = {
-        'true' => true,
-        'false' => false
+        "true" => true,
+        "false" => false
       }.freeze
 
       def self.call(file_name)

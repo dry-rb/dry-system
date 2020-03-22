@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:bar, namespace: 'test') do
+Test::Container.boot(:bar, namespace: "test") do
   init do
     module Test
       module Bar
@@ -10,6 +10,6 @@ Test::Container.boot(:bar, namespace: 'test') do
   end
 
   start do
-    register(:bar, 'I was finalized')
+    register(:bar, "I was finalized")
   end
 end

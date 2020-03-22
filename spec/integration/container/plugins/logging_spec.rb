@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Plugins / Logging' do
+RSpec.describe "Plugins / Logging" do
   before do
     system.configure do |config|
-      config.root = SPEC_ROOT.join('fixtures/test')
+      config.root = SPEC_ROOT.join("fixtures/test")
     end
   end
 
@@ -15,7 +15,7 @@ RSpec.describe 'Plugins / Logging' do
     File.read(system.log_file_path)
   end
 
-  context 'with default logger settings' do
+  context "with default logger settings" do
     subject(:system) do
       class Test::Container < Dry::System::Container
         use :env
@@ -23,10 +23,10 @@ RSpec.describe 'Plugins / Logging' do
       end
     end
 
-    it 'logs to development.log' do
-      logger.info 'info message'
+    it "logs to development.log" do
+      logger.info "info message"
 
-      expect(log_file_content).to include('info message')
+      expect(log_file_content).to include("info message")
     end
   end
 end

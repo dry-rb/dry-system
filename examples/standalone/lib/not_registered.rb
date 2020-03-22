@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'import'
+require "import"
 
 class NotRegistered
 end

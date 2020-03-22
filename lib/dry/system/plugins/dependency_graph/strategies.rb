@@ -14,7 +14,7 @@ module Dry
 
             # @api private
             def define_initialize(klass)
-              @container['notifications'].instrument(
+              @container["notifications"].instrument(
                 :resolved_dependency, dependency_map: dependency_map.to_h, target_class: klass
               )
               super(klass)

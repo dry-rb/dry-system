@@ -5,8 +5,8 @@ RSpec.describe Dry::System::Container do
     Class.new(Dry::System::Container)
   end
 
-  describe '.after' do
-    it 'registers an after hook' do
+  describe ".after" do
+    it "registers an after hook" do
       system.after(:configure) do
         register(:test, true)
       end
@@ -16,7 +16,7 @@ RSpec.describe Dry::System::Container do
       expect(system[:test]).to be(true)
     end
 
-    it 'inherits hooks from superclass' do
+    it "inherits hooks from superclass" do
       system.after(:configure) do
         register(:test_1, true)
       end

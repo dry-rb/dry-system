@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'dry/events'
-require 'dry/monitor/notifications'
-require 'dry/system/container'
+require "dry/events"
+require "dry/monitor/notifications"
+require "dry/system/container"
 
 class App < Dry::System::Container
   use :dependency_graph
@@ -12,5 +12,5 @@ class App < Dry::System::Container
     config.auto_register = %w[lib]
   end
 
-  load_paths!('lib')
+  load_paths!("lib")
 end

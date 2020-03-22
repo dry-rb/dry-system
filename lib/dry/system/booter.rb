@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'dry/system/components/bootable'
-require 'dry/system/errors'
-require 'dry/system/constants'
-require 'dry/system/lifecycle'
-require 'dry/system/booter/component_registry'
+require "dry/system/components/bootable"
+require "dry/system/errors"
+require "dry/system/constants"
+require "dry/system/lifecycle"
+require "dry/system/booter/component_registry"
 
 module Dry
   module System
@@ -166,7 +166,7 @@ module Dry
       # @api private
       def boot_dependency(component)
         boot_file = boot_file(component)
-        start(boot_file.basename('.*').to_s.to_sym) if boot_file.exist?
+        start(boot_file.basename(".*").to_s.to_sym) if boot_file.exist?
       end
     end
   end
