@@ -44,7 +44,7 @@ This library is the backbone of [dry-web](https://github.com/dry-rb/dry-web), if
 
 ### Rails support
 
-There's no dedicated railtie for `dry-system` yet but we'd like to provide one at some point. Please [get in touch](https://dry-rb.zulipchat.com) if you're interested in helping with this.
+If you want to use dry-system with Rails, it's recommended to use [dry-rails](/gems/dry-rails) which sets up application container for you and provides additional features on top of it.
 
 ### Credits
 
