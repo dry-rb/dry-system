@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 
-require "pathname"
+require 'pathname'
 
-require "dry-auto_inject"
-require "dry-configurable"
-require "dry-container"
-require "dry/inflector"
+require 'dry-auto_inject'
+require 'dry-configurable'
+require 'dry-container'
+require 'dry/inflector'
 
-require "dry/core/deprecations"
+require 'dry/core/deprecations'
 
-require "dry/system"
-require "dry/system/errors"
-require "dry/system/loader"
-require "dry/system/booter"
-require "dry/system/auto_registrar"
-require "dry/system/manual_registrar"
-require "dry/system/importer"
-require "dry/system/component"
-require "dry/system/constants"
-require "dry/system/plugins"
+require 'dry/system'
+require 'dry/system/errors'
+require 'dry/system/loader'
+require 'dry/system/booter'
+require 'dry/system/auto_registrar'
+require 'dry/system/manual_registrar'
+require 'dry/system/importer'
+require 'dry/system/component'
+require 'dry/system/constants'
+require 'dry/system/plugins'
 
 module Dry
   module System
@@ -75,8 +75,8 @@ module Dry
       setting :name
       setting :default_namespace
       setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
-      setting :system_dir, "system"
-      setting :registrations_dir, "container"
+      setting :system_dir, 'system'
+      setting :registrations_dir, 'container'
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
@@ -95,7 +95,7 @@ module Dry
           end
         end
 
-        extend Dry::Core::Deprecations["Dry::System::Container"]
+        extend Dry::Core::Deprecations['Dry::System::Container']
 
         # Define a new configuration setting
         #
@@ -488,7 +488,7 @@ module Dry
         # @param options [Hash] injector options
         #
         # @api public
-        def injector(options = {strategies: strategies})
+        def injector(options = { strategies: strategies })
           Dry::AutoInject(self, options)
         end
 
@@ -506,7 +506,7 @@ module Dry
         # @api public
         def require_from_root(*paths)
           paths.flat_map { |path|
-            path.to_s.include?("*") ? ::Dir[root.join(path)].sort : root.join(path)
+            path.to_s.include?('*') ? ::Dir[root.join(path)].sort : root.join(path)
           }.each { |path|
             Kernel.require path.to_s
           }

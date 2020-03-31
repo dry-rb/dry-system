@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "dry/system/container"
+require 'dry/system/container'
 
 class App < Dry::System::Container
-  load_paths!("lib", "system")
+  load_paths!('lib', 'system')
 
-  auto_register!("lib") do |config|
+  auto_register!('lib') do |config|
     config.memoize = true
     config.instance(&:instance)
 

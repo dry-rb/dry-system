@@ -21,8 +21,8 @@ module Dry
         private
 
         def method_missing(meth, value = nil)
-          if meth.to_s.end_with?("=")
-            @settings[meth.to_s.gsub("=", "").to_sym] = value
+          if meth.to_s.end_with?('=')
+            @settings[meth.to_s.gsub('=', '').to_sym] = value
           elsif @settings.key?(meth)
             @settings[meth]
           else

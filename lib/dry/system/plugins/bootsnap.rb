@@ -22,7 +22,7 @@ module Dry
 
         # @api private
         def self.dependencies
-          {bootsnap: "bootsnap"}
+          { bootsnap: 'bootsnap' }
         end
 
         # Set up bootsnap for faster booting
@@ -31,12 +31,12 @@ module Dry
         def setup_bootsnap
           return unless bootsnap_available?
 
-          ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join("tmp/cache").to_s))
+          ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join('tmp/cache').to_s))
         end
 
         # @api private
         def bootsnap_available?
-          RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.3.0" && RUBY_VERSION < "2.5.0"
+          RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.3.0' && RUBY_VERSION < '2.5.0'
         end
       end
     end

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "bundler/setup"
-require_relative "system/container"
-require "dry/events"
-require "dry/monitor/notifications"
+require 'bundler/setup'
+require_relative 'system/container'
+require 'dry/events'
+require 'dry/monitor/notifications'
 
 App[:notifications].subscribe(:resolved_dependency) do |event|
   puts "Event #{event.id}, payload: #{event.to_h}"
@@ -16,7 +16,7 @@ end
 App.finalize!
 p App.keys
 
-App["service_with_dependency"]
-user_repo = App["user_repo"]
+App['service_with_dependency']
+user_repo = App['user_repo']
 
 puts user_repo.db.inspect

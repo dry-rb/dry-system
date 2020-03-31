@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "dry/system/lifecycle"
-require "dry/system/settings"
-require "dry/system/components/config"
-require "dry/system/constants"
+require 'dry/system/lifecycle'
+require 'dry/system/settings'
+require 'dry/system/components/config'
+require 'dry/system/constants'
 
 module Dry
   module System
@@ -70,7 +70,7 @@ module Dry
           @config = nil
           @config_block = nil
           @identifier = identifier
-          @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
+          @triggers = { before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup }
           @options = block ? options.merge(block: block) : options
           @namespace = options[:namespace]
           finalize = options[:finalize] || DEFAULT_FINALIZE

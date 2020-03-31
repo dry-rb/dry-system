@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "dry/system/constants"
-require "dry/system/magic_comments_parser"
-require "dry/system/auto_registrar/configuration"
+require 'dry/system/constants'
+require 'dry/system/magic_comments_parser'
+require 'dry/system/auto_registrar/configuration'
 
 module Dry
   module System
@@ -67,8 +67,8 @@ module Dry
 
       # @api private
       def relative_path(dir, file_path)
-        dir_root = root.join(dir.to_s.split("/")[0])
-        file_path.to_s.sub("#{dir_root}/", "").sub(RB_EXT, EMPTY_STRING)
+        dir_root = root.join(dir.to_s.split('/')[0])
+        file_path.to_s.sub("#{dir_root}/", '').sub(RB_EXT, EMPTY_STRING)
       end
 
       # @api private

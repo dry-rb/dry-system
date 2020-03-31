@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "dry-system", path: "../.."
-gem "sequel"
-gem "sqlite3"
+gem 'dry-system', path: '../..'
+gem 'sequel'
+gem 'sqlite3'

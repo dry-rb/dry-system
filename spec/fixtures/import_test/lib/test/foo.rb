@@ -2,6 +2,6 @@
 
 module Test
   class Foo
-    include Import["test.bar"]
+    include Import['test.bar']
   end
 end

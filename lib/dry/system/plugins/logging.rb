@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "logger"
+require 'logger'
 
 module Dry
   module System
@@ -11,12 +11,12 @@ module Dry
           system.before(:configure) do
             setting :logger, reader: true
 
-            setting :log_dir, "log"
+            setting :log_dir, 'log'
 
             setting :log_levels,
-                    development: Logger::DEBUG,
-                    test: Logger::DEBUG,
-                    production: Logger::ERROR
+              development: Logger::DEBUG,
+              test: Logger::DEBUG,
+              production: Logger::ERROR
 
             setting :logger_class, ::Logger, reader: true
           end

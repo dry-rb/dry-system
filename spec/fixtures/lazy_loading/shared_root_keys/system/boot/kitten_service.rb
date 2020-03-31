@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:kitten_service, namespace: true) do |_container|
+Test::Container.boot(:kitten_service, namespace: true) do |container|
   init do
     module KittenService
       class Client
@@ -9,6 +9,6 @@ Test::Container.boot(:kitten_service, namespace: true) do |_container|
   end
 
   start do
-    register "client", KittenService::Client.new
+    register 'client', KittenService::Client.new
   end
 end

@@ -8,6 +8,6 @@ Test::Container.namespace(:test) do |container|
   end
 
   container.boot(:bar) do
-    container.register(:bar, "I was finalized")
+    container.register(:bar, 'I was finalized')
   end
 end

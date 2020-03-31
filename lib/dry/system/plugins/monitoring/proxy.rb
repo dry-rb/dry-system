@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "delegate"
+require 'delegate'
 
 module Dry
   module System
@@ -9,7 +9,7 @@ module Dry
         # @api private
         class Proxy < SimpleDelegator
           # @api private
-          def self.for(target, key:, methods: [])
+          def self.for(target, key:, methods: [], &block)
             monitored_methods =
               if methods.empty?
                 target.public_methods - Object.public_instance_methods
@@ -30,7 +30,7 @@ module Dry
               monitored_methods.each do |meth|
                 define_method(meth) do |*args, &block|
                   object = __getobj__
-                  opts = {target: key, object: object, method: meth, args: args}
+                  opts = { target: key, object: object, method: meth, args: args }
 
                   __notifications__.instrument(:monitoring, opts) do
                     object.public_send(meth, *args, &block)

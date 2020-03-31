@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-eval_gemfile "Gemfile.devtools"
+eval_gemfile 'Gemfile.devtools'
 
 gemspec
 
-gem "bootsnap"
-gem "dry-monitor"
+gem 'bootsnap'
+gem 'dry-monitor'
 
 group :tools do
-  gem "pry-byebug", platforms: :mri
+  gem 'pry-byebug', platforms: :mri
 end

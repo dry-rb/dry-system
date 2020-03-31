@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "dry/system/constants"
-require "dry/system/plugins/monitoring/proxy"
+require 'dry/system/constants'
+require 'dry/system/plugins/monitoring/proxy'
 
 module Dry
   module System
@@ -21,7 +21,7 @@ module Dry
 
         # @api private
         def self.dependencies
-          {'dry-events': "dry/events/publisher"}
+          { 'dry-events': 'dry/events/publisher' }
         end
 
         # @api private

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "concurrent/map"
+require 'concurrent/map'
 
-require "dry/system/settings"
+require 'dry/system/settings'
 
 module Dry
   module System

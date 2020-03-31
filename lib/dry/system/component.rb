@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "concurrent/map"
+require 'concurrent/map'
 
-require "dry-equalizer"
-require "dry/inflector"
-require "dry/system/loader"
-require "dry/system/errors"
-require "dry/system/constants"
+require 'dry-equalizer'
+require 'dry/inflector'
+require 'dry/system/loader'
+require 'dry/system/errors'
+require 'dry/system/constants'
 
 module Dry
   module System

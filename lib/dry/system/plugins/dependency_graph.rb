@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "dry/system/constants"
-require "dry/system/plugins/dependency_graph/strategies"
+require 'dry/system/constants'
+require 'dry/system/plugins/dependency_graph/strategies'
 
 module Dry
   module System
@@ -28,7 +28,7 @@ module Dry
 
         # @api private
         def self.dependencies
-          {'dry-events': "dry/events/publisher"}
+          { 'dry-events': 'dry/events/publisher' }
         end
 
         # @api private

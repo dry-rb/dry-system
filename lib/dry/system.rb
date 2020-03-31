@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "dry/system/provider"
-require "dry/system/provider_registry"
+require 'dry/system/provider'
+require 'dry/system/provider_registry'
 
 module Dry
   module System
