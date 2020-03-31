@@ -2,7 +2,7 @@
 
 Dry::System.register_component(:settings, provider: :system) do
   init do
-    require 'dry/system/settings'
+    require "dry/system/settings"
   end
 
   start do
