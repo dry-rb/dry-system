@@ -1,26 +1,26 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
+require "bundler/setup"
 
-require_relative 'support/coverage'
+require_relative "support/coverage"
 
-require 'pathname'
+require "pathname"
 
-require 'warning'
+require "warning"
 # Warning.process { |w| raise RuntimeError, w } unless ENV['NO_WARNING']
 
 begin
-  require 'byebug'
-  require 'pry-byebug'
+  require "byebug"
+  require "pry-byebug"
 rescue LoadError; end
 SPEC_ROOT = Pathname(__FILE__).dirname
 
-Dir[SPEC_ROOT.join('support/*.rb').to_s].each { |f| require f }
-Dir[SPEC_ROOT.join('shared/*.rb').to_s].each { |f| require f }
+Dir[SPEC_ROOT.join("support/*.rb").to_s].each { |f| require f }
+Dir[SPEC_ROOT.join("shared/*.rb").to_s].each { |f| require f }
 
-require 'dry/system/container'
-require 'dry/system/stubs'
-require 'dry/events'
+require "dry/system/container"
+require "dry/system/stubs"
+require "dry/events"
 
 module TestNamespace
   def remove_constants

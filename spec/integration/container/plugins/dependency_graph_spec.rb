@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Plugins / Dependency Graph' do
+RSpec.describe "Plugins / Dependency Graph" do
   before do
-    require SPEC_ROOT.join('fixtures/external_components/lib/external_components')
+    require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
 
     module Test
       class Container < Dry::System::Container
         use :dependency_graph
 
         configure do |config|
-          config.root = SPEC_ROOT.join('fixtures/app').realpath
+          config.root = SPEC_ROOT.join("fixtures/app").realpath
         end
 
         boot(:mailer, from: :external_components)
@@ -23,7 +23,7 @@ RSpec.describe 'Plugins / Dependency Graph' do
   subject(:container) { Test::Container }
 
   let(:events) { [] }
-  let(:service) { Class.new { include Test::Import['logger'] }.new }
+  let(:service) { Class.new { include Test::Import["logger"] }.new }
 
   before do
     container[:notifications].subscribe(:resolved_dependency) do |e|
@@ -38,7 +38,7 @@ RSpec.describe 'Plugins / Dependency Graph' do
     container.finalize!
   end
 
-  it 'broadcasts dependency graph events' do
+  it "broadcasts dependency graph events" do
     expect(events.count).to eq(5)
 
     expect(events.map(&:id)).to eq(
@@ -52,11 +52,11 @@ RSpec.describe 'Plugins / Dependency Graph' do
     )
 
     expect(events.map(&:payload)).to eq([
-      { dependency_map: { logger: 'logger' }, target_class: service.class },
-      { key: 'logger', class: ExternalComponents::Logger },
-      { key: :service, class: container[:service].class },
-      { key: :client, class: Test::Client },
-      { key: 'mailer', class: ExternalComponents::Mailer }
+      {dependency_map: {logger: "logger"}, target_class: service.class},
+      {key: "logger", class: ExternalComponents::Logger},
+      {key: :service, class: container[:service].class},
+      {key: :client, class: Test::Client},
+      {key: "mailer", class: ExternalComponents::Mailer}
     ])
   end
 end

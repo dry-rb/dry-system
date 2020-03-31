@@ -7,7 +7,7 @@ RSpec.describe Dry::System::Container do
     end
   end
 
-  describe '.monitor' do
+  describe ".monitor" do
     let(:klass) do
       Class.new do
         def self.name
@@ -32,7 +32,7 @@ RSpec.describe Dry::System::Container do
       system.register(:object, klass.new)
     end
 
-    it 'monitors object public method calls' do
+    it "monitors object public method calls" do
       captured = []
 
       system.monitor(:object) do |event|
@@ -43,15 +43,15 @@ RSpec.describe Dry::System::Container do
       block_result = []
       block = proc { block_result << true }
 
-      result = object.say('hi', &block)
+      result = object.say("hi", &block)
 
       expect(block_result).to eql([true])
-      expect(result).to eql('hi')
+      expect(result).to eql("hi")
 
-      expect(captured).to eql([[:monitoring, :object, :say, ['hi']]])
+      expect(captured).to eql([[:monitoring, :object, :say, ["hi"]]])
     end
 
-    it 'monitors specified object method calls' do
+    it "monitors specified object method calls" do
       captured = []
 
       system.monitor(:object, methods: [:say]) do |event|
@@ -60,10 +60,10 @@ RSpec.describe Dry::System::Container do
 
       object = system[:object]
 
-      object.say('hi')
+      object.say("hi")
       object.other
 
-      expect(captured).to eql([[:monitoring, :object, :say, ['hi']]])
+      expect(captured).to eql([[:monitoring, :object, :say, ["hi"]]])
     end
   end
 end

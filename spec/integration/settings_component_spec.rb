@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-require 'dry/system/components'
+require "dry/system/components"
 
-RSpec.describe 'Settings component' do
+RSpec.describe "Settings component" do
   subject(:system) do
     Class.new(Dry::System::Container) do
       setting :env
 
       configure do |config|
-        config.root = SPEC_ROOT.join('fixtures').join('settings_test')
+        config.root = SPEC_ROOT.join("fixtures").join("settings_test")
         config.env = :test
       end
 
       boot(:settings, from: :system) do
         before(:init) do
-          require_from_root 'types'
+          require_from_root "types"
         end
 
         settings do
@@ -30,31 +30,31 @@ RSpec.describe 'Settings component' do
   end
 
   before do
-    ENV['DATABASE_URL'] = 'sqlite::memory'
+    ENV["DATABASE_URL"] = "sqlite::memory"
   end
 
   after do
-    ENV.delete('DATABASE_URL')
+    ENV.delete("DATABASE_URL")
   end
 
-  it 'sets up system settings component via ENV and .env' do
-    expect(settings.database_url).to eql('sqlite::memory')
-    expect(settings.session_secret).to eql('super-secret')
+  it "sets up system settings component via ENV and .env" do
+    expect(settings.database_url).to eql("sqlite::memory")
+    expect(settings.session_secret).to eql("super-secret")
   end
 
-  context 'Invalid setting value' do
+  context "Invalid setting value" do
     subject(:system) do
       Class.new(Dry::System::Container) do
         setting :env
 
         configure do |config|
-          config.root = SPEC_ROOT.join('fixtures').join('settings_test')
+          config.root = SPEC_ROOT.join("fixtures").join("settings_test")
           config.env = :test
         end
 
         boot(:settings, from: :system) do
           before(:init) do
-            require_from_root 'types'
+            require_from_root "types"
           end
 
           settings do
@@ -66,16 +66,16 @@ RSpec.describe 'Settings component' do
     end
 
     before do
-      ENV['INTEGER_VALUE'] = 'foo'
-      ENV['COERCIBLE_VALUE'] = 'foo'
+      ENV["INTEGER_VALUE"] = "foo"
+      ENV["COERCIBLE_VALUE"] = "foo"
     end
 
     after do
-      ENV.delete('INTEGER_VALUE')
-      ENV.delete('COERCIBLE_VALUE')
+      ENV.delete("INTEGER_VALUE")
+      ENV.delete("COERCIBLE_VALUE")
     end
 
-    it 'raises InvalidSettingsError with meaningful message' do
+    it "raises InvalidSettingsError with meaningful message" do
       expect {
         settings.integer_value
       }.to raise_error(
@@ -90,19 +90,19 @@ RSpec.describe 'Settings component' do
     end
   end
 
-  context 'With default values' do
+  context "With default values" do
     subject(:system) do
       Class.new(Dry::System::Container) do
         setting :env
 
         configure do |config|
-          config.root = SPEC_ROOT.join('fixtures').join('settings_test')
+          config.root = SPEC_ROOT.join("fixtures").join("settings_test")
           config.env = :test
         end
 
         boot(:settings, from: :system) do
           before(:init) do
-            require_from_root 'types'
+            require_from_root "types"
           end
 
           settings do
@@ -112,20 +112,20 @@ RSpec.describe 'Settings component' do
       end
     end
 
-    it 'uses the default value' do
+    it "uses the default value" do
       expect(settings.number_of_workers).to eql(14)
     end
 
-    context 'ENV variables take precedence before defaults' do
+    context "ENV variables take precedence before defaults" do
       before do
-        ENV['NUMBER_OF_WORKERS'] = '4'
+        ENV["NUMBER_OF_WORKERS"] = "4"
       end
 
       after do
-        ENV.delete('NUMBER_OF_WORKERS')
+        ENV.delete("NUMBER_OF_WORKERS")
       end
 
-      it 'uses the ENV value' do
+      it "uses the ENV value" do
         expect(settings.number_of_workers).to eql(4)
       end
     end

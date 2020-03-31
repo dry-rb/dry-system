@@ -7,8 +7,8 @@ RSpec.describe Dry::System::Container do
     end
   end
 
-  describe '.notifications' do
-    it 'returns configured notifications' do
+  describe ".notifications" do
+    it "returns configured notifications" do
       system.configure {}
 
       expect(system[:notifications]).to be_instance_of(Dry::Monitor::Notifications)
