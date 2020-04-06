@@ -9,6 +9,7 @@ sections:
   - auto-import
   - component-providers
   - plugins
+  - settings
   - test-mode
 ---
 
