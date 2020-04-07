@@ -71,4 +71,4 @@ settings do
 end
 ```
 
-In this case, if you don't have `ENV['REDIS_URL']` value you get `''` as a default value for `settings.redis_url` calls
+In this case, if you don't have `ENV['REDIS_URL']` value, you get `''` as the default value for `settings.redis_url` calls.
