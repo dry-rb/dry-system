@@ -6,7 +6,7 @@ name: dry-system
 
 ## Basic usage
 
-Dry-system provides a built-in `:settings` component which you can use in your application. In order to set it up, simply define a bootable `:settings` component and import it from the `:system` provider:
+dry-system provides a built-in `:settings` component which you can use in your application. In order to set it up, simply define a bootable `:settings` component and import it from the `:system` provider:
 
 ```ruby
 # in system/boot/settings.rb
