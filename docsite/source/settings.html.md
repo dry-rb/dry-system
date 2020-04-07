@@ -44,7 +44,7 @@ Application.boot(:redis) do |container|
 end
 ```
 
-Or use settings in your logic:
+Or use `:settings` as an injectible dependency in your classes:
 
 ```ruby
   module Operations
