@@ -63,7 +63,7 @@ end
 
 ## Default values
 
-You can [use dry-type](https://dry-rb.org/gems/dry-types/master/default-values/) for provide default value for specific setting:
+You can [use dry-types](https://dry-rb.org/gems/dry-types/master/default-values/) for provide default value for specific setting:
 
 ```ruby
 settings do
