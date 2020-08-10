@@ -22,7 +22,7 @@ Dry::System.register_component(:logger, provider: :external_components) do
           @log_level = log_level
         end
       end
-    end
+    end unless defined?(ExternalComponents)
   end
 
   start do
