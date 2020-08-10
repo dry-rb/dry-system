@@ -2,6 +2,9 @@
 
 RSpec.describe "Plugins / Dependency Graph" do
   before do
+    Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
+  end
+  before do
     require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
 
     module Test
