@@ -229,7 +229,7 @@ module Dry
         # @return [TrueClass]
         #
         # @api private
-        def boot?
+        def bootable?
           true
         end
 
