@@ -233,24 +233,6 @@ module Dry
           true
         end
 
-        # Return path to boot dir
-        #
-        # @return [String]
-        #
-        # @api private
-        def boot_path
-          container.boot_path
-        end
-
-        # Return all boot files defined under container's boot path
-        #
-        # @return [String]
-        #
-        # @api private
-        def container_boot_files
-          ::Dir[container.boot_path.join("**/#{RB_GLOB}")].sort
-        end
-
         private
 
         # Return lifecycle object used for this component

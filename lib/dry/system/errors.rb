@@ -17,12 +17,8 @@ module Dry
     # @api public
     ComponentFileMismatchError = Class.new(StandardError) do
       def initialize(component)
-        path = component.boot_path
-        files = component.container_boot_files
-
         super(<<-STR)
-          Boot file for component #{component.identifier.inspect} not found.
-          Container boot files under #{path}: #{files.inspect}")
+          Bootable component #{component.identifier.inspect} not found
         STR
       end
     end

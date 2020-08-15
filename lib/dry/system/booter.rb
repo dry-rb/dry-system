@@ -120,7 +120,7 @@ module Dry
       # @api private
       def call(name_or_component)
         with_component(name_or_component) do |component|
-          raise ComponentFileMismatchError.new(name, registered_booted_keys) unless component
+          raise ComponentFileMismatchError.new(name) unless component
 
           yield(component) if block_given?
 
