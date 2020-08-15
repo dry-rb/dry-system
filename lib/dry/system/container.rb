@@ -255,30 +255,24 @@ module Dry
               boot_local(name, **opts, &block)
             end
 
+          booter.register_component component
+
           components[name] = component
         end
         deprecate :finalize, :boot
 
         # @api private
         def boot_external(identifier, from:, key: nil, namespace: nil, &block)
-          component = System.providers[from].component(
+          System.providers[from].component(
             identifier, key: key, namespace: namespace, finalize: block, container: self
           )
-
-          booter.register_component(component)
-
-          component
         end
 
         # @api private
         def boot_local(identifier, namespace: nil, &block)
-          component = Components::Bootable.new(
+          Components::Bootable.new(
             identifier, container: self, namespace: namespace, &block
           )
-
-          booter.register_component(component)
-
-          component
         end
 
         # Return if a container was finalized
