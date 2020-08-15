@@ -129,11 +129,6 @@ module Dry
       end
 
       # @api private
-      def lifecycle_container(container)
-        LifecycleContainer.new(container)
-      end
-
-      # @api private
       def with_component(id_or_component)
         component =
           case id_or_component
