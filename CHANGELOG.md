@@ -4,9 +4,10 @@
 ### Added
 
 - New `bootable_dirs` setting on `Dry::System::Container`, which accepts paths to multiple directories for looking up bootable component files. (@timriley in PR #151)
-For each entry in the `bootable_dirs` array, relative directories will be appended to the container's `root`, and absolute directories will be left unchanged.
-When searching for bootable files, the first match will win, and any subsequent same-named files will not be loaded. In this way, the `bootable_dirs` act similarly to the `$PATH` in a shell environment.
 
+For each entry in the `bootable_dirs` array, relative directories will be appended to the container's `root`, and absolute directories will be left unchanged.
+
+When searching for bootable files, the first match will win, and any subsequent same-named files will not be loaded. In this way, the `bootable_dirs` act similarly to the `$PATH` in a shell environment.
 
 
 [Compare v0.17.0...v0.18.0](https://github.com/dry-rb/dry-system/compare/v0.17.0...v0.18.0)
