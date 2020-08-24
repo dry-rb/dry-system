@@ -1,23 +1,35 @@
 ---
+- version: 0.18.0
+  summary:
+  date: '2020-08-24'
+  fixed:
+  added:
+  - |-
+    New `bootable_dirs` setting on `Dry::System::Container`, which accepts paths to multiple directories for looking up bootable component files. (@timriley in PR #151)
+
+    For each entry in the `bootable_dirs` array, relative directories will be appended to the container's `root`, and absolute directories will be left unchanged.
+
+    When searching for bootable files, the first match will win, and any subsequent same-named files will not be loaded. In this way, the `bootable_dirs` act similarly to the `$PATH` in a shell environment.
+  changed:
 - version: 0.17.0
-  summary: 
+  summary:
   date: '2020-02-19'
   fixed:
   - 'Works with the latest dry-configurable version (issue #141) (@solnic)'
-  added: 
+  added:
   changed:
   - Depends on dry-configurable `=> 0.11.1` now (@solnic)
 - version: 0.16.0
-  summary: 
+  summary:
   date: '2020-02-15'
   changed:
   - Plugins can now define their own settings which are available in the `before(:configure)`
     hook (@solnic)
   - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 - version: 0.15.0
-  summary: 
+  summary:
   date: '2020-01-30'
-  fixed: 
+  fixed:
   added: |
     New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
 
@@ -31,10 +43,10 @@
   - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
   - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 - version: 0.14.1
-  summary: 
+  summary:
   date: '2020-01-22'
-  fixed: 
-  added: 
+  fixed:
+  added:
   changed:
   - Use `Kernel.require` explicitly to avoid issues with monkey-patched `require`
     from ActiveSupport (@solnic)
