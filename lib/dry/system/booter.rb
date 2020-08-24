@@ -5,6 +5,7 @@ require "dry/system/errors"
 require "dry/system/constants"
 require "dry/system/lifecycle"
 require "dry/system/booter/component_registry"
+require "pathname"
 
 module Dry
   module System
@@ -16,43 +17,27 @@ module Dry
     #
     # @api private
     class Booter
-      attr_reader :path
+      attr_reader :paths
 
       attr_reader :booted
 
       attr_reader :components
 
       # @api private
-      def initialize(path)
-        @path = path
+      def initialize(paths)
+        @paths = paths
         @booted = []
         @components = ComponentRegistry.new
       end
 
       # @api private
       def bootable?(component)
-        boot_file(component).exist?
-      end
-
-      # @api private
-      def boot_file(name)
-        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
-
-        path.join("#{name}#{RB_EXT}")
+        !boot_file(component).nil?
       end
 
       # @api private
       def register_component(component)
         components.register(component)
-        self
-      end
-
-      # @api private
-      def load_component(path)
-        identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
-
-        Kernel.require path unless components.exists?(identifier)
-
         self
       end
 
@@ -120,7 +105,7 @@ module Dry
       # @api private
       def call(name_or_component)
         with_component(name_or_component) do |component|
-          raise ComponentFileMismatchError.new(name, registered_booted_keys) unless component
+          raise ComponentFileMismatchError, name unless component
 
           yield(component) if block_given?
 
@@ -129,11 +114,14 @@ module Dry
       end
 
       # @api private
-      def lifecycle_container(container)
-        LifecycleContainer.new(container)
+      def boot_dependency(component)
+        boot_file = boot_file(component)
+
+        start(boot_file.basename(".*").to_s.to_sym) if boot_file
       end
 
-      # @api private
+      private
+
       def with_component(id_or_component)
         component =
           case id_or_component
@@ -149,24 +137,43 @@ module Dry
         yield(component)
       end
 
-      # @api private
+      def load_component(path)
+        identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
+
+        Kernel.require path unless components.exists?(identifier)
+
+        self
+      end
+
+      def boot_file(name)
+        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
+
+        find_boot_file(name)
+      end
+
       def require_boot_file(identifier)
-        boot_file = boot_files.detect { |path|
-          Pathname(path).basename(RB_EXT).to_s == identifier.to_s
-        }
+        boot_file = find_boot_file(identifier)
 
         Kernel.require boot_file if boot_file
       end
 
-      # @api private
-      def boot_files
-        ::Dir["#{path}/**/#{RB_GLOB}"].sort
+      def find_boot_file(name)
+        boot_files.detect { |file| File.basename(file, RB_EXT) == name.to_s }
       end
 
-      # @api private
-      def boot_dependency(component)
-        boot_file = boot_file(component)
-        start(boot_file.basename(".*").to_s.to_sym) if boot_file.exist?
+      def boot_files
+        @boot_files ||= paths.each_with_object([[], []]) { |path, (boot_files, loaded)|
+          files = Dir["#{path}/#{RB_GLOB}"].sort
+
+          files.each do |file|
+            basename = File.basename(file)
+
+            unless loaded.include?(basename)
+              boot_files << Pathname(file)
+              loaded << basename
+            end
+          end
+        }.first
       end
     end
   end

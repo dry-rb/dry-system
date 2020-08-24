@@ -48,8 +48,6 @@ module Dry
     #
     # * `:name` - a unique container identifier
     # * `:root` - a system root directory (defaults to `pwd`)
-    # * `:system_dir` - directory name relative to root, where bootable components
-    #                 can be defined in `boot` dir this defaults to `system`
     #
     # @example
     #   class MyApp < Dry::System::Container
@@ -76,6 +74,7 @@ module Dry
       setting :default_namespace
       setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
       setting :system_dir, "system"
+      setting :bootable_dirs, ["system/boot"]
       setting :registrations_dir, "container"
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
@@ -170,9 +169,10 @@ module Dry
 
         # Registers finalization function for a bootable component
         #
-        # By convention, boot files for components should be placed in
-        # `%{system_dir}/boot` and they will be loaded on demand when components
-        # are loaded in isolation, or during finalization process.
+        # By convention, boot files for components should be placed in a
+        # `bootable_dirs` entry and they will be loaded on demand when
+        # components are loaded in isolation, or during the finalization
+        # process.
         #
         # @example
         #   # system/container.rb
@@ -255,30 +255,24 @@ module Dry
               boot_local(name, **opts, &block)
             end
 
+          booter.register_component component
+
           components[name] = component
         end
         deprecate :finalize, :boot
 
         # @api private
         def boot_external(identifier, from:, key: nil, namespace: nil, &block)
-          component = System.providers[from].component(
+          System.providers[from].component(
             identifier, key: key, namespace: namespace, finalize: block, container: self
           )
-
-          booter.register_component(component)
-
-          component
         end
 
         # @api private
         def boot_local(identifier, namespace: nil, &block)
-          component = Components::Bootable.new(
+          Components::Bootable.new(
             identifier, container: self, namespace: namespace, &block
           )
-
-          booter.register_component(component)
-
-          component
         end
 
         # Return if a container was finalized
@@ -569,12 +563,20 @@ module Dry
 
         # @api private
         def booter
-          @booter ||= config.booter.new(boot_path)
+          @booter ||= config.booter.new(boot_paths)
         end
 
         # @api private
-        def boot_path
-          root.join("#{config.system_dir}/boot")
+        def boot_paths
+          config.bootable_dirs.map { |dir|
+            dir = Pathname(dir)
+
+            if dir.relative?
+              root.join(dir)
+            else
+              dir
+            end
+          }
         end
 
         # @api private
@@ -635,13 +637,13 @@ module Dry
           return self if registered?(key)
 
           component(key).tap do |component|
-            if component.boot?
+            if component.bootable?
               booter.start(component)
             else
               root_key = component.root_key
 
-              if (bootable_dep = component(root_key)).boot?
-                booter.start(bootable_dep)
+              if (root_bootable = component(root_key)).bootable?
+                booter.start(root_bootable)
               elsif importer.key?(root_key)
                 load_imported_component(component.namespaced(root_key))
               end

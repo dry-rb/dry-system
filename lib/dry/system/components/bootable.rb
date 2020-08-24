@@ -229,36 +229,8 @@ module Dry
         # @return [TrueClass]
         #
         # @api private
-        def boot?
+        def bootable?
           true
-        end
-
-        # Return path to component's boot file
-        #
-        # @return [String]
-        #
-        # @api private
-        def boot_file
-          container_boot_files
-            .detect { |path| Pathname(path).basename(RB_EXT).to_s == identifier.to_s }
-        end
-
-        # Return path to boot dir
-        #
-        # @return [String]
-        #
-        # @api private
-        def boot_path
-          container.boot_path
-        end
-
-        # Return all boot files defined under container's boot path
-        #
-        # @return [String]
-        #
-        # @api private
-        def container_boot_files
-          ::Dir[container.boot_path.join("**/#{RB_GLOB}")].sort
         end
 
         private

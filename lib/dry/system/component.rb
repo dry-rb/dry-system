@@ -118,7 +118,7 @@ module Dry
       ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
       # @api private
-      def boot?
+      def bootable?
         false
       end
 
