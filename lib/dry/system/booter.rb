@@ -120,6 +120,22 @@ module Dry
         start(boot_file.basename(".*").to_s.to_sym) if boot_file
       end
 
+      # @api private
+      def boot_files
+        @boot_files ||= paths.each_with_object([[], []]) { |path, (boot_files, loaded)|
+          files = Dir["#{path}/#{RB_GLOB}"].sort
+
+          files.each do |file|
+            basename = File.basename(file)
+
+            unless loaded.include?(basename)
+              boot_files << Pathname(file)
+              loaded << basename
+            end
+          end
+        }.first
+      end
+
       private
 
       def with_component(id_or_component)
@@ -159,21 +175,6 @@ module Dry
 
       def find_boot_file(name)
         boot_files.detect { |file| File.basename(file, RB_EXT) == name.to_s }
-      end
-
-      def boot_files
-        @boot_files ||= paths.each_with_object([[], []]) { |path, (boot_files, loaded)|
-          files = Dir["#{path}/#{RB_GLOB}"].sort
-
-          files.each do |file|
-            basename = File.basename(file)
-
-            unless loaded.include?(basename)
-              boot_files << Pathname(file)
-              loaded << basename
-            end
-          end
-        }.first
       end
     end
   end
