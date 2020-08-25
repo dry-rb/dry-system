@@ -1,3 +1,13 @@
+## 0.18.1 2020-08-26
+
+
+### Fixed
+
+- Made Booter#boot_files a public method again, since it was required by dry-rails (@timriley)
+
+
+[Compare v0.18.0...v0.18.1](https://github.com/dry-rb/dry-system/compare/v0.18.0...v0.18.1)
+
 ## 0.18.0 2020-08-24
 
 
