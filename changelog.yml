@@ -1,4 +1,11 @@
 ---
+- version: 0.18.1
+  summary:
+  date: '2020-08-26'
+  fixed:
+  - Made Booter#boot_files a public method again, since it was required by dry-rails (@timriley)
+  added:
+  changed:
 - version: 0.18.0
   summary:
   date: '2020-08-24'
