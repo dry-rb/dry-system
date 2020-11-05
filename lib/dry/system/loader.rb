@@ -57,6 +57,10 @@ module Dry
       end
       ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
 
+      def require!
+        require path
+      end
+
       # Return component's class constant
       #
       # @return [Class]

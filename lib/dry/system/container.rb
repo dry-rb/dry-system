@@ -616,7 +616,8 @@ module Dry
 
           raise FileNotFoundError, component unless component.file_exists?(load_paths)
 
-          require_path(component.path)
+          # require_path(component.path)
+          component.require_thyself
 
           yield
         end
@@ -629,6 +630,7 @@ module Dry
         #
         # @api private
         def require_path(path)
+          raise "I shouldn't be called!"
           require path
         end
 

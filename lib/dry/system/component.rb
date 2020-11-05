@@ -93,6 +93,10 @@ module Dry
         freeze
       end
 
+      def require_thyself
+        loader.require!
+      end
+
       # Returns components instance
       #
       # @example
