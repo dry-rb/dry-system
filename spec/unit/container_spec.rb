@@ -124,6 +124,8 @@ RSpec.describe Dry::System::Container do
       end
 
       it "defines an extension point for subclasses to use alternatives to Kernel#require" do
+        pending "Needs adjusting with Tim's zeitwerk changes"
+
         expect(Test::FileLoader).to receive(:call).with("test/foo").and_return(true)
 
         container.load_component("test.foo")
