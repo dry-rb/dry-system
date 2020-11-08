@@ -77,6 +77,7 @@ module Dry
       setting :bootable_dirs, ["system/boot"]
       setting :registrations_dir, "container"
       setting :component_dirs, ["lib"]
+      setting :add_component_dirs_to_load_path, true
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
@@ -401,7 +402,7 @@ module Dry
         #
         # @api public
         def add_to_load_path!(*dirs)
-          dirs.map(&root.method(:join)).each do |path|
+          dirs.reverse.map(&root.method(:join)).each do |path|
             $LOAD_PATH.prepend(path.to_s) unless $LOAD_PATH.include?(path.to_s)
           end
           self
@@ -704,6 +705,11 @@ module Dry
           container.load_component(component.identifier)
           importer.(component.namespace, container)
         end
+      end
+
+      # Default hooks
+      after :configure do
+        add_to_load_path!(*component_paths) if config.add_component_dirs_to_load_path
       end
     end
   end
