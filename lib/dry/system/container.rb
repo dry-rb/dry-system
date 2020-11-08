@@ -125,7 +125,6 @@ module Dry
         def configure(&block)
           hooks[:before_configure].each { |hook| instance_eval(&hook) }
           super(&block)
-          load_paths!(config.system_dir)
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
           self
         end
