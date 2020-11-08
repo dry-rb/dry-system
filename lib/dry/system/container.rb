@@ -401,10 +401,17 @@ module Dry
         #
         # @api public
         def add_to_load_path!(*dirs)
-          dirs.map(&root.method(:join)).each do |path|
+          dirs.reverse.map(&root.method(:join)).each do |path|
             $LOAD_PATH.prepend(path.to_s) unless $LOAD_PATH.include?(path.to_s)
           end
           self
+        end
+
+        # Adds the configured component directories to the Ruby load path
+        #
+        # @api public
+        def add_component_dirs_to_load_path!
+          add_to_load_path!(*component_paths)
         end
 
         # @api public
