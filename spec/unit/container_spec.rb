@@ -13,7 +13,7 @@ RSpec.describe Dry::System::Container do
           config.root = SPEC_ROOT.join("fixtures/test").realpath
         end
 
-        load_paths!("lib")
+        add_to_load_path!("lib")
       end
 
       module Test
@@ -112,7 +112,7 @@ RSpec.describe Dry::System::Container do
               config.root = SPEC_ROOT.join("fixtures/require_path").realpath
             end
 
-            load_paths!("lib")
+            add_to_load_path!("lib")
 
             class << self
               def require_path(path)
@@ -140,7 +140,7 @@ RSpec.describe Dry::System::Container do
           config.root = SPEC_ROOT.join("fixtures/lazytest").realpath
         end
 
-        load_paths!("lib")
+        add_to_load_path!("lib")
       end
     end
 
@@ -187,7 +187,7 @@ RSpec.describe Dry::System::Container do
               config.root = SPEC_ROOT.join("fixtures/test").realpath
             end
 
-            load_paths!("lib")
+            add_to_load_path!("lib")
           end
         end
       end
@@ -202,7 +202,7 @@ RSpec.describe Dry::System::Container do
               config.bootable_dirs = ["config/boot"]
             end
 
-            load_paths!("lib")
+            add_to_load_path!("lib")
           end
         end
       end
@@ -220,7 +220,7 @@ RSpec.describe Dry::System::Container do
           config.root = SPEC_ROOT.join("fixtures/stubbing").realpath
         end
 
-        load_paths!("lib")
+        add_to_load_path!("lib")
         auto_register!("lib")
       end
     end
@@ -264,7 +264,7 @@ RSpec.describe Dry::System::Container do
 
       class Test::Container < Dry::System::Container
         config.root = SPEC_ROOT.join("fixtures/test").realpath
-        load_paths!("lib")
+        add_to_load_path!("lib")
 
         importer.registry.update(falses: Test::FalseyContainer)
       end
@@ -300,7 +300,7 @@ RSpec.describe Dry::System::Container do
     before do
       class Test::Container < Dry::System::Container
         config.root = SPEC_ROOT.join("fixtures/test").realpath
-        load_paths!("lib")
+        add_to_load_path!("lib")
       end
     end
 

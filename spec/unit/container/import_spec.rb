@@ -28,7 +28,7 @@ RSpec.describe Dry::System::Container, ".import" do
           config.root = SPEC_ROOT.join("fixtures/import_test").realpath
         end
 
-        load_paths!("lib")
+        add_to_load_path!("lib")
       end
 
       class Test::Container < Dry::System::Container
@@ -36,7 +36,7 @@ RSpec.describe Dry::System::Container, ".import" do
           config.root = SPEC_ROOT.join("fixtures/test").realpath
         end
 
-        load_paths!("lib")
+        add_to_load_path!("lib")
 
         import other: Test::Other
       end

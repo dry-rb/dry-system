@@ -61,7 +61,7 @@ module Dry
     #     end
     #
     #     # this will configure $LOAD_PATH to include your `lib` dir
-    #     load_paths!('lib')
+    #     add_dirs_to_load_paths!('lib')
     #   end
     #
     # @api public
@@ -385,7 +385,7 @@ module Dry
           self
         end
 
-        # Sets load paths relative to the container's root dir
+        # Adds the directories (relative to the container's root) to the Ruby load path
         #
         # @example
         #   class MyApp < Dry::System::Container
@@ -393,7 +393,7 @@ module Dry
         #       # ...
         #     end
         #
-        #     load_paths!('lib')
+        #     add_to_load_path!('lib')
         #   end
         #
         # @param [Array<String>] dirs
@@ -401,12 +401,9 @@ module Dry
         # @return [self]
         #
         # @api public
-        def load_paths!(*dirs)
+        def add_to_load_path!(*dirs)
           dirs.map(&root.method(:join)).each do |path|
-            next if load_paths.include?(path)
-
-            load_paths << path
-            $LOAD_PATH.unshift(path.to_s)
+            $LOAD_PATH.prepend(path.to_s) unless $LOAD_PATH.include?(path.to_s)
           end
           self
         end
@@ -555,11 +552,6 @@ module Dry
             registered?(key) || resolve(key) { return false }
             true
           end
-        end
-
-        # @api private
-        def load_paths
-          @load_paths ||= []
         end
 
         # @api private
