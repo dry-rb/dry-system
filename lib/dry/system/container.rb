@@ -77,6 +77,7 @@ module Dry
       setting :bootable_dirs, ["system/boot"]
       setting :registrations_dir, "container"
       setting :component_dirs, ["lib"]
+      setting :add_component_dirs_to_load_path, true
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
@@ -407,13 +408,6 @@ module Dry
           self
         end
 
-        # Adds the configured component directories to the Ruby load path
-        #
-        # @api public
-        def add_component_dirs_to_load_path!
-          add_to_load_path!(*component_paths)
-        end
-
         # @api public
         def load_registrations!(name)
           manual_registrar.(name)
@@ -713,6 +707,11 @@ module Dry
           container.load_component(component.identifier)
           importer.(component.namespace, container)
         end
+      end
+
+      # Default hooks
+      after :configure do
+        add_to_load_path!(*component_paths) if config.add_component_dirs_to_load_path
       end
     end
   end

@@ -34,14 +34,4 @@ RSpec.describe Dry::System::Container, "Load path handling" do
       ]
     end
   end
-
-  describe ".add_component_dirs_to_load_path!" do
-    it "adds the configured component directories, relative to the container root, to the beginning of the $LOAD_PATH" do
-      expect { container.add_component_dirs_to_load_path! }
-        .to change { $LOAD_PATH.include?(SPEC_ROOT.join("fixtures/test/lib").to_s) }
-        .from(false).to(true)
-
-      expect($LOAD_PATH[0]).to eq SPEC_ROOT.join("fixtures/test/lib").to_s
-    end
-  end
 end
