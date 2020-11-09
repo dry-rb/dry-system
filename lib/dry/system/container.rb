@@ -668,15 +668,12 @@ module Dry
 
         # @api private
         def inherited(klass)
-          new_hooks = Container.hooks.dup
-
           hooks.each do |event, blocks|
-            new_hooks[event].concat(blocks)
-            new_hooks[event].concat(klass.hooks[event])
+            klass.hooks[event].concat blocks.dup
           end
 
-          klass.instance_variable_set(:@hooks, new_hooks)
           klass.instance_variable_set(:@__finalized__, false)
+
           super
         end
 
