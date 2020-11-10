@@ -39,6 +39,14 @@ module Dry
         @inflector = inflector
       end
 
+      # Require the component's source file
+      #
+      # @api public
+      def require!
+        require path
+        self
+      end
+
       # Returns component's instance
       #
       # Provided optional args are passed to object's constructor
@@ -56,10 +64,6 @@ module Dry
         end
       end
       ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
-
-      def require!
-        require path
-      end
 
       # Return component's class constant
       #

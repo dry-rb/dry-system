@@ -93,7 +93,7 @@ module Dry
         freeze
       end
 
-      def require_thyself
+      def require!
         loader.require!
       end
 
