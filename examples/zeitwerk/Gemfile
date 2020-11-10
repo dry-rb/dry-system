@@ -1,8 +1,0 @@
-# frozen_string_literal: true
-
-source "https://rubygems.org"
-
-gem "dry-system", path: "../.."
-gem "break"
-gem "pry"
-gem "zeitwerk"
