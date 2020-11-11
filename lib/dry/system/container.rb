@@ -614,20 +614,9 @@ module Dry
 
           raise FileNotFoundError, component unless component.file_exists?(component_paths)
 
-          require_path(component.path)
+          component.require!
 
           yield
-        end
-
-        # Allows subclasses to use a different strategy for required files.
-        #
-        # E.g. apps that use `ActiveSupport::Dependencies::Loadable#require_dependency`
-        # will override this method to allow container managed dependencies to be reloaded
-        # for non-finalized containers.
-        #
-        # @api private
-        def require_path(path)
-          require path
         end
 
         # @api private
