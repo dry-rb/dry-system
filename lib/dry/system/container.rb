@@ -76,6 +76,7 @@ module Dry
       setting :system_dir, "system"
       setting :bootable_dirs, ["system/boot"]
       setting :registrations_dir, "container"
+      setting :component_dirs, ["lib"]
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
@@ -553,8 +554,8 @@ module Dry
         end
 
         # @api private
-        def load_paths
-          @load_paths ||= []
+        def component_paths
+          config.component_dirs.map(&root.method(:join))
         end
 
         # @api private
@@ -610,7 +611,7 @@ module Dry
         def require_component(component)
           return if registered?(component.identifier)
 
-          raise FileNotFoundError, component unless component.file_exists?(load_paths)
+          raise FileNotFoundError, component unless component.file_exists?(component_paths)
 
           require_path(component.path)
 
@@ -683,7 +684,7 @@ module Dry
 
         # @api private
         def load_local_component(component, default_namespace_fallback = false, &block)
-          if booter.bootable?(component) || component.file_exists?(load_paths)
+          if booter.bootable?(component) || component.file_exists?(component_paths)
             booter.boot_dependency(component) unless finalized?
 
             require_component(component) do
