@@ -8,7 +8,7 @@ RSpec.describe "Lazy-loading manual registration files" do
           config.root = SPEC_ROOT.join("fixtures/manual_registration").realpath
         end
 
-        load_paths!("lib")
+        add_to_load_path!("lib")
       end
     end
   end

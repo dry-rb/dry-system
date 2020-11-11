@@ -15,7 +15,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.root = SPEC_ROOT.join("fixtures").realpath
         end
 
-        load_paths!("components")
+        add_to_load_path!("components")
         auto_register!("components")
       end
     end
@@ -34,9 +34,10 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
+          config.component_dirs = ["components"]
         end
 
-        load_paths!("components")
+        add_to_load_path!("components")
       end
     end
 
@@ -63,7 +64,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.root = SPEC_ROOT.join("fixtures").realpath
         end
 
-        load_paths!("components")
+        add_to_load_path!("components")
       end
     end
 
@@ -108,7 +109,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.default_namespace = "namespaced"
         end
 
-        load_paths!("namespaced_components")
+        add_to_load_path!("namespaced_components")
         auto_register!("namespaced_components")
       end
     end
@@ -126,7 +127,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.default_namespace = "namespace"
         end
 
-        load_paths!("components")
+        add_to_load_path!("components")
         auto_register!("components")
       end
     end
@@ -144,7 +145,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.default_namespace = "multiple.level"
         end
 
-        load_paths!("multiple_namespaced_components")
+        add_to_load_path!("multiple_namespaced_components")
         auto_register!("multiple_namespaced_components")
       end
     end
@@ -167,7 +168,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.loader = ::Test::Loader
         end
 
-        load_paths!("components")
+        add_to_load_path!("components")
         auto_register!("components")
       end
     end

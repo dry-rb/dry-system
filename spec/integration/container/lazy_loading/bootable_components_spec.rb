@@ -9,7 +9,7 @@ RSpec.describe "Lazy loading bootable components" do
             config.root = SPEC_ROOT.join("fixtures/lazy_loading/shared_root_keys").realpath
           end
 
-          load_paths! "lib"
+          add_to_load_path! "lib"
         end
       end
     end
