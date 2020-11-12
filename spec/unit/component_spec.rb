@@ -1,11 +1,20 @@
 # frozen_string_literal: true
 
 require "dry/system/component"
+require "dry/system/loader"
 
-RSpec.describe Dry::System::Component do
-  subject(:component) { Dry::System::Component.new(name) }
+RSpec.describe Dry::System::Component, clear_cache: true do
+  subject(:component) { Dry::System::Component.new(name, loader: loader_class) }
+  let(:loader_class) { Dry::System::Loader }
 
-  describe ".new" do
+  before clear_cache: true do
+    # Skip the internal cache for most of examples below, to allow for for a fresh
+    # component to be used in each. This is important for tests that rely on adjusting the
+    # component's dependencies, like the loader.
+    described_class.instance_variable_set :@cache, nil
+  end
+
+  describe ".new", clear_cache: false do
     it "caches components" do
       create = lambda {
         Dry::System::Component.new("foo.bar", namespace: "foo")
@@ -53,6 +62,19 @@ RSpec.describe Dry::System::Component do
     describe "#root_key" do
       it "returns component key" do
         expect(component.root_key).to be(:foo)
+      end
+    end
+
+    describe "#require!" do
+      let(:loader) { instance_spy(Dry::System::Loader) }
+
+      before do
+        allow(loader_class).to receive(:new).with("foo", anything) { loader }
+      end
+
+      it "requires the component via the loader" do
+        component.require!
+        expect(loader).to have_received(:require!)
       end
     end
 

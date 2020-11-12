@@ -61,7 +61,7 @@ module Dry
     #     end
     #
     #     # this will configure $LOAD_PATH to include your `lib` dir
-    #     load_paths!('lib')
+    #     add_dirs_to_load_paths!('lib')
     #   end
     #
     # @api public
@@ -76,6 +76,8 @@ module Dry
       setting :system_dir, "system"
       setting :bootable_dirs, ["system/boot"]
       setting :registrations_dir, "container"
+      setting :component_dirs, ["lib"]
+      setting :add_component_dirs_to_load_path, true
       setting :auto_register, []
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
@@ -125,7 +127,6 @@ module Dry
         def configure(&block)
           hooks[:before_configure].each { |hook| instance_eval(&hook) }
           super(&block)
-          load_paths!(config.system_dir)
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
           self
         end
@@ -384,7 +385,7 @@ module Dry
           self
         end
 
-        # Sets load paths relative to the container's root dir
+        # Adds the directories (relative to the container's root) to the Ruby load path
         #
         # @example
         #   class MyApp < Dry::System::Container
@@ -392,7 +393,7 @@ module Dry
         #       # ...
         #     end
         #
-        #     load_paths!('lib')
+        #     add_to_load_path!('lib')
         #   end
         #
         # @param [Array<String>] dirs
@@ -400,12 +401,9 @@ module Dry
         # @return [self]
         #
         # @api public
-        def load_paths!(*dirs)
-          dirs.map(&root.method(:join)).each do |path|
-            next if load_paths.include?(path)
-
-            load_paths << path
-            $LOAD_PATH.unshift(path.to_s)
+        def add_to_load_path!(*dirs)
+          dirs.reverse.map(&root.method(:join)).each do |path|
+            $LOAD_PATH.prepend(path.to_s) unless $LOAD_PATH.include?(path.to_s)
           end
           self
         end
@@ -557,8 +555,8 @@ module Dry
         end
 
         # @api private
-        def load_paths
-          @load_paths ||= []
+        def component_paths
+          config.component_dirs.map(&root.method(:join))
         end
 
         # @api private
@@ -614,22 +612,11 @@ module Dry
         def require_component(component)
           return if registered?(component.identifier)
 
-          raise FileNotFoundError, component unless component.file_exists?(load_paths)
+          raise FileNotFoundError, component unless component.file_exists?(component_paths)
 
-          require_path(component.path)
+          component.require!
 
           yield
-        end
-
-        # Allows subclasses to use a different strategy for required files.
-        #
-        # E.g. apps that use `ActiveSupport::Dependencies::Loadable#require_dependency`
-        # will override this method to allow container managed dependencies to be reloaded
-        # for non-finalized containers.
-        #
-        # @api private
-        def require_path(path)
-          require path
         end
 
         # @api private
@@ -671,15 +658,12 @@ module Dry
 
         # @api private
         def inherited(klass)
-          new_hooks = Container.hooks.dup
-
           hooks.each do |event, blocks|
-            new_hooks[event].concat(blocks)
-            new_hooks[event].concat(klass.hooks[event])
+            klass.hooks[event].concat blocks.dup
           end
 
-          klass.instance_variable_set(:@hooks, new_hooks)
           klass.instance_variable_set(:@__finalized__, false)
+
           super
         end
 
@@ -687,7 +671,7 @@ module Dry
 
         # @api private
         def load_local_component(component, default_namespace_fallback = false, &block)
-          if booter.bootable?(component) || component.file_exists?(load_paths)
+          if booter.bootable?(component) || component.file_exists?(component_paths)
             booter.boot_dependency(component) unless finalized?
 
             require_component(component) do
@@ -710,6 +694,11 @@ module Dry
           container.load_component(component.identifier)
           importer.(component.namespace, container)
         end
+      end
+
+      # Default hooks
+      after :configure do
+        add_to_load_path!(*component_paths) if config.add_component_dirs_to_load_path
       end
     end
   end

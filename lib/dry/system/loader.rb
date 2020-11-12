@@ -39,6 +39,14 @@ module Dry
         @inflector = inflector
       end
 
+      # Require the component's source file
+      #
+      # @api public
+      def require!
+        require path
+        self
+      end
+
       # Returns component's instance
       #
       # Provided optional args are passed to object's constructor
