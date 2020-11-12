@@ -3,7 +3,7 @@
 require "dry/system/container"
 
 RSpec.describe Dry::System::Container, ".auto_register!" do
-  before do
+  after do
     Object.send(:remove_const, :Foo) if defined? Foo
     Object.send(:remove_const, :Bar) if defined? Bar
   end
