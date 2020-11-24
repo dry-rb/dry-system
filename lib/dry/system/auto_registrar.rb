@@ -26,7 +26,9 @@ module Dry
 
       # @api private
       def finalize!
-        Array(config.auto_register).each { |dir| call(dir) }
+        config.component_dirs.each do |dir|
+          call(dir.path) if dir.auto_register
+        end
       end
 
       # @api private
@@ -36,11 +38,9 @@ module Dry
         components(dir).each do |component|
           next if !component.auto_register? || registration_config.exclude.(component)
 
-          container.require_component(component) do
-            register(component.identifier, memoize: registration_config.memoize) {
-              registration_config.instance.(component)
-            }
-          end
+          register(component.identifier, memoize: registration_config.memoize) {
+            registration_config.instance.(component)
+          }
         end
       end
 

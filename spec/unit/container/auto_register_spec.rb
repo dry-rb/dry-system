@@ -13,11 +13,8 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["components"]
+          config.component_dirs.add "components"
         end
-
-        add_to_load_path!("components")
-        auto_register!("components")
       end
     end
 
@@ -35,10 +32,8 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["components"]
+          config.component_dirs.add "components"
         end
-
-        add_to_load_path!("components")
       end
     end
 
@@ -63,10 +58,8 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       Class.new(Dry::System::Container) do
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["components"]
+          config.component_dirs.add "components"
         end
-
-        add_to_load_path!("components")
       end
     end
 
@@ -108,12 +101,10 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["namespaced_components"]
-          config.default_namespace = "namespaced"
+          config.component_dirs.add "namespaced_components" do |dir|
+            dir.default_namespace = "namespaced"
+          end
         end
-
-        add_to_load_path!("namespaced_components")
-        auto_register!("namespaced_components")
       end
     end
 
@@ -127,12 +118,11 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["components"]
-          config.default_namespace = "namespace"
-        end
 
-        add_to_load_path!("components")
-        auto_register!("components")
+          config.component_dirs.add "components" do |dir|
+            # dir.default_namespace = "namespace"
+          end
+        end
       end
     end
 
@@ -146,12 +136,10 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["multiple_namespaced_components"]
-          config.default_namespace = "multiple.level"
+          config.component_dirs.add "multiple_namespaced_components" do |dir|
+            dir.default_namespace = "multiple.level"
+          end
         end
-
-        add_to_load_path!("multiple_namespaced_components")
-        auto_register!("multiple_namespaced_components")
       end
     end
 
@@ -163,6 +151,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
     before do
       class Test::Loader < Dry::System::Loader
         def call(*args)
+          require!
           constant.respond_to?(:call) ? constant : constant.new(*args)
         end
       end
@@ -170,12 +159,9 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
-          config.component_dirs = ["components"]
+          config.component_dirs.add "components"
           config.loader = ::Test::Loader
         end
-
-        add_to_load_path!("components")
-        auto_register!("components")
       end
     end
 
@@ -191,8 +177,8 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
         class Test::Container < Dry::System::Container
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
-            config.component_dirs = ["components"]
-            config.auto_register = %w[unknown_dir]
+            config.component_dirs.add "components"
+            config.component_dirs.add "unknown_dir"
           end
         end
       end

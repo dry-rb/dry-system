@@ -3,26 +3,11 @@
 require "dry/system/component"
 require "dry/system/loader"
 
-RSpec.describe Dry::System::Component, clear_cache: true do
+RSpec.describe Dry::System::Component do
   subject(:component) { Dry::System::Component.new(name, loader: loader_class) }
   let(:loader_class) { Dry::System::Loader }
 
-  before clear_cache: true do
-    # Skip the internal cache for most of examples below, to allow for for a fresh
-    # component to be used in each. This is important for tests that rely on adjusting the
-    # component's dependencies, like the loader.
-    described_class.instance_variable_set :@cache, nil
-  end
-
-  describe ".new", clear_cache: false do
-    it "caches components" do
-      create = lambda {
-        Dry::System::Component.new("foo.bar", namespace: "foo")
-      }
-
-      expect(create.()).to be(create.())
-    end
-
+  describe ".new" do
     it "allows to have the same key multiple times in the identifier/path" do
       component = Dry::System::Component.new("foo.bar.foo", namespace: "foo")
       expect(component.identifier).to eql("bar.foo")
@@ -65,19 +50,6 @@ RSpec.describe Dry::System::Component, clear_cache: true do
       end
     end
 
-    describe "#require!" do
-      let(:loader) { instance_spy(Dry::System::Loader) }
-
-      before do
-        allow(loader_class).to receive(:new).with("foo", anything) { loader }
-      end
-
-      it "requires the component via the loader" do
-        component.require!
-        expect(loader).to have_received(:require!)
-      end
-    end
-
     describe "#instance" do
       it "builds an instance" do
         class Foo; end
@@ -94,12 +66,6 @@ RSpec.describe Dry::System::Component, clear_cache: true do
       end
     end
 
-    describe "#file" do
-      it "returns relative path to the component file" do
-        expect(component.file).to eql("test/foo.rb")
-      end
-    end
-
     describe "#namespace" do
       it "returns configured namespace" do
         expect(component.namespace).to be(nil)
@@ -112,7 +78,6 @@ RSpec.describe Dry::System::Component, clear_cache: true do
 
         expect(namespaced.identifier).to eql("foo")
         expect(namespaced.path).to eql("test/foo")
-        expect(namespaced.file).to eql("test/foo.rb")
       end
     end
 

@@ -7,9 +7,8 @@ RSpec.describe "Lazy loading bootable components" do
         class Container < Dry::System::Container
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures/lazy_loading/shared_root_keys").realpath
+            config.component_dirs.add "lib"
           end
-
-          add_to_load_path! "lib"
         end
       end
     end

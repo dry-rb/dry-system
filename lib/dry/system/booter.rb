@@ -41,6 +41,20 @@ module Dry
         self
       end
 
+      # Returns a bootable component if it can be found or loaded, otherwise nil
+      #
+      # @return [Dry::System::Components::Bootable, nil]
+      # @api private
+      def find_component(identifier)
+        return components[identifier] if components.exists?(identifier)
+
+        return if finalized?
+
+        require_boot_file(identifier)
+
+        components[identifier] if components.exists?(identifier)
+      end
+
       # @api private
       def finalize!
         boot_files.each do |path|
@@ -53,6 +67,13 @@ module Dry
 
         freeze
       end
+
+      # @!method finalized?
+      #   Returns true if the booter has been finalized
+      #
+      #   @return [Boolean]
+      #   @api private
+      alias_method :finalized?, :frozen?
 
       # @api private
       def shutdown
@@ -168,9 +189,10 @@ module Dry
         self
       end
 
+      # TODO: this name should reflect we're doing a root_key check
+      # TODO: find out in what situations we're actually passing something with a .root_key
       def boot_file(name)
         name = name.respond_to?(:root_key) ? name.root_key.to_s : name
-
         find_boot_file(name)
       end
 

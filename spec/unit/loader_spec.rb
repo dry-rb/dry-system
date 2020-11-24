@@ -3,18 +3,32 @@
 require "dry/inflector"
 require "dry/system/loader"
 require "singleton"
+require "dry/system/component"
 
 RSpec.describe Dry::System::Loader do
+  subject(:loader) { described_class.new(component) }
+
   describe "#require!" do
-    subject(:loader) { Dry::System::Loader.new("test/bar") }
+    let(:component) { Dry::System::Component.new("test.bar") }
 
     before do
       allow(loader).to receive(:require)
     end
 
-    it "requires the loader's path" do
-      loader.require!
-      expect(loader).to have_received(:require).with "test/bar"
+    context "component file exists" do
+      let(:component) { Dry::System::Component.new("test.bar", file_path: "path/to/test/bar.rb") }
+
+      it "requires the components's path" do
+        loader.require!
+        expect(loader).to have_received(:require).with "test/bar"
+      end
+    end
+
+    context "component file does not exist" do
+      it "does not require the components's path" do
+        loader.require!
+        expect(loader).not_to have_received(:require)
+      end
     end
 
     it "returns self" do
@@ -43,7 +57,7 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a singular name" do
-      subject(:loader) { Dry::System::Loader.new("test/bar") }
+      let(:component) { Dry::System::Component.new("test.bar") }
 
       let(:constant) { Test::Bar }
 
@@ -55,7 +69,7 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a plural name" do
-      subject(:loader) { Dry::System::Loader.new("test/bars") }
+      let(:component) { Dry::System::Component.new("test.bars") }
 
       let(:constant) { Test::Bars }
 
@@ -67,7 +81,7 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a constructor accepting args" do
-      subject(:loader) { Dry::System::Loader.new("test/bar") }
+      let(:component) { Dry::System::Component.new("test.bar") }
 
       before do
         module Test
@@ -84,9 +98,12 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a custom inflector" do
-      let(:inflector) { Dry::Inflector.new { |i| i.acronym("API") } }
-
-      subject(:loader) { Dry::System::Loader.new("test/api_bar", inflector) }
+      let(:component) {
+        Dry::System::Component.new(
+          "test.api_bar",
+          inflector: Dry::Inflector.new { |i| i.acronym("API") }
+        )
+      }
 
       let(:constant) { Test::APIBar }
 
