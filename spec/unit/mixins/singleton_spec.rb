@@ -11,6 +11,7 @@ RSpec.describe Dry::System::Mixins::Singleton do
 
       subject_instance = Subject.instance
       expect(subject_instance).to eq(Subject.instance)
+      expect(subject_instance).not_to eq(Subject.new)
     end
   end
 end
