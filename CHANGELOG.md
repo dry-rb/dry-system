@@ -1,3 +1,16 @@
+## 0.19.0 2020-11-26
+
+
+### Added
+
+- `Dry::System::Mixins::Singleton` module in order for the container to resolve to a single instance when injected while also allowing to create new instances when unit testing by allowing to pass mocked dependencies
+
+### Changed
+
+- `Dry::System::Loader` singleton? method now doesn't check if it doesn't respond to .new
+
+[Compare v0.18.1...v0.19.0](https://github.com/dry-rb/dry-system/compare/v0.18.1...v0.19.0)
+
 ## 0.18.1 2020-08-26
 
 
