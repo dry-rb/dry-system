@@ -78,7 +78,7 @@ module Dry
 
       # @api private
       def singleton?(constant)
-        constant.respond_to?(:instance) && !constant.respond_to?(:new)
+        constant.respond_to?(:instance)
       end
     end
   end
