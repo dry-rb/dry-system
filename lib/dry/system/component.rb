@@ -53,10 +53,10 @@ module Dry
           name, options = args
           options = DEFAULT_OPTIONS.merge(options || EMPTY_HASH)
 
-          ns, sep, inflector = options.values_at(:namespace, :separator, :inflector)
-          identifier = extract_identifier(name, ns, sep)
+          namespace, separator, inflector = options.values_at(:namespace, :separator, :inflector)
+          identifier = extract_identifier(name, namespace, separator)
 
-          path = name.to_s.gsub(sep, PATH_SEPARATOR)
+          path = name.to_s.gsub(separator, PATH_SEPARATOR)
           loader = options.fetch(:loader, Loader).new(path, inflector)
 
           super(identifier, path, options.merge(loader: loader))
@@ -64,16 +64,17 @@ module Dry
       end
 
       # @api private
-      def self.extract_identifier(name, ns, sep)
-        name_s = name.to_s
-        identifier = ns ? remove_namespace_from_name(name_s, ns) : name_s
+      def self.extract_identifier(name, namespace, separator)
+        name = name.to_s
 
-        identifier.scan(WORD_REGEX).join(sep)
+        identifier = namespace ? remove_namespace_from_name(name, namespace) : name
+
+        identifier.scan(WORD_REGEX).join(separator)
       end
 
       # @api private
-      def self.remove_namespace_from_name(name, ns)
-        match_value = name.match(/^(?<remove_namespace>#{ns})(?<separator>\W)(?<identifier>.*)/)
+      def self.remove_namespace_from_name(name, namespace)
+        match_value = name.match(/^(?<remove_namespace>#{namespace})(?<separator>\W)(?<identifier>.*)/)
 
         match_value ? match_value[:identifier] : name
       end
