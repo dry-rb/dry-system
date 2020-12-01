@@ -2,6 +2,7 @@
 
 require "concurrent/map"
 require "dry/system/constants"
+require "dry/system/mixins/singleton"
 require "dry/system/components/bootable"
 
 module Dry
