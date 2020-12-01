@@ -5,7 +5,7 @@ require "dry/system/loader/autoloading"
 require "zeitwerk"
 
 RSpec.describe "Autoloading loader" do
-  specify "Resolves components using Zeitwerk" do
+  specify "Resolving components using Zeitwerk" do
     # See https://github.com/jruby/jruby/issues/5638 for current state
     pending "Zeitwerk is not fully functioning on JRuby" if RUBY_PLATFORM == "java"
 
