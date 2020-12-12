@@ -13,7 +13,6 @@ gemspec:
     - [dry-auto_inject, ">= 0.4.0"]
     - [dry-configurable, "~> 0.11", ">= 0.11.1"]
     - [dry-container, "~> 0.7", ">= 0.7.2"]
-    - [dry-core, "~> 0.3", ">= 0.3.1"]
-    - [dry-equalizer, "~> 0.2"]
+    - [dry-core, "~> 0.5", ">= 0.5"]
     - [dry-inflector, "~> 0.1", ">= 0.1.2"]
     - [dry-struct, "~> 1.0"]
