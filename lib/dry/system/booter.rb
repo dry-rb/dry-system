@@ -120,7 +120,14 @@ module Dry
         start(boot_file.basename(".*").to_s.to_sym) if boot_file
       end
 
-      # @api private
+      # Returns all boot files within the configured paths
+      #
+      # Searches for files in the order of the configured paths. In the case of multiple
+      # identically-named boot files within different paths, the file found first will be
+      # returned, and other matching files will be discarded.
+      #
+      # @return [Array<Pathname>]
+      # @api public
       def boot_files
         @boot_files ||= paths.each_with_object([[], []]) { |path, (boot_files, loaded)|
           files = Dir["#{path}/#{RB_GLOB}"].sort
