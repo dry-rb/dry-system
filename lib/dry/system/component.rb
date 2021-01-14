@@ -7,6 +7,7 @@ require "dry/inflector"
 require "dry/system/loader"
 require "dry/system/errors"
 require "dry/system/constants"
+require "dry/system/magic_comments_parser"
 
 module Dry
   module System
@@ -64,14 +65,14 @@ module Dry
           end
         }
 
-        # TODO: read options from magic comments at top of file? that's what the
-        # auto-registrar does (or maybe we should be doing that in Container.component?)
+        file_options = found_path ? MagicCommentsParser.(found_path) : EMPTY_HASH
 
         new(
           identifier,
           namespace: found_namespace,
           file_path: found_path,
-          **options
+          **file_options,
+          **options,
         )
       end
 

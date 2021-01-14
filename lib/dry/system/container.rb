@@ -642,6 +642,8 @@ module Dry
           component(key).tap do |component|
             if component.bootable?
               booter.start(component)
+            elsif !component.auto_register?
+              raise ComponentLoadError, component
             else
               root_key = component.root_key
 
