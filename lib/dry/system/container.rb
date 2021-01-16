@@ -523,8 +523,8 @@ module Dry
         end
 
         # @api public
-        def resolve(key, &block)
-          load_component(key, &block) unless finalized?
+        def resolve(key)
+          load_component(key) unless finalized?
 
           super
         end
@@ -636,25 +636,25 @@ module Dry
         protected
 
         # @api private
-        def load_component(key, &block)
+        def load_component(key)
           return self if registered?(key)
 
-          component(key).tap do |component|
-            if component.bootable?
-              booter.start(component)
-            elsif !component.auto_register?
-              raise ComponentLoadError, component
-            else
-              root_key = component.root_key
+          component = component(key)
 
-              if (root_bootable = component(root_key)).bootable?
-                booter.start(root_bootable)
-              elsif importer.key?(root_key) && !component.file_exists? # TODO: need tests for the latter condition?
-                load_imported_component(component.namespaced(root_key))
-              end
+          if component.bootable?
+            booter.start(component)
+            return self
+          end
 
-              load_local_component(component, &block) unless registered?(key)
-            end
+          booter.boot_dependency(component)
+          return self if registered?(key)
+
+          if component.file_exists?
+            load_local_component(component)
+          elsif manual_registrar.file_exists?(component)
+            manual_registrar.(component)
+          elsif importer.key?(component.root_key)
+            load_imported_component(component.namespaced(component.root_key))
           end
 
           self
@@ -662,22 +662,12 @@ module Dry
 
         private
 
-        # @api private
-        def load_local_component(component, &block)
-          if booter.bootable?(component) || component.file_exists?
-            booter.boot_dependency(component) unless finalized?
-
+        def load_local_component(component)
+          if component.auto_register?
             register(component.identifier) { component.instance }
-          elsif manual_registrar.file_exists?(component)
-            manual_registrar.(component)
-          elsif block_given?
-            yield
-          else
-            raise ComponentLoadError, component
           end
         end
 
-        # @api private
         def load_imported_component(component)
           container = importer[component.namespace]
           container.load_component(component.identifier)

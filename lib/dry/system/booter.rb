@@ -31,11 +31,6 @@ module Dry
       end
 
       # @api private
-      def bootable?(component)
-        !boot_file(component).nil?
-      end
-
-      # @api private
       def register_component(component)
         components.register(component)
         self
@@ -136,9 +131,11 @@ module Dry
 
       # @api private
       def boot_dependency(component)
-        boot_file = boot_file(component)
+        name = component.respond_to?(:root_key) ? component.root_key : component.to_sym
 
-        start(boot_file.basename(".*").to_s.to_sym) if boot_file
+        if (component = find_component(name))
+          start(component)
+        end
       end
 
       # Returns all boot files within the configured paths
@@ -187,13 +184,6 @@ module Dry
         Kernel.require path unless components.exists?(identifier)
 
         self
-      end
-
-      # TODO: this name should reflect we're doing a root_key check
-      # TODO: find out in what situations we're actually passing something with a .root_key
-      def boot_file(name)
-        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
-        find_boot_file(name)
       end
 
       def require_boot_file(identifier)

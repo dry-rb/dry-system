@@ -10,8 +10,11 @@ RSpec.describe "Lazy loading components with auto-registration disabled" do
     end
   end
 
+  it "reports the component as absent" do
+    expect(Test::Container.key?("entities.kitten")).to be false
+  end
+
   it "does not load the component" do
-    expect(Test::Container["fetch_kitten"]).to be
-    expect { Test::Container["entities.kitten"] }.to raise_error(Dry::System::ComponentLoadError)
+    expect { Test::Container["entities.kitten"] }.to raise_error(Dry::Container::Error)
   end
 end
