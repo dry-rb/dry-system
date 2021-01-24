@@ -15,9 +15,6 @@ module Dry
     # They expose an API to query this information and use a configurable
     # loader object to initialize class instances.
     #
-    # Components are created automatically through auto-registration and can be
-    # accessed through `Container.auto_register!` which yields them.
-    #
     # @api public
     class Component
       include Dry::Equalizer(:identifier, :path, :file_path, :options)
@@ -59,20 +56,32 @@ module Dry
 
         path = identifier.to_s.gsub(options[:separator], PATH_SEPARATOR)
 
-        found_path, found_namespace = component_dirs.reduce(nil) { |_, dir|
+        found_dir, found_path = component_dirs.detect { |dir|
           if (component_file = dir.component_file(path))
-            break [component_file, dir.default_namespace]
+            break [dir, component_file]
           end
         }
 
-        file_options = found_path ? MagicCommentsParser.(found_path) : EMPTY_HASH
+        return new(identifier, options) unless found_path
+
+        new_from_component_dir(identifier, found_dir, found_path, options)
+      end
+
+      # @api private
+      def self.new_from_component_dir(identifier, component_dir, file_path, options = EMPTY_HASH)
+        # Replace default options (provided via args) with more component-local values
+        options = {
+          **DEFAULT_OPTIONS,
+          **options,
+          **component_dir.component_options,
+          **MagicCommentsParser.(file_path)
+        }
 
         new(
           identifier,
-          namespace: found_namespace,
-          file_path: found_path,
-          **file_options,
-          **options,
+          namespace: component_dir.default_namespace,
+          file_path: file_path,
+          **options
         )
       end
 
@@ -185,18 +194,27 @@ module Dry
 
       # @api private
       def auto_register?
-        !!options.fetch(:auto_register) { true }
+        callable_option?(options[:auto_register])
+      end
+
+      # @api private
+      def memoize?
+        callable_option?(options[:memoize])
       end
 
       # @api private
       def root_key
-        namespaces.first
+        identifier.split(separator).map(&:to_sym).first
       end
 
       private
 
-      def namespaces
-        identifier.split(separator).map(&:to_sym)
+      def callable_option?(value)
+        if value.respond_to?(:call)
+          !!value.call(self)
+        else
+          !!value
+        end
       end
     end
   end

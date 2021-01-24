@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Bar
-  class Baz
+module Test
+  class Foo
   end
 end

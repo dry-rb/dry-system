@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/constants"
-require "dry/system/magic_comments_parser"
-require "dry/system/auto_registrar/configuration"
 require_relative "component"
 
 module Dry
@@ -18,66 +16,56 @@ module Dry
     class AutoRegistrar
       attr_reader :container
 
-      attr_reader :config
-
       def initialize(container)
         @container = container
-        @config = container.config
       end
 
       # @api private
       def finalize!
-        config.component_dirs.each do |dir|
-          call(dir.path) if dir.auto_register
+        container.component_dirs.each do |component_dir|
+          call(component_dir) if component_dir.auto_register?
         end
       end
 
       # @api private
-      def call(dir)
-        registration_config = Configuration.new
+      def call(component_dir)
+        components(component_dir).each do |component|
+          next unless register_component?(component)
 
-        yield(registration_config) if block_given?
-
-        components(dir).each do |component|
-          next unless register_component?(component, registration_config)
-
-          container.register(component.identifier, memoize: registration_config.memoize) {
-            registration_config.instance.(component)
-          }
+          container.register(component.identifier, memoize: component.memoize?) { component.instance }
         end
       end
 
       private
 
-      def components(dir)
-        files(dir).map { |file_name|
-          Component.new(
-            relative_path(dir, file_name),
-            file_path: file_name,
-            **MagicCommentsParser.(file_name)
+      def components(component_dir)
+        files(component_dir.full_path).map { |file_path|
+          Component.new_from_component_dir(
+            relative_path(component_dir, file_path),
+            component_dir,
+            file_path,
+            separator: container.config.namespace_separator,
+            inflector: container.config.inflector,
           )
         }
       end
 
       def files(dir)
-        components_dir = File.join(container.root, dir)
-
-        unless ::Dir.exist?(components_dir)
-          raise ComponentsDirMissing, "Components dir '#{components_dir}' not found"
+        unless ::Dir.exist?(dir)
+          raise ComponentsDirMissing, "Components dir '#{dir}' not found"
         end
 
-        ::Dir["#{components_dir}/**/#{RB_GLOB}"].sort
+        Dir["#{dir}/**/#{RB_GLOB}"].sort
       end
 
-      def relative_path(dir, file_path)
-        dir_root = container.root.join(dir.to_s.split("/")[0])
-        file_path.to_s.sub("#{dir_root}/", "").sub(RB_EXT, EMPTY_STRING)
+      def relative_path(component_dir, file_path)
+        Pathname(file_path)
+          .relative_path_from(component_dir.full_path)
+          .sub(RB_EXT, EMPTY_STRING)
       end
 
-      def register_component?(component, registration_config)
-        !container.registered?(component) &&
-          component.auto_register? &&
-          !registration_config.exclude.(component)
+      def register_component?(component)
+        !container.registered?(component) && component.auto_register?
       end
     end
   end

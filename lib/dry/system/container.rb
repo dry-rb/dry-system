@@ -414,47 +414,6 @@ module Dry
           self
         end
 
-        # Auto-registers components from the provided directory
-        #
-        # Typically you want to configure auto_register directories, and it will
-        # work automatically. Use this method in cases where you want to have an
-        # explicit way where some components are auto-registered, or if you want
-        # to exclude some components from being auto-registered
-        #
-        # @example
-        #   class MyApp < Dry::System::Container
-        #     configure do |config|
-        #       # ...
-        #     end
-        #
-        #     # with a dir
-        #     auto_register!('lib/core')
-        #
-        #     # with a dir and a custom registration block
-        #     auto_register!('lib/core') do |config|
-        #       config.instance do |component|
-        #         # custom way of initializing a component
-        #       end
-        #
-        #       config.exclude do |component|
-        #         # return true to exclude component from auto-registration
-        #       end
-        #     end
-        #   end
-        #
-        # @param [String] dir The dir name relative to the root dir
-        #
-        # @yield AutoRegistrar::Configuration
-        # @see AutoRegistrar::Configuration
-        #
-        # @return [self]
-        #
-        # @api public
-        def auto_register!(dir, &block)
-          auto_registrar.(dir, &block)
-          self
-        end
-
         # Builds injector for this container
         #
         # An injector is a useful mixin which injects dependencies into
@@ -556,7 +515,7 @@ module Dry
 
         # @api private
         def component_dirs
-          config.component_dirs.to_a.map { |dir| ComponentDir.new(config: dir, root: root) }
+          config.component_dirs.to_a.map { |dir| ComponentDir.new(config: dir, container: self) }
         end
 
         # @api private
@@ -590,22 +549,6 @@ module Dry
         # @api private
         def importer
           @importer ||= config.importer.new(self)
-        end
-
-        # @api private
-        def component(identifier, **options)
-          if (bootable_component = booter.find_component(identifier))
-            return bootable_component
-          end
-
-          Component.locate(
-            identifier,
-            component_dirs,
-            loader: config.loader,
-            separator: config.namespace_separator,
-            inflector: config.inflector,
-            **options
-          )
         end
 
         # @api private
@@ -664,7 +607,7 @@ module Dry
 
         def load_local_component(component)
           if component.auto_register?
-            register(component.identifier) { component.instance }
+            register(component.identifier, memoize: component.memoize?) { component.instance }
           end
         end
 
@@ -672,6 +615,19 @@ module Dry
           container = importer[component.namespace]
           container.load_component(component.identifier)
           importer.(component.namespace, container)
+        end
+
+        def component(identifier)
+          if (bootable_component = booter.find_component(identifier))
+            return bootable_component
+          end
+
+          Component.locate(
+            identifier,
+            component_dirs,
+            separator: config.namespace_separator,
+            inflector: config.inflector,
+          )
         end
       end
 
