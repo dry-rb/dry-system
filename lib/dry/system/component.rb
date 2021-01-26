@@ -54,7 +54,7 @@ module Dry
       #
       # @return [Dry::System::Component]
       # @api private
-      def self.locate(identifier, component_dirs, **options)
+      def self.locate(identifier, component_dirs, options = EMPTY_HASH)
         options = DEFAULT_OPTIONS.merge(options)
 
         path = identifier.to_s.gsub(options[:separator], PATH_SEPARATOR)
@@ -77,7 +77,7 @@ module Dry
       end
 
       # @api private
-      def self.new(identifier, **options)
+      def self.new(identifier, options = EMPTY_HASH)
         options = DEFAULT_OPTIONS.merge(options)
 
         namespace, separator = options.values_at(:namespace, :separator)
