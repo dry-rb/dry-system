@@ -2,12 +2,8 @@ RSpec.describe "Auto-registration / Custom loader" do
   before do
     # A loader that simply returns the component's identifier string as its instance
     class Test::IdentifierLoader
-      def initialize(component)
-        @component = component
-      end
-
-      def call(*args)
-        @component.identifier
+      def self.call(component, *args)
+        component.identifier
       end
     end
 

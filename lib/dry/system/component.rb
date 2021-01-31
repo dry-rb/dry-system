@@ -41,10 +41,6 @@ module Dry
       #   @return [Hash] component's options
       attr_reader :options
 
-      # @!attribute [r] loader
-      #   @return [Object#call] component's loader object
-      attr_reader :loader
-
       # Returns a component with a namespace and path provided from a file found within
       # the given component dirs. If no file is found, a component is returned without
       # these attributes.
@@ -120,40 +116,21 @@ module Dry
       end
       private_class_method :remove_namespace_from_name
 
-      attr_reader :inflector
-
       # @api private
       def initialize(identifier, path:, file_path: nil, **options)
         @identifier = identifier
         @path = path
         @file_path = file_path
         @options = options
-        @inflector = options.fetch(:inflector)
-        @loader = options.fetch(:loader).new(self)
         freeze
       end
 
-      # Returns components instance
-      #
-      # @example
-      #   class MyApp < Dry::System::Container
-      #     configure do |config|
-      #       config.name = :my_app
-      #       config.root = Pathname('/my/app')
-      #     end
-      #
-      #     auto_register!('lib/clients') do |component|
-      #       # some custom initialization logic, ie:
-      #       constant = component.loader.constant
-      #       constant.create
-      #     end
-      #   end
+      # Returns the component's instance
       #
       # @return [Object] component's class instance
-      #
       # @api public
       def instance(*args)
-        loader.call(*args)
+        loader.call(self, *args)
       end
       ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
@@ -177,9 +154,18 @@ module Dry
           path: path,
           file_path: nil,
           **options,
-          loader: loader.class,
           namespace: namespace,
         )
+      end
+
+      # @api private
+      def loader
+        options[:loader]
+      end
+
+      # @api private
+      def inflector
+        options[:inflector]
       end
 
       # @api private

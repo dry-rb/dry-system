@@ -78,8 +78,11 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
   context "with a custom loader" do
     before do
       class Test::Loader < Dry::System::Loader
-        def call(*args)
-          require!
+        def self.call(component, *args)
+          require!(component)
+
+          constant = self.constant(component)
+
           constant.respond_to?(:call) ? constant : constant.new(*args)
         end
       end
@@ -90,7 +93,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.component_dirs.add "components" do |dir|
             dir.default_namespace = "test"
           end
-          config.loader = ::Test::Loader
+          config.loader = Test::Loader
         end
       end
     end

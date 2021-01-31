@@ -14,9 +14,11 @@ module Dry
       # @see Loader
       # @api public
       class Autoloading < Loader
-        def require!
-          constant
-          self
+        class << self
+          def require!(component)
+            constant(component)
+            self
+          end
         end
       end
     end

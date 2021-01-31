@@ -6,7 +6,7 @@ require "singleton"
 require "dry/system/component"
 
 RSpec.describe Dry::System::Loader do
-  subject(:loader) { described_class.new(component) }
+  subject(:loader) { described_class }
 
   describe "#require!" do
     let(:component) { Dry::System::Component.new("test.bar") }
@@ -19,31 +19,31 @@ RSpec.describe Dry::System::Loader do
       let(:component) { Dry::System::Component.new("test.bar", file_path: "path/to/test/bar.rb") }
 
       it "requires the components's path" do
-        loader.require!
+        loader.require!(component)
         expect(loader).to have_received(:require).with "test/bar"
       end
     end
 
     context "component file does not exist" do
       it "does not require the components's path" do
-        loader.require!
+        loader.require!(component)
         expect(loader).not_to have_received(:require)
       end
     end
 
     it "returns self" do
-      expect(loader.require!).to eql loader
+      expect(loader.require!(component)).to eql loader
     end
   end
 
   describe "#call" do
     shared_examples_for "object loader" do
-      let(:instance) { loader.call }
+      let(:instance) { loader.call(component) }
 
       context "not singleton" do
         it "returns a new instance of the constant" do
           expect(instance).to be_instance_of(constant)
-          expect(instance).not_to be(loader.call)
+          expect(instance).not_to be(loader.call(component))
         end
       end
 
@@ -90,7 +90,7 @@ RSpec.describe Dry::System::Loader do
       end
 
       it "passes args to the constructor" do
-        instance = loader.call(1, 2)
+        instance = loader.call(component, 1, 2)
 
         expect(instance.one).to be(1)
         expect(instance.two).to be(2)

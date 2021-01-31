@@ -23,61 +23,53 @@ module Dry
     #
     # @api public
     class Loader
-      # @!attribute [r] component
-      #   @return [Dry::System::Component] Component to be loaded
-      #   @api private
-      attr_reader :component
-
-      # @api private
-      def initialize(component)
-        @component = component
-      end
-
-      # Requires the component's source file
-      #
-      # @api public
-      def require!
-        require(component.path) if component.file_exists?
-        self
-      end
-
-      # Returns component's instance
-      #
-      # Provided optional args are passed to object's constructor
-      #
-      # @param [Array] args Optional constructor args
-      #
-      # @return [Object]
-      #
-      # @api public
-      def call(*args)
-        require!
-
-        if singleton?(constant)
-          constant.instance(*args)
-        else
-          constant.new(*args)
+      class << self
+        # Requires the component's source file
+        #
+        # @api public
+        def require!(component)
+          require(component.path) if component.file_exists?
+          self
         end
-      end
-      ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
 
-      # Return component's class constant
-      #
-      # @return [Class]
-      #
-      # @api public
-      def constant
-        inflector.constantize(inflector.camelize(component.path))
-      end
+        # Returns an instance of the component
+        #
+        # Provided optional args are passed to object's constructor
+        #
+        # @param [Array] args Optional constructor args
+        #
+        # @return [Object]
+        #
+        # @api public
+        def call(component, *args)
+          require!(component)
 
-      private
+          constant = self.constant(component)
 
-      def singleton?(constant)
-        constant.respond_to?(:instance) && !constant.respond_to?(:new)
-      end
+          if singleton?(constant)
+            constant.instance(*args)
+          else
+            constant.new(*args)
+          end
+        end
+        ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
 
-      def inflector
-        component.inflector
+        # Returns the component's class constant
+        #
+        # @return [Class]
+        #
+        # @api public
+        def constant(component)
+          inflector = component.inflector
+
+          inflector.constantize(inflector.camelize(component.path))
+        end
+
+        private
+
+        def singleton?(constant)
+          constant.respond_to?(:instance) && !constant.respond_to?(:new)
+        end
       end
     end
   end
