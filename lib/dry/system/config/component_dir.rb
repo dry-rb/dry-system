@@ -9,6 +9,8 @@ module Dry
         setting :auto_register, true
         setting :add_to_load_path, true
         setting :default_namespace
+        setting :loader
+        setting :memoize, false
 
         attr_reader :path
 
@@ -16,6 +18,10 @@ module Dry
           super()
           @path = path
           yield self if block_given?
+        end
+
+        def auto_register?
+          !!config.auto_register
         end
 
         private

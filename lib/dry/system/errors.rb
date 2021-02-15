@@ -81,8 +81,17 @@ module Dry
       end
     end
 
-    ComponentsDirMissing = Class.new(StandardError)
+    # Error raised when a configured component directory could not be found
+    #
+    # @api public
+    ComponentDirNotFoundError = Class.new(StandardError) do
+      def initialize(dir)
+        super("Component dir '#{dir}' not found")
+      end
+    end
+
     DuplicatedComponentKeyError = Class.new(ArgumentError)
+
     InvalidSettingsError = Class.new(ArgumentError) do
       # @api private
       def initialize(attributes)

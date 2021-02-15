@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require "dry/system/component"
+
 require "dry/system/component_dir"
 require "dry/system/config/component_dir"
+require "dry/system/container"
 require "dry/system/loader"
 
 RSpec.describe Dry::System::Component, ".locate" do
@@ -11,15 +13,24 @@ RSpec.describe Dry::System::Component, ".locate" do
   let(:component_dirs) {
     component_dir_paths.map { |dir_path|
       Dry::System::ComponentDir.new(
-        root: root,
         config: Dry::System::Config::ComponentDir.new(dir_path) { |config|
           config.default_namespace = "namespace"
-        }
+        },
+        container: container
       )
     }
   }
   let(:component_dir_paths) { %w[component_dir_1 component_dir_2] }
-  let(:root) { SPEC_ROOT.join("fixtures/unit/component") }
+  let(:container) {
+    container_root = root
+    Class.new(Dry::System::Container) {
+      configure do |config|
+        config.root = container_root
+      end
+    }
+  }
+
+  let(:root) { SPEC_ROOT.join("fixtures/unit/component").realpath }
   let(:options) { {} }
 
   context "component file located" do
@@ -49,8 +60,12 @@ RSpec.describe Dry::System::Component, ".locate" do
       expect(component.namespace).to eq "namespace"
     end
 
-    it "loads any options specified within the file's magic comments" do
-      expect(component.options).to include(auto_register: false)
+    context "file contains options as magic comments" do
+      let(:identifier) { "nested.component_file_with_auto_register_false" }
+
+      it "loads any options specified within the file's magic comments" do
+        expect(component.options).to include(auto_register: false)
+      end
     end
   end
 
