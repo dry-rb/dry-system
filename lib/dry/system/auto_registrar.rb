@@ -51,9 +51,7 @@ module Dry
       end
 
       def files(dir)
-        unless ::Dir.exist?(dir)
-          raise ComponentsDirMissing, "Components dir '#{dir}' not found"
-        end
+        raise ComponentDirNotFoundError, dir unless Dir.exist?(dir)
 
         Dir["#{dir}/**/#{RB_GLOB}"].sort
       end

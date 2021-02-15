@@ -120,7 +120,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
     it "warns about it" do
       expect {
         Test::Container.finalize!
-      }.to raise_error Dry::System::ComponentsDirMissing, %r{fixtures/unknown_dir}
+      }.to raise_error Dry::System::ComponentDirNotFoundError, %r{fixtures/unknown_dir}
     end
   end
 end
