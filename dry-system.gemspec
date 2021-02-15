@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   # to update dependencies edit project.yml
   spec.add_runtime_dependency "concurrent-ruby", "~> 1.0"
   spec.add_runtime_dependency "dry-auto_inject", ">= 0.4.0"
-  spec.add_runtime_dependency "dry-configurable", "~> 0.11", ">= 0.11.1"
+  spec.add_runtime_dependency "dry-configurable", "~> 0.12", ">= 0.12.1"
   spec.add_runtime_dependency "dry-container", "~> 0.7", ">= 0.7.2"
   spec.add_runtime_dependency "dry-core", "~> 0.5", ">= 0.5"
   spec.add_runtime_dependency "dry-inflector", "~> 0.1", ">= 0.1.2"
