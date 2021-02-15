@@ -5,16 +5,18 @@ require "dry/system/loader/autoloading"
 require "zeitwerk"
 
 RSpec.describe "Autoloading loader" do
-  specify "Resolves components using Zeitwerk" do
+  specify "Resolving components using Zeitwerk" do
     # See https://github.com/jruby/jruby/issues/5638 for current state
     pending "Zeitwerk is not fully functioning on JRuby" if RUBY_PLATFORM == "java"
 
     module Test
       class Container < Dry::System::Container
         config.root = SPEC_ROOT.join("fixtures/autoloading").realpath
-        config.add_component_dirs_to_load_path = false
+        config.component_dirs.add "lib" do |dir|
+          dir.add_to_load_path = false
+          dir.default_namespace = "test"
+        end
         config.loader = Dry::System::Loader::Autoloading
-        config.default_namespace = "test"
       end
     end
 

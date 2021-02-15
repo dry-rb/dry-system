@@ -26,17 +26,15 @@ RSpec.describe Dry::System::Container, ".import" do
       class Test::Other < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures/import_test").realpath
+          config.component_dirs.add "lib"
         end
-
-        add_to_load_path!("lib")
       end
 
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
+          config.component_dirs.add "lib"
         end
-
-        add_to_load_path!("lib")
 
         import other: Test::Other
       end

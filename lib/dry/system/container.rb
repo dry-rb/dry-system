@@ -20,6 +20,9 @@ require "dry/system/component"
 require "dry/system/constants"
 require "dry/system/plugins"
 
+require_relative "component_dir"
+require_relative "config/component_dirs"
+
 module Dry
   module System
     # Abstract container class to inherit from
@@ -71,14 +74,11 @@ module Dry
       extend Dry::System::Plugins
 
       setting :name
-      setting :default_namespace
       setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
       setting :system_dir, "system"
       setting :bootable_dirs, ["system/boot"]
       setting :registrations_dir, "container"
-      setting :component_dirs, ["lib"]
-      setting :add_component_dirs_to_load_path, true
-      setting :auto_register, []
+      setting :component_dirs, Config::ComponentDirs.new, cloneable: true
       setting :inflector, Dry::Inflector.new
       setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
@@ -523,8 +523,8 @@ module Dry
         end
 
         # @api public
-        def resolve(key, &block)
-          load_component(key, &block) unless finalized?
+        def resolve(key)
+          load_component(key) unless finalized?
 
           super
         end
@@ -555,8 +555,8 @@ module Dry
         end
 
         # @api private
-        def component_paths
-          config.component_dirs.map(&root.method(:join))
+        def component_dirs
+          config.component_dirs.to_a.map { |dir| ComponentDir.new(config: dir, root: root) }
         end
 
         # @api private
@@ -594,52 +594,18 @@ module Dry
 
         # @api private
         def component(identifier, **options)
-          if (component = booter.components.detect { |c| c.identifier == identifier })
-            component
-          else
-            Component.new(
-              identifier,
-              loader: config.loader,
-              namespace: config.default_namespace,
-              separator: config.namespace_separator,
-              inflector: config.inflector,
-              **options
-            )
-          end
-        end
-
-        # @api private
-        def require_component(component)
-          return if registered?(component.identifier)
-
-          raise FileNotFoundError, component unless component.file_exists?(component_paths)
-
-          component.require!
-
-          yield
-        end
-
-        # @api private
-        def load_component(key, &block)
-          return self if registered?(key)
-
-          component(key).tap do |component|
-            if component.bootable?
-              booter.start(component)
-            else
-              root_key = component.root_key
-
-              if (root_bootable = component(root_key)).bootable?
-                booter.start(root_bootable)
-              elsif importer.key?(root_key)
-                load_imported_component(component.namespaced(root_key))
-              end
-
-              load_local_component(component, &block) unless registered?(key)
-            end
+          if (bootable_component = booter.find_component(identifier))
+            return bootable_component
           end
 
-          self
+          Component.locate(
+            identifier,
+            component_dirs,
+            loader: config.loader,
+            separator: config.namespace_separator,
+            inflector: config.inflector,
+            **options
+          )
         end
 
         # @api private
@@ -667,28 +633,41 @@ module Dry
           super
         end
 
-        private
+        protected
 
         # @api private
-        def load_local_component(component, default_namespace_fallback = false, &block)
-          if booter.bootable?(component) || component.file_exists?(component_paths)
-            booter.boot_dependency(component) unless finalized?
+        def load_component(key)
+          return self if registered?(key)
 
-            require_component(component) do
-              register(component.identifier) { component.instance }
-            end
-          elsif !default_namespace_fallback
-            load_local_component(component.prepend(config.default_namespace), true, &block)
+          component = component(key)
+
+          if component.bootable?
+            booter.start(component)
+            return self
+          end
+
+          booter.boot_dependency(component)
+          return self if registered?(key)
+
+          if component.file_exists?
+            load_local_component(component)
           elsif manual_registrar.file_exists?(component)
             manual_registrar.(component)
-          elsif block_given?
-            yield
-          else
-            raise ComponentLoadError, component
+          elsif importer.key?(component.root_key)
+            load_imported_component(component.namespaced(component.root_key))
+          end
+
+          self
+        end
+
+        private
+
+        def load_local_component(component)
+          if component.auto_register?
+            register(component.identifier) { component.instance }
           end
         end
 
-        # @api private
         def load_imported_component(component)
           container = importer[component.namespace]
           container.load_component(component.identifier)
@@ -698,7 +677,9 @@ module Dry
 
       # Default hooks
       after :configure do
-        add_to_load_path!(*component_paths) if config.add_component_dirs_to_load_path
+        config.component_dirs.each do |dir|
+          add_to_load_path! dir.path if dir.add_to_load_path
+        end
       end
     end
   end

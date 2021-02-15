@@ -11,9 +11,8 @@ RSpec.describe Dry::System::Container do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
+          config.component_dirs.add "lib"
         end
-
-        add_to_load_path!("lib")
       end
 
       module Test
@@ -33,71 +32,6 @@ RSpec.describe Dry::System::Container do
 
         expect(Test::Models.const_defined?(:User)).to be(true)
         expect(Test::Models.const_defined?(:Book)).to be(true)
-      end
-    end
-
-    describe ".require_component" do
-      shared_examples_for "requireable" do
-        it "requires component file" do
-          component = container.component("test/foo")
-          required = false
-          container.require_component(component) do
-            required = true
-          end
-          expect(required).to be(true)
-        end
-      end
-
-      it_behaves_like "requireable"
-
-      context "when already required" do
-        before do
-          require "test/foo"
-        end
-
-        it_behaves_like "requireable"
-      end
-
-      it "raises when file does not exist" do
-        component = container.component("test/missing")
-        expect { container.require_component(component) }.to raise_error(
-          Dry::System::FileNotFoundError, /test\.missing/
-        )
-      end
-
-      it "returns for already registered components" do
-        component = container.component("test/foo")
-
-        registrar = lambda {
-          container.register(component.identifier) { component.instance }
-        }
-
-        container.require_component(component, &registrar)
-
-        required = false
-        registrar = -> { required = true }
-        container.require_component(component, &registrar)
-        expect(required).to be(false)
-      end
-    end
-
-    describe ".load_component" do
-      it "loads and registers systems from configured load paths" do
-        container.load_component("test.foo")
-
-        expect(Test::Foo.new.dep).to be_instance_of(Test::Dep)
-      end
-
-      it "raises an error if a system's file can't be found" do
-        expect { container.load_component("test.missing") }.to raise_error(
-          Dry::System::ComponentLoadError, /test\.missing/
-        )
-      end
-
-      it "is a no op if a matching system is already registered" do
-        container.register "test.no_matching_file", Object.new
-
-        expect { container.load_component("test.no_matching_file") }.not_to raise_error
       end
     end
   end
@@ -180,17 +114,15 @@ RSpec.describe Dry::System::Container do
 
   describe ".stub" do
     let(:stubbed_car) do
-      instance_double(Test::Car, wheels_count: 5)
+      double(:car, wheels_count: 5)
     end
 
     before do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures/stubbing").realpath
+          config.component_dirs.add "lib"
         end
-
-        add_to_load_path!("lib")
-        auto_register!("lib")
       end
     end
 
@@ -206,7 +138,12 @@ RSpec.describe Dry::System::Container do
       end
 
       it "lazy-loads a component" do
+        # This test doens't really make sense
+        # why do we test it again afterwards? It's also nothing to do with stubbing really...
+
         expect(container[:db]).to be_instance_of(Test::DB)
+
+        # byebug
         container.finalize!
         expect(container[:db]).to be_instance_of(Test::DB)
       end
@@ -232,8 +169,10 @@ RSpec.describe Dry::System::Container do
       end
 
       class Test::Container < Dry::System::Container
-        config.root = SPEC_ROOT.join("fixtures/test").realpath
-        add_to_load_path!("lib")
+        configure do |config|
+          config.root = SPEC_ROOT.join("fixtures/test").realpath
+          config.component_dirs.add "lib"
+        end
 
         importer.registry.update(falses: Test::FalseyContainer)
       end
@@ -256,7 +195,10 @@ RSpec.describe Dry::System::Container do
   describe ".resolve" do
     before do
       class Test::Container < Dry::System::Container
-        config.root = SPEC_ROOT.join("fixtures/test").realpath
+        configure do |config|
+          config.root = SPEC_ROOT.join("fixtures/test").realpath
+          config.component_dirs.add "lib"
+        end
       end
     end
 
@@ -268,8 +210,10 @@ RSpec.describe Dry::System::Container do
   describe ".registered?" do
     before do
       class Test::Container < Dry::System::Container
-        config.root = SPEC_ROOT.join("fixtures/test").realpath
-        add_to_load_path!("lib")
+        configure do |config|
+          config.root = SPEC_ROOT.join("fixtures/test").realpath
+          config.component_dirs.add "lib"
+        end
       end
     end
 

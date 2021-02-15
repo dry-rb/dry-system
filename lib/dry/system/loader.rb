@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/inflector"
-
 module Dry
   module System
     # Default component loader implementation
@@ -25,25 +23,21 @@ module Dry
     #
     # @api public
     class Loader
-      # @!attribute [r] path
-      #   @return [String] Path to component's file
-      attr_reader :path
-
-      # @!attribute [r] inflector
-      #   @return [Object] Inflector backend
-      attr_reader :inflector
+      # @!attribute [r] component
+      #   @return [Dry::System::Component] Component to be loaded
+      #   @api private
+      attr_reader :component
 
       # @api private
-      def initialize(path, inflector = Dry::Inflector.new)
-        @path = path
-        @inflector = inflector
+      def initialize(component)
+        @component = component
       end
 
-      # Require the component's source file
+      # Requires the component's source file
       #
       # @api public
       def require!
-        require path
+        require(component.path) if component.file_exists?
         self
       end
 
@@ -57,6 +51,8 @@ module Dry
       #
       # @api public
       def call(*args)
+        require!
+
         if singleton?(constant)
           constant.instance(*args)
         else
@@ -71,14 +67,17 @@ module Dry
       #
       # @api public
       def constant
-        inflector.constantize(inflector.camelize(path))
+        inflector.constantize(inflector.camelize(component.path))
       end
 
       private
 
-      # @api private
       def singleton?(constant)
         constant.respond_to?(:instance) && !constant.respond_to?(:new)
+      end
+
+      def inflector
+        component.inflector
       end
     end
   end

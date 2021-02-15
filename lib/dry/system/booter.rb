@@ -31,14 +31,23 @@ module Dry
       end
 
       # @api private
-      def bootable?(component)
-        !boot_file(component).nil?
-      end
-
-      # @api private
       def register_component(component)
         components.register(component)
         self
+      end
+
+      # Returns a bootable component if it can be found or loaded, otherwise nil
+      #
+      # @return [Dry::System::Components::Bootable, nil]
+      # @api private
+      def find_component(identifier)
+        return components[identifier] if components.exists?(identifier)
+
+        return if finalized?
+
+        require_boot_file(identifier)
+
+        components[identifier] if components.exists?(identifier)
       end
 
       # @api private
@@ -53,6 +62,13 @@ module Dry
 
         freeze
       end
+
+      # @!method finalized?
+      #   Returns true if the booter has been finalized
+      #
+      #   @return [Boolean]
+      #   @api private
+      alias_method :finalized?, :frozen?
 
       # @api private
       def shutdown
@@ -115,12 +131,21 @@ module Dry
 
       # @api private
       def boot_dependency(component)
-        boot_file = boot_file(component)
+        name = component.respond_to?(:root_key) ? component.root_key : component.to_sym
 
-        start(boot_file.basename(".*").to_s.to_sym) if boot_file
+        if (component = find_component(name))
+          start(component)
+        end
       end
 
-      # @api private
+      # Returns all boot files within the configured paths
+      #
+      # Searches for files in the order of the configured paths. In the case of multiple
+      # identically-named boot files within different paths, the file found first will be
+      # returned, and other matching files will be discarded.
+      #
+      # @return [Array<Pathname>]
+      # @api public
       def boot_files
         @boot_files ||= paths.each_with_object([[], []]) { |path, (boot_files, loaded)|
           files = Dir["#{path}/#{RB_GLOB}"].sort
@@ -159,12 +184,6 @@ module Dry
         Kernel.require path unless components.exists?(identifier)
 
         self
-      end
-
-      def boot_file(name)
-        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
-
-        find_boot_file(name)
       end
 
       def require_boot_file(identifier)

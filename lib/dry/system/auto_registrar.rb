@@ -3,6 +3,7 @@
 require "dry/system/constants"
 require "dry/system/magic_comments_parser"
 require "dry/system/auto_registrar/configuration"
+require_relative "component"
 
 module Dry
   module System
@@ -26,37 +27,40 @@ module Dry
 
       # @api private
       def finalize!
-        Array(config.auto_register).each { |dir| call(dir) }
+        config.component_dirs.each do |dir|
+          call(dir.path) if dir.auto_register
+        end
       end
 
       # @api private
       def call(dir)
         registration_config = Configuration.new
-        yield(registration_config) if block_given?
-        components(dir).each do |component|
-          next if !component.auto_register? || registration_config.exclude.(component)
 
-          container.require_component(component) do
-            register(component.identifier, memoize: registration_config.memoize) {
-              registration_config.instance.(component)
-            }
-          end
+        yield(registration_config) if block_given?
+
+        components(dir).each do |component|
+          next unless register_component?(component, registration_config)
+
+          container.register(component.identifier, memoize: registration_config.memoize) {
+            registration_config.instance.(component)
+          }
         end
       end
 
       private
 
-      # @api private
       def components(dir)
-        files(dir)
-          .map { |file_name| [file_name, file_options(file_name)] }
-          .map { |file_name, options| component(relative_path(dir, file_name), **options) }
-          .reject { |component| registered?(component.identifier) }
+        files(dir).map { |file_name|
+          Component.new(
+            relative_path(dir, file_name),
+            file_path: file_name,
+            **MagicCommentsParser.(file_name)
+          )
+        }
       end
 
-      # @api private
       def files(dir)
-        components_dir = File.join(root, dir)
+        components_dir = File.join(container.root, dir)
 
         unless ::Dir.exist?(components_dir)
           raise ComponentsDirMissing, "Components dir '#{components_dir}' not found"
@@ -65,35 +69,15 @@ module Dry
         ::Dir["#{components_dir}/**/#{RB_GLOB}"].sort
       end
 
-      # @api private
       def relative_path(dir, file_path)
-        dir_root = root.join(dir.to_s.split("/")[0])
+        dir_root = container.root.join(dir.to_s.split("/")[0])
         file_path.to_s.sub("#{dir_root}/", "").sub(RB_EXT, EMPTY_STRING)
       end
 
-      # @api private
-      def file_options(file_name)
-        MagicCommentsParser.(file_name)
-      end
-
-      # @api private
-      def component(path, **options)
-        container.component(path, **options)
-      end
-
-      # @api private
-      def root
-        container.root
-      end
-
-      # @api private
-      def registered?(name)
-        container.registered?(name)
-      end
-
-      # @api private
-      def register(*args, &block)
-        container.register(*args, &block)
+      def register_component?(component, registration_config)
+        !container.registered?(component) &&
+          component.auto_register? &&
+          !registration_config.exclude.(component)
       end
     end
   end

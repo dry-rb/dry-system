@@ -2,6 +2,15 @@
 
 module Dry
   module System
+    # Error raised when a component dir is added to configuration more than once
+    #
+    # @api public
+    ComponentDirAlreadyAddedError = Class.new(StandardError) do
+      def initialize(dir)
+        super("Component directory #{dir.inspect} already added")
+      end
+    end
+
     # Error raised when the container tries to load a component with missing
     # file
     #
@@ -20,15 +29,6 @@ module Dry
         super(<<-STR)
           Bootable component #{component.identifier.inspect} not found
         STR
-      end
-    end
-
-    # Error raised when a resolved component couldn't be found
-    #
-    # @api public
-    ComponentLoadError = Class.new(StandardError) do
-      def initialize(component)
-        super("could not load component #{component.inspect}")
       end
     end
 

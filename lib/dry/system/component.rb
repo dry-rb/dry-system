@@ -7,6 +7,7 @@ require "dry/inflector"
 require "dry/system/loader"
 require "dry/system/errors"
 require "dry/system/constants"
+require "dry/system/magic_comments_parser"
 
 module Dry
   module System
@@ -19,12 +20,12 @@ module Dry
     #
     # @api public
     class Component
-      include Dry::Equalizer(:identifier, :path)
+      include Dry::Equalizer(:identifier, :path, :file_path, :options)
 
       DEFAULT_OPTIONS = {
         separator: DEFAULT_SEPARATOR,
-        namespace: nil,
-        inflector: Dry::Inflector.new
+        inflector: Dry::Inflector.new,
+        loader: Loader
       }.freeze
 
       # @!attribute [r] identifier
@@ -35,9 +36,9 @@ module Dry
       #   @return [String] component's relative path
       attr_reader :path
 
-      # @!attribute [r] file
-      #   @return [String] component's file name
-      attr_reader :file
+      # @!attribute [r] file_path
+      #   @return [String, nil] full path to the component's file, if found
+      attr_reader :file_path
 
       # @!attribute [r] options
       #   @return [Hash] component's options
@@ -47,54 +48,80 @@ module Dry
       #   @return [Object#call] component's loader object
       attr_reader :loader
 
+      # Returns a component with a namespace and path provided from a file found within
+      # the given component dirs. If no file is found, a component is returned without
+      # these attributes.
+      #
+      # @return [Dry::System::Component]
       # @api private
-      def self.new(*args, &block)
-        cache.fetch_or_store([*args, block].hash) do
-          name, options = args
-          options = DEFAULT_OPTIONS.merge(options || EMPTY_HASH)
+      def self.locate(identifier, component_dirs, options = EMPTY_HASH)
+        options = DEFAULT_OPTIONS.merge(options)
 
-          ns, sep, inflector = options.values_at(:namespace, :separator, :inflector)
-          identifier = extract_identifier(name, ns, sep)
+        path = identifier.to_s.gsub(options[:separator], PATH_SEPARATOR)
 
-          path = name.to_s.gsub(sep, PATH_SEPARATOR)
-          loader = options.fetch(:loader, Loader).new(path, inflector)
+        found_path, found_namespace = component_dirs.reduce(nil) { |_, dir|
+          if (component_file = dir.component_file(path))
+            break [component_file, dir.default_namespace]
+          end
+        }
 
-          super(identifier, path, options.merge(loader: loader))
+        file_options = found_path ? MagicCommentsParser.(found_path) : EMPTY_HASH
+
+        new(
+          identifier,
+          namespace: found_namespace,
+          file_path: found_path,
+          **file_options,
+          **options,
+        )
+      end
+
+      # @api private
+      def self.new(identifier, options = EMPTY_HASH)
+        options = DEFAULT_OPTIONS.merge(options)
+
+        namespace, separator = options.values_at(:namespace, :separator)
+
+        identifier = extract_identifier(identifier, namespace, separator)
+
+        path = identifier.gsub(separator, PATH_SEPARATOR)
+        if namespace
+          namespace = namespace.to_s.gsub(separator, PATH_SEPARATOR)
+          path = "#{namespace}#{PATH_SEPARATOR}#{path}"
         end
+
+        super(identifier, path: path, **options)
       end
 
       # @api private
-      def self.extract_identifier(name, ns, sep)
-        name_s = name.to_s
-        identifier = ns ? remove_namespace_from_name(name_s, ns) : name_s
+      def self.extract_identifier(identifier, namespace, separator)
+        identifier = identifier.to_s
 
-        identifier.scan(WORD_REGEX).join(sep)
+        identifier = namespace ? remove_namespace_from_name(identifier, namespace) : identifier
+
+        identifier.scan(WORD_REGEX).join(separator)
       end
+      private_class_method :extract_identifier
 
       # @api private
-      def self.remove_namespace_from_name(name, ns)
-        match_value = name.match(/^(?<remove_namespace>#{ns})(?<separator>\W)(?<identifier>.*)/)
+      def self.remove_namespace_from_name(name, namespace)
+        match_value = name.match(/^(?<remove_namespace>#{namespace})(?<separator>\W)(?<identifier>.*)/)
 
         match_value ? match_value[:identifier] : name
       end
+      private_class_method :remove_namespace_from_name
+
+      attr_reader :inflector
 
       # @api private
-      def self.cache
-        @cache ||= Concurrent::Map.new
-      end
-
-      # @api private
-      def initialize(identifier, path, options)
+      def initialize(identifier, path:, file_path: nil, **options)
         @identifier = identifier
         @path = path
+        @file_path = file_path
         @options = options
-        @file = "#{path}#{RB_EXT}"
-        @loader = options.fetch(:loader)
+        @inflector = options.fetch(:inflector)
+        @loader = options.fetch(:loader).new(self)
         freeze
-      end
-
-      def require!
-        loader.require!
       end
 
       # Returns components instance
@@ -126,22 +153,23 @@ module Dry
         false
       end
 
+      # Returns true if the component has a corresponding file
+      #
+      # @return [Boolean]
       # @api private
-      def file_exists?(paths)
-        paths.any? { |path| path.join(file).exist? }
-      end
-
-      # @api private
-      def prepend(name)
-        self.class.new(
-          [name, identifier].join(separator), options.merge(loader: loader.class)
-        )
+      def file_exists?
+        !!file_path
       end
 
       # @api private
       def namespaced(namespace)
         self.class.new(
-          path, options.merge(loader: loader.class, namespace: namespace)
+          identifier,
+          path: path,
+          file_path: nil,
+          **options,
+          loader: loader.class,
+          namespace: namespace,
         )
       end
 

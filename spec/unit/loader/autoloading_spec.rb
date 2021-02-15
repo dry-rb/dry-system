@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require "dry/system/loader/autoloading"
+require "dry/system/component"
 
 RSpec.describe Dry::System::Loader::Autoloading do
   describe "#require!" do
-    subject(:loader) { described_class.new("test/not_loaded_const") }
+    subject(:loader) { described_class.new(component) }
+    let(:component) { Dry::System::Component.new("test.not_loaded_const") }
 
     before do
       allow(loader).to receive(:require)
