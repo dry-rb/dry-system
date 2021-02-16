@@ -17,7 +17,7 @@ module Dry
     # @api public
     FileNotFoundError = Class.new(StandardError) do
       def initialize(component)
-        super("could not resolve require file for #{component.identifier}")
+        super("could not resolve require file for component '#{component.identifier}'")
       end
     end
 
@@ -27,7 +27,7 @@ module Dry
     ComponentFileMismatchError = Class.new(StandardError) do
       def initialize(component)
         super(<<-STR)
-          Bootable component #{component.identifier.inspect} not found
+          Bootable component '#{component.identifier}' not found
         STR
       end
     end

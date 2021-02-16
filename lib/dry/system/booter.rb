@@ -40,14 +40,16 @@ module Dry
       #
       # @return [Dry::System::Components::Bootable, nil]
       # @api private
-      def find_component(identifier)
-        return components[identifier] if components.exists?(identifier)
+      def find_component(name)
+        name = name.to_sym
+
+        return components[name] if components.exists?(name)
 
         return if finalized?
 
-        require_boot_file(identifier)
+        require_boot_file(name)
 
-        components[identifier] if components.exists?(identifier)
+        components[name] if components.exists?(name)
       end
 
       # @api private
@@ -131,9 +133,7 @@ module Dry
 
       # @api private
       def boot_dependency(component)
-        name = component.respond_to?(:root_key) ? component.root_key : component.to_sym
-
-        if (component = find_component(name))
+        if (component = find_component(component.root_key))
           start(component)
         end
       end

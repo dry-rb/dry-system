@@ -1,5 +1,7 @@
 require "pathname"
 require_relative "constants"
+require_relative "identifier"
+require_relative "magic_comments_parser"
 
 module Dry
   module System
@@ -26,6 +28,56 @@ module Dry
         @container = container
       end
 
+      # Returns a component for a given identifier if a matching component file could be
+      # found within the component dir
+      #
+      # This will search within the component dir's configured default_namespace first,
+      # then fall back to searching for a non-namespaced file
+      #
+      # @param identifier [String] the identifier string
+      # @return [Dry::System::Component, nil] the component, if found
+      #
+      # @api private
+      def component_for_identifier(identifier)
+        identifier = Identifier.new(
+          identifier,
+          namespace: default_namespace,
+          separator: container.config.namespace_separator
+        )
+
+        if (file_path = find_component_file(identifier.path))
+          return build_component(identifier, file_path)
+        end
+
+        identifier = identifier.with(namespace: nil)
+        if (file_path = find_component_file(identifier.path))
+          build_component(identifier, file_path)
+        end
+      end
+
+      # Returns a component for a full path to a Ruby source file within the component dir
+      #
+      # @param path [String] the full path to the file
+      # @return [Dry::System::Component] the component
+      #
+      # @api private
+      def component_for_path(path)
+        separator = container.config.namespace_separator
+
+        key = Pathname(path).relative_path_from(full_path).to_s
+          .sub(RB_EXT, EMPTY_STRING)
+          .scan(WORD_REGEX)
+          .join(separator)
+
+        identifier = Identifier.new(key, separator: separator)
+
+        if identifier.start_with?(default_namespace)
+          identifier = identifier.dequalified(default_namespace, namespace: default_namespace)
+        end
+
+        build_component(identifier, path)
+      end
+
       # Returns the full path of the component directory
       #
       # @return [Pathname]
@@ -43,21 +95,6 @@ module Dry
         config.loader || container.config.loader
       end
 
-      # Returns the full path for a component file within the directory, or nil if none if
-      # exists
-      #
-      # @return [Pathname, nil]
-      # @api private
-      def component_file(component_path)
-        if default_namespace
-          namespace_path = default_namespace.gsub(DEFAULT_SEPARATOR, PATH_SEPARATOR)
-          component_path = "#{namespace_path}#{PATH_SEPARATOR}#{component_path}"
-        end
-
-        component_file = full_path.join("#{component_path}#{RB_EXT}")
-        component_file if component_file.exist?
-      end
-
       # @api private
       def component_options
         {
@@ -68,6 +105,21 @@ module Dry
       end
 
       private
+
+      def build_component(identifier, file_path)
+        options = {
+          inflector: container.config.inflector,
+          **component_options,
+          **MagicCommentsParser.(file_path)
+        }
+
+        Component.new(identifier, file_path: file_path, **options)
+      end
+
+      def find_component_file(component_path)
+        component_file = full_path.join("#{component_path}#{RB_EXT}")
+        component_file if component_file.exist?
+      end
 
       def method_missing(name, *args, &block)
         if config.respond_to?(name)
