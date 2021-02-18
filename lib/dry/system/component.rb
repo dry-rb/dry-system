@@ -122,7 +122,6 @@ module Dry
         @path = path
         @file_path = file_path
         @options = options
-        freeze
       end
 
       # Returns the component's instance
