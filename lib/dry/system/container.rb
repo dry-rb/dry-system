@@ -633,9 +633,13 @@ module Dry
 
       # Default hooks
       after :configure do
-        config.component_dirs.each do |dir|
-          add_to_load_path! dir.path if dir.add_to_load_path
-        end
+        # Add appropriately configured component dirs to the load path
+        #
+        # Do this in a single pass to preserve ordering (i.e. earliest dirs win)
+        paths = config.component_dirs.to_a.each_with_object([]) { |dir, arr|
+          arr << dir.path if dir.add_to_load_path
+        }
+        add_to_load_path!(*paths)
       end
     end
   end
