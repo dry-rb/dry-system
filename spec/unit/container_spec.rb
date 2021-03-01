@@ -48,7 +48,7 @@ RSpec.describe Dry::System::Container do
     end
 
     it "lazy-boot a given system" do
-      container.init(:bar)
+      container.init_bootable(:bar)
 
       expect(Test.const_defined?(:Bar)).to be(true)
       expect(container.registered?("test.bar")).to be(false)
@@ -58,7 +58,7 @@ RSpec.describe Dry::System::Container do
   describe ".start" do
     shared_examples_for "a booted system" do
       it "boots a given system and finalizes it" do
-        container.start(:bar)
+        container.start_bootable(:bar)
 
         expect(Test.const_defined?(:Bar)).to be(true)
         expect(container["test.bar"]).to eql("I was finalized")
@@ -66,7 +66,7 @@ RSpec.describe Dry::System::Container do
 
       it "expects identifier to point to an existing boot file" do
         expect {
-          container.start(:foo)
+          container.start_bootable(:foo)
         }.to raise_error(
           ArgumentError,
           "component identifier +foo+ is invalid or boot file is missing"
@@ -76,7 +76,7 @@ RSpec.describe Dry::System::Container do
       describe "mismatch betwenn finalize name and registered component" do
         it "raises a meaningful error" do
           expect {
-            container.start(:hell)
+            container.start_bootable(:hell)
           }.to raise_error(Dry::System::InvalidComponentIdentifierError)
         end
       end

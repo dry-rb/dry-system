@@ -88,7 +88,7 @@ module Dry
       # @api private
       def use(*names)
         names.each do |name|
-          target.start(name)
+          target.start_bootable(name)
         end
       end
 

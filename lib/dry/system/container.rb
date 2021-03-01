@@ -321,14 +321,14 @@ module Dry
         # As a result, `init` and `start` lifecycle triggers are called
         #
         # @example
-        #   MyApp.start(:persistence)
+        #   MyApp.start_bootable(:persistence)
         #
         # @param name [Symbol] the name of a registered bootable component
         #
         # @return [self]
         #
         # @api public
-        def start(name)
+        def start_bootable(name)
           booter.start(name)
           self
         end
@@ -339,14 +339,14 @@ module Dry
         # needed but its started environment is not required
         #
         # @example
-        #   MyApp.init(:persistence)
+        #   MyApp.init_bootable(:persistence)
         #
         # @param [Symbol] name The name of a registered bootable component
         #
         # @return [self]
         #
         # @api public
-        def init(name)
+        def init_bootable(name)
           booter.init(name)
           self
         end
@@ -354,14 +354,14 @@ module Dry
         # Stop a specific component but calls only `stop` lifecycle trigger
         #
         # @example
-        #   MyApp.stop(:persistence)
+        #   MyApp.stop_bootable(:persistence)
         #
         # @param [Symbol] name The name of a registered bootable component
         #
         # @return [self]
         #
         # @api public
-        def stop(name)
+        def stop_bootable(name)
           booter.stop(name)
           self
         end

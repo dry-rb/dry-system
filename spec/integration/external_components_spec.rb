@@ -93,7 +93,7 @@ RSpec.describe "External Components" do
         end
       end
 
-      container.init(:error_logger)
+      container.init_bootable(:error_logger)
 
       expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
       expect(container[:error_logger].class.default_level).to be(:error)
