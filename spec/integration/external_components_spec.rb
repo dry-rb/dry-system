@@ -11,9 +11,9 @@ RSpec.describe "External Components" do
           config.root = SPEC_ROOT.join("fixtures/app").realpath
         end
 
-        boot(:logger, from: :external_components)
+        register_bootable(:logger, from: :external_components)
 
-        boot(:my_logger, from: :external_components, key: :logger) do
+        register_bootable(:my_logger, from: :external_components, key: :logger) do
           configure do |config|
             config.log_level = :debug
           end
@@ -23,9 +23,9 @@ RSpec.describe "External Components" do
           end
         end
 
-        boot(:notifier, from: :external_components)
+        register_bootable(:notifier, from: :external_components)
 
-        boot(:mailer, from: :external_components)
+        register_bootable(:mailer, from: :external_components)
 
         register(:monitor, "a monitor")
       end
@@ -71,7 +71,7 @@ RSpec.describe "External Components" do
 
   context "with customized booting" do
     it "allows aliasing external components" do
-      container.boot(:error_logger, from: :external_components, key: :logger) do
+      container.register_bootable(:error_logger, from: :external_components, key: :logger) do
         after(:start) do |c|
           register(:error_logger, c[:logger])
         end
@@ -83,7 +83,7 @@ RSpec.describe "External Components" do
     end
 
     it "allows calling :init manually" do
-      container.boot(:error_logger, from: :external_components, key: :logger) do
+      container.register_bootable(:error_logger, from: :external_components, key: :logger) do
         after(:init) do
           ExternalComponents::Logger.default_level = :error
         end
@@ -103,9 +103,9 @@ RSpec.describe "External Components" do
   context "customized registration from an alternative provider" do
     subject(:container) do
       Class.new(Dry::System::Container) do
-        boot(:logger, from: :external_components)
+        register_bootable(:logger, from: :external_components)
 
-        boot(:conn, from: :alt, key: :db) do
+        register_bootable(:conn, from: :alt, key: :db) do
           after(:start) do |c|
             register(:conn, c[:db_conn])
           end

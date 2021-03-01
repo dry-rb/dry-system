@@ -15,8 +15,8 @@ RSpec.describe "Plugins / Dependency Graph" do
           config.root = SPEC_ROOT.join("fixtures/app").realpath
         end
 
-        boot(:mailer, from: :external_components)
-        boot(:logger, from: :external_components)
+        register_bootable(:mailer, from: :external_components)
+        register_bootable(:logger, from: :external_components)
       end
 
       Import = Container.injector

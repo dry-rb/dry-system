@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Umbrella.boot(:db, namespace: "db") do
+Test::Umbrella.register_bootable(:db, namespace: "db") do
   init do
     module Db
       class Repo

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:db) do |container|
+Test::Container.register_bootable(:db) do |container|
   module Test
     class DB
     end

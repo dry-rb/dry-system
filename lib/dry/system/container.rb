@@ -187,7 +187,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Simple component registration
-        #   MyApp.boot(:db) do |container|
+        #   MyApp.register_bootable(:db) do |container|
         #     require 'db'
         #
         #     container.register(:db, DB.new)
@@ -196,7 +196,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Component registration with lifecycle triggers
-        #   MyApp.boot(:db) do |container|
+        #   MyApp.register_bootable(:db) do |container|
         #     init do
         #       require 'db'
         #       DB.configure(ENV['DB_URL'])
@@ -215,7 +215,7 @@ module Dry
         #   # system/boot/db.rb
         #   #
         #   # Component registration which uses another bootable component
-        #   MyApp.boot(:db) do |container|
+        #   MyApp.register_bootable(:db) do |container|
         #     use :logger
         #
         #     start do
@@ -229,7 +229,7 @@ module Dry
         #   #
         #   # Component registration under a namespace. This will register the
         #   # db object under `persistence.db` key
-        #   MyApp.namespace(:persistence) do |persistence|
+        #   MyApp.register_bootable(:persistence, namespace: true) do |persistence|
         #     require 'db'
         #     DB.configure(ENV['DB_URL'], logger: logger)
         #     persistence.register(:db, DB.new)
@@ -242,7 +242,7 @@ module Dry
         # @return [self]
         #
         # @api public
-        def boot(name, **opts, &block)
+        def register_bootable(name, **opts, &block)
           if components.key?(name)
             raise DuplicatedComponentKeyError, <<-STR
               Bootable component #{name.inspect} was already registered
@@ -260,7 +260,7 @@ module Dry
 
           components[name] = component
         end
-        deprecate :finalize, :boot
+        deprecate :finalize, :register_bootable
 
         # Return if a container was finalized
         #

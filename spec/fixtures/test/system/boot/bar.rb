@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:bar, namespace: "test") do
+Test::Container.register_bootable(:bar, namespace: "test") do
   init do
     module Test
       module Bar

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-App.boot(:persistence) do |persistence|
+App.register_bootable(:persistence) do |persistence|
   init do
     require 'sequel'
   end

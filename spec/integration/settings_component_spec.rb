@@ -12,7 +12,7 @@ RSpec.describe "Settings component" do
         config.env = :test
       end
 
-      boot(:settings, from: :system) do
+      register_bootable(:settings, from: :system) do
         before(:init) do
           require_from_root "types"
         end
@@ -52,7 +52,7 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        boot(:settings, from: :system) do
+        register_bootable(:settings, from: :system) do
           before(:init) do
             require_from_root "types"
           end
@@ -100,7 +100,7 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        boot(:settings, from: :system) do
+        register_bootable(:settings, from: :system) do
           before(:init) do
             require_from_root "types"
           end
