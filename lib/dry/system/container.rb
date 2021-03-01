@@ -262,20 +262,6 @@ module Dry
         end
         deprecate :finalize, :boot
 
-        # @api private
-        def boot_external(identifier, from:, key: nil, namespace: nil, &block)
-          System.providers[from].component(
-            identifier, key: key, namespace: namespace, finalize: block, container: self
-          )
-        end
-
-        # @api private
-        def boot_local(identifier, namespace: nil, &block)
-          Components::Bootable.new(
-            identifier, container: self, namespace: namespace, &block
-          )
-        end
-
         # Return if a container was finalized
         #
         # @return [TrueClass, FalseClass]
@@ -604,6 +590,18 @@ module Dry
         end
 
         private
+
+        def boot_external(identifier, from:, key: nil, namespace: nil, &block)
+          System.providers[from].component(
+            identifier, key: key, namespace: namespace, finalize: block, container: self
+          )
+        end
+
+        def boot_local(identifier, namespace: nil, &block)
+          Components::Bootable.new(
+            identifier, container: self, namespace: namespace, &block
+          )
+        end
 
         def load_local_component(component)
           if component.auto_register?
