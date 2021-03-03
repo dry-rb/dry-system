@@ -39,5 +39,15 @@ RSpec.describe Dry::System::Config::ComponentDirs do
         expect(component_dirs.dirs["test/path"]).to eql component_dir
       end
     end
+
+    context "component dir already added" do
+      before do
+        component_dirs.add "test/path"
+      end
+
+      it "raises an error" do
+        expect { component_dirs.add "test/path" }.to raise_error(Dry::System::ComponentDirAlreadyAddedError, %r{test/path})
+      end
+    end
   end
 end

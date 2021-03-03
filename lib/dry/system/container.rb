@@ -596,8 +596,8 @@ module Dry
             load_local_component(component)
           elsif manual_registrar.file_exists?(component)
             manual_registrar.(component)
-          elsif importer.key?(component.root_key)
-            load_imported_component(component.namespaced(component.root_key))
+          elsif importer.key?(component.identifier.root_key)
+            load_imported_component(component.identifier)
           end
 
           self
@@ -611,10 +611,14 @@ module Dry
           end
         end
 
-        def load_imported_component(component)
-          container = importer[component.namespace]
-          container.load_component(component.identifier)
-          importer.(component.namespace, container)
+        def load_imported_component(identifier)
+          import_namespace = identifier.root_key
+
+          container = importer[import_namespace]
+
+          container.load_component(identifier.dequalified(import_namespace).key)
+
+          importer.(import_namespace, container)
         end
 
         def component(identifier)
@@ -622,20 +626,27 @@ module Dry
             return bootable_component
           end
 
-          Component.locate(
-            identifier,
-            component_dirs,
-            separator: config.namespace_separator,
-            inflector: config.inflector,
-          )
+          # Find the first matching component from within the configured component dirs.
+          # If no matching component is found, return a plain component instance with no
+          # associated file path. This fallback is important because the component may
+          # still be loadable via the manual registrar or an imported container.
+          component_dirs.detect { |dir|
+            if (component = dir.component_for_identifier(identifier))
+              break component
+            end
+          } || Component.new(identifier)
         end
       end
 
       # Default hooks
       after :configure do
-        config.component_dirs.each do |dir|
-          add_to_load_path! dir.path if dir.add_to_load_path
-        end
+        # Add appropriately configured component dirs to the load path
+        #
+        # Do this in a single pass to preserve ordering (i.e. earliest dirs win)
+        paths = config.component_dirs.to_a.each_with_object([]) { |dir, arr|
+          arr << dir.path if dir.add_to_load_path
+        }
+        add_to_load_path!(*paths)
       end
     end
   end

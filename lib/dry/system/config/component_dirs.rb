@@ -41,7 +41,7 @@ module Dry
         end
 
         def add_component_dir(dir)
-          raise ComponentDirAlreadyAddedError(dir.path) if dirs.key?(dir.path)
+          raise ComponentDirAlreadyAddedError, dir.path if dirs.key?(dir.path)
 
           dirs[dir.path] = dir
         end

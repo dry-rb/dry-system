@@ -40,13 +40,7 @@ module Dry
 
       def components(component_dir)
         files(component_dir.full_path).map { |file_path|
-          Component.new_from_component_dir(
-            relative_path(component_dir, file_path),
-            component_dir,
-            file_path,
-            separator: container.config.namespace_separator,
-            inflector: container.config.inflector,
-          )
+          component_dir.component_for_path(file_path)
         }
       end
 
@@ -54,12 +48,6 @@ module Dry
         raise ComponentDirNotFoundError, dir unless Dir.exist?(dir)
 
         Dir["#{dir}/**/#{RB_GLOB}"].sort
-      end
-
-      def relative_path(component_dir, file_path)
-        Pathname(file_path)
-          .relative_path_from(component_dir.full_path)
-          .sub(RB_EXT, EMPTY_STRING)
       end
 
       def register_component?(component)
