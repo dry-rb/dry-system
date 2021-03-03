@@ -38,13 +38,10 @@ class Application < Dry::System::Container
   configure do |config|
     config.root = Pathname('./my/app')
 
-    # we set 'lib' relative to `root` as a path which contains class definitions
+    # Add a 'lib' component dir (relative to `root`), containing class definitions
     # that can be auto-registered
-    config.auto_register = 'lib'
+    config.component_dirs.add 'lib'
   end
-
-  # this alters $LOAD_PATH hence the `!`
-  load_paths!('lib')
 end
 
 # under /my/app/lib/logger.rb we put
