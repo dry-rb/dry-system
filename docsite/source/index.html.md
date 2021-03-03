@@ -37,11 +37,11 @@ This comes with a bunch of nice benefits:
 * It makes it possible to load components in complete isolation. In example you can run a single test for a single component and only required files will be loaded, or you can run a rake task and it will only load the things it needs.
 * It opens up doors to better instrumentation and debugging tools
 
-You can use `dry-system` in a new application or add it to an existing application. It should Just Work™ but if it doesn't please [report an issue](https://github.com/dry-rb/dry-system/issues).
+You can use dry-system in a new application or add it to an existing application. It should Just Work™ but if it doesn't please [report an issue](https://github.com/dry-rb/dry-system/issues).
 
 ### Example
 
-This library is the backbone of [dry-web](https://github.com/dry-rb/dry-web), if you'd like to see a full-blown application example check out [Berg](https://github.com/icelab/berg). Please notice that `dry-system` is framework agnostic, in fact, it could be treated as a toolkit for building frameworks, as it provides facilities that are typically needed by frameworks.
+This library is the backbone of [dry-web](https://github.com/dry-rb/dry-web), if you'd like to see a full-blown application example check out [Berg](https://github.com/icelab/berg). Please notice that dry-system is framework agnostic, in fact, it could be treated as a toolkit for building frameworks, as it provides facilities that are typically needed by frameworks.
 
 ### Rails support
 
@@ -49,6 +49,6 @@ If you want to use dry-system with Rails, it's recommended to use [dry-rails](/g
 
 ### Credits
 
-* `dry-system` has been extracted from an experimental project called Rodakase created by [solnic](https://github.com/solnic). Later on Rodakase was renamed to [dry-web](https://github.com/dry-rb/dry-web).
+* dry-system has been extracted from an experimental project called Rodakase created by [solnic](https://github.com/solnic). Later on Rodakase was renamed to [dry-web](https://github.com/dry-rb/dry-web).
 * System/Component and lifecycle triggers are inspired by Clojure's [component](https://github.com/stuartsierra/component) library by [Stuart Sierra](https://github.com/stuartsierra)
 

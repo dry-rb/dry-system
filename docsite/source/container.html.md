@@ -4,7 +4,7 @@ layout: gem-single
 name: dry-system
 ---
 
-Main API of `dry-system` is the abstract container that you inherit from. It allows you to configure basic settings and exposes APIs for requiring files easily. Container is the entry point to your application, and it encapsulates application's state.
+The main API of dry-system is the abstract container that you inherit from. It allows you to configure basic settings and exposes APIs for requiring files easily. Container is the entry point to your application, and it encapsulates application's state.
 
 Let's say you want to define an application container that will provide a logger:
 
@@ -38,13 +38,10 @@ class Application < Dry::System::Container
   configure do |config|
     config.root = Pathname('./my/app')
 
-    # we set 'lib' relative to `root` as a path which contains class definitions
+    # Add a 'lib' component dir (relative to `root`), containing class definitions
     # that can be auto-registered
-    config.auto_register = 'lib'
+    config.component_dirs.add 'lib'
   end
-
-  # this alters $LOAD_PATH hence the `!`
-  load_paths!('lib')
 end
 
 # under /my/app/lib/logger.rb we put
