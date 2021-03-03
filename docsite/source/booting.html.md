@@ -6,7 +6,7 @@ name: dry-system
 
 In some cases a dependency can be huge, so huge it needs to load some additional files (often 3rd party code) and it may rely on custom configuration.
 
-Because of this reason `dry-system` has the concept of booting a dependency.
+Because of this reason dry-system has the concept of booting a dependency.
 
 The convention is pretty simple. You put files under `system/boot` directory and use your container to register dependencies with the ability to postpone finalization. This gives us a way to define what's needed but load it and boot it on demand.
 
@@ -44,7 +44,7 @@ Application['database']
 
 ### Lifecycles
 
-In some cases, a bootable dependency may have multiple stages of initialization, to support it `dry-system` provides 3 levels of booting:
+In some cases, a bootable dependency may have multiple stages of initialization, to support it dry-system provides 3 levels of booting:
 
 * `init` - basic setup code, here you can require 3rd party code and perform basic configuration
 * `start` - code that needs to run for a component to be usable at application's runtime
@@ -83,7 +83,7 @@ Application.boot(:logger) do
   init do
     require 'logger'
   end
-  
+
   start do
     register(:logger, Logger.new($stdout))
   end
