@@ -86,21 +86,12 @@ module Dry
         container.root.join(path)
       end
 
-      # Returns the explicitly configured loader for the component dir, otherwise the
-      # default loader configured for the container
-      #
-      # @see Dry::System::Loader
-      # @api private
-      def loader
-        config.loader || container.config.loader
-      end
-
       # @api private
       def component_options
         {
           auto_register: auto_register,
           loader: loader,
-          memoize: memoize,
+          memoize: memoize
         }
       end
 

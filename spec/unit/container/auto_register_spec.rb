@@ -90,10 +90,10 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
       class Test::Container < Dry::System::Container
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
+          config.component_dirs.loader = Test::Loader
           config.component_dirs.add "components" do |dir|
             dir.default_namespace = "test"
           end
-          config.loader = Test::Loader
         end
       end
     end

@@ -1,6 +1,7 @@
 require "concurrent/map"
 require "dry/configurable"
 require "dry/system/errors"
+require "dry/system/loader"
 require_relative "component_dir"
 
 module Dry
@@ -12,7 +13,7 @@ module Dry
         setting :auto_register, true
         setting :add_to_load_path, true
         setting :default_namespace
-        setting :loader
+        setting :loader, Dry::System::Loader
         setting :memoize, false
 
         attr_reader :dirs
