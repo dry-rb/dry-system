@@ -7,6 +7,14 @@ module Dry
   module System
     module Config
       class ComponentDirs
+        include Dry::Configurable
+
+        setting :auto_register, true
+        setting :add_to_load_path, true
+        setting :default_namespace
+        setting :loader
+        setting :memoize, false
+
         attr_reader :dirs
 
         def initialize
@@ -18,12 +26,22 @@ module Dry
           @dirs = source.dirs.dup
         end
 
-        def add(path_or_component_dir, &block)
-          if path_or_component_dir.is_a?(ComponentDir)
-            add_component_dir(path_or_component_dir)
-          else
-            build_and_add_component_dir(path_or_component_dir, &block)
+        def default_config
+          config
+        end
+
+        def add(path)
+          raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
+
+          dir = ComponentDir.new(path)
+
+          default_config.values.each do |key, val|
+            dir.public_send(:"#{key}=", val)
           end
+
+          yield dir if block_given?
+
+          dirs[path] = dir
         end
 
         def to_a
@@ -36,14 +54,16 @@ module Dry
 
         private
 
-        def build_and_add_component_dir(path, &block)
-          add_component_dir(ComponentDir.new(path, &block))
+        def method_missing(name, *args, &block)
+          if config.respond_to?(name)
+            config.public_send(name, *args, &block)
+          else
+            super
+          end
         end
 
-        def add_component_dir(dir)
-          raise ComponentDirAlreadyAddedError, dir.path if dirs.key?(dir.path)
-
-          dirs[dir.path] = dir
+        def respond_to_missing?(name, include_all = false)
+          config.respond_to?(name) || super
         end
       end
     end
