@@ -2,7 +2,6 @@ require "concurrent/map"
 require "dry/configurable"
 require "dry/system/constants"
 require "dry/system/errors"
-require "dry/system/loader"
 require_relative "component_dir"
 
 module Dry
@@ -11,11 +10,8 @@ module Dry
       class ComponentDirs
         include Dry::Configurable
 
-        setting :auto_register, true
-        setting :add_to_load_path, true
-        setting :default_namespace
-        setting :loader, Dry::System::Loader
-        setting :memoize, false
+        # Component dirs settings can be configured here to apply as defaults to all dirs
+        @_settings = ComponentDir._settings.dup
 
         def initialize
           @dirs = Concurrent::Map.new
