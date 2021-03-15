@@ -44,27 +44,20 @@ module Dry
 
         private
 
-        # Apply global default settings to a component dir. This is run every time the
-        # dirs are accessed, so this must be idempotent
+        # Apply default settings to a component dir. This is run every time the dirs are
+        # accessed, so this must be idempotent
         #
         # @return [void]
         def apply_defaults_to_dir(dir)
-          # Copy the existing config so we don't lose it after applying defaults
-          dir_config = dir.config.dup
+          dir.config.values.each do |key, value|
+            # For each component dir setting, if the value is still the setting's default,
+            # but the value configured _here_ is different, then apply it, since it must
+            # have been explicitly configured as a default for all component dirs
+            setting_default = Undefined.coalesce(dir.class._settings[key].default, nil)
+            system_default_value = public_send(key)
 
-          # Apply the defaults
-          config.values.each do |key, val|
-            dir.public_send(:"#{key}=", val)
-          end
-
-          # Reapply the dir's own config over the defaults, but only the values that are
-          # different from the setting defaults. This ensures we don't overwrite globals
-          # with meaningful, user-configured values.
-          dir_config.values.each do |key, val|
-            default_value = Undefined.coalesce(dir.class._settings[key].default, nil)
-
-            if val != default_value
-              dir.public_send(:"#{key}=", val)
+            if value == setting_default && system_default_value != value
+              dir.public_send(:"#{key}=", system_default_value)
             end
           end
         end
