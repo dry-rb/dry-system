@@ -113,6 +113,7 @@ module Dry
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
           dirs[path] = ComponentDir.new(path).tap do |dir|
+            apply_defaults_to_dir(dir)
             yield dir if block_given?
           end
         end
@@ -147,17 +148,22 @@ module Dry
         #
         # @return [void]
         def apply_defaults_to_dir(dir)
-          dir.config.values.each do |key, value|
-            # For each component dir setting, if the value is still the setting's default,
-            # but the value configured _here_ is different, then apply it, since it must
-            # have been explicitly configured as a default for all component dirs
-            setting_default = Undefined.coalesce(dir.class._settings[key].default, nil)
-            system_default_value = public_send(key)
-
-            if value == setting_default && system_default_value != value
-              dir.public_send(:"#{key}=", system_default_value)
+          dir.config.values.each do |key, _value|
+            if configured?(key) && !dir.configured?(key)
+              dir.public_send(:"#{key}=", public_send(key))
             end
           end
+        end
+
+        # Returns true if a setting has been explicitly configured and is not returning
+        # just a default value.
+        #
+        # This is used to determine which settings should be applied to added component
+        # dirs as additional defaults.
+        #
+        # @api private
+        def configured?(key)
+          config._settings[key].input_defined?
         end
 
         def method_missing(name, *args, &block)

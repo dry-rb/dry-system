@@ -172,6 +172,17 @@ module Dry
           !!config.auto_register
         end
 
+        # Returns true if a setting has been explicitly configured and is not returning
+        # just a default value.
+        #
+        # This is used to determine which settings from `ComponentDirs` should be applied
+        # as additional defaults.
+        #
+        # @api private
+        def configured?(key)
+          config._settings[key].input_defined?
+        end
+
         private
 
         def method_missing(name, *args, &block)
