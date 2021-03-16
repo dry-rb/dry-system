@@ -2,7 +2,7 @@
 
 require "concurrent/map"
 
-require "dry-equalizer"
+require "dry/core/equalizer"
 require "dry/inflector"
 require "dry/system/loader"
 require "dry/system/errors"
