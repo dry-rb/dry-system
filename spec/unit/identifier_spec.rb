@@ -9,6 +9,10 @@ RSpec.describe Dry::System::Identifier do
   let(:namespace) { "my_app" }
   let(:separator) { "." }
 
+  it "casts identifier to string" do
+    expect(described_class.new(:db).identifier).to eq "db"
+  end
+
   describe "#identifier" do
     it "is the identifier string in full" do
       expect(identifier.identifier).to eq "kittens.operations.belly_rub"
