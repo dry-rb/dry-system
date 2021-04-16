@@ -29,7 +29,7 @@ module Dry
 
       # @api private
       def initialize(identifier, namespace: nil, separator: DEFAULT_SEPARATOR)
-        @identifier = identifier
+        @identifier = identifier.to_s
         @namespace = namespace
         @separator = separator
       end
