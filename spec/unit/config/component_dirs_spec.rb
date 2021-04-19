@@ -22,7 +22,7 @@ RSpec.describe Dry::System::Config::ComponentDirs do
       expect(dir.add_to_load_path).to eq false
     end
 
-    it "applies default values configured previously" do
+    it "applies default values configured before adding" do
       component_dirs.default_namespace = "global_default"
 
       component_dirs.add "test/path"
@@ -38,6 +38,21 @@ RSpec.describe Dry::System::Config::ComponentDirs do
 
       dir = component_dirs.dirs["test/path"]
       expect(dir.default_namespace).to eq "global_default"
+    end
+
+    it "does not apply default values over the component dir's own config" do
+      component_dirs.default_namespace = "global_default"
+      component_dirs.memoize = true
+
+      component_dirs.add "test/path" do |dir|
+        dir.default_namespace = nil
+        dir.memoize = false
+      end
+
+      dir = component_dirs.dirs["test/path"]
+
+      expect(dir.default_namespace).to be nil
+      expect(dir.memoize).to be false
     end
 
     context "component dir already added" do
