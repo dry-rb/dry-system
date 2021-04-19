@@ -10,9 +10,10 @@ module Dry
       class ComponentDirs
         include Dry::Configurable
 
-        # Settings from ComponentDir can be configured here to apply all added dirs as
-        # defaults
-        @_settings = ComponentDir._settings.dup
+        # Settings from ComponentDir are configured here as defaults for all added dirs
+        ComponentDir._settings.each do |setting|
+          _settings << setting.dup
+        end
 
         # @!group Settings
 
