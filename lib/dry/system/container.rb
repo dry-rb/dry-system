@@ -11,7 +11,6 @@ require "dry/core/deprecations"
 
 require "dry/system"
 require "dry/system/errors"
-require "dry/system/loader"
 require "dry/system/booter"
 require "dry/system/auto_registrar"
 require "dry/system/manual_registrar"
@@ -80,7 +79,6 @@ module Dry
       setting :registrations_dir, "container"
       setting :component_dirs, Config::ComponentDirs.new, cloneable: true
       setting :inflector, Dry::Inflector.new
-      setting :loader, Dry::System::Loader
       setting :booter, Dry::System::Booter
       setting :auto_registrar, Dry::System::AutoRegistrar
       setting :manual_registrar, Dry::System::ManualRegistrar
