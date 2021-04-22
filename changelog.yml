@@ -2,6 +2,7 @@
 - version: 0.19.0
   date: 2021-04-20
   summary:
+    This release marks a huge step forward for dry-system, bringing support for Zeitwerk and other autoloaders, plus clearer configuration and improved consistency around component resolution for both finalized and lazy loading containers. [Read the announcement post](https://dry-rb.org/news/2021/04/22/dry-system-0-19-released-with-zeitwerk-support-and-more-leading-the-way-for-hanami-2-0/) for a high-level tour of the new features.
   added:
   - |-
     New `component_dirs` setting on `Dry::System::Container`, which must be used for specifying the directories which dry-system will search for component source files.
