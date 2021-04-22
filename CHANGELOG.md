@@ -38,7 +38,7 @@
   - `loader`, a custom replacement for the default `Dry::System::Loader` to be used for the component dir
   - `memoize`, a boolean, to enable/disable memoizing all components in the directory, or a proc accepting a `Dry::System::Component` instance and returning a truthy or falsey value. Providing a proc allows a memoization policy to apply on a per-component basis
 
-  **All component dir settings are optional.**
+  _All component dir settings are optional._
 
   (@timriley in #155, #157, and #162)
 - A new autoloading-friendly `Dry::System::Loader::Autoloading` is available, which is tested to work with [Zeitwerk](https://github.com/fxn/zeitwerk) 🎉
@@ -72,7 +72,7 @@
   loader.setup
   ```
 
-(@timriley in #153)
+  (@timriley in #153)
 - [BREAKING] `Dry::System::Component` instances (which users of dry-system will interact with via custom loaders, as well as via the `auto_register` and `memoize` component dir settings described above) now return a `Dry::System::Identifier` from their `#identifier` method. The raw identifier string may be accessed via the identifier's own `#key` or `#to_s` methods. `Identifier` also provides a helpful namespace-aware `#start_with?` method for returning whether the identifier begins with the provided namespace(s) (@timriley in #158)
 
 ### Changed
