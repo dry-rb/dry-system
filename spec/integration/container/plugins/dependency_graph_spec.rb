@@ -12,9 +12,9 @@ RSpec.describe "Plugins / Dependency Graph" do
         use :dependency_graph
 
         configure do |config|
-          config.ignored_dependencies = [:ignored_spec_service]
           config.root = SPEC_ROOT.join("fixtures/app").realpath
           config.component_dirs.add "lib"
+          config.ignored_dependencies = [:ignored_spec_service]
         end
 
         boot(:mailer, from: :external_components)
