@@ -12,7 +12,9 @@ RSpec.describe "Plugins / Dependency Graph" do
         use :dependency_graph
 
         configure do |config|
+          config.ignored_dependencies = [:ignored_spec_service]
           config.root = SPEC_ROOT.join("fixtures/app").realpath
+          config.component_dirs.add "lib"
         end
 
         boot(:mailer, from: :external_components)
@@ -42,7 +44,7 @@ RSpec.describe "Plugins / Dependency Graph" do
   end
 
   it "broadcasts dependency graph events" do
-    expect(events.count).to eq(5)
+    expect(events.count).to eq(6)
 
     expect(events.map(&:id)).to eq(
       %i[
@@ -51,15 +53,17 @@ RSpec.describe "Plugins / Dependency Graph" do
         registered_dependency
         registered_dependency
         registered_dependency
+        registered_dependency
       ]
     )
 
     expect(events.map(&:payload)).to eq([
-      {dependency_map: {logger: "logger"}, target_class: service.class},
-      {key: "logger", class: ExternalComponents::Logger},
-      {key: :service, class: container[:service].class},
-      {key: :client, class: Test::Client},
-      {key: "mailer", class: ExternalComponents::Mailer}
+      { dependency_map: { logger: "logger" }, target_class: service.class },
+      { key: :logger, class: ExternalComponents::Logger },
+      { key: :service, class: container[:service].class },
+      { key: :client, class: Test::Client },
+      { key: :mailer, class: ExternalComponents::Mailer },
+      { key: :spec_service, class: SpecService }
     ])
   end
 end

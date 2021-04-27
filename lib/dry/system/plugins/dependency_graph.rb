@@ -34,10 +34,10 @@ module Dry
         # @api private
         def register(key, contents = nil, options = {}, &block)
           super
-
-          unless config.ignored_dependencies.include?(key.to_sym)
+          sym_key = key.to_sym
+          unless config.ignored_dependencies.include?(sym_key)
             self[:notifications].instrument(
-              :registered_dependency, key: key, class: self[key].class
+              :registered_dependency, key: sym_key, class: self[key].class
             )
           end
 
