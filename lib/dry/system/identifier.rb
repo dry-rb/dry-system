@@ -50,16 +50,6 @@ module Dry
       #   @api public
       alias_method :to_s, :identifier
 
-      # @!method to_sym
-      #   Returns the identifier symbol
-      #
-      #   @return [Symbol]
-      #   @see #identifier
-      #   @api public
-      def to_sym
-        identifier.to_sym
-      end
-
       # Returns the root namespace segment of the identifier string, as a symbol
       #
       # @example

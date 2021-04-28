@@ -31,12 +31,6 @@ RSpec.describe Dry::System::Identifier do
     end
   end
 
-  describe "#to_sym" do
-    it "returns the identifier symbol in full" do
-      expect(identifier.to_sym).to eq :"kittens.operations.belly_rub"
-    end
-  end
-
   describe "#root_key" do
     it "is the base segment of the identifier string, as a symbol" do
       expect(identifier.root_key).to eq :kittens
