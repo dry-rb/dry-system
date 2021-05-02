@@ -32,7 +32,7 @@ module Dry
         components(component_dir).each do |component|
           next unless register_component?(component)
 
-          container.register(component.identifier, memoize: component.memoize?) { component.instance }
+          container.register(component.key, memoize: component.memoize?) { component.instance }
         end
       end
 
@@ -51,7 +51,7 @@ module Dry
       end
 
       def register_component?(component)
-        !container.registered?(component) && component.auto_register?
+        !container.registered?(component.key) && component.auto_register?
       end
     end
   end
