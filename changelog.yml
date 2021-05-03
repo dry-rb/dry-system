@@ -1,8 +1,18 @@
 ---
+- version: unreleased
+  summary: 
+  date: 
+  fixed:
+  - dependency graph plugin should work again (@wuarmin)
+  added: 
+  changed: 
 - version: 0.19.0
   date: 2021-04-22
-  summary:
-    This release marks a huge step forward for dry-system, bringing support for Zeitwerk and other autoloaders, plus clearer configuration and improved consistency around component resolution for both finalized and lazy loading containers. [Read the announcement post](https://dry-rb.org/news/2021/04/22/dry-system-0-19-released-with-zeitwerk-support-and-more-leading-the-way-for-hanami-2-0/) for a high-level tour of the new features.
+  summary: This release marks a huge step forward for dry-system, bringing support
+    for Zeitwerk and other autoloaders, plus clearer configuration and improved consistency
+    around component resolution for both finalized and lazy loading containers. [Read
+    the announcement post](https://dry-rb.org/news/2021/04/22/dry-system-0-19-released-with-zeitwerk-support-and-more-leading-the-way-for-hanami-2-0/)
+    for a high-level tour of the new features.
   added:
   - |-
     New `component_dirs` setting on `Dry::System::Container`, which must be used for specifying the directories which dry-system will search for component source files.
@@ -41,63 +51,68 @@
       _All component dir settings are optional._
 
       (@timriley in #155, #157, and #162)
-  - |-
-    A new autoloading-friendly `Dry::System::Loader::Autoloading` is available, which is tested to work with [Zeitwerk](https://github.com/fxn/zeitwerk) 🎉
-
-      Configure this on the container (via a component dir `loader` setting), and the loader will no longer `require` any components, instead allowing missing constant resolution to trigger the loading of the required file.
-
-      This loader presumes an autoloading system like Zeitwerk has already been enabled and appropriately configured.
-
-      A recommended setup is as follows:
-
-      ```ruby
-      require "dry/system/container"
-      require "dry/system/loader/autoloading"
-      require "zeitwerk"
-
-      class MyApp::Container < Dry::System::Container
-        configure do |config|
-          config.root = __dir__
-
-          config.component_dirs.loader = Dry::System::Loader::Autoloading
-          config.component_dirs.add_to_load_path = false
-
-          config.component_dirs.add "lib" do |dir|
-            # ...
-          end
-        end
-      end
-
-      loader = Zeitwerk::Loader.new
-      loader.push_dir MyApp::Container.config.root.join("lib").realpath
-      loader.setup
-      ```
-
-      (@timriley in #153)
-  - |-
-    [BREAKING] `Dry::System::Component` instances (which users of dry-system will interact with via custom loaders, as well as via the `auto_register` and `memoize` component dir settings described above) now return a `Dry::System::Identifier` from their `#identifier` method. The raw identifier string may be accessed via the identifier's own `#key` or `#to_s` methods. `Identifier` also provides a helpful namespace-aware `#start_with?` method for returning whether the identifier begins with the provided namespace(s) (@timriley in #158)
+  - "A new autoloading-friendly `Dry::System::Loader::Autoloading` is available, which
+    is tested to work with [Zeitwerk](https://github.com/fxn/zeitwerk) \U0001F389\n\n
+    \ Configure this on the container (via a component dir `loader` setting), and
+    the loader will no longer `require` any components, instead allowing missing constant
+    resolution to trigger the loading of the required file.\n\n  This loader presumes
+    an autoloading system like Zeitwerk has already been enabled and appropriately
+    configured.\n\n  A recommended setup is as follows:\n\n  ```ruby\n  require \"dry/system/container\"\n
+    \ require \"dry/system/loader/autoloading\"\n  require \"zeitwerk\"\n\n  class
+    MyApp::Container < Dry::System::Container\n    configure do |config|\n      config.root
+    = __dir__\n\n      config.component_dirs.loader = Dry::System::Loader::Autoloading\n
+    \     config.component_dirs.add_to_load_path = false\n\n      config.component_dirs.add
+    \"lib\" do |dir|\n        # ...\n      end\n    end\n  end\n\n  loader = Zeitwerk::Loader.new\n
+    \ loader.push_dir MyApp::Container.config.root.join(\"lib\").realpath\n  loader.setup\n
+    \ ```\n\n  (@timriley in #153)"
+  - "[BREAKING] `Dry::System::Component` instances (which users of dry-system will
+    interact with via custom loaders, as well as via the `auto_register` and `memoize`
+    component dir settings described above) now return a `Dry::System::Identifier`
+    from their `#identifier` method. The raw identifier string may be accessed via
+    the identifier's own `#key` or `#to_s` methods. `Identifier` also provides a helpful
+    namespace-aware `#start_with?` method for returning whether the identifier begins
+    with the provided namespace(s) (@timriley in #158)"
   changed:
-  - "Components with `# auto_register: false` magic comments in their source files are now properly ignored when lazy loading (@timriley in #155)"
-  - "`# memoize: true` and `# memoize: false` magic comments at top of component files are now respected (@timriley in #155)"
-  - "[BREAKING] `Dry::System::Container.load_paths!` has been renamed to `.add_to_load_path!`. This method now exists as a mere convenience only. Calling this method is no longer required for any configured `component_dirs`; these are now added to the load path automatically (@timriley in #153 and #155)"
-  - "[BREAKING] `auto_register` container setting has been removed. Configured directories to be auto-registered by adding `component_dirs` instead (@timriley in #155)"
-  - "[BREAKING] `default_namespace` container setting has been removed. Set it when adding `component_dirs` instead (@timriley in #155)"
-  - "[BREAKING] `loader` container setting has been nested under `component_dirs`, now available as `component_dirs.loader` to configure a default loader for all component dirs, as well as on individual component dirs when being added (@timriley in #162)"
-  - "[BREAKING] `Dry::System::ComponentLoadError` is no longer raised when a component could not be lazy loaded; this was only raised in a single specific failure condition. Instead, a `Dry::Container::Error` is raised in all cases of components failing to load (@timriley in #155)"
-  - "[BREAKING] `Dry::System::Container.auto_register!` has been removed. Configure `component_dirs` instead. (@timriley in #157)"
-  - "[BREAKING] The `Dry::System::Loader` interface has changed. It is now a static interface, no longer initialized with a component. The component is instead passed to each method as an argument: `.require!(component)`, `.call(component, *args)`, `.constant(component)` (@timriley in #157)"
-  - "[BREAKING] `Dry::System::Container.require_path` has been removed. Provide custom require behavior by configuring your own `loader` (@timriley in #153)"
+  - 'Components with `# auto_register: false` magic comments in their source files
+    are now properly ignored when lazy loading (@timriley in #155)'
+  - "`# memoize: true` and `# memoize: false` magic comments at top of component files
+    are now respected (@timriley in #155)"
+  - "[BREAKING] `Dry::System::Container.load_paths!` has been renamed to `.add_to_load_path!`.
+    This method now exists as a mere convenience only. Calling this method is no longer
+    required for any configured `component_dirs`; these are now added to the load
+    path automatically (@timriley in #153 and #155)"
+  - "[BREAKING] `auto_register` container setting has been removed. Configured directories
+    to be auto-registered by adding `component_dirs` instead (@timriley in #155)"
+  - "[BREAKING] `default_namespace` container setting has been removed. Set it when
+    adding `component_dirs` instead (@timriley in #155)"
+  - "[BREAKING] `loader` container setting has been nested under `component_dirs`,
+    now available as `component_dirs.loader` to configure a default loader for all
+    component dirs, as well as on individual component dirs when being added (@timriley
+    in #162)"
+  - "[BREAKING] `Dry::System::ComponentLoadError` is no longer raised when a component
+    could not be lazy loaded; this was only raised in a single specific failure condition.
+    Instead, a `Dry::Container::Error` is raised in all cases of components failing
+    to load (@timriley in #155)"
+  - "[BREAKING] `Dry::System::Container.auto_register!` has been removed. Configure
+    `component_dirs` instead. (@timriley in #157)"
+  - "[BREAKING] The `Dry::System::Loader` interface has changed. It is now a static
+    interface, no longer initialized with a component. The component is instead passed
+    to each method as an argument: `.require!(component)`, `.call(component, *args)`,
+    `.constant(component)` (@timriley in #157)"
+  - "[BREAKING] `Dry::System::Container.require_path` has been removed. Provide custom
+    require behavior by configuring your own `loader` (@timriley in #153)"
 - version: 0.18.1
-  summary:
+  summary: 
   date: '2020-08-26'
   fixed:
-  - Made `Booter#boot_files` a public method again, since it was required by dry-rails (@timriley)
-  added:
-  changed:
+  - Made `Booter#boot_files` a public method again, since it was required by dry-rails
+    (@timriley)
+  added: 
+  changed: 
 - version: 0.18.0
-  summary:
+  summary: 
   date: '2020-08-24'
-  fixed:
+  fixed: 
   added:
   - |-
     New `bootable_dirs` setting on `Dry::System::Container`, which accepts paths to multiple directories for looking up bootable component files. (@timriley in PR #151)
@@ -105,26 +120,26 @@
       For each entry in the `bootable_dirs` array, relative directories will be appended to the container's `root`, and absolute directories will be left unchanged.
 
       When searching for bootable files, the first match will win, and any subsequent same-named files will not be loaded. In this way, the `bootable_dirs` act similarly to the `$PATH` in a shell environment.
-  changed:
+  changed: 
 - version: 0.17.0
-  summary:
+  summary: 
   date: '2020-02-19'
   fixed:
   - 'Works with the latest dry-configurable version (issue #141) (@solnic)'
-  added:
+  added: 
   changed:
   - Depends on dry-configurable `=> 0.11.1` now (@solnic)
 - version: 0.16.0
-  summary:
+  summary: 
   date: '2020-02-15'
   changed:
   - Plugins can now define their own settings which are available in the `before(:configure)`
     hook (@solnic)
   - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 - version: 0.15.0
-  summary:
+  summary: 
   date: '2020-01-30'
-  fixed:
+  fixed: 
   added: |
     New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
 
@@ -138,10 +153,10 @@
   - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
   - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 - version: 0.14.1
-  summary:
+  summary: 
   date: '2020-01-22'
-  fixed:
-  added:
+  fixed: 
+  added: 
   changed:
   - Use `Kernel.require` explicitly to avoid issues with monkey-patched `require`
     from ActiveSupport (@solnic)
