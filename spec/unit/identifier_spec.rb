@@ -72,6 +72,12 @@ RSpec.describe Dry::System::Identifier do
       expect(identifier.start_with?("kittens.operations.belly_rub")).to be true
     end
 
+    # this spec was added because start_with? is called with nil (at Dry::System::ComponentDir, line 74).
+    # that should possibly be fixed
+    it "returns false when the provided string is nil" do
+      expect(identifier.start_with?(nil)).to be false
+    end
+
     context "when component is identified by a single segment" do
       let(:key) { "belly_rub" }
 

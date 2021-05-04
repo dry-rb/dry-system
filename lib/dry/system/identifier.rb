@@ -99,7 +99,8 @@ module Dry
       # @return [Boolean]
       # @api public
       def start_with?(leading_segments_string)
-        leading_segments = leading_segments_string.split(separator)
+        return false if leading_segments_string.nil?
+        leading_segments = leading_segments_string.to_s.split(separator)
         identifier_segments = identifier.split(separator)
         identifier_segments.first(leading_segments.length) == leading_segments
       end
