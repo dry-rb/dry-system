@@ -98,11 +98,8 @@ module Dry
       # @param leading_namespaces [String] the one or more leading namespaces to check
       # @return [Boolean]
       # @api public
-      def start_with?(leading_segments_string)
-        return false if leading_segments_string.nil?
-        leading_segments = leading_segments_string.to_s.split(separator)
-        identifier_segments = identifier.split(separator)
-        identifier_segments.first(leading_segments.length) == leading_segments
+      def start_with?(leading_namespaces)
+        identifier.eql?(leading_namespaces) || identifier.start_with?("#{leading_namespaces}#{separator}")
       end
 
       # Returns a copy of the identifier with the given leading namespaces removed from
@@ -130,7 +127,7 @@ module Dry
           new_identifier,
           namespace: namespace,
           separator: separator,
-          **options
+          **options,
         )
       end
 
@@ -146,7 +143,7 @@ module Dry
         self.class.new(
           identifier,
           namespace: namespace,
-          separator: separator
+          separator: separator,
         )
       end
 
