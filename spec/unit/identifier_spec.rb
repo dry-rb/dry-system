@@ -52,11 +52,11 @@ RSpec.describe Dry::System::Identifier do
   end
 
   describe "#start_with?" do
-    it "returns true when the provided string matches the base segment of the identifer string" do
+    it "returns true when the provided string matches the base segment of the identifier string" do
       expect(identifier.start_with?("kittens")).to be true
     end
 
-    it "returns true when the provided string matches multiple base segments of the identifer string" do
+    it "returns true when the provided string matches multiple base segments of the identifier string" do
       expect(identifier.start_with?("kittens.operations")).to be true
     end
 
@@ -66,6 +66,22 @@ RSpec.describe Dry::System::Identifier do
 
     it "returns false if the provided string is not a base segment" do
       expect(identifier.start_with?("puppies")).to be false
+    end
+
+    it "returns true when the provided string matches all segments of the identifier string" do
+      expect(identifier.start_with?("kittens.operations.belly_rub")).to be true
+    end
+
+    context "when component is identified by a single segment" do
+      let(:key) { "belly_rub" }
+
+      it "returns true when the provided string matches the identifier string" do
+        expect(identifier.start_with?("belly_rub")).to be true
+      end
+
+      it "returns false when the provided string does not match the identifier string" do
+        expect(identifier.start_with?("belly_ruby")).to be false
+      end
     end
   end
 

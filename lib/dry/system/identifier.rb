@@ -98,8 +98,10 @@ module Dry
       # @param leading_namespaces [String] the one or more leading namespaces to check
       # @return [Boolean]
       # @api public
-      def start_with?(leading_namespaces)
-        identifier.start_with?("#{leading_namespaces}#{separator}")
+      def start_with?(leading_segments_string)
+        leading_segments = leading_segments_string.split(separator)
+        identifier_segments = identifier.split(separator)
+        identifier_segments.first(leading_segments.length) == leading_segments
       end
 
       # Returns a copy of the identifier with the given leading namespaces removed from
