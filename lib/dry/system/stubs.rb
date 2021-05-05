@@ -7,7 +7,7 @@ module Dry
     class Container
       # @api private
       module Stubs
-        def finalize!(&block)
+        def finalize!(freeze: true, &block)
           super(freeze: false, &block)
         end
       end
