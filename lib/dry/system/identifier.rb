@@ -99,7 +99,8 @@ module Dry
       # @return [Boolean]
       # @api public
       def start_with?(leading_namespaces)
-        identifier.start_with?("#{leading_namespaces}#{separator}")
+        identifier.start_with?("#{leading_namespaces}#{separator}") ||
+          identifier.eql?(leading_namespaces)
       end
 
       # Returns a copy of the identifier with the given leading namespaces removed from
