@@ -7,6 +7,7 @@
 
 - dependency graph plugin should work again (@wuarmin)
 - Fix behavior of `Dry::System::Identifier#start_with?` (issue #176 fixed via #177) (@wuarmin)
+- Update `finalize!` signature in `Container::Stubs` (@mpokrywka)
 
 
 [Compare v0.19.0...master](https://github.com/dry-rb/dry-system/compare/v0.19.0...master)
