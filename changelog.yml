@@ -4,6 +4,8 @@
   date: 
   fixed:
   - dependency graph plugin should work again (@wuarmin)
+  - 'Fix behavior of `Dry::System::Identifier#start_with?` (issue #176 fixed via #177)
+    (@wuarmin)'
   added: 
   changed: 
 - version: 0.19.0
