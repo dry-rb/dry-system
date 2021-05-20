@@ -11,14 +11,15 @@ module Dry
           system.before(:configure) do
             setting :logger, reader: true
 
-            setting :log_dir, "log"
+            setting :log_dir, default: "log"
 
-            setting :log_levels,
-                    development: Logger::DEBUG,
-                    test: Logger::DEBUG,
-                    production: Logger::ERROR
+            setting :log_levels, default: {
+              development: Logger::DEBUG,
+              test: Logger::DEBUG,
+              production: Logger::ERROR
+            }
 
-            setting :logger_class, ::Logger, reader: true
+            setting :logger_class, default: ::Logger, reader: true
           end
 
           system.after(:configure, &:register_logger)

@@ -20,7 +20,7 @@ module Dry
 
         # @api private
         def extended(system)
-          system.setting :env, inferrer.(), reader: true
+          system.setting :env, default: inferrer.(), reader: true
           super
         end
       end
