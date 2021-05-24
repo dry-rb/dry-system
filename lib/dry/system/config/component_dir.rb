@@ -40,7 +40,7 @@ module Dry
         #   @return [Boolean, Proc] the configured policy
         #
         #   @see auto_register=
-        setting :auto_register, true
+        setting :auto_register, default: true
 
         # @!method add_to_load_path=(policy)
         #
@@ -63,7 +63,7 @@ module Dry
         #   @return [Boolean]
         #
         #   @see add_to_load_path=
-        setting :add_to_load_path, true
+        setting :add_to_load_path, default: true
 
         # @!method default_namespace=(leading_namespace)
         #
@@ -117,7 +117,7 @@ module Dry
         #   @return [#call]
         #
         #   @see loader=
-        setting :loader, Dry::System::Loader
+        setting :loader, default: Dry::System::Loader
 
         # @!method memoize=(policy)
         #
@@ -151,7 +151,7 @@ module Dry
         #   @return [Boolean, Proc] the configured memoization policy
         #
         #   @see memoize=
-        setting :memoize, false
+        setting :memoize, default: false
 
         # @!endgroup
 

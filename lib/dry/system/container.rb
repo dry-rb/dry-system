@@ -7,6 +7,7 @@ require "dry-configurable"
 require "dry-container"
 require "dry/inflector"
 
+require "dry/core/constants"
 require "dry/core/deprecations"
 
 require "dry/system"
@@ -73,17 +74,17 @@ module Dry
       extend Dry::System::Plugins
 
       setting :name
-      setting(:root, Pathname.pwd.freeze) { |path| Pathname(path) }
-      setting :system_dir, "system"
-      setting :bootable_dirs, ["system/boot"]
-      setting :registrations_dir, "container"
-      setting :component_dirs, Config::ComponentDirs.new, cloneable: true
-      setting :inflector, Dry::Inflector.new
-      setting :booter, Dry::System::Booter
-      setting :auto_registrar, Dry::System::AutoRegistrar
-      setting :manual_registrar, Dry::System::ManualRegistrar
-      setting :importer, Dry::System::Importer
-      setting(:components, {}, reader: true, &:dup)
+      setting :root, default: Pathname.pwd.freeze, constructor: -> path { Pathname(path) }
+      setting :system_dir, default: "system"
+      setting :bootable_dirs, default: ["system/boot"]
+      setting :registrations_dir, default: "container"
+      setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
+      setting :inflector, default: Dry::Inflector.new
+      setting :booter, default: Dry::System::Booter
+      setting :auto_registrar, default: Dry::System::AutoRegistrar
+      setting :manual_registrar, default: Dry::System::ManualRegistrar
+      setting :importer, default: Dry::System::Importer
+      setting :components, default: {}, reader: true, constructor: :dup.to_proc
 
       class << self
         def strategies(value = nil)
@@ -101,8 +102,8 @@ module Dry
         # @see https://dry-rb.org/gems/dry-configurable
         #
         # @api public
-        def setting(name, *args, &block)
-          super(name, *args, &block)
+        def setting(name, default = Dry::Core::Constants::Undefined, **options, &block)
+          super(name, default, **options, &block)
           # TODO: dry-configurable needs a public API for this
           config._settings << _settings[name]
           self
