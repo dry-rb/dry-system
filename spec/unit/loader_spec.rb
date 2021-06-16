@@ -1,34 +1,30 @@
 # frozen_string_literal: true
 
-require "dry/inflector"
 require "dry/system/loader"
-require "singleton"
+
+require "dry/inflector"
 require "dry/system/component"
+require "dry/system/config/namespace"
+require "dry/system/identifier"
+require "singleton"
 
 RSpec.describe Dry::System::Loader do
   subject(:loader) { described_class }
 
   describe "#require!" do
-    let(:component) { Dry::System::Component.new("test.bar") }
+    let(:component) {
+      Dry::System::Component.new(
+        Dry::System::Identifier.new("test.bar"),
+        namespace: Dry::System::Config::Namespace.default_root
+      )
+    }
 
     before do
-      allow(loader).to receive(:require)
+      expect(loader).to receive(:require).with("test/bar").at_least(1)
     end
 
-    context "component file exists" do
-      let(:component) { Dry::System::Component.new("test.bar", file_path: "path/to/test/bar.rb") }
-
-      it "requires the components's path" do
-        loader.require!(component)
-        expect(loader).to have_received(:require).with "test/bar"
-      end
-    end
-
-    context "component file does not exist" do
-      it "does not require the components's path" do
-        loader.require!(component)
-        expect(loader).not_to have_received(:require)
-      end
+    it "requires the components's path" do
+      loader.require!(component)
     end
 
     it "returns self" do
@@ -57,33 +53,37 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a singular name" do
-      let(:component) { Dry::System::Component.new("test.bar") }
+      let(:component) {
+        Dry::System::Component.new(
+          Dry::System::Identifier.new("test.bar"),
+          namespace: Dry::System::Config::Namespace.default_root
+        )
+      }
 
       let(:constant) { Test::Bar }
 
       before do
-        module Test; class Bar; end; end
-      end
+        expect(loader).to receive(:require).with("test/bar").at_least(1)
 
-      it_behaves_like "object loader"
-    end
-
-    context "with a plural name" do
-      let(:component) { Dry::System::Component.new("test.bars") }
-
-      let(:constant) { Test::Bars }
-
-      before do
-        module Test; class Bars; end; end
+        module Test
+          Bar = Class.new
+        end
       end
 
       it_behaves_like "object loader"
     end
 
     context "with a constructor accepting args" do
-      let(:component) { Dry::System::Component.new("test.bar") }
+      let(:component) {
+        Dry::System::Component.new(
+          Dry::System::Identifier.new("test.bar"),
+          namespace: Dry::System::Config::Namespace.default_root
+        )
+      }
 
       before do
+        expect(loader).to receive(:require).with("test/bar").at_least(1)
+
         module Test
           Bar = Struct.new(:one, :two)
         end
@@ -100,7 +100,8 @@ RSpec.describe Dry::System::Loader do
     context "with a custom inflector" do
       let(:component) {
         Dry::System::Component.new(
-          "test.api_bar",
+          Dry::System::Identifier.new("test.api_bar"),
+          namespace: Dry::System::Config::Namespace.default_root,
           inflector: Dry::Inflector.new { |i| i.acronym("API") }
         )
       }
@@ -108,6 +109,8 @@ RSpec.describe Dry::System::Loader do
       let(:constant) { Test::APIBar }
 
       before do
+        expect(loader).to receive(:require).with("test/api_bar").at_least(1)
+
         Test::APIBar = Class.new
       end
 

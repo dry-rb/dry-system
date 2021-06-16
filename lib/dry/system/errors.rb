@@ -11,6 +11,16 @@ module Dry
       end
     end
 
+    # Error raised when a namespace for a component dir is added to configuration more
+    # than once
+    NamespaceAlreadyAddedError = Class.new(StandardError) do
+      def initialize(path)
+        path_label = path ? "path #{path.inspect}" : "root path"
+
+        super("Namespace for #{path_label} already added")
+      end
+    end
+
     # Error raised when booter file do not match with register component
     #
     # @api public

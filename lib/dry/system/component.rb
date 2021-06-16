@@ -17,7 +17,7 @@ module Dry
     #
     # @api public
     class Component
-      include Dry::Equalizer(:identifier, :file_path, :options)
+      include Dry::Equalizer(:identifier, :namespace, :options)
 
       DEFAULT_OPTIONS = {
         separator: DEFAULT_SEPARATOR,
@@ -26,43 +26,34 @@ module Dry
       }.freeze
 
       # @!attribute [r] identifier
-      #   @return [String] component's unique identifier
+      #   @return [String] the component's unique identifier
       attr_reader :identifier
 
-      # @!attribute [r] file_path
-      #   @return [String, nil] full path to the component's file, if found
-      attr_reader :file_path
+      # @!attribute [r] namespace
+      #   @return [Dry::System::Config::Namespace] the component's namespace
+      attr_reader :namespace
 
       # @!attribute [r] options
-      #   @return [Hash] component's options
+      #   @return [Hash] the component's options
       attr_reader :options
 
       # @api private
-      def self.new(identifier, options = EMPTY_HASH)
-        options = DEFAULT_OPTIONS.merge(options)
-
-        namespace = options.delete(:namespace)
-        separator = options.delete(:separator)
-
-        identifier =
-          if identifier.is_a?(Identifier)
-            identifier
-          else
-            Identifier.new(
-              identifier,
-              namespace: namespace,
-              separator: separator
-            )
-          end
-
-        super(identifier, **options)
+      def initialize(identifier, namespace:, **options)
+        @identifier = identifier
+        @namespace = namespace
+        @options = DEFAULT_OPTIONS.merge(options)
       end
 
+      # Returns true, indicating that the component is directly loadable from the files
+      # managed by the container
+      #
+      # This is the inverse of {IndirectComponent#loadable?}
+      #
+      # @return [TrueClass]
+      #
       # @api private
-      def initialize(identifier, file_path: nil, **options)
-        @identifier = identifier
-        @file_path = file_path
-        @options = options
+      def loadable?
+        true
       end
 
       # Returns the component's instance
@@ -74,39 +65,95 @@ module Dry
       end
       ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
-      # @api private
-      def bootable?
-        false
-      end
-
+      # Returns the component's unique key
+      #
+      # @return [String] the key
+      #
+      # @see Identifier#key
+      #
+      # @api public
       def key
-        identifier.to_s
+        identifier.key
       end
 
-      def path
-        identifier.path
-      end
-
+      # Returns the root namespace segment of the component's key, as a symbol
+      #
+      # @see Identifier#root_key
+      #
+      # @return [Symbol] the root key
+      #
+      # @api public
       def root_key
         identifier.root_key
       end
 
-      # Returns true if the component has a corresponding file
+      # Returns a path-delimited representation of the compnent, appropriate for passing
+      # to `Kernel#require` to require its source file
       #
-      # @return [Boolean]
-      # @api private
-      def file_exists?
-        !!file_path
+      # The path takes into account the rules of the namespace used to load the component.
+      #
+      # @example Component from a root namespace
+      #   component.key # => "articles.create"
+      #   component.require_path # => "articles/create"
+      #
+      # @example Component from an "admin/" path namespace (with `key: nil`)
+      #   component.key # => "articles.create"
+      #   component.require_path # => "admin/articles/create"
+      #
+      # @see Config::Namespaces#add
+      # @see Config::Namespace
+      #
+      # @return [String] the require path
+      #
+      # @api public
+      def require_path
+        if namespace.path
+          "#{namespace.path}#{PATH_SEPARATOR}#{path_in_namespace}"
+        else
+          path_in_namespace
+        end
+      end
+
+      # Returns an "underscored", path-delimited representation of the component,
+      # appropriate for passing to the inflector for constantizing
+      #
+      # The const path takes into account the rules of the namespace used to load the
+      # component.
+      #
+      # @example Component from a namespace with `const_namespace: nil`
+      #   component.key # => "articles.create_article"
+      #   component.const_path # => "articles/create_article"
+      #   component.inflector.constantize(component.const_path) # => Articles::CreateArticle
+      #
+      # @example Component from a namespace with `const_namespace: "admin"`
+      #   component.key # => "articles.create_article"
+      #   component.const_path # => "admin/articles/create_article"
+      #   component.inflector.constantize(component.const_path) # => Admin::Articles::CreateArticle
+      #
+      # @see Config::Namespaces#add
+      # @see Config::Namespace
+      #
+      # @return [String] the const path
+      #
+      # @api public
+      def const_path
+        namespace_const_path = namespace.const&.gsub(identifier.separator, PATH_SEPARATOR)
+
+        if namespace_const_path
+          "#{namespace_const_path}#{PATH_SEPARATOR}#{path_in_namespace}"
+        else
+          path_in_namespace
+        end
       end
 
       # @api private
       def loader
-        options[:loader]
+        options.fetch(:loader)
       end
 
       # @api private
       def inflector
-        options[:inflector]
+        options.fetch(:inflector)
       end
 
       # @api private
@@ -120,6 +167,17 @@ module Dry
       end
 
       private
+
+      def path_in_namespace
+        identifier_in_namespace =
+          if namespace.key
+            identifier.namespaced(from: namespace.key, to: nil)
+          else
+            identifier
+          end
+
+        identifier_in_namespace.key_with_separator(PATH_SEPARATOR)
+      end
 
       def callable_option?(value)
         if value.respond_to?(:call)

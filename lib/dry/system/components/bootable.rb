@@ -224,15 +224,6 @@ module Dry
           self.class.new(identifier, options.merge(new_options))
         end
 
-        # Return true
-        #
-        # @return [TrueClass]
-        #
-        # @api private
-        def bootable?
-          true
-        end
-
         private
 
         # Return lifecycle object used for this component

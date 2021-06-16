@@ -30,16 +30,12 @@ module Dry
       end
 
       # @api private
-      def call(name)
-        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
-
-        require(root.join(config.registrations_dir, name))
+      def call(component)
+        require(root.join(config.registrations_dir, component.root_key.to_s))
       end
 
-      def file_exists?(name)
-        name = name.respond_to?(:root_key) ? name.root_key.to_s : name
-
-        File.exist?(File.join(registrations_dir, "#{name}#{RB_EXT}"))
+      def file_exists?(component)
+        File.exist?(File.join(registrations_dir, "#{component.root_key}#{RB_EXT}"))
       end
 
       private

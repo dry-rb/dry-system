@@ -28,7 +28,7 @@ module Dry
         #
         # @api public
         def require!(component)
-          require(component.path) if component.file_exists?
+          require(component.require_path)
           self
         end
 
@@ -61,8 +61,7 @@ module Dry
         # @api public
         def constant(component)
           inflector = component.inflector
-
-          inflector.constantize(inflector.camelize(component.path))
+          inflector.constantize(inflector.camelize(component.const_path))
         end
 
         private

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dry/system/config/component_dirs"
 require "dry/system/config/component_dir"
 
@@ -23,35 +25,35 @@ RSpec.describe Dry::System::Config::ComponentDirs do
     end
 
     it "applies default values configured before adding" do
-      component_dirs.default_namespace = "global_default"
+      component_dirs.namespaces.add "global_default"
 
       component_dirs.add "test/path"
 
       dir = component_dirs.dirs["test/path"]
-      expect(dir.default_namespace).to eq "global_default"
+      expect(dir.namespaces.to_a.map(&:path)).to eq ["global_default", nil]
     end
 
     it "applies default values configured after adding" do
       component_dirs.add "test/path"
 
-      component_dirs.default_namespace = "global_default"
+      component_dirs.namespaces.add "global_default"
 
       dir = component_dirs.dirs["test/path"]
-      expect(dir.default_namespace).to eq "global_default"
+      expect(dir.namespaces.to_a.map(&:path)).to eq ["global_default", nil]
     end
 
     it "does not apply default values over the component dir's own config" do
-      component_dirs.default_namespace = "global_default"
+      component_dirs.namespaces.add "global_default"
       component_dirs.memoize = true
 
       component_dirs.add "test/path" do |dir|
-        dir.default_namespace = nil
+        dir.namespaces.root # force the default value
         dir.memoize = false
       end
 
       dir = component_dirs.dirs["test/path"]
 
-      expect(dir.default_namespace).to be nil
+      expect(dir.namespaces.to_a.map(&:path)).to eq [nil]
       expect(dir.memoize).to be false
     end
 

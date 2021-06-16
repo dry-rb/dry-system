@@ -29,7 +29,7 @@ module Dry
 
       # @api private
       def call(component_dir)
-        components(component_dir).each do |component|
+        component_dir.each_component do |component|
           next unless register_component?(component)
 
           container.register(component.key, memoize: component.memoize?) { component.instance }
@@ -37,18 +37,6 @@ module Dry
       end
 
       private
-
-      def components(component_dir)
-        files(component_dir.full_path).map { |file_path|
-          component_dir.component_for_path(file_path)
-        }
-      end
-
-      def files(dir)
-        raise ComponentDirNotFoundError, dir unless Dir.exist?(dir)
-
-        Dir["#{dir}/**/#{RB_GLOB}"].sort
-      end
 
       def register_component?(component)
         !container.registered?(component.key) && component.auto_register?

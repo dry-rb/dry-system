@@ -1,5 +1,6 @@
+# frozen_string_literal: true
+
 require "concurrent/map"
-require "dry/configurable"
 require "dry/system/constants"
 require "dry/system/errors"
 require_relative "component_dir"
@@ -8,13 +9,6 @@ module Dry
   module System
     module Config
       class ComponentDirs
-        include Dry::Configurable
-
-        # Settings from ComponentDir are configured here as defaults for all added dirs
-        ComponentDir._settings.each do |setting|
-          _settings << setting.dup
-        end
-
         # @!group Settings
 
         # @!method auto_register=(value)
@@ -43,19 +37,6 @@ module Dry
         #
         #   @see add_to_load_path=
 
-        # @!method default_namespace=(value)
-        #
-        #   Sets a default `default_namespace` value for all added component dirs
-        #
-        #   @see ComponentDir.default_namespace
-        #   @see default_namespace
-        #
-        # @!method default_namespace
-        #
-        #   Returns the configured default `default_namespace`
-        #
-        #   @see default_namespace=
-
         # @!method loader=(value)
         #
         #   Sets a default `loader` value for all added component dirs
@@ -82,17 +63,34 @@ module Dry
         #
         #   @see memoize=
 
+        # @!method namespaces
+        #
+        #   Returns the default configured namespaces for all added component dirs
+        #
+        #   Allows namespaces to added on the returned object via {Namespaces#add}.
+        #
+        #   @see Namespaces#add
+        #
+        #   @return [Namespaces] the namespaces
+
         # @!endgroup
+
+        # A ComponentDir for configuring the default values to apply to all added
+        # component dirs
+        #
+        # @api private
+        attr_reader :defaults
 
         # @api private
         def initialize
           @dirs = Concurrent::Map.new
+          @defaults = ComponentDir.new(nil)
         end
 
         # @api private
         def initialize_copy(source)
-          super
           @dirs = source.dirs.dup
+          @defaults = source.defaults.dup
         end
 
         # Adds and configures a component dir
@@ -114,8 +112,8 @@ module Dry
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
           dirs[path] = ComponentDir.new(path).tap do |dir|
-            apply_defaults_to_dir(dir)
             yield dir if block_given?
+            apply_defaults_to_dir(dir)
           end
         end
 
@@ -143,40 +141,29 @@ module Dry
 
         private
 
-        # Apply default settings to a component dir. This is run every time the dirs are
+        # Applies default settings to a component dir. This is run every time the dirs are
         # accessed to ensure defaults are applied regardless of when new component dirs
         # are added. This method must be idempotent.
         #
         # @return [void]
         def apply_defaults_to_dir(dir)
-          dir.config.values.each do |key, _value|
-            if configured?(key) && !dir.configured?(key)
-              dir.public_send(:"#{key}=", public_send(key))
+          defaults.config.values.each do |key, _|
+            if defaults.configured?(key) && !dir.configured?(key)
+              dir.public_send(:"#{key}=", defaults.public_send(key).dup)
             end
           end
         end
 
-        # Returns true if a setting has been explicitly configured and is not returning
-        # just a default value.
-        #
-        # This is used to determine which settings should be applied to added component
-        # dirs as additional defaults.
-        #
-        # @api private
-        def configured?(key)
-          config._settings[key].input_defined?
-        end
-
         def method_missing(name, *args, &block)
-          if config.respond_to?(name)
-            config.public_send(name, *args, &block)
+          if defaults.respond_to?(name)
+            defaults.public_send(name, *args, &block)
           else
             super
           end
         end
 
         def respond_to_missing?(name, include_all = false)
-          config.respond_to?(name) || super
+          defaults.respond_to?(name) || super
         end
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec::Matchers.define :have_memoized_component do |identifier|
   match do |container|
     container[identifier].eql?(container[identifier])
@@ -12,7 +14,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
-            dir.default_namespace = "test"
+            dir.namespaces.add "test", key: nil
             dir.memoize = true
           end
         end
@@ -45,9 +47,9 @@ RSpec.describe "Auto-registration / Memoizing components" do
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
-            dir.default_namespace = "test"
+            dir.namespaces.add "test", key: nil
             dir.memoize = proc do |component|
-              !component.path.match?(/bar/)
+              !component.key.match?(/bar/)
             end
           end
         end
@@ -92,7 +94,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
-              dir.default_namespace = "test"
+              dir.namespaces.add "test", key: nil
             end
           end
         end
@@ -111,7 +113,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
-              dir.default_namespace = "test"
+              dir.namespaces.add "test", key: nil
               dir.memoize = false
             end
           end
@@ -131,7 +133,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
-              dir.default_namespace = "test"
+              dir.namespaces.add "test", key: nil
               dir.memoize = true
             end
           end
