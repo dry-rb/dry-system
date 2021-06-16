@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/container"
-require "dry/system/loader/autoloading"
 require "zeitwerk"
 
 RSpec.describe "Auto-registration" do
