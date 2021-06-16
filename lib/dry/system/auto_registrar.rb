@@ -39,15 +39,28 @@ module Dry
       private
 
       def components(component_dir)
-        files(component_dir.full_path).map { |file_path|
+        files(component_dir).map { |file_path|
+          # p file_path
           component_dir.component_for_path(file_path)
         }
       end
 
-      def files(dir)
-        raise ComponentDirNotFoundError, dir unless Dir.exist?(dir)
+      def files(component_dir)
+        dir_path = component_dir.full_path
 
-        Dir["#{dir}/**/#{RB_GLOB}"].sort
+        raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
+
+        (component_dir.namespaces.map { |(path_namespace, _)|
+          if path_namespace.nil?
+            []
+          else
+            Dir["#{dir_path}/#{path_namespace}/**/#{RB_GLOB}"]
+          end
+        }.flatten + Dir["#{dir_path}/**/#{RB_GLOB}"]).uniq.tap do |ff|
+            # byebug
+          end
+
+        # Dir["#{component_dir.full_path}/**/#{RB_GLOB}"].sort
       end
 
       def register_component?(component)

@@ -96,7 +96,15 @@ module Dry
 
         # FIXME: fix docs above
         # FIXME: this default value, while true, is kind of gross
-        setting :namespaces, [nil].freeze
+        setting :namespaces, [nil].freeze do |namespaces|
+          namespaces.map { |ns|
+            if ns.is_a?(Array)
+              ns
+            else
+              [ns, ns]
+            end
+          }
+        end
 
         # TODO: add deprecated default_namespace setting
         # TODO: add `namespace` setting for nicer shortcut

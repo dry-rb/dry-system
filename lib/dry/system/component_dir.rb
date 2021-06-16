@@ -73,7 +73,10 @@ module Dry
           .scan(WORD_REGEX)
           .join(separator)
 
-        nss = namespaces_by_specificity
+        # nss = namespaces_by_specificity # Maybe don't need it now that the auto-registrar is giving things to us in the right order?
+        nss = namespaces
+
+        # byebug if key == "component"
 
         nss.each do |(path_namespace, const_namespace)|
           # FIXME: move the namespace assignment into building the component
@@ -84,10 +87,13 @@ module Dry
             const_namespace: const_namespace,
           )
 
+          # byebug
+          # byebug if key == "component"
+
           return build_component(identifier, path) if path_namespace.nil?
 
           if identifier.start_with?(path_namespace)
-            identifier = identifier.dequalified(path_namespace)
+            identifier = identifier.dequalified(path_namespace, require_path: "#{key.gsub('.', '/')}")
 
             return build_component(identifier, path)
           end

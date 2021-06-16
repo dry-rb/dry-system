@@ -42,6 +42,7 @@ module Dry
         #
         # @api public
         def call(component, *args)
+          # byebug if component.key == "component"
           require!(component)
 
           constant = self.constant(component)
@@ -68,9 +69,12 @@ module Dry
           const_path = component.path
 
           # TODO: put this into component itself?
-          if component.identifier.const_namespace # FIXME: going off the identifier here is gross
+          # TODO: need to handle const_namespaces with multiple separators, i.e. translate them to paths
+          if component.identifier.const_namespace && !const_path.start_with?(component.identifier.const_namespace) # FIXME: going off the identifier here is gross
             const_path = "#{component.identifier.const_namespace}/#{const_path}"
           end
+
+          # byebug if component.key == "component"
 
           inflector.constantize(inflector.camelize(const_path))
         end
