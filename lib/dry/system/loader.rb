@@ -62,7 +62,17 @@ module Dry
         def constant(component)
           inflector = component.inflector
 
-          inflector.constantize(inflector.camelize(component.path))
+          # puts "constantizing component #{component.path}"
+          # byebug
+
+          const_path = component.path
+
+          # TODO: put this into component itself?
+          if component.identifier.const_namespace # FIXME: going off the identifier here is gross
+            const_path = "#{component.identifier.const_namespace}/#{const_path}"
+          end
+
+          inflector.constantize(inflector.camelize(const_path))
         end
 
         private

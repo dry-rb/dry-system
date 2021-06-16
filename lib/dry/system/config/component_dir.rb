@@ -93,7 +93,13 @@ module Dry
         #   @return [String, nil]
         #
         #   @see default_namespace=
-        setting :default_namespace
+
+        # FIXME: fix docs above
+        # FIXME: this default value, while true, is kind of gross
+        setting :namespaces, [nil].freeze
+
+        # TODO: add deprecated default_namespace setting
+        # TODO: add `namespace` setting for nicer shortcut
 
         # @!method loader=(loader)
         #

@@ -13,7 +13,7 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:identifier, :namespace, :separator)
+      include Dry::Equalizer(:identifier, :path_namespace, :const_namespace, :separator)
 
       # @return [String] the identifier string
       # @api public
@@ -21,16 +21,19 @@ module Dry
 
       # @return [String, nil] the namespace for the component
       # @api public
-      attr_reader :namespace
+      attr_reader :path_namespace
+
+      attr_reader :const_namespace
 
       # @return [String] the configured namespace separator
       # @api public
       attr_reader :separator
 
       # @api private
-      def initialize(identifier, namespace: nil, separator: DEFAULT_SEPARATOR)
+      def initialize(identifier, path_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
         @identifier = identifier.to_s
-        @namespace = namespace
+        @path_namespace = path_namespace
+        @const_namespace = const_namespace
         @separator = separator
       end
 
@@ -75,10 +78,10 @@ module Dry
       # @return [String] the path
       # @api public
       def path
-        @require_path ||= identifier.gsub(separator, PATH_SEPARATOR).yield_self { |path|
-          if namespace
-            namespace_path = namespace.to_s.gsub(separator, PATH_SEPARATOR)
-            "#{namespace_path}#{PATH_SEPARATOR}#{path}"
+        @path ||= identifier.gsub(separator, PATH_SEPARATOR).yield_self { |path|
+          if path_namespace
+            path_prefix = path_namespace.to_s.gsub(separator, PATH_SEPARATOR)
+            "#{path_prefix}#{PATH_SEPARATOR}#{path}"
           else
             path
           end
@@ -126,7 +129,8 @@ module Dry
 
         self.class.new(
           new_identifier,
-          namespace: namespace,
+          path_namespace: path_namespace,
+          const_namespace: const_namespace,
           separator: separator,
           **options
         )
@@ -143,7 +147,8 @@ module Dry
       def with(namespace:)
         self.class.new(
           identifier,
-          namespace: namespace,
+          path_namespace: path_namespace,
+          const_namespace: const_namespace,
           separator: separator
         )
       end

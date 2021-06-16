@@ -41,16 +41,19 @@ module Dry
       def self.new(identifier, options = EMPTY_HASH)
         options = DEFAULT_OPTIONS.merge(options)
 
-        namespace = options.delete(:namespace)
+        path_namespace = options.delete(:path_namespace)
+        const_namespace = options.delete(:const_namespace)
         separator = options.delete(:separator)
 
         identifier =
           if identifier.is_a?(Identifier)
             identifier
           else
+            # TODO: is this branch even necessary?
             Identifier.new(
               identifier,
-              namespace: namespace,
+              path_namespace: path_namespace,
+              const_namespace: const_namespace,
               separator: separator
             )
           end
@@ -101,12 +104,12 @@ module Dry
 
       # @api private
       def loader
-        options[:loader]
+        options.fetch(:loader)
       end
 
       # @api private
       def inflector
-        options[:inflector]
+        options.fetch(:inflector)
       end
 
       # @api private
