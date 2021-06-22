@@ -66,6 +66,8 @@ module Dry
       #
       # @api private
       def component_for_path(path)
+        p path
+
         separator = container.config.namespace_separator
 
         key = Pathname(path).relative_path_from(full_path).to_s
@@ -76,28 +78,77 @@ module Dry
         # nss = namespaces_by_specificity # Maybe don't need it now that the auto-registrar is giving things to us in the right order?
         nss = namespaces
 
+
         # byebug if key == "component"
 
-        nss.each do |(path_namespace, const_namespace)|
-          # FIXME: move the namespace assignment into building the component
-          identifier = Identifier.new(
-            key,
-            separator: separator,
-            path_namespace: path_namespace,
-            const_namespace: const_namespace,
-          )
+        # What I actually want to do is create a matcher proc for each namespace, with the
+        # matcher for the `nil` namespace (if provided) being the _absence_ of the other
+        # namespaces
 
-          # byebug
-          # byebug if key == "component"
 
-          return build_component(identifier, path) if path_namespace.nil?
 
-          if identifier.start_with?(path_namespace)
-            identifier = identifier.dequalified(path_namespace, require_path: "#{key.gsub('.', '/')}")
+        ns_matchers = nss.map { |(key_ns, const_ns)|
+          matcher =
+            if key_ns.nil?
+              # TODO: compile this into regexp so it's faster??
+              non_nil_key_ns = nss.map(&:first).reject(&:nil?)
+              -> path { non_nil_key_ns.none? { |ns| path.start_with?(ns) } }
+            else
+              -> path { path.start_with?(key_ns) }
+            end
 
-            return build_component(identifier, path)
+          [matcher, [key_ns, const_ns]]
+        }.to_h
+        # TODO: maybe add a nil one on the end if there isn't one already?
+
+        # byebug if path =~ /admin_component/
+
+        ns_matchers.each do |matcher, (key_ns, const_ns)|
+          if matcher.(key)
+            puts "matched ns: #{key_ns} / #{const_ns}"
+            puts
+
+
+            identifier = Identifier.new(
+              key,
+              separator: separator,
+              path_namespace: key_ns,
+              const_namespace: const_ns,
+            )
+
+            # byebug if path =~ /[^_]component/
+
+            # Ugh, shouldn't be needed
+            if key_ns.nil?
+              return build_component(identifier, path)
+            else
+              identifier = identifier.dequalified(key_ns, require_path: "#{key.gsub('.', '/')}") # Ugh
+              # byebug if path =~ /admin_component/
+              return build_component(identifier, path)
+            end
           end
         end
+
+        # nss.each do |(path_namespace, const_namespace)|
+        #   # FIXME: move the namespace assignment into building the component
+        #   identifier = Identifier.new(
+        #     key,
+        #     separator: separator,
+        #     path_namespace: path_namespace,
+        #     const_namespace: const_namespace,
+        #   )
+
+        #   # byebug
+        #   # byebug if key == "component"
+
+        #   return build_component(identifier, path) if path_namespace.nil?
+
+        #   if identifier.start_with?(path_namespace)
+        #     identifier = identifier.dequalified(path_namespace, require_path: "#{key.gsub('.', '/')}")
+
+        #     return build_component(identifier, path)
+        #   end
+        # end
 
         # TODO: is this needed?
 

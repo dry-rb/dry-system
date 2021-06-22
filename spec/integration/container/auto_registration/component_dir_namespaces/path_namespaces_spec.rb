@@ -186,4 +186,86 @@ RSpec.describe "Component dir path namespaces" do
       end
     end
   end
+
+  context "two named namespaces and nil namespace" do
+    context "order 1" do
+      let!(:container) {
+        module Test
+          class Container < Dry::System::Container
+            configure do |config|
+              config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
+
+              config.component_dirs.add "lib" do |dir|
+                dir.namespaces = [nil, "admin", "test"]
+              end
+            end
+          end
+        end
+
+        Test::Container
+      }
+
+      context "lazy loading" do
+        it do
+          expect(container["component"]).to be_an_instance_of Component
+          expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
+          expect(container["test_component"]).to be_an_instance_of Test::TestComponent
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
+      end
+
+      context "finalized" do
+        before do
+          container.finalize!
+        end
+
+        it do
+          expect(container["component"]).to be_an_instance_of Component
+          expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
+          expect(container["test_component"]).to be_an_instance_of Test::TestComponent
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
+      end
+    end
+
+    context "order 2" do
+      let!(:container) {
+        module Test
+          class Container < Dry::System::Container
+            configure do |config|
+              config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
+
+              config.component_dirs.add "lib" do |dir|
+                dir.namespaces = ["admin", nil, "test"]
+              end
+            end
+          end
+        end
+
+        Test::Container
+      }
+
+      context "lazy loading" do
+        it do
+          expect(container["component"]).to be_an_instance_of Admin::Component
+          expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
+          expect(container["test_component"]).to be_an_instance_of Test::TestComponent
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
+      end
+
+      context "finalized" do
+        before do
+          container.finalize!
+        end
+
+        it do
+          expect(container["component"]).to be_an_instance_of Admin::Component
+          expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
+          expect(container["test_component"]).to be_an_instance_of Test::TestComponent
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
+      end
+    end
+  end
 end

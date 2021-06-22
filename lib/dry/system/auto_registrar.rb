@@ -32,6 +32,8 @@ module Dry
         components(component_dir).each do |component|
           next unless register_component?(component)
 
+          puts "auto_registering #{component.key}"
+
           container.register(component.key, memoize: component.memoize?) { component.instance }
         end
       end
@@ -50,17 +52,61 @@ module Dry
 
         raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
 
-        (component_dir.namespaces.map { |(path_namespace, _)|
-          if path_namespace.nil?
-            []
-          else
-            Dir["#{dir_path}/#{path_namespace}/**/#{RB_GLOB}"]
-          end
-        }.flatten + Dir["#{dir_path}/**/#{RB_GLOB}"]).uniq.tap do |ff|
-            # byebug
+        # FIXME: this is broken - we actually want to get all the files first, then sort
+        # by namespaces, which would allow the `nil` namespace to go first, if provided
+        # that way
+
+        # Old way (not right):
+        # (component_dir.namespaces.map { |(path_namespace, _)|
+        #   if path_namespace.nil?
+        #     []
+        #   else
+        #     Dir["#{dir_path}/#{path_namespace}/**/#{RB_GLOB}"]
+        #   end
+        # }.flatten + Dir["#{dir_path}/**/#{RB_GLOB}"]).uniq.tap do |ff|
+        #   # byebug
+        # end
+
+        # Original way (won't work anymore):
+        # Dir["#{component_dir.full_path}/**/#{RB_GLOB}"].sort
+
+        ## Maybe correct? (but also hugely inefficient):
+
+        ns_sort_map = component_dir.namespaces.map.with_index { |(path_namespace, _), i|
+          [
+            path_namespace&.gsub(".", "/"), # FIXME make right
+            i,
+          ]
+        }.to_h
+
+        p ns_sort_map
+
+        Dir["#{component_dir.full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
+          # ns_sort_map
+
+          sort = nil
+
+          relative_file_path = Pathname(file_path).relative_path_from(component_dir.full_path).to_s
+
+          ns_sort_map.each do |prefix, sort_i|
+            # byebug unless prefix.nil?
+            next if prefix.nil?
+
+            if relative_file_path.start_with?(prefix)
+              sort = sort_i
+              break
+            end
           end
 
-        # Dir["#{component_dir.full_path}/**/#{RB_GLOB}"].sort
+          if sort.nil?
+            sort = ns_sort_map.fetch(nil, 0)
+          end
+
+          puts "#{file_path}: #{sort}"
+          sort
+        }.tap do |ff|
+          # byebug
+        end
       end
 
       def register_component?(component)
