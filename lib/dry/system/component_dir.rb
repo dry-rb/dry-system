@@ -1,4 +1,5 @@
 require "pathname"
+require "dry/system/constants"
 require_relative "constants"
 require_relative "identifier"
 require_relative "magic_comments_parser"
@@ -26,6 +27,68 @@ module Dry
       def initialize(config:, container:)
         @config = config
         @container = container
+      end
+
+      def files
+        dir_path = full_path
+
+        raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
+
+        # FIXME: this is broken - we actually want to get all the files first, then sort
+        # by namespaces, which would allow the `nil` namespace to go first, if provided
+        # that way
+
+        # Old way (not right):
+        # (namespaces.map { |(path_namespace, _)|
+        #   if path_namespace.nil?
+        #     []
+        #   else
+        #     Dir["#{dir_path}/#{path_namespace}/**/#{RB_GLOB}"]
+        #   end
+        # }.flatten + Dir["#{dir_path}/**/#{RB_GLOB}"]).uniq.tap do |ff|
+        #   # byebug
+        # end
+
+        # Original way (won't work anymore):
+        # Dir["#{full_path}/**/#{RB_GLOB}"].sort
+
+        ## Maybe correct? (but also hugely inefficient):
+
+        ns_sort_map = namespaces.map.with_index { |(path_namespace, _), i|
+          [
+            path_namespace&.gsub(".", "/"), # FIXME make right
+            i,
+          ]
+        }.to_h
+
+        p ns_sort_map
+
+        Dir["#{full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
+          # ns_sort_map
+
+          sort = nil
+
+          relative_file_path = Pathname(file_path).relative_path_from(full_path).to_s
+
+          ns_sort_map.each do |prefix, sort_i|
+            # byebug unless prefix.nil?
+            next if prefix.nil?
+
+            if relative_file_path.start_with?(prefix)
+              sort = sort_i
+              break
+            end
+          end
+
+          if sort.nil?
+            sort = ns_sort_map.fetch(nil, 999_999) # This was originally 0... But I think putting it at the end is actually the correct behaviour
+          end
+
+          puts "#{file_path}: #{sort}"
+          sort
+        }.tap do |ff|
+          # byebug
+        end
       end
 
       # Returns a component for a given identifier if a matching component file could be
