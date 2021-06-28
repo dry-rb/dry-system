@@ -26,8 +26,10 @@ RSpec.describe Dry::System::ComponentDir do
       expect(component_dir.path).to eql config.path
       expect(component_dir.auto_register).to eql config.auto_register
       expect(component_dir.add_to_load_path).to eql config.add_to_load_path
-      expect(component_dir.default_namespace).to eql config.default_namespace
     end
+
+    # TODO
+    xit "provides a default root namespace if none is specified"
   end
 
   describe "#full_path" do

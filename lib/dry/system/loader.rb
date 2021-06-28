@@ -70,11 +70,31 @@ module Dry
 
           # TODO: put this into component itself?
           # TODO: need to handle const_namespaces with multiple separators, i.e. translate them to paths
-          if component.identifier.const_namespace && !const_path.start_with?(component.identifier.const_namespace) # FIXME: going off the identifier here is gross
+
+
+          # TODO: need to do something about that const_path.start_with condition, i.e.
+          # encapsulate it somewhere sensible.... perhaps what we actually want to do here
+          # is _only_ adjust the const_path if the path_namespace != the
+          # const_namespace... we probably want more tests to account for the various
+          # permutations of these two values
+
+          # byebug if component.key =~ /admin_component/
+          p component.key
+
+          # FIXME: un-hack
+          # FIXME: stop putting all those namespaces on the identifier - its gross - it should be on the component
+          leading_const_namespace = component.identifier.const_namespace.gsub(".", "/") if component.identifier.const_namespace
+
+          if leading_const_namespace && !const_path.start_with?(leading_const_namespace)
             const_path = "#{component.identifier.const_namespace}/#{const_path}"
           end
 
+          # if component.identifier.const_namespace && component.identifier.const_namespace != component.identifier.path_namespace
+          #   const_path = "#{component.identifier.const_namespace}/#{const_path}"
+          # end
+
           # byebug if component.key == "component"
+          # byebug
 
           inflector.constantize(inflector.camelize(const_path))
         end

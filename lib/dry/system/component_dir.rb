@@ -274,6 +274,16 @@ module Dry
 
       private
 
+      # This ensures we always have a root namespace, if none was specified
+      # FIXME: all of this needs to become nicer
+      def namespaces
+        @namespaces ||= super.dup.tap do |arr|
+          if arr.map(&:first).none?(&:nil?)
+            arr << [nil, nil]
+          end
+        end
+      end
+
       def build_component(identifier, file_path)
         options = {
           inflector: container.config.inflector,

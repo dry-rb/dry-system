@@ -10,7 +10,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
   let(:component_dir) {
     Dry::System::ComponentDir.new(
       config: Dry::System::Config::ComponentDir.new(component_dir_path) { |config|
-        config.default_namespace = default_namespace
+        config.namespaces = namespaces
         component_dir_options.each do |key, val|
           config.send :"#{key}=", val
         end
@@ -19,7 +19,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     )
   }
   let(:component_dir_path) { "component_dir_1" }
-  let(:default_namespace) { "namespace" }
+  let(:namespaces) { ["namespace"] }
   let(:component_dir_options) { {} }
   let(:container) {
     container_root = root
@@ -32,7 +32,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
   let(:root) { SPEC_ROOT.join("fixtures/unit/component").realpath }
 
   context "component file exists within default namespace" do
-    let(:path) { root.join(component_dir_path, default_namespace, "nested/component_file.rb") }
+    let(:path) { root.join(component_dir_path, "namespace", "nested/component_file.rb") }
 
     it "returns a component" do
       expect(component).to be_a Dry::System::Component
@@ -51,7 +51,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     end
 
     it "has the component dir's namespace" do
-      expect(component.identifier.namespace).to eq component_dir.default_namespace
+      expect(component.identifier.path_namespace).to eq "namespace"
     end
 
     context "options given as component dir config" do
@@ -63,7 +63,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     end
 
     context "options given as magic comments in file" do
-      let(:path) { root.join(component_dir_path, default_namespace, "nested/component_file_with_auto_register_false.rb") }
+      let(:path) { root.join(component_dir_path, "namespace", "nested/component_file_with_auto_register_false.rb") }
 
       it "loads options specified within the file's magic comments" do
         expect(component.options).to include(auto_register: false)
@@ -72,7 +72,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
 
     context "options given as both component dir config and as magic comments in file" do
       let(:component_dir_options) { {auto_register: true} }
-      let(:path) { root.join(component_dir_path, default_namespace, "nested/component_file_with_auto_register_false.rb") }
+      let(:path) { root.join(component_dir_path, "namespace", "nested/component_file_with_auto_register_false.rb") }
 
       it "prefers the options specified as magic comments" do
         expect(component.options).to include(auto_register: false)
@@ -100,7 +100,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     end
 
     it "does not have the component dir's namespace" do
-      expect(component.identifier.namespace).to be_nil
+      expect(component.identifier.path_namespace).to be_nil
     end
   end
 

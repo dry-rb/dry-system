@@ -9,7 +9,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
           config.component_dirs.add "components" do |dir|
-            dir.default_namespace = "test"
+            dir.namespaces = ["test"]
           end
         end
       end
@@ -30,7 +30,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
           config.component_dirs.add "namespaced_components" do |dir|
-            dir.default_namespace = "namespaced"
+            dir.namespaces = ["namespaced"]
           end
         end
       end
@@ -48,7 +48,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
-            dir.default_namespace = "test"
+            dir.namespaces = ["test"]
           end
         end
       end
@@ -65,7 +65,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
           config.component_dirs.add "multiple_namespaced_components" do |dir|
-            dir.default_namespace = "multiple.level"
+            dir.namespaces = ["multiple.level"]
           end
         end
       end
@@ -92,7 +92,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
           config.root = SPEC_ROOT.join("fixtures").realpath
           config.component_dirs.loader = Test::Loader
           config.component_dirs.add "components" do |dir|
-            dir.default_namespace = "test"
+            dir.namespaces = ["test"]
           end
         end
       end
@@ -110,7 +110,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
           config.component_dirs.add "components" do |dir|
-            dir.default_namespace = "test"
+            dir.namespaces = ["test"]
           end
           config.component_dirs.add "unknown_dir"
         end
