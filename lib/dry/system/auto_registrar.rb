@@ -29,7 +29,8 @@ module Dry
 
       # @api private
       def call(component_dir)
-        components(component_dir).each do |component|
+        # components(component_dir).each do |component|
+        component_dir.each_component do |component|
           next unless register_component?(component)
 
           puts "auto_registering #{component.key}"
@@ -40,12 +41,12 @@ module Dry
 
       private
 
-      def components(component_dir)
-        component_dir.files.map { |file_path|
-          # p file_path
-          component_dir.component_for_path(file_path)
-        }
-      end
+      # def components(component_dir)
+      #   component_dir.files.map { |file_path|
+      #     # p file_path
+      #     component_dir.component_for_path(file_path)
+      #   }
+      # end
 
       def register_component?(component)
         !container.registered?(component.key) && component.auto_register?

@@ -122,6 +122,15 @@ module Dry
         nil
       end
 
+      # WIP
+      # Along with this, I think I might want to
+      def each_component(&block)
+        # TODO: support calling without block, returning enum
+        files.each do |file_path|
+          yield component_for_path(file_path)
+        end
+      end
+
       # Returns a component for a full path to a Ruby source file within the component dir
       #
       # @param path [String] the full path to the file
@@ -138,23 +147,17 @@ module Dry
           .scan(WORD_REGEX)
           .join(separator)
 
-        # nss = namespaces_by_specificity # Maybe don't need it now that the auto-registrar is giving things to us in the right order?
-        nss = namespaces
-
-
         # byebug if key == "component"
 
         # What I actually want to do is create a matcher proc for each namespace, with the
         # matcher for the `nil` namespace (if provided) being the _absence_ of the other
         # namespaces
 
-
-
-        ns_matchers = nss.map { |(key_ns, const_ns)|
+        ns_matchers = namespaces.map { |(key_ns, const_ns)|
           matcher =
             if key_ns.nil?
               # TODO: compile this into regexp so it's faster??
-              non_nil_key_ns = nss.map(&:first).reject(&:nil?)
+              non_nil_key_ns = namespaces.map(&:first).reject(&:nil?)
               -> path { non_nil_key_ns.none? { |ns| path.start_with?(ns) } }
             else
               -> path { path.start_with?(key_ns) }
@@ -170,7 +173,6 @@ module Dry
           if matcher.(key)
             puts "matched ns: #{key_ns} / #{const_ns}"
             puts
-
 
             identifier = Identifier.new(
               key,
@@ -234,17 +236,6 @@ module Dry
         #     identifier = identifier.dequalified(path_namespace) # WIP
         #   end
         # end
-      end
-
-      def namespaces_by_specificity
-        # TODO: move to memoized private method
-        @namespaces_by_specificity ||= namespaces.sort_by { |(path_namespace, _)|
-          if path_namespace.nil?
-            0
-          else
-            path_namespace.to_s.split(container.config.namespace_separator).length
-          end
-        }.reverse
       end
 
       def old_component_for_path(path)
