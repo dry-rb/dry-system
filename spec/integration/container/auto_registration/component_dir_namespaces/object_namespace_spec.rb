@@ -11,7 +11,23 @@ RSpec.describe "Component dir object namespace" do
 
             config.component_dirs.add "lib" do |dir|
               # no path namespace (i.e. a "flattened" folder structure), but an object namespace of "Test"
-              dir.namespaces = [[nil, "test"]]
+              # dir.namespaces = [[nil, "test"]]
+              dir.namespaces.add const: "test"
+
+              # dir.namespaces.add sub_dir, identifier: nil, const: nil
+
+              # # equivalent of our previous `default_namespace = "admin"`
+              # dir.namespaces.add "admin"
+
+              # # implicitly the same as
+              # dir.namespaces.add "admin", identifier: nil
+
+              # # root namespace, i.e. the files in the root of the component dir
+              # dir.namespaces.add const: "test"
+
+              # dir.namespaces.add "admin", identifier: "awesome.thing"
+
+              # dir.namespaces.add "admin" const: "test"
             end
           end
         end
@@ -46,7 +62,9 @@ RSpec.describe "Component dir object namespace" do
 
             config.component_dirs.add "lib" do |dir|
               # no path namespace (i.e. a "flattened" folder structure), but an object namespace of "Test"
-              dir.namespaces = [[nil, "test"]]
+              # dir.namespaces = [[nil, "test"]]
+              dir.namespaces.add const: "test"
+
               dir.loader = Dry::System::Loader::Autoloading
             end
           end

@@ -54,9 +54,10 @@ module Dry
 
         ## Maybe correct? (but also hugely inefficient):
 
-        ns_sort_map = namespaces.map.with_index { |(path_namespace, _), i|
+        ns_sort_map = namespaces.to_a.map.with_index { |namespace, i|
           [
-            path_namespace&.gsub(".", "/"), # FIXME make right
+            # FIXME: should just use namespace.path?
+            namespace.identifier_namespace&.gsub(".", "/"), # FIXME make right
             i,
           ]
         }.to_h
@@ -104,13 +105,10 @@ module Dry
       # @api private
       def component_for_identifier(identifier)
         namespaces.each do |namespace|
-          # TODO: input validation of these namespace arrays in component dir config
-          path_namespace, const_namespace = *namespace
-
           identifier = Identifier.new(
             identifier,
-            path_namespace: path_namespace,
-            const_namespace: const_namespace,
+            path_namespace: namespace.identifier_namespace,
+            const_namespace: namespace.const_namespace,
             separator: container.config.namespace_separator,
           )
 
@@ -153,41 +151,41 @@ module Dry
         # matcher for the `nil` namespace (if provided) being the _absence_ of the other
         # namespaces
 
-        ns_matchers = namespaces.map { |(key_ns, const_ns)|
+        ns_matchers = namespaces.to_a.map { |namespace|
           matcher =
-            if key_ns.nil?
+            if namespace.root?
               # TODO: compile this into regexp so it's faster??
-              non_nil_key_ns = namespaces.map(&:first).reject(&:nil?)
+              non_nil_key_ns = namespaces.to_a.reject(&:root?).map(&:path)
               -> path { non_nil_key_ns.none? { |ns| path.start_with?(ns) } }
             else
-              -> path { path.start_with?(key_ns) }
+              -> path { path.start_with?(namespace.path) }
             end
 
-          [matcher, [key_ns, const_ns]]
+          [matcher, namespace]
         }.to_h
         # TODO: maybe add a nil one on the end if there isn't one already?
 
         # byebug if path =~ /admin_component/
 
-        ns_matchers.each do |matcher, (key_ns, const_ns)|
+        ns_matchers.each do |matcher, namespace|
           if matcher.(key)
-            puts "matched ns: #{key_ns} / #{const_ns}"
+            puts "matched ns: #{namespace.inspect}"
             puts
 
             identifier = Identifier.new(
               key,
               separator: separator,
-              path_namespace: key_ns,
-              const_namespace: const_ns,
+              path_namespace: namespace.identifier_namespace,
+              const_namespace: namespace.const_namespace,
             )
 
             # byebug if path =~ /[^_]component/
 
-            # Ugh, shouldn't be needed
-            if key_ns.nil?
+            # FIXME: Ugh, shouldn't be needed
+            if namespace.root?
               return build_component(identifier, path)
             else
-              identifier = identifier.dequalified(key_ns, require_path: "#{key.gsub('.', '/')}") # Ugh
+              identifier = identifier.dequalified(namespace.identifier_namespace, require_path: "#{key.gsub('.', '/')}") # Ugh
               # byebug if path =~ /admin_component/
               return build_component(identifier, path)
             end
@@ -273,16 +271,6 @@ module Dry
       end
 
       private
-
-      # This ensures we always have a root namespace, if none was specified
-      # FIXME: all of this needs to become nicer
-      def namespaces
-        @namespaces ||= super.dup.tap do |arr|
-          if arr.map(&:first).none?(&:nil?)
-            arr << [nil, nil]
-          end
-        end
-      end
 
       def build_component(identifier, file_path)
         options = {
