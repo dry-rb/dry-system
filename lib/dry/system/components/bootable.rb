@@ -35,8 +35,8 @@ module Dry
       #   class App < Dry::System::Container
       #     boot(:settings, from: :system) do
       #       settings do
-      #         key :database_url, Types::String.constrained(filled: true)
-      #         key :session_secret, Types::String.constrained(filled: true)
+      #         setting :database_url, Types::String.constrained(filled: true)
+      #         setting :session_secret, Types::String.constrained(filled: true)
       #       end
       #     end
       #   end

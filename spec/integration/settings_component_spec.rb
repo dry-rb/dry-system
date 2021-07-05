@@ -18,8 +18,8 @@ RSpec.describe "Settings component" do
         end
 
         settings do
-          key :database_url, SettingsTest::Types::String.constrained(filled: true)
-          key :session_secret, SettingsTest::Types::String.constrained(filled: true)
+          setting :database_url, SettingsTest::Types::String.constrained(filled: true)
+          setting :session_secret, SettingsTest::Types::String.constrained(filled: true)
         end
       end
     end
@@ -58,8 +58,8 @@ RSpec.describe "Settings component" do
           end
 
           settings do
-            key :integer_value, SettingsTest::Types::Strict::Integer
-            key :coercible_value, SettingsTest::Types::Coercible::Integer
+            setting :integer_value, SettingsTest::Types::Strict::Integer
+            setting :coercible_value, SettingsTest::Types::Coercible::Integer
           end
         end
       end
@@ -106,7 +106,7 @@ RSpec.describe "Settings component" do
           end
 
           settings do
-            key :number_of_workers, SettingsTest::Types::Coercible::Integer.default(14)
+            setting :number_of_workers, SettingsTest::Types::Coercible::Integer.default(14)
           end
         end
       end
