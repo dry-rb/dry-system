@@ -7,7 +7,7 @@ RSpec.describe "Component dir path namespaces" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              dir.namespaces = ["test"]
+              dir.namespaces.add "test" #, identifier: "test"
             end
           end
         end
@@ -41,7 +41,7 @@ RSpec.describe "Component dir path namespaces" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_and_null_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              dir.namespaces = ["test", nil]
+              dir.namespaces.add "test"
             end
           end
         end
@@ -79,7 +79,8 @@ RSpec.describe "Component dir path namespaces" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_and_null_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              dir.namespaces = [nil, "test"]
+              dir.namespaces.root
+              dir.namespaces.add "test"
             end
           end
         end
@@ -118,7 +119,8 @@ RSpec.describe "Component dir path namespaces" do
               config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
 
               config.component_dirs.add "lib" do |dir|
-                dir.namespaces = ["admin", "test"]
+                dir.namespaces.add "admin"
+                dir.namespaces.add "test"
               end
             end
           end
@@ -156,7 +158,8 @@ RSpec.describe "Component dir path namespaces" do
               config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
 
               config.component_dirs.add "lib" do |dir|
-                dir.namespaces = ["test", "admin"]
+                dir.namespaces.add "test"
+                dir.namespaces.add "admin"
               end
             end
           end
@@ -196,7 +199,9 @@ RSpec.describe "Component dir path namespaces" do
               config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
 
               config.component_dirs.add "lib" do |dir|
-                dir.namespaces = [nil, "admin", "test"]
+                dir.namespaces.root
+                dir.namespaces.add "admin"
+                dir.namespaces.add "test"
               end
             end
           end
@@ -236,7 +241,9 @@ RSpec.describe "Component dir path namespaces" do
               config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
 
               config.component_dirs.add "lib" do |dir|
-                dir.namespaces = ["admin", nil, "test"]
+                dir.namespaces.add "admin"
+                dir.namespaces.root
+                dir.namespaces.add "test"
               end
             end
           end

@@ -79,7 +79,7 @@ module Dry
           # permutations of these two values
 
           # byebug if component.key =~ /admin_component/
-          p component.key
+          # p component.key
 
           # FIXME: un-hack
           # FIXME: stop putting all those namespaces on the identifier - its gross - it should be on the component

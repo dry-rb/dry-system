@@ -13,11 +13,13 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:identifier, :path_namespace, :const_namespace, :separator)
+      include Dry::Equalizer(:identifier, :base_path, :path_namespace, :const_namespace, :separator)
 
       # @return [String] the identifier string
       # @api public
       attr_reader :identifier
+
+      attr_reader :base_path
 
       attr_reader :require_path
 
@@ -32,8 +34,9 @@ module Dry
       attr_reader :separator
 
       # @api private
-      def initialize(identifier, require_path: nil, path_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
+      def initialize(identifier, base_path:, require_path: nil, path_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
         @identifier = identifier.to_s
+        @base_path = base_path
         @require_path = require_path
         @path_namespace = path_namespace
         @const_namespace = const_namespace
@@ -81,6 +84,22 @@ module Dry
       # @return [String] the path
       # @api public
       def path
+        # FIXME: this special casing shouldn't really be necessary
+        return @require_path if @require_path
+
+        identifier_path = identifier.gsub(separator, PATH_SEPARATOR)
+
+        if base_path
+          "#{base_path}/#{identifier_path}"
+        else
+          identifier_path
+        end
+
+        # identifier.gsub(separator, PATH_SEPARATOR)
+      end
+
+      def old_path
+        # FIXME: this special casing shouldn't really be necessary
         return @require_path if @require_path
 
         @path ||= identifier.gsub(separator, PATH_SEPARATOR).yield_self { |path|
@@ -125,15 +144,21 @@ module Dry
       # @see #initialize
       # @api private
       def dequalified(leading_namespaces, **options)
-        new_identifier = identifier.gsub(
-          /^#{Regexp.escape(leading_namespaces)}#{Regexp.escape(separator)}/,
-          EMPTY_STRING
-        )
+        begin
+          new_identifier = identifier.gsub(
+            /^#{Regexp.escape(leading_namespaces)}#{Regexp.escape(separator)}/,
+            EMPTY_STRING
+          )
+        rescue => e
+          byebug
+          raise e
+        end
 
         return self if new_identifier == identifier
 
         self.class.new(
           new_identifier,
+          base_path: base_path,
           path_namespace: path_namespace,
           const_namespace: const_namespace,
           separator: separator,

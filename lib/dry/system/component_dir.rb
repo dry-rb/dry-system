@@ -54,15 +54,19 @@ module Dry
 
         ## Maybe correct? (but also hugely inefficient):
 
+        # p namespaces.to_a
+
         ns_sort_map = namespaces.to_a.map.with_index { |namespace, i|
           [
             # FIXME: should just use namespace.path?
-            namespace.identifier_namespace&.gsub(".", "/"), # FIXME make right
+            # namespace.identifier_namespace&.gsub(".", "/"), # FIXME make right
+            namespace.path,
             i,
           ]
         }.to_h
 
-        p ns_sort_map
+        # puts "\n\nns_sort_map"
+        # p ns_sort_map
 
         Dir["#{full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
           # ns_sort_map
@@ -85,7 +89,7 @@ module Dry
             sort = ns_sort_map.fetch(nil, 999_999) # This was originally 0... But I think putting it at the end is actually the correct behaviour
           end
 
-          puts "#{file_path}: #{sort}"
+          # puts "#{file_path}: #{sort}"
           sort
         }.tap do |ff|
           # byebug
@@ -104,14 +108,27 @@ module Dry
       #
       # @api private
       def component_for_identifier(identifier)
+        p identifier
+        p namespaces.each.to_a
+
         namespaces.each do |namespace|
+          p namespace
           identifier = Identifier.new(
             identifier,
-            path_namespace: namespace.identifier_namespace,
+            base_path: namespace.path,
+            # path_namespace: namespace.identifier_namespace,
+            path_namespace: namespace.identifier_namespace, # WIP?????
             const_namespace: namespace.const_namespace,
             separator: container.config.namespace_separator,
           )
 
+          p identifier
+
+          # p identifier.path
+          # p find_component_file(identifier.path)
+          # byebug
+
+          # if (file_path = new_find_component_file(namespace.path, identifier.path))
           if (file_path = find_component_file(identifier.path))
             return build_component(identifier, file_path)
           end
@@ -136,7 +153,8 @@ module Dry
       #
       # @api private
       def component_for_path(path)
-        p path
+        # puts
+        # p path
 
         separator = container.config.namespace_separator
 
@@ -144,12 +162,6 @@ module Dry
           .sub(RB_EXT, EMPTY_STRING)
           .scan(WORD_REGEX)
           .join(separator)
-
-        # byebug if key == "component"
-
-        # What I actually want to do is create a matcher proc for each namespace, with the
-        # matcher for the `nil` namespace (if provided) being the _absence_ of the other
-        # namespaces
 
         ns_matchers = namespaces.to_a.map { |namespace|
           matcher =
@@ -163,30 +175,35 @@ module Dry
 
           [matcher, namespace]
         }.to_h
-        # TODO: maybe add a nil one on the end if there isn't one already?
-
-        # byebug if path =~ /admin_component/
 
         ns_matchers.each do |matcher, namespace|
+          # p namespace
+
           if matcher.(key)
-            puts "matched ns: #{namespace.inspect}"
-            puts
+            # puts "matched ns: #{namespace.inspect}"
+            # puts
 
             identifier = Identifier.new(
               key,
+              base_path: namespace.path,
               separator: separator,
               path_namespace: namespace.identifier_namespace,
               const_namespace: namespace.const_namespace,
             )
 
             # byebug if path =~ /[^_]component/
+            # p path
+            # byebug if path =~ %r{/component.rb}
 
-            # FIXME: Ugh, shouldn't be needed
+            # FIXME: This whole thing should not be needed
             if namespace.root?
               return build_component(identifier, path)
             else
-              identifier = identifier.dequalified(namespace.identifier_namespace, require_path: "#{key.gsub('.', '/')}") # Ugh
-              # byebug if path =~ /admin_component/
+              identifier = identifier.dequalified(
+                namespace.path.gsub("/", "."), # FIXME: do I need this gsub? How do I get the separator here?
+                require_path: "#{key.gsub('.', '/')}"
+              )
+
               return build_component(identifier, path)
             end
           end
@@ -284,6 +301,11 @@ module Dry
 
       def find_component_file(component_path)
         component_file = full_path.join("#{component_path}#{RB_EXT}")
+        component_file if component_file.exist?
+      end
+
+      def new_find_component_file(sub_path, component_path)
+        component_file = full_path.join(*sub_path, "#{component_path}#{RB_EXT}")
         component_file if component_file.exist?
       end
 

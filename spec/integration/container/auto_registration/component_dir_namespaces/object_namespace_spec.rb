@@ -12,7 +12,7 @@ RSpec.describe "Component dir object namespace" do
             config.component_dirs.add "lib" do |dir|
               # no path namespace (i.e. a "flattened" folder structure), but an object namespace of "Test"
               # dir.namespaces = [[nil, "test"]]
-              dir.namespaces.add const: "test"
+              dir.namespaces.root const: "test"
 
               # dir.namespaces.add sub_dir, identifier: nil, const: nil
 
@@ -63,7 +63,7 @@ RSpec.describe "Component dir object namespace" do
             config.component_dirs.add "lib" do |dir|
               # no path namespace (i.e. a "flattened" folder structure), but an object namespace of "Test"
               # dir.namespaces = [[nil, "test"]]
-              dir.namespaces.add const: "test"
+              dir.namespaces.root const: "test"
 
               dir.loader = Dry::System::Loader::Autoloading
             end

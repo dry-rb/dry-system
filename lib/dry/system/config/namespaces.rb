@@ -22,7 +22,7 @@ module Dry
           @namespaces = source.namespaces.dup
         end
 
-        def add(path = Namespace::ROOT_PATH, identifier: nil, const: nil) # TODO
+        def add(path, identifier: nil, const: identifier)
           # TODO: would there be any reason to add _multiple_ namespace configurations on
           # path? I think not, but it would be good to validate this
           raise "TODO: create a namespace already added error", path if namespaces.key?(path)
@@ -32,6 +32,10 @@ module Dry
             identifier_namespace: identifier,
             const_namespace: const,
           )
+        end
+
+        def root(identifier: nil, const: identifier)
+          add(Namespace::ROOT_PATH, identifier: identifier, const: const)
         end
 
         # TODO: document why we set up a default root ns
