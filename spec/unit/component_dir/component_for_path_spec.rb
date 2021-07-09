@@ -10,7 +10,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
   let(:component_dir) {
     Dry::System::ComponentDir.new(
       config: Dry::System::Config::ComponentDir.new(component_dir_path) { |config|
-        config.namespaces = namespaces
+        config.namespaces.add "namespace"
         component_dir_options.each do |key, val|
           config.send :"#{key}=", val
         end
@@ -19,7 +19,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     )
   }
   let(:component_dir_path) { "component_dir_1" }
-  let(:namespaces) { ["namespace"] }
+  # let(:namespaces) { ["namespace"] }
   let(:component_dir_options) { {} }
   let(:container) {
     container_root = root
@@ -51,7 +51,8 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     end
 
     it "has the component dir's namespace" do
-      expect(component.identifier.path_namespace).to eq "namespace"
+      # FIXME: not sure if I really want base_path for this
+      expect(component.identifier.base_path).to eq "namespace"
     end
 
     context "options given as component dir config" do

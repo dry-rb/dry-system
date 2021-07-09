@@ -114,8 +114,9 @@ module Dry
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
           dirs[path] = ComponentDir.new(path).tap do |dir|
-            apply_defaults_to_dir(dir)
+            # TODO: I switched this order... does it feel OK?
             yield dir if block_given?
+            apply_defaults_to_dir(dir)
           end
         end
 
@@ -151,7 +152,7 @@ module Dry
         def apply_defaults_to_dir(dir)
           dir.config.values.each do |key, _value|
             if configured?(key) && !dir.configured?(key)
-              dir.public_send(:"#{key}=", public_send(key))
+              dir.public_send(:"#{key}=", public_send(key).dup)
             end
           end
         end
@@ -161,10 +162,13 @@ module Dry
         #
         # This is used to determine which settings should be applied to added component
         # dirs as additional defaults.
-        #
-        # @api private
         def configured?(key)
-          config._settings[key].input_defined?
+          # UGH
+          if key == :namespaces
+            !config.namespaces.empty?
+          else
+            config._settings[key].input_defined?
+          end
         end
 
         def method_missing(name, *args, &block)

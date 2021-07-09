@@ -38,6 +38,10 @@ module Dry
           add(Namespace::ROOT_PATH, identifier: identifier, const: const)
         end
 
+        def empty?
+          namespaces.empty?
+        end
+
         # TODO: document why we set up a default root ns
         def to_a
           namespaces.values.tap do |arr|

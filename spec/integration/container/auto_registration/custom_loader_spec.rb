@@ -12,7 +12,7 @@ RSpec.describe "Auto-registration / Custom loader" do
         config.root = SPEC_ROOT.join("fixtures").realpath
 
         config.component_dirs.add "components" do |dir|
-          dir.namespaces = ["test"]
+          dir.namespaces.add "test"
           dir.loader = Test::IdentifierLoader
         end
       end

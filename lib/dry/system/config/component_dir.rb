@@ -186,14 +186,19 @@ module Dry
         #
         # @api private
         def configured?(key)
-          config._settings[key].input_defined?
+          # UGH
+          if key == :namespaces
+            !config.namespaces.empty?
+          else
+            config._settings[key].input_defined?
+          end
         end
 
         private
 
         def method_missing(name, *args, &block)
           # TODO: handle this nicer
-          return super if name == :namespaces=
+          # return super if name == :namespaces=
 
           if config.respond_to?(name)
             config.public_send(name, *args, &block)
