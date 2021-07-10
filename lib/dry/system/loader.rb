@@ -17,7 +17,7 @@ module Dry
     #   class MyApp < Dry::System::Container
     #     configure do |config|
     #       # ...
-    #       config.loader MyLoader
+    #       config.component_dirs.loader = MyLoader
     #     end
     #   end
     #
