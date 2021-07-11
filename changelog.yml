@@ -1,4 +1,8 @@
 ---
+- version: 0.19.1
+  date: 2021-07-11
+  fixed:
+  - "Check for registered components (@timriley in #175)"
 - version: 0.19.0
   date: 2021-04-22
   summary:
