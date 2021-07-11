@@ -10,7 +10,17 @@
 - Update `finalize!` signature in `Container::Stubs` (@mpokrywka)
 
 
-[Compare v0.19.0...master](https://github.com/dry-rb/dry-system/compare/v0.19.0...master)
+[Compare v0.19.1...master](https://github.com/dry-rb/dry-system/compare/v0.19.1...master)
+
+## 0.19.1 2021-07-11
+
+
+### Fixed
+
+- Check for registered components (@timriley in #175)
+
+
+[Compare v0.19.0...v0.19.1](https://github.com/dry-rb/dry-system/compare/v0.19.0...v0.19.1)
 
 ## 0.19.0 2021-04-22
 
