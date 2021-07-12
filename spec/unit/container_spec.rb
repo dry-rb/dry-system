@@ -223,4 +223,24 @@ RSpec.describe Dry::System::Container do
       expect(container.registered?("test.dep")).to be(true)
     end
   end
+
+  describe ".configure" do
+    it "raises an exception if the config is set manually" do
+      expect{
+        class Test::Container < Dry::System::Container
+          config.root = SPEC_ROOT.join("fixtures/test").realpath
+        end
+      }.to raise_error("Config can't be accessed directly. Please use the #configure method")
+    end
+
+    it 'works if the config is set using the configure method' do
+      expect{
+        class Test::Container < Dry::System::Container
+          configure do |config|
+            config.root = SPEC_ROOT.join("fixtures/test").realpath
+          end
+        end
+      }.not_to raise_error("Config can't be accessed directly. Please use the #configure method")
+    end
+  end
 end

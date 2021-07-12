@@ -105,7 +105,9 @@ module Dry
         def setting(name, default = Dry::Core::Constants::Undefined, **options, &block)
           super(name, default, **options, &block)
           # TODO: dry-configurable needs a public API for this
+          @configure_self = true
           config._settings << _settings[name]
+          @configure_self = false
           self
         end
 
@@ -124,10 +126,29 @@ module Dry
         #
         # @api public
         def configure(&block)
+          @hooks_initialized ||= true
           hooks[:before_configure].each { |hook| instance_eval(&hook) }
           super(&block)
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
           self
+        end
+
+        def config
+          if @hooks_initialized != true && finalized? != true && @configure_self != true
+            klass = super
+            super.instance_eval do
+              def method_missing(meth, *args)
+                setting = _settings[resolve(meth)]
+                super unless setting
+                if setting.writer?(meth)
+                  raise "Config can't be accessed directly. Please use the #configure method"
+                else
+                  super
+                end
+              end #unless super.respond_to?(:method_missing)
+            end
+          end
+          super
         end
 
         # Registers another container for import
