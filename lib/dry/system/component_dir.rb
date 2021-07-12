@@ -158,7 +158,9 @@ module Dry
 
         separator = container.config.namespace_separator
 
-        key = Pathname(path).relative_path_from(full_path).to_s
+        relative_path = Pathname(path).relative_path_from(full_path).to_s
+
+        key = relative_path
           .sub(RB_EXT, EMPTY_STRING)
           .scan(WORD_REGEX)
           .join(separator)
@@ -179,7 +181,7 @@ module Dry
         ns_matchers.each do |matcher, namespace|
           # p namespace
 
-          if matcher.(key)
+          if matcher.(relative_path)
             # puts "matched ns: #{namespace.inspect}"
             # puts
 
