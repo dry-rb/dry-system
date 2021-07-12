@@ -135,7 +135,6 @@ module Dry
 
         def config
           if @hooks_initialized != true && finalized? != true && @configure_self != true
-            klass = super
             super.instance_eval do
               def method_missing(meth, *args)
                 setting = _settings[resolve(meth)]
@@ -145,8 +144,9 @@ module Dry
                 else
                   super
                 end
-              end #unless super.respond_to?(:method_missing)
-            end
+              end
+            end if !@method_patched
+            @method_patched = true
           end
           super
         end

@@ -240,7 +240,7 @@ RSpec.describe Dry::System::Container do
             config.root = SPEC_ROOT.join("fixtures/test").realpath
           end
         end
-      }.not_to raise_error("Config can't be accessed directly. Please use the #configure method")
+      }.not_to raise_error
     end
   end
 end
