@@ -151,14 +151,8 @@ module Dry
           end
         end
 
-        # TODO: is this needed?
-
-        identifier = Identifier.new(
-          key,
-          separator: separator,
-        )
-
-        build_component(identifier, path)
+        # FIXME: replace with real exception
+        raise "Unreachable"
       end
 
       # Returns the full path of the component directory
