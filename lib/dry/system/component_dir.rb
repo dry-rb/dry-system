@@ -34,28 +34,6 @@ module Dry
 
         raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
 
-        # FIXME: this is broken - we actually want to get all the files first, then sort
-        # by namespaces, which would allow the `nil` namespace to go first, if provided
-        # that way
-
-        # Old way (not right):
-        # (namespaces.map { |(path_namespace, _)|
-        #   if path_namespace.nil?
-        #     []
-        #   else
-        #     Dir["#{dir_path}/#{path_namespace}/**/#{RB_GLOB}"]
-        #   end
-        # }.flatten + Dir["#{dir_path}/**/#{RB_GLOB}"]).uniq.tap do |ff|
-        #   # byebug
-        # end
-
-        # Original way (won't work anymore):
-        # Dir["#{full_path}/**/#{RB_GLOB}"].sort
-
-        ## Maybe correct? (but also hugely inefficient):
-
-        # p namespaces.to_a
-
         ns_sort_map = namespaces.to_a.map.with_index { |namespace, i|
           [
             # FIXME: should just use namespace.path?
@@ -65,18 +43,12 @@ module Dry
           ]
         }.to_h
 
-        # puts "\n\nns_sort_map"
-        # p ns_sort_map
-
         Dir["#{full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
-          # ns_sort_map
-
           sort = nil
 
           relative_file_path = Pathname(file_path).relative_path_from(full_path).to_s
 
           ns_sort_map.each do |prefix, sort_i|
-            # byebug unless prefix.nil?
             next if prefix.nil?
 
             if relative_file_path.start_with?(prefix)
@@ -89,11 +61,8 @@ module Dry
             sort = ns_sort_map.fetch(nil, 999_999) # This was originally 0... But I think putting it at the end is actually the correct behaviour
           end
 
-          # puts "#{file_path}: #{sort}"
           sort
-        }.tap do |ff|
-          # byebug
-        end
+        }
       end
 
       # Returns a component for a given identifier if a matching component file could be
@@ -108,11 +77,7 @@ module Dry
       #
       # @api private
       def component_for_identifier(identifier)
-        p identifier
-        p namespaces.each.to_a
-
         namespaces.each do |namespace|
-          p namespace
           identifier = Identifier.new(
             identifier,
             base_path: namespace.path,
@@ -122,13 +87,6 @@ module Dry
             separator: container.config.namespace_separator,
           )
 
-          p identifier
-
-          # p identifier.path
-          # p find_component_file(identifier.path)
-          # byebug
-
-          # if (file_path = new_find_component_file(namespace.path, identifier.path))
           if (file_path = find_component_file(identifier.path))
             return build_component(identifier, file_path)
           end
@@ -153,9 +111,6 @@ module Dry
       #
       # @api private
       def component_for_path(path)
-        # puts
-        # p path
-
         separator = container.config.namespace_separator
 
         relative_path = Pathname(path).relative_path_from(full_path).to_s
@@ -179,12 +134,7 @@ module Dry
         }.to_h
 
         ns_matchers.each do |matcher, namespace|
-          # p namespace
-
           if matcher.(relative_path)
-            # puts "matched ns: #{namespace.inspect}"
-            # puts
-
             identifier = Identifier.new(
               key,
               base_path: namespace.path,
@@ -192,10 +142,6 @@ module Dry
               path_namespace: namespace.identifier_namespace,
               const_namespace: namespace.const_namespace,
             )
-
-            # byebug if path =~ /[^_]component/
-            # p path
-            # byebug if path =~ %r{/component.rb}
 
             # FIXME: This whole thing should not be needed
             if namespace.root?
@@ -211,63 +157,12 @@ module Dry
           end
         end
 
-        # nss.each do |(path_namespace, const_namespace)|
-        #   # FIXME: move the namespace assignment into building the component
-        #   identifier = Identifier.new(
-        #     key,
-        #     separator: separator,
-        #     path_namespace: path_namespace,
-        #     const_namespace: const_namespace,
-        #   )
-
-        #   # byebug
-        #   # byebug if key == "component"
-
-        #   return build_component(identifier, path) if path_namespace.nil?
-
-        #   if identifier.start_with?(path_namespace)
-        #     identifier = identifier.dequalified(path_namespace, require_path: "#{key.gsub('.', '/')}")
-
-        #     return build_component(identifier, path)
-        #   end
-        # end
-
         # TODO: is this needed?
 
         identifier = Identifier.new(
           key,
           separator: separator,
         )
-
-        build_component(identifier, path)
-
-        # namespaces.each do |(path_namespace, const_namespace)|
-        #   identifier = Identifier.new(
-        #     key,
-        #     separator: separator,
-        #     path_namespace: path_namespace,
-        #     const_namespace: const_namespace,
-        #   )
-
-        #   if identifier.start_with?(path_namespace) # WIP
-        #     identifier = identifier.dequalified(path_namespace) # WIP
-        #   end
-        # end
-      end
-
-      def old_component_for_path(path)
-        separator = container.config.namespace_separator
-
-        key = Pathname(path).relative_path_from(full_path).to_s
-          .sub(RB_EXT, EMPTY_STRING)
-          .scan(WORD_REGEX)
-          .join(separator)
-
-        identifier = Identifier.new(key, separator: separator)
-
-        if identifier.start_with?(namespaces) # WIP
-          identifier = identifier.dequalified(namespaces, namespace: namespaces) # WIP
-        end
 
         build_component(identifier, path)
       end

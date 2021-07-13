@@ -42,7 +42,6 @@ module Dry
         #
         # @api public
         def call(component, *args)
-          # byebug if component.key == "component"
           require!(component)
 
           constant = self.constant(component)
@@ -63,9 +62,6 @@ module Dry
         def constant(component)
           inflector = component.inflector
 
-          # puts "constantizing component #{component.path}"
-          # byebug
-
           const_path = component.path
 
           # TODO: put this into component itself?
@@ -78,9 +74,6 @@ module Dry
           # const_namespace... we probably want more tests to account for the various
           # permutations of these two values
 
-          # byebug if component.key =~ /admin_component/
-          # p component.key
-
           # FIXME: un-hack
           # FIXME: stop putting all those namespaces on the identifier - its gross - it should be on the component
           leading_const_namespace = component.identifier.const_namespace.gsub(".", "/") if component.identifier.const_namespace
@@ -88,13 +81,6 @@ module Dry
           if leading_const_namespace && !const_path.start_with?(leading_const_namespace)
             const_path = "#{component.identifier.const_namespace}/#{const_path}"
           end
-
-          # if component.identifier.const_namespace && component.identifier.const_namespace != component.identifier.path_namespace
-          #   const_path = "#{component.identifier.const_namespace}/#{const_path}"
-          # end
-
-          # byebug if component.key == "component"
-          # byebug
 
           inflector.constantize(inflector.camelize(const_path))
         end
