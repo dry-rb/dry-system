@@ -41,16 +41,17 @@ module Dry
       def self.new(identifier, options = EMPTY_HASH)
         options = DEFAULT_OPTIONS.merge(options)
 
-        base_path = options.delete(:base_path)
-        identifier_namespace = options.delete(:identifier_namespace)
-        const_namespace = options.delete(:const_namespace)
-        separator = options.delete(:separator)
-
         identifier =
           if identifier.is_a?(Identifier)
             identifier
           else
-            # FIXME: is this branch _really_ necessary?
+            # TODO: remove the need for this branch
+
+            base_path = options.delete(:base_path)
+            identifier_namespace = options.delete(:identifier_namespace)
+            const_namespace = options.delete(:const_namespace)
+            separator = options.delete(:separator)
+
             Identifier.new(
               identifier,
               base_path: base_path,
