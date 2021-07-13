@@ -29,42 +29,6 @@ module Dry
         @container = container
       end
 
-      def files
-        dir_path = full_path
-
-        raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
-
-        ns_sort_map = namespaces.to_a.map.with_index { |namespace, i|
-          [
-            # FIXME: should just use namespace.path?
-            # namespace.identifier_namespace&.gsub(".", "/"), # FIXME make right
-            namespace.path,
-            i,
-          ]
-        }.to_h
-
-        Dir["#{full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
-          sort = nil
-
-          relative_file_path = Pathname(file_path).relative_path_from(full_path).to_s
-
-          ns_sort_map.each do |prefix, sort_i|
-            next if prefix.nil?
-
-            if relative_file_path.start_with?(prefix)
-              sort = sort_i
-              break
-            end
-          end
-
-          if sort.nil?
-            sort = ns_sort_map.fetch(nil, 999_999) # This was originally 0... But I think putting it at the end is actually the correct behaviour
-          end
-
-          sort
-        }
-      end
-
       # Returns a component for a given identifier if a matching component file could be
       # found within the component dir
       # # WIP
@@ -101,6 +65,61 @@ module Dry
         files.each do |file_path|
           yield component_for_path(file_path)
         end
+      end
+
+      # Returns the full path of the component directory
+      #
+      # @return [Pathname]
+      # @api private
+      def full_path
+        container.root.join(path)
+      end
+
+      # @api private
+      def component_options
+        {
+          auto_register: auto_register,
+          loader: loader,
+          memoize: memoize
+        }
+      end
+
+      private
+
+      def files
+        dir_path = full_path
+
+        raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
+
+        ns_sort_map = namespaces.to_a.map.with_index { |namespace, i|
+          [
+            # FIXME: should just use namespace.path?
+            # namespace.identifier_namespace&.gsub(".", "/"), # FIXME make right
+            namespace.path,
+            i,
+          ]
+        }.to_h
+
+        Dir["#{full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
+          sort = nil
+
+          relative_file_path = Pathname(file_path).relative_path_from(full_path).to_s
+
+          ns_sort_map.each do |prefix, sort_i|
+            next if prefix.nil?
+
+            if relative_file_path.start_with?(prefix)
+              sort = sort_i
+              break
+            end
+          end
+
+          if sort.nil?
+            sort = ns_sort_map.fetch(nil, 999_999) # This was originally 0... But I think putting it at the end is actually the correct behaviour
+          end
+
+          sort
+        }
       end
 
       # Returns a component for a full path to a Ruby source file within the component dir
@@ -154,25 +173,6 @@ module Dry
         # FIXME: replace with real exception
         raise "Unreachable"
       end
-
-      # Returns the full path of the component directory
-      #
-      # @return [Pathname]
-      # @api private
-      def full_path
-        container.root.join(path)
-      end
-
-      # @api private
-      def component_options
-        {
-          auto_register: auto_register,
-          loader: loader,
-          memoize: memoize
-        }
-      end
-
-      private
 
       def build_component(identifier, file_path)
         options = {
