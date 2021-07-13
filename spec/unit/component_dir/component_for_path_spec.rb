@@ -101,7 +101,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_path" do
     end
 
     it "does not have the component dir's namespace" do
-      expect(component.identifier.path_namespace).to be_nil
+      expect(component.identifier.identifier_namespace).to be_nil
     end
   end
 

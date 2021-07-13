@@ -81,8 +81,7 @@ module Dry
           identifier = Identifier.new(
             identifier,
             base_path: namespace.path,
-            # path_namespace: namespace.identifier_namespace,
-            path_namespace: namespace.identifier_namespace, # WIP?????
+            identifier_namespace: namespace.identifier_namespace,
             const_namespace: namespace.const_namespace,
             separator: container.config.namespace_separator,
           )
@@ -139,7 +138,7 @@ module Dry
               key,
               base_path: namespace.path,
               separator: separator,
-              path_namespace: namespace.identifier_namespace,
+              identifier_namespace: namespace.identifier_namespace,
               const_namespace: namespace.const_namespace,
             )
 

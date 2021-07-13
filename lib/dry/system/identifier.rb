@@ -13,7 +13,7 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:identifier, :base_path, :path_namespace, :const_namespace, :separator)
+      include Dry::Equalizer(:identifier, :base_path, :identifier_namespace, :const_namespace, :separator)
 
       # @return [String] the identifier string
       # @api public
@@ -25,7 +25,7 @@ module Dry
 
       # @return [String, nil] the namespace for the component
       # @api public
-      attr_reader :path_namespace
+      attr_reader :identifier_namespace
 
       attr_reader :const_namespace
 
@@ -34,11 +34,11 @@ module Dry
       attr_reader :separator
 
       # @api private
-      def initialize(identifier, base_path:, require_path: nil, path_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
+      def initialize(identifier, base_path:, require_path: nil, identifier_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
         @identifier = identifier.to_s
         @base_path = base_path
         @require_path = require_path
-        @path_namespace = path_namespace
+        @identifier_namespace = identifier_namespace
         @const_namespace = const_namespace
         @separator = separator
       end
@@ -103,8 +103,8 @@ module Dry
         return @require_path if @require_path
 
         @path ||= identifier.gsub(separator, PATH_SEPARATOR).yield_self { |path|
-          if path_namespace
-            path_prefix = path_namespace.to_s.gsub(separator, PATH_SEPARATOR)
+          if identifier_namespace
+            path_prefix = identifier_namespace.to_s.gsub(separator, PATH_SEPARATOR)
             "#{path_prefix}#{PATH_SEPARATOR}#{path}"
           else
             path
@@ -159,7 +159,7 @@ module Dry
         self.class.new(
           new_identifier,
           base_path: base_path,
-          path_namespace: path_namespace,
+          identifier_namespace: identifier_namespace,
           const_namespace: const_namespace,
           separator: separator,
           **options
@@ -177,7 +177,7 @@ module Dry
       def with(namespace:)
         self.class.new(
           identifier,
-          path_namespace: path_namespace,
+          identifier_namespace: identifier_namespace,
           const_namespace: const_namespace,
           separator: separator
         )

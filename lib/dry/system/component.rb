@@ -42,7 +42,7 @@ module Dry
         options = DEFAULT_OPTIONS.merge(options)
 
         base_path = options.delete(:base_path)
-        path_namespace = options.delete(:path_namespace)
+        identifier_namespace = options.delete(:identifier_namespace)
         const_namespace = options.delete(:const_namespace)
         separator = options.delete(:separator)
 
@@ -54,7 +54,7 @@ module Dry
             Identifier.new(
               identifier,
               base_path: base_path,
-              path_namespace: path_namespace,
+              identifier_namespace: identifier_namespace,
               const_namespace: const_namespace,
               separator: separator
             )
