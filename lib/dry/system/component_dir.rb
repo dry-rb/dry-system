@@ -58,12 +58,10 @@ module Dry
         nil
       end
 
-      # WIP
-      # Along with this, I think I might want to
+      # TODO: support calling without block, returning enum
       def each_component(&block)
-        # TODO: support calling without block, returning enum
-        files.each do |file_path|
-          yield component_for_path(file_path)
+        each_file do |file_path, namespace|
+          yield component_for_path(file_path, namespace)
         end
       end
 
@@ -86,40 +84,25 @@ module Dry
 
       private
 
-      def files
-        dir_path = full_path
+      def each_file
+        raise ComponentDirNotFoundError, full_path unless Dir.exist?(full_path)
 
-        raise ComponentDirNotFoundError, dir_path unless Dir.exist?(dir_path)
+        namespaces.each do |namespace|
+          files =
+            if !namespace.root?
+              Dir["#{full_path}/#{namespace.path}/**/#{RB_GLOB}"].sort
+            else
+              non_root_paths = namespaces.to_a.reject(&:root?).map(&:path)
 
-        ns_sort_map = namespaces.to_a.map.with_index { |namespace, i|
-          [
-            # FIXME: should just use namespace.path?
-            # namespace.identifier_namespace&.gsub(".", "/"), # FIXME make right
-            namespace.path,
-            i,
-          ]
-        }.to_h
-
-        Dir["#{full_path}/**/#{RB_GLOB}"].sort_by { |file_path|
-          sort = nil
-
-          relative_file_path = Pathname(file_path).relative_path_from(full_path).to_s
-
-          ns_sort_map.each do |prefix, sort_i|
-            next if prefix.nil?
-
-            if relative_file_path.start_with?(prefix)
-              sort = sort_i
-              break
+              Dir["#{full_path}/**/#{RB_GLOB}"].reject { |file_path|
+                Pathname(file_path).relative_path_from(full_path).to_s.start_with?(*non_root_paths)
+              }
             end
-          end
 
-          if sort.nil?
-            sort = ns_sort_map.fetch(nil, 999_999) # This was originally 0... But I think putting it at the end is actually the correct behaviour
+          files.each do |file|
+            yield file, namespace
           end
-
-          sort
-        }
+        end
       end
 
       # Returns a component for a full path to a Ruby source file within the component dir
@@ -128,7 +111,7 @@ module Dry
       # @return [Dry::System::Component] the component
       #
       # @api private
-      def component_for_path(path)
+      def component_for_path(path, namespace)
         separator = container.config.namespace_separator
 
         relative_path = Pathname(path).relative_path_from(full_path).to_s
@@ -138,40 +121,20 @@ module Dry
           .scan(WORD_REGEX)
           .join(separator)
 
-        ns_matchers = namespaces.to_a.map { |namespace|
-          matcher =
-            if namespace.root?
-              # TODO: compile this into regexp so it's faster??
-              non_nil_key_ns = namespaces.to_a.reject(&:root?).map(&:path)
-              -> path { non_nil_key_ns.none? { |ns| path.start_with?(ns) } }
-            else
-              -> path { path.start_with?(namespace.path) }
-            end
+        identifier = Identifier.new(
+          key,
+          base_path: namespace.path,
+          separator: separator,
+          identifier_namespace: namespace.identifier_namespace,
+          const_namespace: namespace.const_namespace,
+        )
+          .namespaced(
+            from: namespace.path&.gsub(PATH_SEPARATOR, separator),
+            to: namespace.identifier_namespace,
+            require_path: "#{key.gsub('.', '/')}" # TODO: move to component
+          )
 
-          [matcher, namespace]
-        }.to_h
-
-        ns_matchers.each do |matcher, namespace|
-          if matcher.(relative_path)
-            identifier = Identifier.new(
-              key,
-              base_path: namespace.path,
-              separator: separator,
-              identifier_namespace: namespace.identifier_namespace,
-              const_namespace: namespace.const_namespace,
-            )
-              .namespaced(
-                from: namespace.path&.gsub(PATH_SEPARATOR, separator),
-                to: namespace.identifier_namespace,
-                require_path: "#{key.gsub('.', '/')}" # TODO: move to component
-              )
-
-            return build_component(identifier, path)
-          end
-        end
-
-        # FIXME: replace with real exception
-        raise "Unreachable"
+        build_component(identifier, path)
       end
 
       def build_component(identifier, file_path)
