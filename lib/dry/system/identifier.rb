@@ -146,10 +146,19 @@ module Dry
       # @see #initialize
       # @api private
       def namespaced(from:, to:, **options)
-        new_key = key.sub(
-          /^#{Regexp.escape(from)}#{Regexp.escape(separator)}/,
-          to || EMPTY_STRING
-        )
+        # TODO: need tests for this case
+        return self if from == to
+
+        # TODO: need tests for the `from.nil?` case
+        new_key =
+          if from.nil?
+            "#{to}#{separator}#{key}"
+          else
+            key.sub(
+              /^#{Regexp.escape(from.to_s)}#{Regexp.escape(separator)}/,
+              to || EMPTY_STRING
+            )
+          end
 
         return self if new_key == key
 

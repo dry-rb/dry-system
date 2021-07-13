@@ -141,19 +141,13 @@ module Dry
               identifier_namespace: namespace.identifier_namespace,
               const_namespace: namespace.const_namespace,
             )
-
-            # FIXME: This whole thing should not be needed
-            if namespace.root?
-              return build_component(identifier, path)
-            else
-              identifier = identifier.namespaced(
-                from: namespace.path.gsub(PATH_SEPARATOR, separator),
+              .namespaced(
+                from: namespace.path&.gsub(PATH_SEPARATOR, separator),
                 to: namespace.identifier_namespace,
                 require_path: "#{key.gsub('.', '/')}" # TODO: move to component
               )
 
-              return build_component(identifier, path)
-            end
+            return build_component(identifier, path)
           end
         end
 
