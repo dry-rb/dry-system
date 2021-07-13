@@ -615,7 +615,7 @@ module Dry
 
           container = importer[import_namespace]
 
-          container.load_component(identifier.dequalified(import_namespace).key)
+          container.load_component(identifier.namespaced(from: import_namespace, to: nil).key)
 
           importer.(import_namespace, container)
         end

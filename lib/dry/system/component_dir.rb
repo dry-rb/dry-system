@@ -146,9 +146,10 @@ module Dry
             if namespace.root?
               return build_component(identifier, path)
             else
-              identifier = identifier.dequalified(
-                namespace.path.gsub("/", "."), # FIXME: do I need this gsub? How do I get the separator here?
-                require_path: "#{key.gsub('.', '/')}"
+              identifier = identifier.namespaced(
+                from: namespace.path.gsub(PATH_SEPARATOR, separator),
+                to: namespace.identifier_namespace,
+                require_path: "#{key.gsub('.', '/')}" # TODO: move to component
               )
 
               return build_component(identifier, path)

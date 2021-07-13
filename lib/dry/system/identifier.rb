@@ -130,6 +130,8 @@ module Dry
           identifier.eql?(leading_namespaces)
       end
 
+      # FIXME: update docs below for change from dequalified -> namespaced
+      #
       # Returns a copy of the identifier with the given leading namespaces removed from
       # the identifier string.
       #
@@ -143,21 +145,16 @@ module Dry
       #
       # @see #initialize
       # @api private
-      def dequalified(leading_namespaces, **options)
-        begin
-          new_identifier = identifier.gsub(
-            /^#{Regexp.escape(leading_namespaces)}#{Regexp.escape(separator)}/,
-            EMPTY_STRING
-          )
-        rescue => e
-          byebug
-          raise e
-        end
+      def namespaced(from:, to:, **options)
+        new_key = key.sub(
+          /^#{Regexp.escape(from)}#{Regexp.escape(separator)}/,
+          to || EMPTY_STRING
+        )
 
-        return self if new_identifier == identifier
+        return self if new_key == key
 
         self.class.new(
-          new_identifier,
+          new_key,
           base_path: base_path,
           identifier_namespace: identifier_namespace,
           const_namespace: const_namespace,
