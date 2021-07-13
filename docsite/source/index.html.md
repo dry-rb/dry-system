@@ -41,7 +41,7 @@ You can use dry-system in a new application or add it to an existing application
 
 ### Example
 
-This library is the backbone of [dry-web](https://github.com/dry-rb/dry-web), if you'd like to see a full-blown application example check out [Berg](https://github.com/icelab/berg). Please notice that dry-system is framework agnostic, in fact, it could be treated as a toolkit for building frameworks, as it provides facilities that are typically needed by frameworks.
+This library is the backbone of [dry-web](https://github.com/dry-rb/dry-web), if you'd like to see a full-blown application example check out [Berg](https://github.com/bemurphy/berg). Please notice that dry-system is framework agnostic, in fact, it could be treated as a toolkit for building frameworks, as it provides facilities that are typically needed by frameworks.
 
 ### Rails support
 
