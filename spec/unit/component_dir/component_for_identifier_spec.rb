@@ -49,8 +49,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
     end
 
     it "has the component dir's namespace" do
-      # FIXME: I'm not sure if "base_path" is really what I want to be calling this
-      expect(component.identifier.base_path).to eq "namespace"
+      expect(component.namespace.path).to eq "namespace"
     end
 
     context "options given as component dir config" do

@@ -13,15 +13,11 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:identifier, :base_path, :identifier_namespace, :const_namespace, :separator)
+      include Dry::Equalizer(:identifier, :identifier_namespace, :const_namespace, :separator)
 
       # @return [String] the identifier string
       # @api public
       attr_reader :identifier
-
-      attr_reader :base_path
-
-      attr_reader :require_path
 
       # @return [String, nil] the namespace for the component
       # @api public
@@ -34,10 +30,8 @@ module Dry
       attr_reader :separator
 
       # @api private
-      def initialize(identifier, base_path:, require_path: nil, identifier_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
+      def initialize(identifier, identifier_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
         @identifier = identifier.to_s
-        @base_path = base_path
-        @require_path = require_path
         @identifier_namespace = identifier_namespace
         @const_namespace = const_namespace
         @separator = separator
@@ -71,47 +65,6 @@ module Dry
         segments.first.to_sym
       end
 
-      # Returns a path-delimited representation of the identifier, with the namespace
-      # incorporated. This path is intended for usage when requiring the component's
-      # source file.
-      #
-      # @example
-      #   identifier.key # => "articles.operations.create"
-      #   identifier.namespace # => "admin"
-      #
-      #   identifier.path # => "admin/articles/operations/create"
-      #
-      # @return [String] the path
-      # @api public
-      def path
-        # FIXME: this special casing shouldn't really be necessary
-        return @require_path if @require_path
-
-        identifier_path = identifier.gsub(separator, PATH_SEPARATOR)
-
-        if base_path
-          "#{base_path}/#{identifier_path}"
-        else
-          identifier_path
-        end
-
-        # identifier.gsub(separator, PATH_SEPARATOR)
-      end
-
-      def old_path
-        # FIXME: this special casing shouldn't really be necessary
-        return @require_path if @require_path
-
-        @path ||= identifier.gsub(separator, PATH_SEPARATOR).yield_self { |path|
-          if identifier_namespace
-            path_prefix = identifier_namespace.to_s.gsub(separator, PATH_SEPARATOR)
-            "#{path_prefix}#{PATH_SEPARATOR}#{path}"
-          else
-            path
-          end
-        }
-      end
-
       # Returns true if the given namespace prefix is part of the identifier's leading
       # namespaces
       #
@@ -128,6 +81,12 @@ module Dry
       def start_with?(leading_namespaces)
         identifier.start_with?("#{leading_namespaces}#{separator}") ||
           identifier.eql?(leading_namespaces)
+      end
+
+      # TODO: docs
+      # TODO: better name?
+      def joined(separator)
+        segments.join(separator)
       end
 
       # FIXME: update docs below for change from dequalified -> namespaced
@@ -164,7 +123,6 @@ module Dry
 
         self.class.new(
           new_key,
-          base_path: base_path,
           identifier_namespace: identifier_namespace,
           const_namespace: const_namespace,
           separator: separator,

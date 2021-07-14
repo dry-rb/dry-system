@@ -44,13 +44,12 @@ module Dry
         namespaces.each do |namespace|
           identifier = Identifier.new(
             identifier,
-            base_path: namespace.path,
             identifier_namespace: namespace.identifier_namespace,
             const_namespace: namespace.const_namespace,
             separator: container.config.namespace_separator,
           )
 
-          if (file_path = find_component_file(identifier.path))
+          if (file_path = find_component_file(identifier, namespace))
             return build_component(identifier, namespace, file_path)
           end
         end
@@ -124,7 +123,6 @@ module Dry
 
         identifier = Identifier.new(
           key,
-          base_path: namespace.path,
           separator: separator,
           identifier_namespace: namespace.identifier_namespace,
           const_namespace: namespace.const_namespace,
@@ -132,7 +130,6 @@ module Dry
           .namespaced(
             from: namespace.path&.gsub(PATH_SEPARATOR, separator),
             to: namespace.identifier_namespace,
-            require_path: "#{key.gsub('.', '/')}" # TODO: move to component
           )
 
         build_component(identifier, namespace, path)
@@ -148,13 +145,16 @@ module Dry
         Component.new(identifier, namespace: namespace, file_path: file_path, **options)
       end
 
-      def find_component_file(component_path)
-        component_file = full_path.join("#{component_path}#{RB_EXT}")
-        component_file if component_file.exist?
-      end
+      def find_component_file(identifier, namespace)
+        file_name = "#{identifier.joined(PATH_SEPARATOR)}#{RB_EXT}"
 
-      def new_find_component_file(sub_path, component_path)
-        component_file = full_path.join(*sub_path, "#{component_path}#{RB_EXT}")
+        component_file =
+          if namespace.path?
+            full_path.join(namespace.path, file_name)
+          else
+            full_path.join(file_name)
+          end
+
         component_file if component_file.exist?
       end
 

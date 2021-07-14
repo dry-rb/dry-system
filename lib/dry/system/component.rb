@@ -49,14 +49,12 @@ module Dry
           else
             # TODO: remove the need for this branch
 
-            base_path = options.delete(:base_path)
             identifier_namespace = options.delete(:identifier_namespace)
             const_namespace = options.delete(:const_namespace)
             separator = options.delete(:separator)
 
             Identifier.new(
               identifier,
-              base_path: base_path,
               identifier_namespace: identifier_namespace,
               const_namespace: const_namespace,
               separator: separator
@@ -92,8 +90,30 @@ module Dry
         identifier.to_s
       end
 
+      # TODO: update docs to reflect it's in component now
+      #
+      # Returns a path-delimited representation of the identifier, with the namespace
+      # incorporated. This path is intended for usage when requiring the component's
+      # source file.
+      #
+      # @example
+      #   identifier.key # => "articles.operations.create"
+      #   identifier.namespace # => "admin"
+      #
+      #   identifier.path # => "admin/articles/operations/create"
+      #
+      # @return [String] the path
+      # @api public
       def path
-        identifier.path
+        path = identifier.joined(PATH_SEPARATOR)
+
+        if namespace&.path
+          "#{namespace.path}/#{path}"
+        else
+          path
+        end
+
+        # identifier.gsub(separator, PATH_SEPARATOR)
       end
 
       def root_key

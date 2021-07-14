@@ -33,6 +33,10 @@ module Dry
         def root?
           path == ROOT_PATH
         end
+
+        def path?
+          !root?
+        end
       end
     end
   end

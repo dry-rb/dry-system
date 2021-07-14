@@ -22,8 +22,7 @@ RSpec.describe Dry::System::Component do
     context "component initialized with Identifier instance" do
       let(:identifier) { Dry::System::Identifier.new("test.foo", separator: ".") }
 
-      it "returns given identifier instance" do
-        pending "Need to fix this once I sort out identifier changes"
+      it "returns the given identifier instance" do
         expect(component.identifier).to be identifier
       end
     end
@@ -36,8 +35,8 @@ RSpec.describe Dry::System::Component do
   end
 
   describe "#path" do
-    it "returns the identifier's path" do
-      expect(component.path).to eql component.identifier.path
+    it "returns a path based on the identifier" do
+      expect(component.path).to eq "test/foo"
     end
   end
 
