@@ -88,20 +88,21 @@ module Dry
         raise ComponentDirNotFoundError, full_path unless Dir.exist?(full_path)
 
         namespaces.each do |namespace|
-          files =
-            if !namespace.root?
-              Dir["#{full_path}/#{namespace.path}/**/#{RB_GLOB}"].sort
-            else
-              non_root_paths = namespaces.to_a.reject(&:root?).map(&:path)
-
-              Dir["#{full_path}/**/#{RB_GLOB}"].reject { |file_path|
-                Pathname(file_path).relative_path_from(full_path).to_s.start_with?(*non_root_paths)
-              }
-            end
-
-          files.each do |file|
+          files(namespace).each do |file|
             yield file, namespace
           end
+        end
+      end
+
+      def files(namespace)
+        if !namespace.root?
+          Dir["#{full_path}/#{namespace.path}/**/#{RB_GLOB}"].sort
+        else
+          non_root_paths = namespaces.to_a.reject(&:root?).map(&:path)
+
+          Dir["#{full_path}/**/#{RB_GLOB}"].reject { |file_path|
+            Pathname(file_path).relative_path_from(full_path).to_s.start_with?(*non_root_paths)
+          }.sort
         end
       end
 
