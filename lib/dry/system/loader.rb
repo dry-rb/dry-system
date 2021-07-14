@@ -60,28 +60,14 @@ module Dry
         #
         # @api public
         def constant(component)
-          inflector = component.inflector
-
           const_path = component.path
+          const_namespace = component.const_namespace
 
-          # TODO: put this into component itself?
-          # TODO: need to handle const_namespaces with multiple separators, i.e. translate them to paths
-
-
-          # TODO: need to do something about that const_path.start_with condition, i.e.
-          # encapsulate it somewhere sensible.... perhaps what we actually want to do here
-          # is _only_ adjust the const_path if the path_namespace != the
-          # const_namespace... we probably want more tests to account for the various
-          # permutations of these two values
-
-          # FIXME: un-hack
-          # FIXME: stop putting all those namespaces on the identifier - its gross - it should be on the component
-          leading_const_namespace = component.namespace.const_namespace.gsub(".", "/") if component.namespace.const_namespace
-
-          if leading_const_namespace && !const_path.start_with?(leading_const_namespace)
-            const_path = "#{component.namespace.const_namespace}/#{const_path}"
+          if const_namespace && !const_path.start_with?(const_namespace)
+            const_path = "#{const_namespace}/#{const_path}"
           end
 
+          inflector = component.inflector
           inflector.constantize(inflector.camelize(const_path))
         end
 

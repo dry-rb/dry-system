@@ -80,6 +80,10 @@ module Dry
         identifier.to_s
       end
 
+      def root_key
+        identifier.root_key
+      end
+
       # TODO: update docs to reflect it's in component now
       #
       # Returns a path-delimited representation of the identifier, with the namespace
@@ -106,8 +110,8 @@ module Dry
         # identifier.gsub(separator, PATH_SEPARATOR)
       end
 
-      def root_key
-        identifier.root_key
+      def const_namespace
+        namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
       end
 
       # Returns true if the component has a corresponding file
