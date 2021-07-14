@@ -29,6 +29,7 @@ module Dry
       #   @return [String] component's unique identifier
       attr_reader :identifier
 
+      # TODO: docs
       attr_reader :namespace
 
       # @!attribute [r] file_path
@@ -106,8 +107,6 @@ module Dry
         else
           path
         end
-
-        # identifier.gsub(separator, PATH_SEPARATOR)
       end
 
       def const_namespace
