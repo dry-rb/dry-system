@@ -59,23 +59,6 @@ module Dry
         end
       end
 
-      # Returns the full path of the component directory
-      #
-      # @return [Pathname]
-      # @api private
-      def full_path
-        container.root.join(path)
-      end
-
-      # @api private
-      def component_options
-        {
-          auto_register: auto_register,
-          loader: loader,
-          memoize: memoize
-        }
-      end
-
       private
 
       def each_file
@@ -100,18 +83,21 @@ module Dry
         end
       end
 
+      # Returns the full path of the component directory
+      #
+      # @return [Pathname]
+      def full_path
+        container.root.join(path)
+      end
+
       # Returns a component for a full path to a Ruby source file within the component dir
       #
       # @param path [String] the full path to the file
       # @return [Dry::System::Component] the component
-      #
-      # @api private
       def component_for_path(path, namespace)
         separator = container.config.namespace_separator
 
-        relative_path = Pathname(path).relative_path_from(full_path).to_s
-
-        key = relative_path
+        key = Pathname(path).relative_path_from(full_path).to_s
           .sub(RB_EXT, EMPTY_STRING)
           .scan(WORD_REGEX)
           .join(separator)
@@ -125,16 +111,6 @@ module Dry
         build_component(identifier, namespace, path)
       end
 
-      def build_component(identifier, namespace, file_path)
-        options = {
-          inflector: container.config.inflector,
-          **component_options,
-          **MagicCommentsParser.(file_path)
-        }
-
-        Component.new(identifier, namespace: namespace, file_path: file_path, **options)
-      end
-
       def find_component_file(identifier, namespace)
         file_name = "#{identifier.joined(PATH_SEPARATOR)}#{RB_EXT}"
 
@@ -146,6 +122,24 @@ module Dry
           end
 
         component_file if component_file.exist?
+      end
+
+      def build_component(identifier, namespace, file_path)
+        options = {
+          inflector: container.config.inflector,
+          **component_options,
+          **MagicCommentsParser.(file_path)
+        }
+
+        Component.new(identifier, namespace: namespace, file_path: file_path, **options)
+      end
+
+      def component_options
+        {
+          auto_register: auto_register,
+          loader: loader,
+          memoize: memoize
+        }
       end
 
       def method_missing(name, *args, &block)

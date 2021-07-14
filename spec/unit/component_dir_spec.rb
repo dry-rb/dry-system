@@ -31,14 +31,4 @@ RSpec.describe Dry::System::ComponentDir do
     # TODO
     xit "provides a default root namespace if none is specified"
   end
-
-  describe "#full_path" do
-    it "is a pathname" do
-      expect(component_dir.full_path).to be_a_kind_of Pathname
-    end
-
-    it "returns the config's path appended onto the container's root" do
-      expect(component_dir.full_path.to_s).to eq "#{root}/#{dir_path}"
-    end
-  end
 end
