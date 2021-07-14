@@ -72,7 +72,7 @@ module Dry
       end
 
       def files(namespace)
-        if !namespace.root?
+        if namespace.path?
           Dir["#{full_path}/#{namespace.path}/**/#{RB_GLOB}"].sort
         else
           non_root_paths = namespaces.to_a.reject(&:root?).map(&:path)
