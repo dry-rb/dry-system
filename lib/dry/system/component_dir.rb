@@ -51,7 +51,7 @@ module Dry
           )
 
           if (file_path = find_component_file(identifier.path))
-            return build_component(identifier, file_path)
+            return build_component(identifier, namespace, file_path)
           end
         end
 
@@ -135,17 +135,17 @@ module Dry
             require_path: "#{key.gsub('.', '/')}" # TODO: move to component
           )
 
-        build_component(identifier, path)
+        build_component(identifier, namespace, path)
       end
 
-      def build_component(identifier, file_path)
+      def build_component(identifier, namespace, file_path)
         options = {
           inflector: container.config.inflector,
           **component_options,
           **MagicCommentsParser.(file_path)
         }
 
-        Component.new(identifier, file_path: file_path, **options)
+        Component.new(identifier, namespace: namespace, file_path: file_path, **options)
       end
 
       def find_component_file(component_path)

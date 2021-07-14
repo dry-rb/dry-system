@@ -17,7 +17,7 @@ module Dry
     #
     # @api public
     class Component
-      include Dry::Equalizer(:identifier, :file_path, :options)
+      include Dry::Equalizer(:identifier, :namespace, :file_path, :options)
 
       DEFAULT_OPTIONS = {
         separator: DEFAULT_SEPARATOR,
@@ -28,6 +28,8 @@ module Dry
       # @!attribute [r] identifier
       #   @return [String] component's unique identifier
       attr_reader :identifier
+
+      attr_reader :namespace
 
       # @!attribute [r] file_path
       #   @return [String, nil] full path to the component's file, if found
@@ -65,8 +67,9 @@ module Dry
       end
 
       # @api private
-      def initialize(identifier, file_path: nil, **options)
+      def initialize(identifier, namespace: nil, file_path: nil, **options)
         @identifier = identifier
+        @namespace = namespace
         @file_path = file_path
         @options = options
       end
