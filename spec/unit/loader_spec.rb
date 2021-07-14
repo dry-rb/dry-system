@@ -1,22 +1,34 @@
 # frozen_string_literal: true
 
-require "dry/inflector"
 require "dry/system/loader"
-require "singleton"
+
+require "dry/inflector"
 require "dry/system/component"
+require "dry/system/config/namespace"
+require "singleton"
 
 RSpec.describe Dry::System::Loader do
   subject(:loader) { described_class }
 
   describe "#require!" do
-    let(:component) { Dry::System::Component.new("test.bar") }
+    let(:component) {
+      Dry::System::Component.new(
+        "test.bar",
+        namespace: Dry::System::Config::Namespace.default_root
+      )
+    }
 
     before do
       allow(loader).to receive(:require)
     end
 
     context "component file exists" do
-      let(:component) { Dry::System::Component.new("test.bar", file_path: "path/to/test/bar.rb") }
+      let(:component) {
+        Dry::System::Component.new(
+          "test.bar",
+          namespace: Dry::System::Config::Namespace.default_root,
+          file_path: "path/to/test/bar.rb")
+      }
 
       it "requires the components's path" do
         loader.require!(component)
@@ -57,7 +69,12 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a singular name" do
-      let(:component) { Dry::System::Component.new("test.bar") }
+      let(:component) {
+        Dry::System::Component.new(
+          "test.bar",
+          namespace: Dry::System::Config::Namespace.default_root
+        )
+      }
 
       let(:constant) { Test::Bar }
 
@@ -69,7 +86,12 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a plural name" do
-      let(:component) { Dry::System::Component.new("test.bars") }
+      let(:component) {
+        Dry::System::Component.new(
+          "test.bars",
+          namespace: Dry::System::Config::Namespace.default_root
+        )
+      }
 
       let(:constant) { Test::Bars }
 
@@ -81,7 +103,12 @@ RSpec.describe Dry::System::Loader do
     end
 
     context "with a constructor accepting args" do
-      let(:component) { Dry::System::Component.new("test.bar") }
+      let(:component) {
+        Dry::System::Component.new(
+          "test.bar",
+          namespace: Dry::System::Config::Namespace.default_root
+        )
+      }
 
       before do
         module Test
@@ -101,6 +128,7 @@ RSpec.describe Dry::System::Loader do
       let(:component) {
         Dry::System::Component.new(
           "test.api_bar",
+          namespace: Dry::System::Config::Namespace.default_root,
           inflector: Dry::Inflector.new { |i| i.acronym("API") }
         )
       }

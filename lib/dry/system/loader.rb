@@ -76,10 +76,10 @@ module Dry
 
           # FIXME: un-hack
           # FIXME: stop putting all those namespaces on the identifier - its gross - it should be on the component
-          leading_const_namespace = component.identifier.const_namespace.gsub(".", "/") if component.identifier.const_namespace
+          leading_const_namespace = component.namespace.const_namespace.gsub(".", "/") if component.namespace.const_namespace
 
           if leading_const_namespace && !const_path.start_with?(leading_const_namespace)
-            const_path = "#{component.identifier.const_namespace}/#{const_path}"
+            const_path = "#{component.namespace.const_namespace}/#{const_path}"
           end
 
           inflector.constantize(inflector.camelize(const_path))

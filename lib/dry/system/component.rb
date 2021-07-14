@@ -47,18 +47,8 @@ module Dry
           if identifier.is_a?(Identifier)
             identifier
           else
-            # TODO: remove the need for this branch
-
-            identifier_namespace = options.delete(:identifier_namespace)
-            const_namespace = options.delete(:const_namespace)
-            separator = options.delete(:separator)
-
-            Identifier.new(
-              identifier,
-              identifier_namespace: identifier_namespace,
-              const_namespace: const_namespace,
-              separator: separator
-            )
+            # TODO: remove the need for this branch?
+            Identifier.new(identifier, separator: options.delete(:separator))
           end
 
         super(identifier, **options)

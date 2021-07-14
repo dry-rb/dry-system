@@ -13,27 +13,19 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:identifier, :identifier_namespace, :const_namespace, :separator)
+      include Dry::Equalizer(:identifier, :separator)
 
       # @return [String] the identifier string
       # @api public
       attr_reader :identifier
-
-      # @return [String, nil] the namespace for the component
-      # @api public
-      attr_reader :identifier_namespace
-
-      attr_reader :const_namespace
 
       # @return [String] the configured namespace separator
       # @api public
       attr_reader :separator
 
       # @api private
-      def initialize(identifier, identifier_namespace: nil, const_namespace: nil, separator: DEFAULT_SEPARATOR)
+      def initialize(identifier, separator: DEFAULT_SEPARATOR)
         @identifier = identifier.to_s
-        @identifier_namespace = identifier_namespace
-        @const_namespace = const_namespace
         @separator = separator
       end
 
@@ -123,27 +115,8 @@ module Dry
 
         self.class.new(
           new_key,
-          identifier_namespace: identifier_namespace,
-          const_namespace: const_namespace,
           separator: separator,
           **options
-        )
-      end
-
-      # Returns a copy of the identifier with the given options applied
-      #
-      # @param namespace [String, nil] a new namespace to be used
-      #
-      # @return [Dry::System::Identifier] the copy of the identifier
-      #
-      # @see #initialize
-      # @api private
-      def with(namespace:)
-        self.class.new(
-          identifier,
-          identifier_namespace: identifier_namespace,
-          const_namespace: const_namespace,
-          separator: separator
         )
       end
 

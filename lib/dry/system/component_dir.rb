@@ -42,12 +42,7 @@ module Dry
       # @api private
       def component_for_identifier(identifier)
         namespaces.each do |namespace|
-          identifier = Identifier.new(
-            identifier,
-            identifier_namespace: namespace.identifier_namespace,
-            const_namespace: namespace.const_namespace,
-            separator: container.config.namespace_separator,
-          )
+          identifier = Identifier.new(identifier, separator: container.config.namespace_separator)
 
           if (file_path = find_component_file(identifier, namespace))
             return build_component(identifier, namespace, file_path)
@@ -121,12 +116,7 @@ module Dry
           .scan(WORD_REGEX)
           .join(separator)
 
-        identifier = Identifier.new(
-          key,
-          separator: separator,
-          identifier_namespace: namespace.identifier_namespace,
-          const_namespace: namespace.const_namespace,
-        )
+        identifier = Identifier.new(key, separator: separator)
           .namespaced(
             from: namespace.path&.gsub(PATH_SEPARATOR, separator),
             to: namespace.identifier_namespace,
