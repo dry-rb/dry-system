@@ -3,7 +3,9 @@
 RSpec.describe Dry::System::Container, "Default hooks / Load path" do
   let(:container) {
     Class.new(Dry::System::Container) {
-      config.root = SPEC_ROOT.join("fixtures/test")
+      configure do |config|
+        config.root = SPEC_ROOT.join("fixtures/test")
+      end
     }
   }
 
