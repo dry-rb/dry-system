@@ -16,7 +16,7 @@ require "path/to/dry/types/file"
 Application.boot(:settings, from: :system) do
   settings do
     key :database_url, Types::String.constrained(filled: true)
-    key :logger_level, Types::Symbol.constructor(Kernel.proc { |value| value.to_s.downcase.to_sym })
+    key :logger_level, Types::Symbol.constructor { |value| value.to_s.downcase.to_sym }
                                     .default(:info)
                                     .enum(:trace, :unknown, :error, :fatal, :warn, :info, :debug)
   end
