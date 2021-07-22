@@ -15,8 +15,8 @@ require "path/to/dry/types/file"
 
 Application.boot(:settings, from: :system) do
   settings do
-    key :database_url, Types::String.constrained(filled: true)
-    key :logger_level, Types::Symbol.constructor(proc { |value| value.to_s.downcase.to_sym })
+    setting :database_url, Types::String.constrained(filled: true)
+    setting :logger_level, Types::Symbol.constructor(proc { |value| value.to_s.downcase.to_sym })
                                     .default(:info)
                                     .enum(:trace, :unknown, :error, :fatal, :warn, :info, :debug)
   end
@@ -67,7 +67,7 @@ You can [use dry-types](https://dry-rb.org/gems/dry-types/master/default-values/
 
 ```ruby
 settings do
-  key :redis_url, Types::Coercible::String.default('')
+  setting :redis_url, Types::Coercible::String.default('')
 end
 ```
 

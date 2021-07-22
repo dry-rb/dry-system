@@ -84,8 +84,8 @@ Here's an extended `:exception_notifier` example which uses its own settings:
 #  |- lib/my_gem/boot/exception_notifier.rb
 Dry::System.register_component(:exception_notifier, provider: :common) do
   settings do
-    key :environments, Types::Strict::Array.of(Types::Strict::Symbol).default(%i[production])
-    key :logger, Types::Any
+    setting :environments, Types::Strict::Array.of(Types::Strict::Symbol).default(%i[production])
+    setting :logger, Types::Any
   end
 
   init do

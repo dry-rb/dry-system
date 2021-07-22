@@ -29,9 +29,18 @@ module Dry
           end
         end
 
-        def key(name, type)
+        def setting(name, type)
+          if ::Kernel::__callee__ == :key
+            ::Dry::Core::Deprecations.announce(
+              "the name of this method will be renamed to :settings",
+              "Please refactor your call at #{::Kernel::caller[0]}",
+              tag: "dry-system",
+              uplevel: 2
+            )
+          end
           schema[name] = type
         end
+        alias :key :setting
       end
 
       class Configuration < Dry::Struct

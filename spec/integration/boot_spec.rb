@@ -68,7 +68,7 @@ RSpec.describe Dry::System::Container, ".boot" do
     it "uses defaults" do
       system.boot(:api) do
         settings do
-          key :token, Types::String.default("xxx")
+          setting :token, Types::String.default("xxx")
         end
 
         start do
