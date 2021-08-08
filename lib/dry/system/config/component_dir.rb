@@ -6,7 +6,29 @@ module Dry
   module System
     module Config
       class ComponentDir
+        module Configurable
+          # Returns true if a setting has been explicitly configured and is not returning
+          # just a default value.
+          #
+          # This is used to determine which settings from `ComponentDirs` should be applied
+          # as additional defaults.
+          #
+          # @api private
+          def configured?(key)
+            case key
+            when :namespaces
+              # Because we mutate the default value for the `namespaces` setting, rather
+              # than assign a new one, to check if it's configured we must see whether any
+              # namespaces have been added
+              !config.namespaces.empty?
+            else
+              config._settings[key].input_defined?
+            end
+          end
+        end
+
         include Dry::Configurable
+        include Configurable
 
         # @!group Settings
 
@@ -178,28 +200,9 @@ module Dry
           !!config.auto_register
         end
 
-        # Returns true if a setting has been explicitly configured and is not returning
-        # just a default value.
-        #
-        # This is used to determine which settings from `ComponentDirs` should be applied
-        # as additional defaults.
-        #
-        # @api private
-        def configured?(key)
-          # UGH
-          if key == :namespaces
-            !config.namespaces.empty?
-          else
-            config._settings[key].input_defined?
-          end
-        end
-
         private
 
         def method_missing(name, *args, &block)
-          # TODO: handle this nicer
-          # return super if name == :namespaces=
-
           if config.respond_to?(name)
             config.public_send(name, *args, &block)
           else

@@ -9,6 +9,7 @@ module Dry
     module Config
       class ComponentDirs
         include Dry::Configurable
+        include ComponentDir::Configurable
 
         # Settings from ComponentDir are configured here as defaults for all added dirs
         ComponentDir._settings.each do |setting|
@@ -144,7 +145,7 @@ module Dry
 
         private
 
-        # Apply default settings to a component dir. This is run every time the dirs are
+        # Applies default settings to a component dir. This is run every time the dirs are
         # accessed to ensure defaults are applied regardless of when new component dirs
         # are added. This method must be idempotent.
         #
@@ -154,20 +155,6 @@ module Dry
             if configured?(key) && !dir.configured?(key)
               dir.public_send(:"#{key}=", public_send(key).dup)
             end
-          end
-        end
-
-        # Returns true if a setting has been explicitly configured and is not returning
-        # just a default value.
-        #
-        # This is used to determine which settings should be applied to added component
-        # dirs as additional defaults.
-        def configured?(key)
-          # UGH
-          if key == :namespaces
-            !config.namespaces.empty?
-          else
-            config._settings[key].input_defined?
           end
         end
 
