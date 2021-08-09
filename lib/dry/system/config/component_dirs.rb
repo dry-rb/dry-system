@@ -1,5 +1,4 @@
 require "concurrent/map"
-require "dry/configurable"
 require "dry/system/constants"
 require "dry/system/errors"
 require_relative "component_dir"
@@ -8,14 +7,6 @@ module Dry
   module System
     module Config
       class ComponentDirs
-        include Dry::Configurable
-        include ComponentDir::Configurable
-
-        # Settings from ComponentDir are configured here as defaults for all added dirs
-        ComponentDir._settings.each do |setting|
-          _settings << setting.dup
-        end
-
         # @!group Settings
 
         # @!method auto_register=(value)
@@ -85,15 +76,22 @@ module Dry
 
         # @!endgroup
 
+        # A ComponentDir for configuring the default values to apply to all added
+        # component dirs
+        #
+        # @api private
+        attr_reader :defaults
+
         # @api private
         def initialize
           @dirs = Concurrent::Map.new
+          @defaults = ComponentDir.new(nil)
         end
 
         # @api private
         def initialize_copy(source)
-          super
           @dirs = source.dirs.dup
+          @defaults = source.defaults.dup
         end
 
         # Adds and configures a component dir
@@ -151,23 +149,23 @@ module Dry
         #
         # @return [void]
         def apply_defaults_to_dir(dir)
-          dir.config.values.each do |key, _value|
-            if configured?(key) && !dir.configured?(key)
-              dir.public_send(:"#{key}=", public_send(key).dup)
+          defaults.config.values.each do |key, _|
+            if defaults.configured?(key) && !dir.configured?(key)
+              dir.public_send(:"#{key}=", defaults.public_send(key).dup)
             end
           end
         end
 
         def method_missing(name, *args, &block)
-          if config.respond_to?(name)
-            config.public_send(name, *args, &block)
+          if defaults.respond_to?(name)
+            defaults.public_send(name, *args, &block)
           else
             super
           end
         end
 
         def respond_to_missing?(name, include_all = false)
-          config.respond_to?(name) || super
+          defaults.respond_to?(name) || super
         end
       end
     end
