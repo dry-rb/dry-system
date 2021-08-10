@@ -11,13 +11,14 @@ require "dry/core/constants"
 require "dry/core/deprecations"
 
 require "dry/system"
-require "dry/system/errors"
-require "dry/system/booter"
 require "dry/system/auto_registrar"
-require "dry/system/manual_registrar"
-require "dry/system/importer"
+require "dry/system/booter"
 require "dry/system/component"
 require "dry/system/constants"
+require "dry/system/errors"
+require "dry/system/identifier"
+require "dry/system/importer"
+require "dry/system/manual_registrar"
 require "dry/system/plugins"
 
 require_relative "component_dir"
@@ -633,7 +634,7 @@ module Dry
             if (component = dir.component_for_identifier(identifier))
               break component
             end
-          } || Component.new(identifier)
+          } || Component.new(Dry::System::Identifier.new(identifier, separator: config.namespace_separator))
         end
       end
 

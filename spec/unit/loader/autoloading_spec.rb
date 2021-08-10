@@ -3,13 +3,14 @@
 require "dry/system/loader/autoloading"
 require "dry/system/component"
 require "dry/system/config/namespace"
+require "dry/system/identifier"
 
 RSpec.describe Dry::System::Loader::Autoloading do
   describe "#require!" do
     subject(:loader) { described_class }
     let(:component) {
       Dry::System::Component.new(
-        "test.not_loaded_const",
+        Dry::System::Identifier.new("test.not_loaded_const"),
         namespace: Dry::System::Config::Namespace.default_root
       )
     }

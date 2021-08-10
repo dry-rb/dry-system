@@ -41,26 +41,11 @@ module Dry
       attr_reader :options
 
       # @api private
-      def self.new(identifier, options = EMPTY_HASH)
-        options = DEFAULT_OPTIONS.merge(options)
-
-        identifier =
-          if identifier.is_a?(Identifier)
-            identifier
-          else
-            # TODO: remove the need for this branch?
-            Identifier.new(identifier, separator: options.delete(:separator))
-          end
-
-        super(identifier, **options)
-      end
-
-      # @api private
       def initialize(identifier, namespace: nil, file_path: nil, **options)
         @identifier = identifier
         @namespace = namespace
         @file_path = file_path
-        @options = options
+        @options = DEFAULT_OPTIONS.merge(options)
       end
 
       # Returns the component's instance
@@ -109,6 +94,7 @@ module Dry
         end
       end
 
+      # TODO: docs
       def const_namespace
         namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
       end

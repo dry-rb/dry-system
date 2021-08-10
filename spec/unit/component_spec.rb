@@ -7,7 +7,7 @@ require "dry/system/loader"
 RSpec.describe Dry::System::Component do
   subject(:component) { Dry::System::Component.new(identifier, file_path: file_path, loader: loader) }
 
-  let(:identifier) { "test.foo" }
+  let(:identifier) { Dry::System::Identifier.new("test.foo") }
   let(:file_path) { nil }
   let(:loader) { Dry::System::Loader }
 

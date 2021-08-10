@@ -5,6 +5,7 @@ require "dry/system/loader"
 require "dry/inflector"
 require "dry/system/component"
 require "dry/system/config/namespace"
+require "dry/system/identifier"
 require "singleton"
 
 RSpec.describe Dry::System::Loader do
@@ -13,7 +14,7 @@ RSpec.describe Dry::System::Loader do
   describe "#require!" do
     let(:component) {
       Dry::System::Component.new(
-        "test.bar",
+        Dry::System::Identifier.new("test.bar"),
         namespace: Dry::System::Config::Namespace.default_root
       )
     }
@@ -25,7 +26,7 @@ RSpec.describe Dry::System::Loader do
     context "component file exists" do
       let(:component) {
         Dry::System::Component.new(
-          "test.bar",
+          Dry::System::Identifier.new("test.bar"),
           namespace: Dry::System::Config::Namespace.default_root,
           file_path: "path/to/test/bar.rb")
       }
@@ -71,7 +72,7 @@ RSpec.describe Dry::System::Loader do
     context "with a singular name" do
       let(:component) {
         Dry::System::Component.new(
-          "test.bar",
+          Dry::System::Identifier.new("test.bar"),
           namespace: Dry::System::Config::Namespace.default_root
         )
       }
@@ -88,7 +89,7 @@ RSpec.describe Dry::System::Loader do
     context "with a plural name" do
       let(:component) {
         Dry::System::Component.new(
-          "test.bars",
+          Dry::System::Identifier.new("test.bars"),
           namespace: Dry::System::Config::Namespace.default_root
         )
       }
@@ -105,7 +106,7 @@ RSpec.describe Dry::System::Loader do
     context "with a constructor accepting args" do
       let(:component) {
         Dry::System::Component.new(
-          "test.bar",
+          Dry::System::Identifier.new("test.bar"),
           namespace: Dry::System::Config::Namespace.default_root
         )
       }
@@ -127,7 +128,7 @@ RSpec.describe Dry::System::Loader do
     context "with a custom inflector" do
       let(:component) {
         Dry::System::Component.new(
-          "test.api_bar",
+          Dry::System::Identifier.new("test.api_bar"),
           namespace: Dry::System::Config::Namespace.default_root,
           inflector: Dry::Inflector.new { |i| i.acronym("API") }
         )
