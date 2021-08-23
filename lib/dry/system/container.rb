@@ -107,6 +107,7 @@ module Dry
           config._settings << _settings[name]
           self
         end
+        ruby2_keywords(:setting) if respond_to?(:ruby2_keywords, true)
 
         # Configures the container
         #
