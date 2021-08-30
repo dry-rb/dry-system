@@ -1,4 +1,8 @@
 ---
+- version: 0.19.2
+  date: '2021-08-30'
+  changed:
+  - '[internal] Improved compatibility with upcoming dry-configurable 0.13.0 release (@timriley in #186)'
 - version: 0.19.1
   date: 2021-07-11
   fixed:
