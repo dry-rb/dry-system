@@ -1,4 +1,8 @@
 ---
+- version: 0.18.2
+  date: '2021-08-30'
+  changed:
+  - '[internal] Improved compatibility with upcoming dry-configurable 0.13.0 release (@timriley in #187)'
 - version: 0.18.1
   summary:
   date: '2020-08-26'
