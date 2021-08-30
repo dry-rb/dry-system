@@ -1,3 +1,12 @@
+## 0.18.2 2021-08-30
+
+
+### Changed
+
+- [internal] Improved compatibility with upcoming dry-configurable 0.13.0 release (@timriley in #187)
+
+[Compare v0.18.1...v0.18.2](https://github.com/dry-rb/dry-system/compare/v0.18.1...v0.18.2)
+
 ## 0.18.1 2020-08-26
 
 
