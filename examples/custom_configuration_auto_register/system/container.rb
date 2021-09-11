@@ -3,14 +3,14 @@
 require 'dry/system/container'
 
 class App < Dry::System::Container
-  load_paths!('lib', 'system')
+  configure do |config|
+    config.component_dirs.add "lib" do |dir|
+      dir.add_to_load_path = true # defaults to true
+      dir.memoize = true
 
-  auto_register!('lib') do |config|
-    config.memoize = true
-    config.instance(&:instance)
-
-    config.exclude do |component|
-      component.path =~ /entities/
+      dir.auto_register = lambda do |component|
+        !component.identifier.start_with?("entities")
+      end
     end
   end
 end
