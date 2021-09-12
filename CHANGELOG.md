@@ -11,7 +11,7 @@
 
 ### Changed
 
-- Upgraded to new `setting` API provided in dry-configurable 0.13.0 (@timriley in #179)
+- [internal] Upgraded to new `setting` API provided in dry-configurable 0.13.0 (@timriley in #179)
 
 [Compare v0.19.2...v0.20.0](https://github.com/dry-rb/dry-system/compare/v0.19.2...v0.20.0)
 
