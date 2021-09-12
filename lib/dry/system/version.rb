@@ -2,6 +2,6 @@
 
 module Dry
   module System
-    VERSION = "0.19.0"
+    VERSION = "0.20.0"
   end
 end
