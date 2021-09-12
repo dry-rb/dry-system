@@ -8,7 +8,7 @@
   - 'Fixed compatibility of `finalize!` signature provided in `Container::Stubs` (@mpokrywka in #178)'
   added:
   changed:
-  - 'Upgraded to new `setting` API provided in dry-configurable 0.13.0 (@timriley in #179)'
+  - '[internal] Upgraded to new `setting` API provided in dry-configurable 0.13.0 (@timriley in #179)'
 - version: 0.19.2
   date: '2021-08-30'
   changed:
