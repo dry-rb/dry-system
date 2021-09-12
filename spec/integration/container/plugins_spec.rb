@@ -160,7 +160,7 @@ RSpec.describe Dry::System::Container, ".use" do
     context "plugin with a block" do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
-          setting :foo, "bar"
+          setting :foo, default: "bar"
         end
       end
 
@@ -200,7 +200,7 @@ RSpec.describe Dry::System::Container, ".use" do
     context "calling multiple times" do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
-          setting :trace, []
+          setting :trace, default: []
 
           after(:configure) do
             config.trace << :works
