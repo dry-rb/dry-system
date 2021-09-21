@@ -30,7 +30,7 @@ module Dry
           namespaces[path] = Namespace.new(
             path: path,
             identifier_namespace: identifier,
-            const_namespace: const,
+            const_namespace: const
           )
         end
 

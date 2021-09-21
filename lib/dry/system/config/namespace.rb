@@ -17,10 +17,10 @@ module Dry
         attr_reader :const_namespace
 
         def self.default_root
-          self.new(
+          new(
             path: ROOT_PATH,
             identifier_namespace: nil,
-            const_namespace: nil,
+            const_namespace: nil
           )
         end
 

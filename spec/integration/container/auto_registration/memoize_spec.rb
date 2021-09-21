@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec::Matchers.define :have_memoized_component do |identifier|
   match do |container|
     container[identifier].eql?(container[identifier])

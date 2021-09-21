@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Auto-registration / Custom auto_register proc" do
   before do
     class Test::Container < Dry::System::Container

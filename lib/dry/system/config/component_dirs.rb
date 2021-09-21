@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "concurrent/map"
 require "dry/system/constants"
 require "dry/system/errors"

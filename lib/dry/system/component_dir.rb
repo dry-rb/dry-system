@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pathname"
 require "dry/system/constants"
 require_relative "constants"
@@ -53,7 +55,7 @@ module Dry
       end
 
       # TODO: support calling without block, returning enum
-      def each_component(&block)
+      def each_component
         each_file do |file_path, namespace|
           yield component_for_path(file_path, namespace)
         end
@@ -105,7 +107,7 @@ module Dry
         identifier = Identifier.new(key, separator: separator)
           .namespaced(
             from: namespace.path&.gsub(PATH_SEPARATOR, separator),
-            to: namespace.identifier_namespace,
+            to: namespace.identifier_namespace
           )
 
         build_component(identifier, namespace, path)

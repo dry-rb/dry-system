@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dry/configurable"
 require "dry/system/loader"
 require_relative "namespaces"

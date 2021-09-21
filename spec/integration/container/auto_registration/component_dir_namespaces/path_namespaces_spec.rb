@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Component dir path namespaces" do
   context "single namespace" do
     let!(:container) {
@@ -7,7 +9,7 @@ RSpec.describe "Component dir path namespaces" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              dir.namespaces.add "test" #, identifier: "test"
+              dir.namespaces.add "test"
             end
           end
         end

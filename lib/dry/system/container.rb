@@ -456,7 +456,7 @@ module Dry
         # @param paths [Array<String>] one or more paths, supports globs too
         #
         # @api public
-        def require_from_root(*paths)
+        def require_from_root(*paths) # rubocop:disable Style/MultilineBlockChain
           paths.flat_map { |path|
             path.to_s.include?("*") ? ::Dir[root.join(path)].sort : root.join(path)
           }.each { |path|

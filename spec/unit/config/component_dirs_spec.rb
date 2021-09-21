@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dry/system/config/component_dirs"
 require "dry/system/config/component_dir"
 
