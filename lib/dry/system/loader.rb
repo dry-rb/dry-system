@@ -28,7 +28,7 @@ module Dry
         #
         # @api public
         def require!(component)
-          require(component.path) if component.file_exists?
+          require(component.path)
           self
         end
 

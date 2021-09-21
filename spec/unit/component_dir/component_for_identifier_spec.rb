@@ -40,14 +40,6 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
       expect(component.identifier.to_s).to eq identifier
     end
 
-    it "has a file" do
-      expect(component.file_exists?).to be true
-    end
-
-    it "has a matching file path" do
-      expect(component.file_path.to_s).to eq root.join("component_dir_1/namespace/nested/component_file.rb").to_s
-    end
-
     it "has the component dir's namespace" do
       expect(component.namespace.path).to eq "namespace"
     end

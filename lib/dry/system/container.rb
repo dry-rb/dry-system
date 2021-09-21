@@ -19,6 +19,7 @@ require "dry/system/errors"
 require "dry/system/identifier"
 require "dry/system/importer"
 require "dry/system/manual_registrar"
+require "dry/system/null_component"
 require "dry/system/plugins"
 
 require_relative "component_dir"
@@ -582,17 +583,17 @@ module Dry
         def load_component(key)
           return self if registered?(key)
 
-          component = component(key)
-
-          if component.bootable?
-            booter.start(component)
+          if (bootable_component = booter.find_component(key))
+            booter.start(bootable_component)
             return self
           end
+
+          component = find_component(key)
 
           booter.boot_dependency(component)
           return self if registered?(key)
 
-          if component.file_exists?
+          if component.loadable?
             load_local_component(component)
           elsif manual_registrar.file_exists?(component)
             manual_registrar.(component)
@@ -621,20 +622,16 @@ module Dry
           importer.(import_namespace, container)
         end
 
-        def component(identifier)
-          if (bootable_component = booter.find_component(identifier))
-            return bootable_component
-          end
-
+        def find_component(key)
           # Find the first matching component from within the configured component dirs.
-          # If no matching component is found, return a plain component instance with no
-          # associated file path. This fallback is important because the component may
-          # still be loadable via the manual registrar or an imported container.
+          # If no matching component is found, return a null component; this fallback is
+          # important because the component may still be loadable via the manual registrar
+          # or an imported container.
           component_dirs.detect { |dir|
-            if (component = dir.component_for_identifier(identifier))
+            if (component = dir.component_for_identifier(key))
               break component
             end
-          } || Component.new(Dry::System::Identifier.new(identifier, separator: config.namespace_separator))
+          } || NullComponent.new(Identifier.new(key, separator: config.namespace_separator))
         end
       end
 
