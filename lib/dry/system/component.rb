@@ -80,7 +80,7 @@ module Dry
       # @return [String] the path
       # @api public
       def path
-        path = identifier.joined(PATH_SEPARATOR)
+        path = identifier.key_with_separator(PATH_SEPARATOR)
 
         if namespace&.path
           "#{namespace.path}/#{path}"

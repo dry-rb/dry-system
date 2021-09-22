@@ -2,55 +2,53 @@
 
 require "dry/system/identifier"
 
-# FIXME: restore these tests once the component/identifier interface has settled down again
-RSpec.xdescribe Dry::System::Identifier do
-  subject(:identifier) { described_class.new(key, namespace: namespace, separator: separator) }
+RSpec.describe Dry::System::Identifier do
+  subject(:identifier) { described_class.new(key, separator: separator) }
 
   let(:key) { "kittens.operations.belly_rub" }
-  let(:namespace) { "my_app" }
   let(:separator) { "." }
 
-  it "casts identifier to string" do
-    expect(described_class.new(:db).identifier).to eq "db"
-  end
-
-  describe "#identifier" do
-    it "is the identifier string in full" do
-      expect(identifier.identifier).to eq "kittens.operations.belly_rub"
-    end
-  end
-
   describe "#key" do
-    it "is an alias of #identifier" do
-      expect(identifier.key).to eql identifier.identifier
+    it "returns the identifier's key" do
+      expect(identifier.key).to eql "kittens.operations.belly_rub"
+    end
+
+    context "non-string key given" do
+      let(:key) { :db }
+
+      it "converts to a string" do
+        expect(identifier.key).to eq "db"
+      end
     end
   end
 
   describe "#to_s" do
-    it "returns the identifier string in full" do
+    it "returns the key" do
       expect(identifier.to_s).to eq "kittens.operations.belly_rub"
     end
   end
 
   describe "#root_key" do
-    it "is the base segment of the identifier string, as a symbol" do
+    it "returns the base segment of the key, as a symbol" do
       expect(identifier.root_key).to eq :kittens
     end
   end
 
-  describe "#path" do
-    it "is the identifier string, preceded by the namespace, with separators converted to path separators" do
-      expect(identifier.path).to eq "my_app/kittens/operations/belly_rub"
-    end
+  # FIXME: move this to somewhere? component?
 
-    context "no namespace given" do
-      let(:namespace) { nil }
+  # describe "#path" do
+  #   it "is the identifier string, preceded by the namespace, with separators converted to path separators" do
+  #     expect(identifier.path).to eq "my_app/kittens/operations/belly_rub"
+  #   end
 
-      it "is the identifier string with separators converted to path separators" do
-        expect(identifier.path).to eq "kittens/operations/belly_rub"
-      end
-    end
-  end
+  #   context "no namespace given" do
+  #     let(:namespace) { nil }
+
+  #     it "is the identifier string with separators converted to path separators" do
+  #       expect(identifier.path).to eq "kittens/operations/belly_rub"
+  #     end
+  #   end
+  # end
 
   describe "#start_with?" do
     it "returns true when the provided string matches the base segment of the identifier string" do
@@ -73,13 +71,30 @@ RSpec.xdescribe Dry::System::Identifier do
       expect(identifier.start_with?("kittens.operations.belly_rub")).to be true
     end
 
+    describe "alternative separators" do
+      let(:key) { "kittens->operations->belly_rub" }
+      let(:separator) { "->" }
+
+      it "returns true when the given string matches the base segment of the key" do
+        expect(identifier.start_with?("kittens")).to be true
+      end
+
+      it "returns true when the given string matches multiple base segments of the key" do
+        expect(identifier.start_with?("kittens->operations")).to be true
+      end
+
+      it "returns false when a non-matching separator is given" do
+        expect(identifier.start_with?("kittens/operations")).to be false
+      end
+    end
+
     # this spec was added because start_with? is called with nil (at Dry::System::ComponentDir, line 74).
     # that should possibly be fixed
     it "returns false when the provided string is nil" do
       expect(identifier.start_with?(nil)).to be false
     end
 
-    context "when component is identified by a single segment" do
+    context "component is identified by a single segment" do
       let(:key) { "belly_rub" }
 
       it "returns true when the provided string matches the identifier string" do
@@ -92,32 +107,57 @@ RSpec.xdescribe Dry::System::Identifier do
     end
   end
 
-  describe "#with" do
-    it "returns a new identifier with the given namespace" do
-      new_identifier = identifier.with(namespace: "another_app")
-
-      expect(new_identifier).to be_an_instance_of(described_class)
-      expect(new_identifier.key).to eql identifier.key
-      expect(new_identifier.namespace).to eq "another_app"
-      expect(new_identifier.separator).to eql identifier.separator
+  describe "#key_with_separator" do
+    it "returns the key split by the given separator" do
+      expect(identifier.key_with_separator("/")).to eq "kittens/operations/belly_rub"
     end
   end
 
-  describe "#dequalified" do
-    it "returns a new identifier with the given base segments removed from the key" do
-      new_identifier = identifier.dequalified("kittens.operations")
+  describe "#namespaced" do
+    let(:new_identifier) { identifier.namespaced(from: from, to: to, **opts) }
 
+    let(:from) { "kittens" }
+    let(:to) { "cats" }
+    let(:opts) { {} }
+
+    it "returns a new identifier" do
       expect(new_identifier).to be_an_instance_of(described_class)
-      expect(new_identifier.key).to eq "belly_rub"
-      expect(new_identifier.namespace).to eql identifier.namespace
-      expect(new_identifier.separator).to eql identifier.separator
     end
 
-    it "allows a new namespace to be given at the same time" do
-      new_identifier = identifier.dequalified("kittens.operations", namespace: "another_app")
-      expect(new_identifier.key).to eq "belly_rub"
-      expect(new_identifier.namespace).to eql "another_app"
-      expect(new_identifier.separator).to eql identifier.separator
+    it "replaces the leading namespace" do
+      expect(new_identifier.key).to eq "cats.operations.belly_rub"
+    end
+
+    context "multiple leading namespaces" do
+      let(:from) { "kittens.operations" }
+
+      it "replaces the namespaces" do
+        expect(new_identifier.key).to eq "cats.belly_rub"
+      end
+    end
+
+    context "removing the leading namespace" do
+      let(:to) { nil }
+
+      it "removes the namespace" do
+        expect(new_identifier.key).to eq "operations.belly_rub"
+      end
+    end
+
+    context "adding a leading namespace" do
+      let(:from) { nil }
+
+      it "adds the namespace" do
+        expect(new_identifier.key).to eq "cats.kittens.operations.belly_rub"
+      end
+    end
+
+    it "preserves other attributes" do
+      expect(new_identifier.separator).to eq identifier.separator
+    end
+
+    it "returns itself if the key is unchanged" do
+      expect(identifier.namespaced(from: nil, to: nil)).to be identifier
     end
   end
 end

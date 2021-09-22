@@ -66,49 +66,57 @@ module Dry
         key.start_with?("#{leading_namespaces}#{separator}") || key.eql?(leading_namespaces)
       end
 
-      # TODO: docs
-      # TODO: better name? join
-      def joined(separator)
+      # Returns the key with its segments separated by the given separator
+      #
+      # @example
+      #   identifier.key # => "articles.operations.create"
+      #   identifier.key_with_separator("/") # => "articles/operations/create"
+      #
+      # @return [String] the key using the separator
+      # @api private
+      def key_with_separator(separator)
         segments.join(separator)
       end
 
-      # FIXME: update docs below for change from dequalified -> namespaced
+      # Returns a copy of the identifier with the key's leading namespace(s) replaced
       #
-      # Returns a copy of the identifier with the given leading namespaces removed from
-      # the identifier string.
+      # @example Changing a namespace
+      #   identifier.key # => "articles.operations.create"
+      #   identifier.namespaced(from: "articles", to: "posts").key # => "posts.commands.create"
       #
-      # Additional options may be provided, which are passed to #initialize when
-      # constructing the new copy of the identifier
+      # @example Removing a namespace
+      #   identifier.key # => "articles.operations.create"
+      #   identifier.namespaced(from: "articles", to: nil).key # => "operations.create"
       #
-      # @param leading_namespace [String] the one or more leading namespaces to remove
-      # @param options [Hash] additional options for initialization
+      # @example Adding a namespace
+      #   identifier.key # => "articles.operations.create"
+      #   identifier.namespaced(from: nil, to: "admin").key # => "admin.articles.operations.create"
+      #
+      # @param from [String, nil] the leading namespace(s) to replace
+      # @param to [String, nil] the replacement for the leading namespace
       #
       # @return [Dry::System::Identifier] the copy of the identifier
       #
       # @see #initialize
       # @api private
-      def namespaced(from:, to:, **options)
-        # TODO: need tests for this case
+      def namespaced(from:, to:)
         return self if from == to
 
-        # TODO: need tests for the `from.nil?` case
+        separated_to = "#{to}#{separator}" if to
+
         new_key =
           if from.nil?
-            "#{to}#{separator}#{key}"
+            "#{separated_to}#{key}"
           else
             key.sub(
               /^#{Regexp.escape(from.to_s)}#{Regexp.escape(separator)}/,
-              to || EMPTY_STRING
+              separated_to || EMPTY_STRING
             )
           end
 
         return self if new_key == key
 
-        self.class.new(
-          new_key,
-          separator: separator,
-          **options
-        )
+        self.class.new(new_key, separator: separator)
       end
 
       private

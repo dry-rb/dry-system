@@ -114,7 +114,7 @@ module Dry
       end
 
       def find_component_file(identifier, namespace)
-        file_name = "#{identifier.joined(PATH_SEPARATOR)}#{RB_EXT}"
+        file_name = "#{identifier.key_with_separator(PATH_SEPARATOR)}#{RB_EXT}"
 
         component_file =
           if namespace.path?
