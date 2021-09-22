@@ -13,37 +13,29 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:identifier, :separator)
+      include Dry::Equalizer(:key, :separator)
 
-      # @return [String] the identifier string
+      # @return [String] the identifier's string key
       # @api public
-      attr_reader :identifier
+      attr_reader :key
 
       # @return [String] the configured namespace separator
       # @api public
       attr_reader :separator
 
       # @api private
-      def initialize(identifier, separator: DEFAULT_SEPARATOR)
-        @identifier = identifier.to_s
+      def initialize(key, separator: DEFAULT_SEPARATOR)
+        @key = key.to_s
         @separator = separator
       end
 
-      # @!method key
-      #   Returns the identifier string
-      #
-      #   @return [String]
-      #   @see #identifier
-      #   @api public
-      alias_method :key, :identifier
-
       # @!method to_s
-      #   Returns the identifier string
+      #   Returns the identifier string key
       #
       #   @return [String]
-      #   @see #identifier
+      #   @see #key
       #   @api public
-      alias_method :to_s, :identifier
+      alias_method :to_s, :key
 
       # Returns the root namespace segment of the identifier string, as a symbol
       #
@@ -71,12 +63,11 @@ module Dry
       # @return [Boolean]
       # @api public
       def start_with?(leading_namespaces)
-        identifier.start_with?("#{leading_namespaces}#{separator}") ||
-          identifier.eql?(leading_namespaces)
+        key.start_with?("#{leading_namespaces}#{separator}") || key.eql?(leading_namespaces)
       end
 
       # TODO: docs
-      # TODO: better name?
+      # TODO: better name? join
       def joined(separator)
         segments.join(separator)
       end
@@ -123,7 +114,7 @@ module Dry
       private
 
       def segments
-        @segments ||= identifier.split(separator)
+        @segments ||= key.split(separator)
       end
     end
   end
