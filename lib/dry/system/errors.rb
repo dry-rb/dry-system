@@ -11,16 +11,6 @@ module Dry
       end
     end
 
-    # Error raised when the container tries to load a component with missing
-    # file
-    #
-    # @api public
-    FileNotFoundError = Class.new(StandardError) do
-      def initialize(component)
-        super("could not resolve require file for component '#{component.identifier}'")
-      end
-    end
-
     # Error raised when booter file do not match with register component
     #
     # @api public
@@ -51,15 +41,6 @@ module Dry
         super(
           "component identifier +#{name}+ is invalid or boot file is missing"
         )
-      end
-    end
-
-    # Error raised when component's identifier for booting is not a symbol
-    #
-    # @api public
-    InvalidComponentIdentifierTypeError = Class.new(ArgumentError) do
-      def initialize(name)
-        super("component identifier #{name.inspect} must be a symbol")
       end
     end
 
