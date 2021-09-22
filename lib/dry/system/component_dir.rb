@@ -31,20 +31,19 @@ module Dry
         @container = container
       end
 
-      # Returns a component for a given identifier if a matching component file could be
-      # found within the component dir
-      # # WIP
-      # FIXME: REMOVE THIS WIP COMMENT ABOVE
-      # This will search within the component dir's configured namespaces first, # WIP
-      # then fall back to searching for a non-namespaced file
+      # Returns a component for the given key if a matching source file is found within
+      # the component dir
       #
-      # @param identifier [String] the identifier string
+      # This searches according to the component dir's configured namespaces, in order of
+      # definition, with the first match returned as the component.
+      #
+      # @param key [String] the component's key
       # @return [Dry::System::Component, nil] the component, if found
       #
       # @api private
-      def component_for_identifier(identifier)
+      def component_for_identifier(key)
         namespaces.each do |namespace|
-          identifier = Identifier.new(identifier, separator: container.config.namespace_separator)
+          identifier = Identifier.new(key, separator: container.config.namespace_separator)
 
           if (file_path = find_component_file(identifier, namespace))
             return build_component(identifier, namespace, file_path)
