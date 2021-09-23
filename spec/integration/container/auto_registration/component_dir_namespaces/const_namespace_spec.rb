@@ -3,7 +3,42 @@
 require "dry/system/loader/autoloading"
 require "zeitwerk"
 
-RSpec.describe "Component dir object namespace" do
+RSpec.describe "Component dir with a const namespace" do
+  describe "Namespace with no const namespace (i.e. top-level constants)" do
+    let!(:container) {
+      module Test
+        class Container < Dry::System::Container
+          configure do |config|
+            config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/nil_const_namespace").realpath
+
+            config.component_dirs.add "lib" do |dir|
+              dir.namespaces.add "adapters", const: nil
+            end
+          end
+        end
+      end
+
+      Test::Container
+    }
+
+    context "lazy loading" do
+      it "resolves the component" do
+        # FIXME: clean up the constant
+        expect(container["adapter_component"]).to be_an_instance_of AdapterComponent
+      end
+    end
+
+    context "finalized" do
+      before do
+        container.finalize!
+      end
+
+      it "resolves the component" do
+        expect(container["adapter_component"]).to be_an_instance_of AdapterComponent
+      end
+    end
+  end
+
   context "default loader" do
     let!(:container) {
       module Test
@@ -12,7 +47,8 @@ RSpec.describe "Component dir object namespace" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/mixed_path_and_object_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              # no path namespace (i.e. a "flattened" folder structure), but an object namespace of "Test"
+              # No path namespace (i.e. a "flattened" folder structure), but a const
+              # namespace of `Test`
               dir.namespaces.root const: "test"
             end
           end
@@ -47,7 +83,8 @@ RSpec.describe "Component dir object namespace" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/mixed_path_and_object_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              # no path namespace (i.e. a "flattened" folder structure), but an object namespace of "Test"
+              # No path namespace (i.e. a "flattened" folder structure), but a const
+              # namespace of `Test`
               dir.namespaces.root const: "test"
 
               dir.loader = Dry::System::Loader::Autoloading

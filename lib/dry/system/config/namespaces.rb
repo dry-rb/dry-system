@@ -22,7 +22,7 @@ module Dry
           @namespaces = source.namespaces.dup
         end
 
-        def add(path, identifier: nil, const: identifier)
+        def add(path, identifier: nil, const: path)
           # TODO: would there be any reason to add _multiple_ namespace configurations on
           # path? I think not, but it would be good to validate this
           raise "TODO: create a namespace already added error", path if namespaces.key?(path)

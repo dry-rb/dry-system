@@ -65,6 +65,10 @@ module Dry
         identifier.root_key
       end
 
+      def path
+        identifier.key_with_separator(PATH_SEPARATOR)
+      end
+
       # TODO: update docs to reflect it's in component now
       #
       # Returns a path-delimited representation of the identifier, with the namespace
@@ -79,9 +83,7 @@ module Dry
       #
       # @return [String] the path
       # @api public
-      def path
-        path = identifier.key_with_separator(PATH_SEPARATOR)
-
+      def require_path
         if namespace&.path
           "#{namespace.path}/#{path}"
         else
@@ -90,8 +92,14 @@ module Dry
       end
 
       # TODO: docs
-      def const_namespace
-        namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
+      def const_path
+        namespace_path = namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
+
+        if namespace_path
+          "#{namespace_path}/#{path}"
+        else
+          path
+        end
       end
 
       # @api private
