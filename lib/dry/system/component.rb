@@ -37,7 +37,7 @@ module Dry
       attr_reader :options
 
       # @api private
-      def initialize(identifier, namespace: nil, **options)
+      def initialize(identifier, namespace:, **options)
         @identifier = identifier
         @namespace = namespace
         @options = DEFAULT_OPTIONS.merge(options)
@@ -65,8 +65,16 @@ module Dry
         identifier.root_key
       end
 
+      # TODO: mention in docs that this is the path _relative to the component's given
+      # namespace_
       def path
-        identifier.key_with_separator(PATH_SEPARATOR)
+        if namespace.identifier_namespace
+          identifier
+            .namespaced(from: namespace.identifier_namespace, to: nil)
+            .key_with_separator(PATH_SEPARATOR)
+        else
+          identifier.key_with_separator(PATH_SEPARATOR)
+        end
       end
 
       # TODO: update docs to reflect it's in component now

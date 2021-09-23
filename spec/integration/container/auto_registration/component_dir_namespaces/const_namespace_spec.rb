@@ -39,6 +39,41 @@ RSpec.describe "Component dir with a const namespace" do
     end
   end
 
+  describe "Namespace with distinct const namespace" do
+    let!(:container) {
+      module Test
+        class Container < Dry::System::Container
+          configure do |config|
+            config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/distinct_const_namespace").realpath
+
+            config.component_dirs.add "lib" do |dir|
+              dir.namespaces.add "adapters", identifier: "adapters", const: "system_adapters"
+            end
+          end
+        end
+      end
+
+      Test::Container
+    }
+
+    context "lazy loading" do
+      it "resolves the component" do
+        # FIXME: clean up the constant
+        expect(container["adapters.adapter_component"]).to be_an_instance_of SystemAdapters::AdapterComponent
+      end
+    end
+
+    context "finalized" do
+      before do
+        container.finalize!
+      end
+
+      it "resolves the component" do
+        expect(container["adapters.adapter_component"]).to be_an_instance_of SystemAdapters::AdapterComponent
+      end
+    end
+  end
+
   context "default loader" do
     let!(:container) {
       module Test

@@ -113,6 +113,13 @@ module Dry
       end
 
       def find_component_file(identifier, namespace)
+        # To properly find the file within a namespace with an explicitly provided
+        # identifier_namespace, we should strip the identifier_namespace from beginning of
+        # our given identifier
+        if namespace.identifier_namespace
+          identifier = identifier.namespaced(from: namespace.identifier_namespace, to: nil)
+        end
+
         file_name = "#{identifier.key_with_separator(PATH_SEPARATOR)}#{RB_EXT}"
 
         component_file =

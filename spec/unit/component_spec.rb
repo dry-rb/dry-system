@@ -3,11 +3,13 @@
 require "dry/system/component"
 require "dry/system/identifier"
 require "dry/system/loader"
+require "dry/system/config/namespace"
 
 RSpec.describe Dry::System::Component do
-  subject(:component) { described_class.new(identifier, loader: loader) }
+  subject(:component) { described_class.new(identifier, namespace: namespace, loader: loader) }
 
   let(:identifier) { Dry::System::Identifier.new("test.foo") }
+  let(:namespace) { Dry::System::Config::Namespace.default_root }
   let(:loader) { class_spy(Dry::System::Loader) }
 
   it "is loadable" do
