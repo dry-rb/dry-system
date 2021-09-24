@@ -9,7 +9,7 @@ RSpec.describe "Auto-registration / Custom auto_register proc" do
         config.component_dirs.add "components" do |dir|
           dir.namespaces.add "test"
           dir.auto_register = proc do |component|
-            !component.path.match?(/bar/)
+            !component.key.match?(/bar/)
           end
         end
       end

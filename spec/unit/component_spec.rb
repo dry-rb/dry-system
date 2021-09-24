@@ -34,12 +34,6 @@ RSpec.describe Dry::System::Component do
     end
   end
 
-  describe "#path" do
-    it "returns a path based on the identifier" do
-      expect(component.path).to eq "test/foo"
-    end
-  end
-
   describe "#instance" do
     it "builds and returns an instance via the loader" do
       loaded_instance = double(:instance)

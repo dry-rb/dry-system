@@ -49,7 +49,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           config.component_dirs.add "components" do |dir|
             dir.namespaces.add "test"
             dir.memoize = proc do |component|
-              !component.path.match?(/bar/)
+              !component.key.match?(/bar/)
             end
           end
         end

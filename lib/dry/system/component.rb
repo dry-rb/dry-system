@@ -65,18 +65,6 @@ module Dry
         identifier.root_key
       end
 
-      # TODO: mention in docs that this is the path _relative to the component's given
-      # namespace_
-      def path
-        if namespace.identifier_namespace
-          identifier
-            .namespaced(from: namespace.identifier_namespace, to: nil)
-            .key_with_separator(PATH_SEPARATOR)
-        else
-          identifier.key_with_separator(PATH_SEPARATOR)
-        end
-      end
-
       # TODO: update docs to reflect it's in component now
       #
       # Returns a path-delimited representation of the identifier, with the namespace
@@ -92,21 +80,21 @@ module Dry
       # @return [String] the path
       # @api public
       def require_path
-        if namespace&.path
-          "#{namespace.path}/#{path}"
+        if namespace.path
+          "#{namespace.path}/#{path_in_namespace}"
         else
-          path
+          path_in_namespace
         end
       end
 
       # TODO: docs
       def const_path
-        namespace_path = namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
+        namespace_const_path = namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
 
-        if namespace_path
-          "#{namespace_path}/#{path}"
+        if namespace_const_path
+          "#{namespace_const_path}/#{path_in_namespace}"
         else
-          path
+          path_in_namespace
         end
       end
 
@@ -131,6 +119,17 @@ module Dry
       end
 
       private
+
+      def path_in_namespace
+        identifier_in_namespace =
+          if namespace.identifier_namespace
+            identifier.namespaced(from: namespace.identifier_namespace, to: nil)
+          else
+            identifier
+          end
+
+        identifier_in_namespace.key_with_separator(PATH_SEPARATOR)
+      end
 
       def callable_option?(value)
         if value.respond_to?(:call)
