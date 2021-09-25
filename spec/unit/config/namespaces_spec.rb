@@ -110,7 +110,7 @@ RSpec.describe Dry::System::Config::Namespaces do
         namespaces.each(&b)
       }.to yield_successive_args(
         an_object_satisfying { |ns| ns.path == "test/path" },
-        an_object_satisfying { |ns| ns.root? },
+        an_object_satisfying(&:root?)
       )
     end
   end
