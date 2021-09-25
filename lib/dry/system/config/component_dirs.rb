@@ -115,7 +115,6 @@ module Dry
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
           dirs[path] = ComponentDir.new(path).tap do |dir|
-            # TODO: I switched this order... does it feel OK?
             yield dir if block_given?
             apply_defaults_to_dir(dir)
           end
