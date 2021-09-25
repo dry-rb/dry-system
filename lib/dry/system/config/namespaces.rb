@@ -7,7 +7,13 @@ require_relative "namespace"
 module Dry
   module System
     module Config
+      # The configured namespaces for a ComponentDir
+      #
+      # @see Config::ComponentDir#namespaces
+      #
+      # @api private
       class Namespaces
+        # @api private
         attr_reader :namespaces
 
         # @api private
@@ -81,22 +87,36 @@ module Dry
 
         # rubocop:enable Layout/LineLength
 
+        # Adds a root component dir namespace
+        #
+        # @see #add
+        #
         # @api public
         def root(identifier: nil, const: nil)
           add(Namespace::ROOT_PATH, identifier: identifier, const: const)
         end
 
+        # @api private
         def empty?
           namespaces.empty?
         end
 
-        # TODO: document why we set up a default root ns
+        # Returns the configured namespaces as an array
+        #
+        # This adds a root namespace to the end of the array if one was not configured
+        # manually. This fallback ensures that all components in the component dir can be
+        # loaded.
+        #
+        # @return [Array<Namespace>] the namespaces
+        #
+        # @api private
         def to_a
           namespaces.values.tap do |arr|
             arr << Namespace.default_root unless arr.any?(&:root?)
           end
         end
 
+        # @api private
         def each(&block)
           to_a.each(&block)
         end
