@@ -59,7 +59,7 @@ module Dry
       ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
       def key
-        identifier.to_s
+        identifier.key
       end
 
       def root_key
