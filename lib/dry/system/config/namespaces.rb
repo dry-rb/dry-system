@@ -68,7 +68,7 @@ module Dry
         #
         # @api public
         def add(path, identifier: path, const: path)
-          raise NamespaceAlreadyAddedError, path  if namespaces.key?(path)
+          raise NamespaceAlreadyAddedError, path if namespaces.key?(path)
 
           namespaces[path] = Namespace.new(
             path: path,
