@@ -32,24 +32,24 @@ module Dry
         # @example Adding a namespace with top-level identifiers
         #   # Components defined within admin/ (e.g. admin/my_component.rb) will be:
         #   #
-        #   # - Registered with top-level identifiers (e.g. "my_component")
-        #   # - Expected to have constants in `Admin`, matching the namespace's path (e.g. Admin::MyComponent)
+        #   # - Registered with top-level identifiers ("my_component")
+        #   # - Expected to have constants in `Admin`, matching the namespace's path (Admin::MyComponent)
         #
         #   namespaces.add "admin", identifier: nil
         #
         # @example Adding a namespace with top-level class constants
         #   # Components defined within adapters/ (e.g. adapters/my_adapter.rb) will be:
         #   #
-        #   # - Registered with leading identifiers matching the namespace's path (e.g. "adapters.my_adapter")
-        #   # - Expected to have top-level constants (e.g. ::MyAdapter)
+        #   # - Registered with leading identifiers matching the namespace's path ("adapters.my_adapter")
+        #   # - Expected to have top-level constants (::MyAdapter)
         #
         #   namespaces.add "adapters", const: nil
         #
         # @example Adding a namespace with distinct identifiers and class constants
         #   # Components defined within `bananas/` (e.g. bananas/banana_split.rb) will be:
         #   #
-        #   # - Registered with the given leading identifier (e.g. "desserts.banana_split")
-        #   # - Expected to have constants within the given namespace (e.g. EatMe::Now::BananaSplit)
+        #   # - Registered with the given leading identifier ("desserts.banana_split")
+        #   # - Expected to have constants within the given namespace (EatMe::Now::BananaSplit)
         #
         #   namespaces.add "bananas", identifier: "desserts", const: "eat_me/now"
         #
