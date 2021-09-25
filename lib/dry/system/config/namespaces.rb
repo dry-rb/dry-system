@@ -21,6 +21,8 @@ module Dry
           @namespaces = source.namespaces.dup
         end
 
+        # rubocop:disable Layout/LineLength
+
         # Adds a component dir namespace
         #
         # A namespace encompasses a given sub-directory of the component dir, and
@@ -76,6 +78,8 @@ module Dry
             const_namespace: const
           )
         end
+
+        # rubocop:enable Layout/LineLength
 
         # @api public
         def root(identifier: nil, const: nil)
