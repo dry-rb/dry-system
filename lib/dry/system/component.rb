@@ -26,14 +26,14 @@ module Dry
       }.freeze
 
       # @!attribute [r] identifier
-      #   @return [String] component's unique identifier
+      #   @return [String] the component's unique identifier
       attr_reader :identifier
 
       # TODO: docs
       attr_reader :namespace
 
       # @!attribute [r] options
-      #   @return [Hash] component's options
+      #   @return [Hash] the component's options
       attr_reader :options
 
       # @api private
