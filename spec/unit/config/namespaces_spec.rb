@@ -47,7 +47,7 @@ RSpec.describe Dry::System::Config::Namespaces do
     it "raises an exception when a root namespace is already added" do
       namespaces.root
 
-      expect { namespaces.root }.to raise_error(Dry::System::NamespaceAlreadyAddedError, %r{root path})
+      expect { namespaces.root }.to raise_error(Dry::System::NamespaceAlreadyAddedError, /root path/)
     end
   end
 
