@@ -88,10 +88,8 @@ RSpec.describe Dry::System::Identifier do
       end
     end
 
-    # this spec was added because start_with? is called with nil (at Dry::System::ComponentDir, line 74).
-    # that should possibly be fixed
     it "returns false when the provided string is nil" do
-      expect(identifier.start_with?(nil)).to be false
+      expect(identifier.start_with?(nil)).to be true
     end
 
     context "component is identified by a single segment" do

@@ -63,7 +63,9 @@ module Dry
       # @return [Boolean]
       # @api public
       def start_with?(leading_namespaces)
-        key.start_with?("#{leading_namespaces}#{separator}") || key.eql?(leading_namespaces)
+        leading_namespaces.nil? ||
+          key.start_with?("#{leading_namespaces}#{separator}") ||
+          key.eql?(leading_namespaces)
       end
 
       # Returns the key with its segments separated by the given separator

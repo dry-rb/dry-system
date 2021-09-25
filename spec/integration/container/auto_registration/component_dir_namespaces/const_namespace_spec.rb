@@ -12,7 +12,7 @@ RSpec.describe "Component dir with a const namespace" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/nil_const_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              dir.namespaces.add "adapters", const: nil
+              dir.namespaces.add "adapters", identifier: nil, const: nil
             end
           end
         end
@@ -47,7 +47,7 @@ RSpec.describe "Component dir with a const namespace" do
             config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/distinct_const_namespace").realpath
 
             config.component_dirs.add "lib" do |dir|
-              dir.namespaces.add "adapters", identifier: "adapters", const: "system_adapters"
+              dir.namespaces.add "adapters", const: "system_adapters"
             end
           end
         end

@@ -45,6 +45,8 @@ module Dry
         namespaces.each do |namespace|
           identifier = Identifier.new(key, separator: container.config.namespace_separator)
 
+          next unless identifier.start_with?(namespace.identifier_namespace)
+
           if (file_path = find_component_file(identifier, namespace))
             return build_component(identifier, namespace, file_path)
           end
