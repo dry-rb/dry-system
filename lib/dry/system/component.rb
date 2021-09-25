@@ -29,7 +29,8 @@ module Dry
       #   @return [String] the component's unique identifier
       attr_reader :identifier
 
-      # TODO: docs
+      # @!attribute [r] namespace
+      #   @return [Dry::System::Config::Namespace] the component's namespace
       attr_reader :namespace
 
       # @!attribute [r] options
