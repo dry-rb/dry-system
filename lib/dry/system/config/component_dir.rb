@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "dry/configurable"
+require "dry/core/deprecations"
+require "dry/system/constants"
 require "dry/system/loader"
 require_relative "namespaces"
 
@@ -68,40 +70,52 @@ module Dry
         #   @see add_to_load_path=
         setting :add_to_load_path, default: true
 
-        # @!method default_namespace=(leading_namespace)
+        # @!method namespaces
         #
-        #   Sets the leading namespace segments to be stripped when registering components
-        #   from the dir in the container.
+        #   Returns the configured namespaces for the component dir.
         #
-        #   This is useful to configure when the dir contains components in a module
-        #   namespace that you don't want repeated in their identifiers.
+        #   Allows namespaces to added on the returned object via {Namespaces#add}.
         #
-        #   Defaults to `nil`.
+        #   @see Namespaces#add
         #
-        #   @param leading_namespace [String, nil]
-        #   @return [String, nil]
-        #
-        #   @example
-        #     dir.default_namespace = "my_app"
-        #
-        #   @example
-        #     dir.default_namespace = "my_app.admin"
-        #
-        #   @see default_namespace
-        #
-        # @!method default_namespace
-        #
-        #   Returns the configured value.
-        #
-        #   @return [String, nil]
-        #
-        #   @see default_namespace=
-
-        # FIXME: fix docs above
+        #   @return [Namespaces] the namespaces
         setting :namespaces, default: Namespaces.new, cloneable: true
 
-        # TODO: add deprecated default_namespace setting
-        # TODO: add `namespace` setting for nicer shortcut
+        # rubocop:disable Layout/LineLength
+
+        def default_namespace=(namespace)
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Config::ComponentDir#default_namespace=",
+            "Add a namespace instead: `dir.namespaces.add #{namespace.to_s.inspect}, identifier: nil`",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          # We don't have the configured separator here, so the best we can do is guess
+          # that it's a dot
+          namespace_path = namespace.gsub(".", PATH_SEPARATOR)
+
+          return if namespaces.namespaces[namespace_path]
+
+          namespaces.add namespace_path, identifier: nil
+        end
+
+        def default_namespace
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Config::ComponentDir#default_namespace",
+            "Use namespaces instead, e.g. `dir.namespaces`",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          ns_path = namespaces.to_a.reject(&:root?).first&.path
+
+          # We don't have the configured separator here, so the best we can do is guess
+          # that it's a dot
+          ns_path&.gsub(PATH_SEPARATOR, ".")
+        end
+
+        # rubocop:enable Layout/LineLength
 
         # @!method loader=(loader)
         #
