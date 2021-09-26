@@ -57,6 +57,8 @@ module Dry
 
       # TODO: support calling without block, returning enum
       def each_component
+        return enum_for(:each_component) unless block_given?
+
         each_file do |file_path, namespace|
           yield component_for_path(file_path, namespace)
         end
@@ -65,6 +67,8 @@ module Dry
       private
 
       def each_file
+        return enum_for(:each_file) unless block_given?
+
         raise ComponentDirNotFoundError, full_path unless Dir.exist?(full_path)
 
         namespaces.each do |namespace|
