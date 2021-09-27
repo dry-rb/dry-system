@@ -15,6 +15,12 @@ module RSpec
     module WithTmpDirectory
       private
 
+      def make_tmp_directory
+        Pathname(Dir.mktmpdir).tap do |dir|
+          (@tmp_dirs ||= []) << dir
+        end
+      end
+
       def with_tmp_directory(dir = Dir.mktmpdir, &block)
         delete_tmp_directory(dir)
         create_tmp_directory(dir)
@@ -39,4 +45,10 @@ end
 
 RSpec.configure do |config|
   config.include RSpec::Support::WithTmpDirectory
+
+  config.after :all do
+    Array(@tmp_dirs).each do |dir|
+      FileUtils.remove_entry dir
+    end
+  end
 end

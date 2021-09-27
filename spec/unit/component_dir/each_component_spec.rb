@@ -4,10 +4,6 @@ require "dry/system/component_dir"
 require "dry/system/config/component_dir"
 require "dry/system/container"
 
-require "fileutils"
-require "pathname"
-require "tmpdir"
-
 RSpec.describe Dry::System::ComponentDir, "#each_component" do
   subject(:components) { component_dir.each_component.to_a }
 
@@ -30,16 +26,9 @@ RSpec.describe Dry::System::ComponentDir, "#each_component" do
     }
   }
 
-  # TODO: make this easy/ergonomic
   before :all do
-    @dir = Pathname(Dir.mktmpdir)
-  end
+    @dir = make_tmp_directory
 
-  after :all do
-    FileUtils.remove_entry @dir
-  end
-
-  before :all do
     with_directory(@dir) do
       write "lib/test/component_file.rb"
 
@@ -136,13 +125,8 @@ RSpec.describe Dry::System::ComponentDir, "#each_component" do
   end
 
   context "clashing component names in multiple namespaces" do
-    # TODO: make this easy/ergonomic
     before :all do
-      @dir = Pathname(Dir.mktmpdir)
-    end
-
-    after :all do
-      FileUtils.remove_entry @dir
+      @dir = make_tmp_directory
     end
 
     before :all do
