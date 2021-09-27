@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "tmpdir"
+
 module TestCleanableNamespace
   def remove_constants
     constants.each do |name|
@@ -31,7 +33,7 @@ RSpec.configure do |config|
     # We want to delete only newly loaded features within spec/, otherwise we're removing
     # files that may have been additionally loaded for rspec et al
     new_features_to_keep = ($LOADED_FEATURES - @loaded_features).tap do |feats|
-      feats.delete_if { |path| path.include?(SPEC_ROOT.to_s) }
+      feats.delete_if { |path| path.include?(SPEC_ROOT.to_s) || path.include?(Dir.tmpdir) }
     end
     $LOADED_FEATURES.replace(@loaded_features + new_features_to_keep)
 
