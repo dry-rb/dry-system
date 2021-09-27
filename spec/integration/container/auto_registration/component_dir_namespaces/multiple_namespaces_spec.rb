@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe "Component dir path namespaces" do
+  let(:cleanable_constants) { %i[Component RootComponent] }
+  let(:cleanable_modules) { %i[Admin Test] }
+
   context "single namespace" do
     let!(:container) {
       module Test
@@ -69,8 +72,6 @@ RSpec.describe "Component dir path namespaces" do
         expect(container["root_component"]).to be_an_instance_of RootComponent
       end
     end
-
-    # FIXME: how do I clean up the root namespace? look for the other place I've done it
   end
 
   context "nil namespace then single named namespace" do
@@ -108,8 +109,6 @@ RSpec.describe "Component dir path namespaces" do
         expect(container["root_component"]).to be_an_instance_of RootComponent
       end
     end
-
-    # FIXME: how do I clean up the root namespace? look for the other place I've done it
   end
 
   context "two named namespaces" do
