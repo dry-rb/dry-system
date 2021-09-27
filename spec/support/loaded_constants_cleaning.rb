@@ -17,7 +17,7 @@ RSpec.configure do |config|
   config.include_context "Loaded constants cleaning"
 
   config.before do
-    @load_paths = $LOAD_PATH.dup
+    @load_path = $LOAD_PATH.dup
     @loaded_features = $LOADED_FEATURES.dup
 
     cleanable_modules.each do |mod|
@@ -26,8 +26,14 @@ RSpec.configure do |config|
   end
 
   config.after do
-    $LOAD_PATH.replace(@load_paths)
-    $LOADED_FEATURES.replace(@loaded_features)
+    $LOAD_PATH.replace(@load_path)
+
+    # We want to delete only newly loaded features within spec/, otherwise we're removing
+    # files that may have been additionally loaded for rspec et al
+    new_features_to_keep = ($LOADED_FEATURES - @loaded_features).tap do |feats|
+      feats.delete_if { |path| path.include?(SPEC_ROOT.to_s) }
+    end
+    $LOADED_FEATURES.replace(@loaded_features + new_features_to_keep)
 
     cleanable_modules.each do |mod|
       Object.const_get(mod).remove_constants
