@@ -4,22 +4,37 @@ RSpec.describe "Component dir path namespaces" do
   let(:cleanable_constants) { %i[Component RootComponent] }
   let(:cleanable_modules) { %i[Admin Test] }
 
-  context "single namespace" do
-    let!(:container) {
-      module Test
-        class Container < Dry::System::Container
-          configure do |config|
-            config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_namespace").realpath
+  let(:container) {
+    root = @dir
+    dir_config = defined?(component_dir_config) ? component_dir_config : -> * {}
 
-            config.component_dirs.add "lib" do |dir|
-              dir.namespaces.add "test", identifier: nil
+    Class.new(Dry::System::Container) {
+      configure do |config|
+        config.root = root
+        config.component_dirs.add("lib", &dir_config)
+      end
+    }
+  }
+
+  context "single configured path namespace" do
+    let(:component_dir_config) {
+      -> dir {
+        dir.namespaces.add "test", identifier: nil
+      }
+    }
+
+    before :context do
+      @dir = make_tmp_directory
+
+      with_directory(@dir) do
+        write "lib/test/component.rb", <<~RUBY
+          module Test
+            class Component
             end
           end
-        end
+        RUBY
       end
-
-      Test::Container
-    }
+    end
 
     context "lazy loading" do
       it do
@@ -38,96 +53,135 @@ RSpec.describe "Component dir path namespaces" do
     end
   end
 
-  context "single named namespace and nil namespace" do
-    let!(:container) {
-      module Test
-        class Container < Dry::System::Container
-          configure do |config|
-            config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_and_null_namespace").realpath
+  context "mixed path and root namespace" do
+    before :context do
+      @dir = make_tmp_directory
 
-            config.component_dirs.add "lib" do |dir|
-              dir.namespaces.add "test", identifier: nil
+      with_directory(@dir) do
+        write "lib/test/component.rb", <<~RUBY
+          module Test
+            class Component
             end
           end
-        end
-      end
+        RUBY
 
-      Test::Container
-    }
+        write "lib/component.rb", <<~RUBY
+          class Component
+          end
+        RUBY
 
-    context "lazy loading" do
-      it do
-        expect(container["component"]).to be_an_instance_of Test::Component
-        expect(container["root_component"]).to be_an_instance_of RootComponent
+        write "lib/root_component.rb", <<~RUBY
+          class RootComponent
+          end
+        RUBY
       end
     end
 
-    context "finalized" do
-      before do
-        container.finalize!
+    context "configured path namespace before implicit trailing root namespace" do
+      let(:component_dir_config) {
+        -> dir {
+          dir.namespaces.add "test", identifier: nil
+        }
+      }
+
+      context "lazy loading" do
+        it do
+          expect(container["component"]).to be_an_instance_of Test::Component
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
       end
 
-      it do
-        expect(container["component"]).to be_an_instance_of Test::Component
-        expect(container["root_component"]).to be_an_instance_of RootComponent
+      context "finalized" do
+        before do
+          container.finalize!
+        end
+
+        it do
+          expect(container["component"]).to be_an_instance_of Test::Component
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
+      end
+    end
+
+    context "leading root namespace before configured path namespace" do
+      let(:component_dir_config) {
+        -> dir {
+          dir.namespaces.root
+          dir.namespaces.add "test", identifier: nil
+        }
+      }
+
+      context "lazy loading" do
+        it do
+          expect(container["component"]).to be_an_instance_of Component
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
+      end
+
+      context "finalized" do
+        before do
+          container.finalize!
+        end
+
+        it do
+          expect(container["component"]).to be_an_instance_of Component
+          expect(container["root_component"]).to be_an_instance_of RootComponent
+        end
       end
     end
   end
 
-  context "nil namespace then single named namespace" do
-    let!(:container) {
-      module Test
-        class Container < Dry::System::Container
-          configure do |config|
-            config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/single_and_null_namespace").realpath
+  context "multiple configured path namespaces" do
+    before :context do
+      @dir = make_tmp_directory
 
-            config.component_dirs.add "lib" do |dir|
-              dir.namespaces.root
-              dir.namespaces.add "test", identifier: nil
+      with_directory(@dir) do
+        write "lib/admin/admin_component.rb", <<~RUBY
+          module Admin
+            class AdminComponent
             end
           end
-        end
-      end
+        RUBY
 
-      Test::Container
-    }
+        write "lib/admin/component.rb", <<~RUBY
+          module Admin
+            class Component
+            end
+          end
+        RUBY
 
-    context "lazy loading" do
-      it do
-        expect(container["component"]).to be_an_instance_of Component
-        expect(container["root_component"]).to be_an_instance_of RootComponent
+        write "lib/test/test_component.rb", <<~RUBY
+          module Test
+            class TestComponent
+            end
+          end
+        RUBY
+
+        write "lib/test/component.rb", <<~RUBY
+          module Test
+            class Component
+            end
+          end
+        RUBY
+
+        write "lib/component.rb", <<~RUBY
+          class Component
+          end
+        RUBY
+
+        write "lib/root_component.rb", <<~RUBY
+          class RootComponent
+          end
+        RUBY
       end
     end
 
-    context "finalized" do
-      before do
-        container.finalize!
-      end
-
-      it do
-        expect(container["component"]).to be_an_instance_of Component
-        expect(container["root_component"]).to be_an_instance_of RootComponent
-      end
-    end
-  end
-
-  context "two named namespaces" do
     context "ordered one way" do
-      let!(:container) {
-        module Test
-          class Container < Dry::System::Container
-            configure do |config|
-              config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
-
-              config.component_dirs.add "lib" do |dir|
-                dir.namespaces.add "admin", identifier: nil
-                dir.namespaces.add "test", identifier: nil
-              end
-            end
-          end
-        end
-
-        Test::Container
+      let(:component_dir_config) {
+        -> dir {
+          dir.namespaces.add "admin", identifier: nil
+          dir.namespaces.add "test", identifier: nil
+        }
       }
 
       context "lazy loading" do
@@ -152,21 +206,11 @@ RSpec.describe "Component dir path namespaces" do
     end
 
     context "ordered the other way" do
-      let!(:container) {
-        module Test
-          class Container < Dry::System::Container
-            configure do |config|
-              config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
-
-              config.component_dirs.add "lib" do |dir|
-                dir.namespaces.add "test", identifier: nil
-                dir.namespaces.add "admin", identifier: nil
-              end
-            end
-          end
-        end
-
-        Test::Container
+      let(:component_dir_config) {
+        -> dir {
+          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "admin", identifier: nil
+        }
       }
 
       context "lazy loading" do
@@ -189,26 +233,14 @@ RSpec.describe "Component dir path namespaces" do
         end
       end
     end
-  end
 
-  context "two named namespaces and nil namespace" do
-    context "order 1" do
-      let!(:container) {
-        module Test
-          class Container < Dry::System::Container
-            configure do |config|
-              config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
-
-              config.component_dirs.add "lib" do |dir|
-                dir.namespaces.root
-                dir.namespaces.add "admin", identifier: nil
-                dir.namespaces.add "test", identifier: nil
-              end
-            end
-          end
-        end
-
-        Test::Container
+    context "leading root namespace" do
+      let(:component_dir_config) {
+        -> dir {
+          dir.namespaces.root
+          dir.namespaces.add "admin", identifier: nil
+          dir.namespaces.add "test", identifier: nil
+        }
       }
 
       context "lazy loading" do
@@ -234,23 +266,13 @@ RSpec.describe "Component dir path namespaces" do
       end
     end
 
-    context "order 2" do
-      let!(:container) {
-        module Test
-          class Container < Dry::System::Container
-            configure do |config|
-              config.root = SPEC_ROOT.join("fixtures/component_dir_namespaces/two_namespaces").realpath
-
-              config.component_dirs.add "lib" do |dir|
-                dir.namespaces.add "admin", identifier: nil
-                dir.namespaces.root
-                dir.namespaces.add "test", identifier: nil
-              end
-            end
-          end
-        end
-
-        Test::Container
+    context "root namespace between path namespaces" do
+      let(:component_dir_config) {
+        -> dir {
+          dir.namespaces.add "admin", identifier: nil
+          dir.namespaces.root
+          dir.namespaces.add "test", identifier: nil
+        }
       }
 
       context "lazy loading" do
