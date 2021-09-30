@@ -43,11 +43,12 @@ RSpec.configure do |config|
     end
 
     dbg = cleanable_constants.any?
+    # dbg = cleanable_constants.any?
 
     cleanable_constants.each do |const|
-      if dbg
-        puts "Cleaning constant #{const}... defined? #{Object.const_defined?(const)}"
-      end
+      # if dbg
+      #   puts "Cleaning constant #{const}... defined? #{Object.const_defined?(const)}"
+      # end
 
       Object.send :remove_const, const if Object.const_defined?(const)
     end
