@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Component dir path namespaces" do
+RSpec.describe "Component dir namespaces / Multiple namespaces" do
   let(:cleanable_constants) { %i[Component RootComponent] }
   let(:cleanable_modules) { %i[Admin Test] }
 
