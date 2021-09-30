@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "concurrent/hash"
 require "dry/system/errors"
 require_relative "namespace"
 
@@ -18,7 +17,7 @@ module Dry
 
         # @api private
         def initialize
-          @namespaces = Concurrent::Hash.new
+          @namespaces = {}
         end
 
         # @api private
