@@ -38,8 +38,10 @@ RSpec.configure do |config|
   config.include RSpec::Support::TmpDirectory
 
   config.after :all do
-    Array(@made_tmp_dirs).each do |dir|
-      FileUtils.remove_entry dir
+    if instance_variable_defined?(:@made_tmp_dirs)
+      Array(@made_tmp_dirs).each do |dir|
+        FileUtils.remove_entry dir
+      end
     end
   end
 end
