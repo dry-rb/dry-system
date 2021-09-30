@@ -33,6 +33,7 @@ jobs:
         include:
           - ruby: "3.0"
             coverage: "true"
+    continue-on-error: ${{ startsWith(matrix.ruby, 'jruby') }}
     env:
       COVERAGE: ${{matrix.coverage}}
       COVERAGE_TOKEN: ${{secrets.CODACY_PROJECT_TOKEN}}
