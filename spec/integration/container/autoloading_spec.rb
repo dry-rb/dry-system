@@ -6,9 +6,6 @@ require "zeitwerk"
 
 RSpec.describe "Autoloading loader" do
   specify "Resolving components using Zeitwerk" do
-    # See https://github.com/jruby/jruby/issues/5638 for current state
-    pending "Zeitwerk is not fully functioning on JRuby" if RUBY_PLATFORM == "java"
-
     module Test
       class Container < Dry::System::Container
         config.root = SPEC_ROOT.join("fixtures/autoloading").realpath
