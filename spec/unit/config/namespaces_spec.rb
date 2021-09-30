@@ -122,7 +122,7 @@ RSpec.describe Dry::System::Config::Namespaces do
       new_namespaces = namespaces.dup
 
       expect(new_namespaces.to_a).to eq(namespaces.to_a)
-      expect(new_namespaces.namespaces).not_to eq(namespaces.namespaces)
+      expect(new_namespaces.namespaces).not_to be(namespaces.namespaces)
     end
   end
 end
