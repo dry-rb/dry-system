@@ -34,22 +34,6 @@ RSpec.describe Dry::System::Identifier do
     end
   end
 
-  # FIXME: move this to somewhere? component?
-
-  # describe "#path" do
-  #   it "is the identifier string, preceded by the namespace, with separators converted to path separators" do
-  #     expect(identifier.path).to eq "my_app/kittens/operations/belly_rub"
-  #   end
-
-  #   context "no namespace given" do
-  #     let(:namespace) { nil }
-
-  #     it "is the identifier string with separators converted to path separators" do
-  #       expect(identifier.path).to eq "kittens/operations/belly_rub"
-  #     end
-  #   end
-  # end
-
   describe "#start_with?" do
     it "returns true when the provided string matches the base segment of the identifier string" do
       expect(identifier.start_with?("kittens")).to be true
