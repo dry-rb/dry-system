@@ -51,7 +51,7 @@ module Dry
     #
     # Every container needs to be configured with following settings:
     #
-    # * `:name` - a unique container identifier
+    # * `:name` - a unique container name
     # * `:root` - a system root directory (defaults to `pwd`)
     #
     # @example
