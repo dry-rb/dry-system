@@ -149,7 +149,7 @@ module Dry
           if block
             @settings_block = block
           elsif @settings_block
-            @settings = Settings::DSL.new(name, &@settings_block).call
+            @settings = Settings::DSL.new(&@settings_block).call
           else
             @settings
           end
