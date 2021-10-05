@@ -11,12 +11,9 @@ module Dry
   module System
     module Settings
       class DSL < BasicObject
-        attr_reader :identifier
-
         attr_reader :schema
 
-        def initialize(identifier, &block)
-          @identifier = identifier
+        def initialize(&block)
           @schema = {}
           instance_eval(&block)
         end
