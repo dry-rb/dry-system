@@ -8,17 +8,17 @@ module Dry
     # Register external component provider
     #
     # @api public
-    def self.register_provider(identifier, options)
-      providers.register(identifier, options)
-      providers[identifier].load_components
+    def self.register_provider(name, options)
+      providers.register(name, options)
+      providers[name].load_components
       self
     end
 
     # Register an external component that can be booted within other systems
     #
     # @api public
-    def self.register_component(identifier, provider:, &block)
-      providers[provider].register_component(identifier, block)
+    def self.register_component(name, provider:, &block)
+      providers[provider].register_component(name, block)
       self
     end
 
