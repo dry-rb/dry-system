@@ -36,8 +36,8 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_key" do
       expect(component).to be_a Dry::System::Component
     end
 
-    it "has a matching identifier" do
-      expect(component.identifier.to_s).to eq identifier
+    it "has a matching key" do
+      expect(component.key).to eq key
     end
 
     it "has the component dir's namespace" do
