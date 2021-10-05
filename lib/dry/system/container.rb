@@ -236,7 +236,7 @@ module Dry
         #     persistence.register(:db, DB.new)
         #   end
         #
-        # @param name [Symbol] a unique identifier for a bootable component
+        # @param name [Symbol] a unique name for a bootable component
         #
         # @see Lifecycle
         #
@@ -264,17 +264,15 @@ module Dry
         deprecate :finalize, :boot
 
         # @api private
-        def boot_external(identifier, from:, key: nil, namespace: nil, &block)
+        def boot_external(name, from:, key: nil, namespace: nil, &block)
           System.providers[from].component(
-            identifier, key: key, namespace: namespace, finalize: block, container: self
+            name, key: key, namespace: namespace, finalize: block, container: self
           )
         end
 
         # @api private
-        def boot_local(identifier, namespace: nil, &block)
-          Components::Bootable.new(
-            identifier, container: self, namespace: namespace, &block
-          )
+        def boot_local(name, namespace: nil, &block)
+          Components::Bootable.new(name, container: self, namespace: namespace, &block)
         end
 
         # Return if a container was finalized

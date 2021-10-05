@@ -21,13 +21,13 @@ module Dry
         end
 
         def exists?(name)
-          components.any? { |component| component.identifier == name }
+          components.any? { |component| component.name == name }
         end
 
         def [](name)
-          component = components.detect { |c| c.identifier == name }
+          component = components.detect { |c| c.name == name }
 
-          component || raise(InvalidComponentIdentifierError, name)
+          component || raise(InvalidComponentNameError, name)
         end
       end
     end
