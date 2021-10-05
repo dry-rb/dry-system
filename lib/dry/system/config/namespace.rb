@@ -37,6 +37,10 @@ module Dry
         def path?
           !root?
         end
+
+        def default_key_namespace?
+          key_namespace == path
+        end
       end
     end
   end

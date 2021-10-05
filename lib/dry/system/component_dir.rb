@@ -65,6 +65,33 @@ module Dry
 
       private
 
+      def namespaces
+        config.namespaces.to_a.map { |namespace| normalize_namespace(namespace) }
+      end
+
+      # Returns an array of "normalized" namespaces, safe for loading components
+      #
+      # This works around the issue of a namespace being added for a nested path but
+      # _without_ specifying a key namespace. In this case, the key namespace will defaut
+      # to match the path, meaning it will contain path separators instead of the
+      # container's configured `namespace_separator` (due to `Config::Namespaces` not
+      # being able to know the configured `namespace_separator`), so we need to replace
+      # the path separators with the proper `namespace_separator` here (where we _do_ know
+      # what it is).
+      def normalize_namespace(namespace)
+        if namespace.path&.include?(PATH_SEPARATOR) && namespace.default_key_namespace?
+          namespace = namespace.class.new(
+            path: namespace.path,
+            key_namespace: namespace.key_namespace.gsub(
+              PATH_SEPARATOR, container.config.namespace_separator
+            ),
+            const_namespace: namespace.const_namespace
+          )
+        end
+
+        namespace
+      end
+
       def each_file
         return enum_for(:each_file) unless block_given?
 
