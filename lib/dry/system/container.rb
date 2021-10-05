@@ -491,7 +491,7 @@ module Dry
         #
         # @!method registered?(key)
         #   Whether a +key+ is registered (doesn't trigger loading)
-        #   @param [String,Symbol] key Identifier
+        #   @param [String,Symbol] key The key
         #   @return [Boolean]
         #   @api public
         #
