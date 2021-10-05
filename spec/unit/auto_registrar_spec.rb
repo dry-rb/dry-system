@@ -10,7 +10,7 @@ RSpec.describe Dry::System::AutoRegistrar, "#finalize!" do
       configure do |config|
         config.root = SPEC_ROOT.join("fixtures").realpath
         config.component_dirs.add "components" do |dir|
-          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "test", key: nil
         end
       end
     }

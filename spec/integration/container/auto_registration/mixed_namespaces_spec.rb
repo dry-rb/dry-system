@@ -7,7 +7,7 @@ RSpec.describe "Auto-registration / Components with mixed namespaces" do
         config.root = SPEC_ROOT.join("fixtures/mixed_namespaces").realpath
 
         config.component_dirs.add "lib" do |dir|
-          dir.namespaces.add "test/my_app", identifier: nil
+          dir.namespaces.add "test/my_app", key: nil
         end
       end
     end

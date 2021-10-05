@@ -14,7 +14,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
-            dir.namespaces.add "test", identifier: nil
+            dir.namespaces.add "test", key: nil
             dir.memoize = true
           end
         end
@@ -47,7 +47,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
-            dir.namespaces.add "test", identifier: nil
+            dir.namespaces.add "test", key: nil
             dir.memoize = proc do |component|
               !component.key.match?(/bar/)
             end
@@ -94,7 +94,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
-              dir.namespaces.add "test", identifier: nil
+              dir.namespaces.add "test", key: nil
             end
           end
         end
@@ -113,7 +113,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
-              dir.namespaces.add "test", identifier: nil
+              dir.namespaces.add "test", key: nil
               dir.memoize = false
             end
           end
@@ -133,7 +133,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
           configure do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
-              dir.namespaces.add "test", identifier: nil
+              dir.namespaces.add "test", key: nil
               dir.memoize = true
             end
           end

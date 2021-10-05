@@ -155,11 +155,11 @@ RSpec.describe "Component dir namespaces / Default loader" do
     end
   end
 
-  describe "identifier namespaces" do
-    describe "top-level identifier namespace" do
+  describe "key namespaces" do
+    describe "top-level key namespace" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.add "ns", identifier: nil
+          dir.namespaces.add "ns", key: nil
         }
       }
 
@@ -195,10 +195,10 @@ RSpec.describe "Component dir namespaces / Default loader" do
       end
     end
 
-    describe "distinct identifier namespace" do
+    describe "distinct key namespace" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.add "ns", identifier: "my_ns"
+          dir.namespaces.add "ns", key: "my_ns"
         }
       }
 
@@ -245,10 +245,10 @@ RSpec.describe "Component dir namespaces / Default loader" do
       end
     end
 
-    describe "distinct identifier namespace for root" do
+    describe "distinct key namespace for root" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.root identifier: "my_ns"
+          dir.namespaces.root key: "my_ns"
         }
       }
 
@@ -293,10 +293,10 @@ RSpec.describe "Component dir namespaces / Default loader" do
     end
   end
 
-  describe "mixed constant and identifier namespaces" do
+  describe "mixed constant and key namespaces" do
     let(:component_dir_config) {
       -> dir {
-        dir.namespaces.add "ns", identifier: "my_ns", const: "my_namespace"
+        dir.namespaces.add "ns", key: "my_ns", const: "my_namespace"
       }
     }
 

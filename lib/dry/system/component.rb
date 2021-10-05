@@ -123,8 +123,8 @@ module Dry
 
       def path_in_namespace
         identifier_in_namespace =
-          if namespace.identifier_namespace
-            identifier.namespaced(from: namespace.identifier_namespace, to: nil)
+          if namespace.key_namespace
+            identifier.namespaced(from: namespace.key_namespace, to: nil)
           else
             identifier
           end

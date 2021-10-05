@@ -105,7 +105,7 @@ RSpec.describe Dry::System::ComponentDir, "#each_component" do
   context "namespaces configured" do
     let(:component_dir_config) {
       -> config {
-        config.namespaces.add "test", identifier: nil
+        config.namespaces.add "test", key: nil
       }
     }
 
@@ -138,8 +138,8 @@ RSpec.describe Dry::System::ComponentDir, "#each_component" do
 
     let(:component_dir_config) {
       -> config {
-        config.namespaces.add "ns1", identifier: nil
-        config.namespaces.add "ns2", identifier: nil
+        config.namespaces.add "ns1", key: nil
+        config.namespaces.add "ns2", key: nil
       }
     }
 

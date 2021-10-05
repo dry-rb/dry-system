@@ -28,7 +28,7 @@ RSpec.describe "Auto-registration" do
         configure do |config|
           config.root = SPEC_ROOT.join("fixtures/standard_container_with_default_namespace").realpath
           config.component_dirs.add "lib" do |dir|
-            dir.namespaces.add "test", identifier: nil
+            dir.namespaces.add "test", key: nil
           end
         end
       end

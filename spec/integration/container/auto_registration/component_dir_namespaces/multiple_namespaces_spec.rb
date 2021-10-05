@@ -19,7 +19,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
   context "single configured path namespace" do
     let(:component_dir_config) {
       -> dir {
-        dir.namespaces.add "test", identifier: nil
+        dir.namespaces.add "test", key: nil
       }
     }
 
@@ -80,7 +80,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     context "configured path namespace before implicit trailing root namespace" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "test", key: nil
         }
       }
 
@@ -107,12 +107,13 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       let(:component_dir_config) {
         -> dir {
           dir.namespaces.root
-          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "test", key: nil
         }
       }
 
       context "lazy loading" do
         it do
+          # binding.irb
           expect(container["component"]).to be_an_instance_of Component
           expect(container["root_component"]).to be_an_instance_of RootComponent
         end
@@ -124,6 +125,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
         end
 
         it do
+          # binding.irb
           expect(container["component"]).to be_an_instance_of Component
           expect(container["root_component"]).to be_an_instance_of RootComponent
         end
@@ -179,8 +181,8 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     context "ordered one way" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.add "admin", identifier: nil
-          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "admin", key: nil
+          dir.namespaces.add "test", key: nil
         }
       }
 
@@ -208,8 +210,8 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     context "ordered the other way" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.add "test", identifier: nil
-          dir.namespaces.add "admin", identifier: nil
+          dir.namespaces.add "test", key: nil
+          dir.namespaces.add "admin", key: nil
         }
       }
 
@@ -238,8 +240,8 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       let(:component_dir_config) {
         -> dir {
           dir.namespaces.root
-          dir.namespaces.add "admin", identifier: nil
-          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "admin", key: nil
+          dir.namespaces.add "test", key: nil
         }
       }
 
@@ -269,9 +271,9 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     context "root namespace between path namespaces" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.add "admin", identifier: nil
+          dir.namespaces.add "admin", key: nil
           dir.namespaces.root
-          dir.namespaces.add "test", identifier: nil
+          dir.namespaces.add "test", key: nil
         }
       }
 

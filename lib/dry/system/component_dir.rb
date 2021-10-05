@@ -45,7 +45,7 @@ module Dry
         namespaces.each do |namespace|
           identifier = Identifier.new(key, separator: container.config.namespace_separator)
 
-          next unless identifier.start_with?(namespace.identifier_namespace)
+          next unless identifier.start_with?(namespace.key_namespace)
 
           if (file_path = find_component_file(identifier, namespace))
             return build_component(identifier, namespace, file_path)
@@ -55,7 +55,6 @@ module Dry
         nil
       end
 
-      # TODO: support calling without block, returning enum
       def each_component
         return enum_for(:each_component) unless block_given?
 
@@ -112,18 +111,17 @@ module Dry
         identifier = Identifier.new(key, separator: separator)
           .namespaced(
             from: namespace.path&.gsub(PATH_SEPARATOR, separator),
-            to: namespace.identifier_namespace
+            to: namespace.key_namespace
           )
 
         build_component(identifier, namespace, path)
       end
 
       def find_component_file(identifier, namespace)
-        # To properly find the file within a namespace with an explicitly provided
-        # identifier_namespace, we should strip the identifier_namespace from beginning of
-        # our given identifier
-        if namespace.identifier_namespace
-          identifier = identifier.namespaced(from: namespace.identifier_namespace, to: nil)
+        # To properly find the file within a namespace with a key_namespace, we should
+        # strip the key_namespace from beginning of our given identifier
+        if namespace.key_namespace
+          identifier = identifier.namespaced(from: namespace.key_namespace, to: nil)
         end
 
         file_name = "#{identifier.key_with_separator(PATH_SEPARATOR)}#{RB_EXT}"

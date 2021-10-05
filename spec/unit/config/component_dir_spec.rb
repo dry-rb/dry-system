@@ -21,7 +21,7 @@ RSpec.describe Dry::System::Config::ComponentDir do
 
       expect(added_namespace).to be
       expect(added_namespace.path).to eq "admin"
-      expect(added_namespace.identifier_namespace).to eq nil
+      expect(added_namespace.key_namespace).to eq nil
       expect(added_namespace.const_namespace).to eq "admin"
     end
 
@@ -32,7 +32,7 @@ RSpec.describe Dry::System::Config::ComponentDir do
 
       expect(added_namespace).to be
       expect(added_namespace.path).to eq "nested/admin"
-      expect(added_namespace.identifier_namespace).to eq nil
+      expect(added_namespace.key_namespace).to eq nil
       expect(added_namespace.const_namespace).to eq "nested/admin"
     end
 

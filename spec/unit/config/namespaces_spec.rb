@@ -9,7 +9,7 @@ RSpec.describe Dry::System::Config::Namespaces do
   describe "#add" do
     it "adds the namespace with the given configuration" do
       expect {
-        namespaces.add "test/path", identifier: "ident_ns", const: "const_ns"
+        namespaces.add "test/path", key: "key_ns", const: "const_ns"
       }
         .to change { namespaces.namespaces.keys.length }
         .from(0).to(1)
@@ -17,7 +17,7 @@ RSpec.describe Dry::System::Config::Namespaces do
       ns = namespaces.namespaces["test/path"]
 
       expect(ns.path).to eq "test/path"
-      expect(ns.identifier_namespace).to eq "ident_ns"
+      expect(ns.key_namespace).to eq "key_ns"
       expect(ns.const_namespace).to eq "const_ns"
     end
 
@@ -31,7 +31,7 @@ RSpec.describe Dry::System::Config::Namespaces do
   describe "#root" do
     it "adds a root namespace with the given configuration" do
       expect {
-        namespaces.root identifier: "ident_ns", const: "const_ns"
+        namespaces.root key: "key_ns", const: "const_ns"
       }
         .to change { namespaces.namespaces.keys.length }
         .from(0).to(1)
@@ -40,7 +40,7 @@ RSpec.describe Dry::System::Config::Namespaces do
 
       expect(ns).to be_root
       expect(ns.path).to be_nil
-      expect(ns.identifier_namespace).to eq "ident_ns"
+      expect(ns.key_namespace).to eq "key_ns"
       expect(ns.const_namespace).to eq "const_ns"
     end
 
@@ -61,32 +61,32 @@ RSpec.describe Dry::System::Config::Namespaces do
 
   describe "#to_a" do
     it "returns an array of the configured namespaces, in order of definition" do
-      namespaces.add "test/path", identifier: "test_ident_ns"
-      namespaces.root identifier: "root_ident_ns"
+      namespaces.add "test/path", key: "test_key_ns"
+      namespaces.root key: "root_key_ns"
 
       arr = namespaces.to_a
 
       expect(arr.length).to eq 2
 
       expect(arr[0].path).to eq "test/path"
-      expect(arr[0].identifier_namespace).to eq "test_ident_ns"
+      expect(arr[0].key_namespace).to eq "test_key_ns"
 
       expect(arr[1].path).to eq nil
-      expect(arr[1].identifier_namespace).to eq "root_ident_ns"
+      expect(arr[1].key_namespace).to eq "root_key_ns"
     end
 
     it "appends a default root namespace if not explicitly configured" do
-      namespaces.add "test/path", identifier: "test_ident_ns"
+      namespaces.add "test/path", key: "test_key_ns"
 
       arr = namespaces.to_a
 
       expect(arr.length).to eq 2
 
       expect(arr[0].path).to eq "test/path"
-      expect(arr[0].identifier_namespace).to eq "test_ident_ns"
+      expect(arr[0].key_namespace).to eq "test_key_ns"
 
       expect(arr[1].path).to be nil
-      expect(arr[1].identifier_namespace).to be nil
+      expect(arr[1].key_namespace).to be nil
       expect(arr[1].const_namespace).to be nil
     end
 
@@ -96,15 +96,15 @@ RSpec.describe Dry::System::Config::Namespaces do
       expect(arr.length).to eq 1
 
       expect(arr[0].path).to be nil
-      expect(arr[0].identifier_namespace).to be nil
+      expect(arr[0].key_namespace).to be nil
       expect(arr[0].const_namespace).to be nil
     end
   end
 
   describe "#each" do
     it "yields each configured namespace" do
-      namespaces.add "test/path", identifier: "test_ident_ns"
-      namespaces.root identifier: "root_ident_ns"
+      namespaces.add "test/path", key: "test_key_ns"
+      namespaces.root key: "root_key_ns"
 
       expect { |b|
         namespaces.each(&b)
@@ -117,7 +117,7 @@ RSpec.describe Dry::System::Config::Namespaces do
 
   describe "#dup" do
     it "dups the registry of namespaces" do
-      namespaces.add "test/path", identifier: "test_ident_ns"
+      namespaces.add "test/path", key: "test_key_ns"
 
       new_namespaces = namespaces.dup
 

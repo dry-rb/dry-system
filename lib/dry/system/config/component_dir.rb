@@ -86,7 +86,7 @@ module Dry
         def default_namespace=(namespace)
           Dry::Core::Deprecations.announce(
             "Dry::System::Config::ComponentDir#default_namespace=",
-            "Add a namespace instead: `dir.namespaces.add #{namespace.to_s.inspect}, identifier: nil`",
+            "Add a namespace instead: `dir.namespaces.add #{namespace.to_s.inspect}, key: nil`",
             tag: "dry-system",
             uplevel: 1
           )
@@ -97,7 +97,7 @@ module Dry
 
           return if namespaces.namespaces[namespace_path]
 
-          namespaces.add namespace_path, identifier: nil
+          namespaces.add namespace_path, key: nil
         end
 
         def default_namespace

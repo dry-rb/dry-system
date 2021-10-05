@@ -8,25 +8,25 @@ module Dry
       class Namespace
         ROOT_PATH = nil
 
-        include Dry::Equalizer(:path, :identifier_namespace, :const_namespace)
+        include Dry::Equalizer(:path, :key_namespace, :const_namespace)
 
         attr_reader :path
 
-        attr_reader :identifier_namespace
+        attr_reader :key_namespace
 
         attr_reader :const_namespace
 
         def self.default_root
           new(
             path: ROOT_PATH,
-            identifier_namespace: nil,
+            key_namespace: nil,
             const_namespace: nil
           )
         end
 
-        def initialize(path:, identifier_namespace:, const_namespace:)
+        def initialize(path:, key_namespace:, const_namespace:)
           @path = path
-          @identifier_namespace = identifier_namespace
+          @key_namespace = key_namespace
           @const_namespace = const_namespace
         end
 

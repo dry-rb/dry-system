@@ -42,7 +42,7 @@ module Dry
         #   # - Registered with top-level identifiers ("my_component")
         #   # - Expected to have constants in `Admin`, matching the namespace's path (Admin::MyComponent)
         #
-        #   namespaces.add "admin", identifier: nil
+        #   namespaces.add "admin", key: nil
         #
         # @example Adding a namespace with top-level class constants
         #   # Components defined within adapters/ (e.g. adapters/my_adapter.rb) will be:
@@ -58,7 +58,7 @@ module Dry
         #   # - Registered with the given leading identifier ("desserts.banana_split")
         #   # - Expected to have constants within the given namespace (EatMe::Now::BananaSplit)
         #
-        #   namespaces.add "bananas", identifier: "desserts", const: "eat_me/now"
+        #   namespaces.add "bananas", key: "desserts", const: "eat_me/now"
         #
         # @param path [String] the path to the sub-directory of source files to which this
         #   namespace should apply, relative to the component dir
@@ -74,12 +74,12 @@ module Dry
         # @see Namespace
         #
         # @api public
-        def add(path, identifier: path, const: path)
+        def add(path, key: path, const: path)
           raise NamespaceAlreadyAddedError, path if namespaces.key?(path)
 
           namespaces[path] = Namespace.new(
             path: path,
-            identifier_namespace: identifier,
+            key_namespace: key,
             const_namespace: const
           )
         end
@@ -91,8 +91,8 @@ module Dry
         # @see #add
         #
         # @api public
-        def root(identifier: nil, const: nil)
-          add(Namespace::ROOT_PATH, identifier: identifier, const: const)
+        def root(key: nil, const: nil)
+          add(Namespace::ROOT_PATH, key: key, const: const)
         end
 
         # @api private

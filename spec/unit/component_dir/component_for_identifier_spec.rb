@@ -10,7 +10,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
   let(:component_dir) {
     Dry::System::ComponentDir.new(
       config: Dry::System::Config::ComponentDir.new("component_dir_1") { |config|
-        config.namespaces.add "namespace", identifier: nil
+        config.namespaces.add "namespace", key: nil
         component_dir_options.each do |key, val|
           config.send :"#{key}=", val
         end
