@@ -25,6 +25,6 @@ end
 
 RSpec.configure do |config|
   config.after do
-    Dry::System.providers.items.delete_if { |p| p.identifier != :system }
+    Dry::System.providers.items.delete_if { |p| p.name != :system }
   end
 end
