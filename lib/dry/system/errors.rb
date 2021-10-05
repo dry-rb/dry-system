@@ -27,7 +27,7 @@ module Dry
     ComponentFileMismatchError = Class.new(StandardError) do
       def initialize(component)
         super(<<-STR)
-          Bootable component '#{component.identifier}' not found
+          Bootable component '#{component.name}' not found
         STR
       end
     end
@@ -43,13 +43,13 @@ module Dry
       end
     end
 
-    # Error raised when component's identifier is not valid
+    # Error raised when component's name is not valid
     #
     # @api public
-    InvalidComponentIdentifierError = Class.new(ArgumentError) do
+    InvalidComponentNameError = Class.new(ArgumentError) do
       def initialize(name)
         super(
-          "component identifier +#{name}+ is invalid or boot file is missing"
+          "component +#{name}+ is invalid or boot file is missing"
         )
       end
     end

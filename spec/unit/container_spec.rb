@@ -64,20 +64,20 @@ RSpec.describe Dry::System::Container do
         expect(container["test.bar"]).to eql("I was finalized")
       end
 
-      it "expects identifier to point to an existing boot file" do
+      it "expects name to point to an existing boot file" do
         expect {
           container.start(:foo)
         }.to raise_error(
           ArgumentError,
-          "component identifier +foo+ is invalid or boot file is missing"
+          "component +foo+ is invalid or boot file is missing"
         )
       end
 
-      describe "mismatch betwenn finalize name and registered component" do
+      describe "mismatch between finalize name and registered component" do
         it "raises a meaningful error" do
           expect {
             container.start(:hell)
-          }.to raise_error(Dry::System::InvalidComponentIdentifierError)
+          }.to raise_error(Dry::System::InvalidComponentNameError)
         end
       end
     end

@@ -47,9 +47,9 @@ module Dry
       class Bootable
         DEFAULT_FINALIZE = proc {}
 
-        # @!attribute [r] identifier
-        #   @return [Symbol] component's unique identifier
-        attr_reader :identifier
+        # @!attribute [r] key
+        #   @return [Symbol] component's unique name
+        attr_reader :name
 
         # @!attribute [r] options
         #   @return [Hash] component's options
@@ -66,10 +66,10 @@ module Dry
         TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
 
         # @api private
-        def initialize(identifier, options = {}, &block)
+        def initialize(name, options = {}, &block)
           @config = nil
           @config_block = nil
-          @identifier = identifier
+          @name = name
           @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
           @options = block ? options.merge(block: block) : options
           @namespace = options[:namespace]
@@ -149,7 +149,7 @@ module Dry
           if block
             @settings_block = block
           elsif @settings_block
-            @settings = Settings::DSL.new(identifier, &@settings_block).call
+            @settings = Settings::DSL.new(name, &@settings_block).call
           else
             @settings
           end
@@ -211,8 +211,8 @@ module Dry
         # @return [Dry::Struct]
         #
         # @api private
-        def new(identifier, new_options = EMPTY_HASH)
-          self.class.new(identifier, options.merge(new_options))
+        def new(name, new_options = EMPTY_HASH)
+          self.class.new(name, options.merge(new_options))
         end
 
         # Return a new instance with updated options
@@ -221,7 +221,7 @@ module Dry
         #
         # @api private
         def with(new_options)
-          self.class.new(identifier, options.merge(new_options))
+          self.class.new(name, options.merge(new_options))
         end
 
         private
@@ -247,7 +247,7 @@ module Dry
           when String, Symbol
             container.namespace(namespace) { |c| return c }
           when true
-            container.namespace(identifier) { |c| return c }
+            container.namespace(name) { |c| return c }
           when nil
             container
           else
