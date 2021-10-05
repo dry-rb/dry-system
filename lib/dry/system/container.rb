@@ -628,7 +628,7 @@ module Dry
           # important because the component may still be loadable via the manual registrar
           # or an imported container.
           component_dirs.detect { |dir|
-            if (component = dir.component_for_identifier(key))
+            if (component = dir.component_for_key(key))
               break component
             end
           } || IndirectComponent.new(Identifier.new(key, separator: config.namespace_separator))

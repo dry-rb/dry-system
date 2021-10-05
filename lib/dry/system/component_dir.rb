@@ -41,7 +41,7 @@ module Dry
       # @return [Dry::System::Component, nil] the component, if found
       #
       # @api private
-      def component_for_identifier(key)
+      def component_for_key(key)
         namespaces.each do |namespace|
           identifier = Identifier.new(key, separator: container.config.namespace_separator)
 
