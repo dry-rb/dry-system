@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec::Matchers.define :have_memoized_component do |identifier|
+RSpec::Matchers.define :have_memoized_component do |key|
   match do |container|
-    container[identifier].eql?(container[identifier])
+    container[key].eql?(container[key])
   end
 end
 
