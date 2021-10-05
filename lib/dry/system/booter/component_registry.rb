@@ -25,7 +25,7 @@ module Dry
         end
 
         def [](name)
-          component = components.detect { |component| component.identifier == name }
+          component = components.detect { |c| c.identifier == name }
 
           component || raise(InvalidComponentIdentifierError, name)
         end
