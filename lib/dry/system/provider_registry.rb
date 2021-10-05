@@ -15,12 +15,12 @@ module Dry
         items.each(&block)
       end
 
-      def register(identifier, options)
-        items << Provider.new(identifier, options)
+      def register(name, options)
+        items << Provider.new(name, options)
       end
 
-      def [](identifier)
-        detect { |provider| provider.identifier == identifier }
+      def [](name)
+        detect { |provider| provider.name == name }
       end
     end
   end

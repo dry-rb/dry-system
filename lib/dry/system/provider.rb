@@ -7,14 +7,14 @@ require "dry/system/components/bootable"
 module Dry
   module System
     class Provider
-      attr_reader :identifier
+      attr_reader :name
 
       attr_reader :options
 
       attr_reader :components
 
-      def initialize(identifier, options)
-        @identifier = identifier
+      def initialize(name, options)
+        @name = name
         @options = options
         @components = Concurrent::Map.new
       end
@@ -35,9 +35,9 @@ module Dry
         boot_files.detect { |path| Pathname(path).basename(RB_EXT).to_s == name.to_s }
       end
 
-      def component(name, options = {})
-        identifier = options[:key] || name
-        components.fetch(identifier).new(name, options)
+      def component(component_name, options = {})
+        component_key = options[:key] || component_name
+        components.fetch(component_key).new(component_name, options)
       end
 
       def load_components
