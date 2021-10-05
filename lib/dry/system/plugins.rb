@@ -84,9 +84,7 @@ module Dry
       # Enables a plugin if not already enabled.
       # Raises error if plugin cannot be found in the plugin registry.
       #
-      # Plugin identifier
-      #
-      # @param [Symbol] name The plugin identifier
+      # @param [Symbol] name The plugin name
       # @param [Hash] options Plugin options
       #
       # @return [self]
