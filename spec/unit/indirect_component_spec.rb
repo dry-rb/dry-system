@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "dry/system/null_component"
 require "dry/system/identifier"
+require "dry/system/indirect_component"
 
-RSpec.describe Dry::System::NullComponent do
+RSpec.describe Dry::System::IndirectComponent do
   subject(:component) { described_class.new(identifier) }
   let(:identifier) { Dry::System::Identifier.new("test.foo") }
 

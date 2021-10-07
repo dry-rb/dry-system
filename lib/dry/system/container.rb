@@ -18,8 +18,8 @@ require "dry/system/constants"
 require "dry/system/errors"
 require "dry/system/identifier"
 require "dry/system/importer"
+require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
-require "dry/system/null_component"
 require "dry/system/plugins"
 
 require_relative "component_dir"
@@ -629,7 +629,7 @@ module Dry
             if (component = dir.component_for_key(key))
               break component
             end
-          } || NullComponent.new(Identifier.new(key, separator: config.namespace_separator))
+          } || IndirectComponent.new(Identifier.new(key, separator: config.namespace_separator))
         end
       end
 
