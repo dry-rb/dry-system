@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/system/loader/autoloading"
-require "zeitwerk"
-
 RSpec.describe "Component dir namespaces / Default loader" do
   let(:container) {
     root = @dir
