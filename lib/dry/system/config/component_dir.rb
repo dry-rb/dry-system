@@ -32,7 +32,7 @@ module Dry
         #
         #   @example
         #     dir.auto_register = proc do |component|
-        #       !component.start_with?("entities")
+        #       !component.identifier.start_with?("entities")
         #     end
         #
         #   @see auto_register
@@ -156,7 +156,7 @@ module Dry
         #
         #   @example
         #     dir.memoize = proc do |component|
-        #       !component.start_with?("providers")
+        #       !component.identifier.start_with?("providers")
         #     end
         #
         #   @see memoize
