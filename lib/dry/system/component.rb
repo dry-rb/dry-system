@@ -66,19 +66,24 @@ module Dry
         identifier.root_key
       end
 
-      # TODO: update docs to reflect it's in component now
+      # Returns a path-delimited representation of the compnent, appropriate for passing
+      # to `Kernel#require` to require its source file
       #
-      # Returns a path-delimited representation of the identifier, with the namespace
-      # incorporated. This path is intended for usage when requiring the component's
-      # source file.
+      # The path takes into account the rules of the namespace used to load the component.
       #
-      # @example
-      #   identifier.key # => "articles.operations.create"
-      #   identifier.namespace # => "admin"
+      # @example Component from a root namespace
+      #   component.key # => "articles.create"
+      #   component.require_path # => "articles/create"
       #
-      #   identifier.path # => "admin/articles/operations/create"
+      # @example Component from an "admin/" path namespace (with `key_namespace: nil`)
+      #   component.key # => "articles.create"
+      #   component.require_path # => "admin/articles/create"
       #
-      # @return [String] the path
+      # @see Config::Namespaces#add
+      # @see Config::Namespace
+      #
+      # @return [String] the require path
+      #
       # @api public
       def require_path
         if namespace.path
@@ -88,7 +93,28 @@ module Dry
         end
       end
 
-      # TODO: docs
+      # Returns an "underscored", path-delimited representation of the component,
+      # appropriate for passing to the inflector for constantizing
+      #
+      # The const path takes into account the rules of the namespace used to load the
+      # component.
+      #
+      # @example Component from a namespace with `const_namespace: nil`
+      #   component.key # => "articles.create_article"
+      #   component.const_path # => "articles/create_article"
+      #   component.inflector.constantize(component.const_path) # => Articles::CreateArticle
+      #
+      # @example Component from a namespace with `const_namespace: "admin"`
+      #   component.key # => "articles.create_article"
+      #   component.const_path # => "admin/articles/create_article"
+      #   component.inflector.constantize(component.const_path) # => Admin::Articles::CreateArticle
+      #
+      # @see Config::Namespaces#add
+      # @see Config::Namespace
+      #
+      # @return [String] the const path
+      #
+      # @api public
       def const_path
         namespace_const_path = namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
 
