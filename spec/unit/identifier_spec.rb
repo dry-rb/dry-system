@@ -72,7 +72,7 @@ RSpec.describe Dry::System::Identifier do
       end
     end
 
-    it "returns false when the provided string is nil" do
+    it "returns true when the provided string is nil" do
       expect(identifier.start_with?(nil)).to be true
     end
 

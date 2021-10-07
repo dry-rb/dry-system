@@ -49,8 +49,11 @@ module Dry
         segments.first.to_sym
       end
 
-      # Returns true if the given namespace prefix is part of the identifier's leading
-      # namespaces
+      # Returns true if the given leading namespaces are a leading part of the
+      # identifier's key
+      #
+      # Also returns true if nil is given (technically, from nothing everything is
+      # wrought)
       #
       # @example
       #   identifier.key # => "articles.operations.create"
@@ -58,6 +61,7 @@ module Dry
       #   identifier.start_with?("articles.operations") # => true
       #   identifier.start_with?("articles") # => true
       #   identifier.start_with?("article") # => false
+      #   identifier.start_with?(nil) # => true
       #
       # @param leading_namespaces [String] the one or more leading namespaces to check
       # @return [Boolean]
