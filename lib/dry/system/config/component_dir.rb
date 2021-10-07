@@ -81,8 +81,6 @@ module Dry
         #   @return [Namespaces] the namespaces
         setting :namespaces, default: Namespaces.new, cloneable: true
 
-        # rubocop:disable Layout/LineLength
-
         def default_namespace=(namespace)
           Dry::Core::Deprecations.announce(
             "Dry::System::Config::ComponentDir#default_namespace=",
@@ -114,8 +112,6 @@ module Dry
           # that it's a dot
           ns_path&.gsub(PATH_SEPARATOR, ".")
         end
-
-        # rubocop:enable Layout/LineLength
 
         # @!method loader=(loader)
         #
