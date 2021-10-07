@@ -87,7 +87,7 @@ module Dry
       # @api public
       def require_path
         if namespace.path
-          "#{namespace.path}#{FILE_SEPARATOR}#{path_in_namespace}"
+          "#{namespace.path}#{PATH_SEPARATOR}#{path_in_namespace}"
         else
           path_in_namespace
         end
@@ -119,7 +119,7 @@ module Dry
         namespace_const_path = namespace.const_namespace&.gsub(identifier.separator, PATH_SEPARATOR)
 
         if namespace_const_path
-          "#{namespace_const_path}#{FILE_SEPARATOR}#{path_in_namespace}"
+          "#{namespace_const_path}#{PATH_SEPARATOR}#{path_in_namespace}"
         else
           path_in_namespace
         end
