@@ -44,6 +44,13 @@ module Dry
         @options = DEFAULT_OPTIONS.merge(options)
       end
 
+      # Returns true, indicating that the component is directly loadable from the files
+      # managed by the container
+      #
+      # This is the inverse of {IndirectComponent#loadable?}
+      #
+      # @return [TrueClass]
+      #
       # @api private
       def loadable?
         true
@@ -58,10 +65,24 @@ module Dry
       end
       ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
+      # Returns the component's unique key
+      #
+      # @return [String] the key
+      #
+      # @see Identifier#key
+      #
+      # @api public
       def key
         identifier.key
       end
 
+      # Returns the root namespace segment of the component's key, as a symbol
+      #
+      # @see Identifier#root_key
+      #
+      # @return [Symbol] the root key
+      #
+      # @api public
       def root_key
         identifier.root_key
       end
