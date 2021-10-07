@@ -115,7 +115,8 @@ module Dry
 
         # @!method loader=(loader)
         #
-        #   Sets the loader to use when registering coponents from the dir in the container.
+        #   Sets the loader to use when registering components from the dir in the
+        #   container.
         #
         #   Defaults to `Dry::System::Loader`.
         #
