@@ -37,7 +37,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     end
 
     context "lazy loading" do
-      it do
+      it "resolves the compoment via the namespace" do
         expect(container["component"]).to be_an_instance_of Test::Component
       end
     end
@@ -47,7 +47,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
         container.finalize!
       end
 
-      it do
+      it "resolves the compoment via the namespace" do
         expect(container["component"]).to be_an_instance_of Test::Component
       end
     end
@@ -85,7 +85,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       }
 
       context "lazy loading" do
-        it do
+        it "prefers the configured namespace when resolving components" do
           expect(container["component"]).to be_an_instance_of Test::Component
           expect(container["root_component"]).to be_an_instance_of RootComponent
         end
@@ -96,7 +96,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
           container.finalize!
         end
 
-        it do
+        it "prefers the configured namespace when resolving components" do
           expect(container["component"]).to be_an_instance_of Test::Component
           expect(container["root_component"]).to be_an_instance_of RootComponent
         end
@@ -112,8 +112,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       }
 
       context "lazy loading" do
-        it do
-          # binding.irb
+        it "prefers the root namespace when resolving components" do
           expect(container["component"]).to be_an_instance_of Component
           expect(container["root_component"]).to be_an_instance_of RootComponent
         end
@@ -124,8 +123,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
           container.finalize!
         end
 
-        it do
-          # binding.irb
+        it "prefers the root namespace when resolving components" do
           expect(container["component"]).to be_an_instance_of Component
           expect(container["root_component"]).to be_an_instance_of RootComponent
         end
@@ -187,7 +185,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       }
 
       context "lazy loading" do
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Admin::Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -199,7 +197,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
           container.finalize!
         end
 
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Admin::Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -216,7 +214,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       }
 
       context "lazy loading" do
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Test::Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -228,7 +226,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
           container.finalize!
         end
 
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Test::Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -246,7 +244,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       }
 
       context "lazy loading" do
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -259,7 +257,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
           container.finalize!
         end
 
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -278,7 +276,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       }
 
       context "lazy loading" do
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Admin::Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
@@ -291,7 +289,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
           container.finalize!
         end
 
-        it do
+        it "prefers the earlier configured namespaces when resolving components" do
           expect(container["component"]).to be_an_instance_of Admin::Component
           expect(container["admin_component"]).to be_an_instance_of Admin::AdminComponent
           expect(container["test_component"]).to be_an_instance_of Test::TestComponent
