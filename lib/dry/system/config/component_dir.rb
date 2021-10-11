@@ -70,49 +70,6 @@ module Dry
         #   @see add_to_load_path=
         setting :add_to_load_path, default: true
 
-        # @!method namespaces
-        #
-        #   Returns the configured namespaces for the component dir.
-        #
-        #   Allows namespaces to added on the returned object via {Namespaces#add}.
-        #
-        #   @see Namespaces#add
-        #
-        #   @return [Namespaces] the namespaces
-        setting :namespaces, default: Namespaces.new, cloneable: true
-
-        def default_namespace=(namespace)
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Config::ComponentDir#default_namespace=",
-            "Add a namespace instead: `dir.namespaces.add #{namespace.to_s.inspect}, key: nil`",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          # We don't have the configured separator here, so the best we can do is guess
-          # that it's a dot
-          namespace_path = namespace.gsub(".", PATH_SEPARATOR)
-
-          return if namespaces.namespaces[namespace_path]
-
-          namespaces.add namespace_path, key: nil
-        end
-
-        def default_namespace
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Config::ComponentDir#default_namespace",
-            "Use namespaces instead, e.g. `dir.namespaces`",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          ns_path = namespaces.to_a.reject(&:root?).first&.path
-
-          # We don't have the configured separator here, so the best we can do is guess
-          # that it's a dot
-          ns_path&.gsub(PATH_SEPARATOR, ".")
-        end
-
         # @!method loader=(loader)
         #
         #   Sets the loader to use when registering components from the dir in the
@@ -171,6 +128,49 @@ module Dry
         #
         #   @see memoize=
         setting :memoize, default: false
+
+        # @!method namespaces
+        #
+        #   Returns the configured namespaces for the component dir.
+        #
+        #   Allows namespaces to added on the returned object via {Namespaces#add}.
+        #
+        #   @see Namespaces#add
+        #
+        #   @return [Namespaces] the namespaces
+        setting :namespaces, default: Namespaces.new, cloneable: true
+
+        def default_namespace=(namespace)
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Config::ComponentDir#default_namespace=",
+            "Add a namespace instead: `dir.namespaces.add #{namespace.to_s.inspect}, key: nil`",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          # We don't have the configured separator here, so the best we can do is guess
+          # that it's a dot
+          namespace_path = namespace.gsub(".", PATH_SEPARATOR)
+
+          return if namespaces.namespaces[namespace_path]
+
+          namespaces.add namespace_path, key: nil
+        end
+
+        def default_namespace
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Config::ComponentDir#default_namespace",
+            "Use namespaces instead, e.g. `dir.namespaces`",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          ns_path = namespaces.to_a.reject(&:root?).first&.path
+
+          # We don't have the configured separator here, so the best we can do is guess
+          # that it's a dot
+          ns_path&.gsub(PATH_SEPARATOR, ".")
+        end
 
         # @!endgroup
 
