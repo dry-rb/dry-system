@@ -37,19 +37,6 @@ module Dry
         #
         #   @see add_to_load_path=
 
-        # @!method default_namespace=(value)
-        #
-        #   Sets a default `default_namespace` value for all added component dirs
-        #
-        #   @see ComponentDir.default_namespace
-        #   @see default_namespace
-        #
-        # @!method default_namespace
-        #
-        #   Returns the configured default `default_namespace`
-        #
-        #   @see default_namespace=
-
         # @!method loader=(value)
         #
         #   Sets a default `loader` value for all added component dirs
@@ -75,6 +62,16 @@ module Dry
         #   Returns the configured default `memoize`
         #
         #   @see memoize=
+
+        # @!method namespaces
+        #
+        #   Returns the default configured namespaces for all added component dirs
+        #
+        #   Allows namespaces to added on the returned object via {Namespaces#add}.
+        #
+        #   @see Namespaces#add
+        #
+        #   @return [Namespaces] the namespaces
 
         # @!endgroup
 
