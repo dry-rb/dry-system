@@ -120,12 +120,12 @@ module Dry
       # The const path takes into account the rules of the namespace used to load the
       # component.
       #
-      # @example Component from a namespace with `const_namespace: nil`
+      # @example Component from a namespace with `const: nil`
       #   component.key # => "articles.create_article"
       #   component.const_path # => "articles/create_article"
       #   component.inflector.constantize(component.const_path) # => Articles::CreateArticle
       #
-      # @example Component from a namespace with `const_namespace: "admin"`
+      # @example Component from a namespace with `const: "admin"`
       #   component.key # => "articles.create_article"
       #   component.const_path # => "admin/articles/create_article"
       #   component.inflector.constantize(component.const_path) # => Admin::Articles::CreateArticle
