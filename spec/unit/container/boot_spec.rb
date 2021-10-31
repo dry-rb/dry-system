@@ -66,7 +66,7 @@ RSpec.describe Dry::System::Container, ".boot" do
 
     it "store booted component" do
       system.booter.start(:db)
-      expect(system.booter.booted.map(&:identifier)).to include(:db)
+      expect(system.booter.booted.map(&:name)).to include(:db)
     end
   end
 

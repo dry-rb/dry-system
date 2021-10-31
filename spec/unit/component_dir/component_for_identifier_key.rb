@@ -4,13 +4,13 @@ require "dry/system/component_dir"
 require "dry/system/config/component_dir"
 require "dry/system/container"
 
-RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
-  subject(:component) { component_dir.component_for_identifier(identifier) }
+RSpec.describe Dry::System::ComponentDir, "#component_for_key" do
+  subject(:component) { component_dir.component_for_key(key) }
 
   let(:component_dir) {
     Dry::System::ComponentDir.new(
       config: Dry::System::Config::ComponentDir.new("component_dir_1") { |config|
-        config.default_namespace = "namespace"
+        config.namespaces.add "namespace", key: nil
         component_dir_options.each do |key, val|
           config.send :"#{key}=", val
         end
@@ -30,26 +30,18 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
   let(:root) { SPEC_ROOT.join("fixtures/unit/component").realpath }
 
   context "component file located" do
-    let(:identifier) { "nested.component_file" }
+    let(:key) { "nested.component_file" }
 
     it "returns a component" do
       expect(component).to be_a Dry::System::Component
     end
 
-    it "has a matching identifier" do
-      expect(component.identifier.to_s).to eq identifier
-    end
-
-    it "has a file" do
-      expect(component.file_exists?).to be true
-    end
-
-    it "has a matching file path" do
-      expect(component.file_path.to_s).to eq root.join("component_dir_1/namespace/nested/component_file.rb").to_s
+    it "has a matching key" do
+      expect(component.key).to eq key
     end
 
     it "has the component dir's namespace" do
-      expect(component.identifier.namespace).to eq component_dir.default_namespace
+      expect(component.namespace.path).to eq "namespace"
     end
 
     context "options given as component dir config" do
@@ -61,7 +53,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
     end
 
     context "options given as magic comments in file" do
-      let(:identifier) { "nested.component_file_with_auto_register_false" }
+      let(:key) { "nested.component_file_with_auto_register_false" }
 
       it "loads options specified within the file's magic comments" do
         expect(component.options).to include(auto_register: false)
@@ -70,7 +62,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
 
     context "options given as both component dir config and as magic comments in file" do
       let(:component_dir_options) { {auto_register: true} }
-      let(:identifier) { "nested.component_file_with_auto_register_false" }
+      let(:key) { "nested.component_file_with_auto_register_false" }
 
       it "prefers the options specified as magic comments" do
         expect(component.options).to include(auto_register: false)
@@ -79,7 +71,7 @@ RSpec.describe Dry::System::ComponentDir, "#component_for_identifier" do
   end
 
   context "component file not located" do
-    let(:identifier) { "nested.missing_component" }
+    let(:key) { "nested.missing_component" }
 
     it "returns nil" do
       expect(component).to be_nil

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Auto-registration / Custom auto_register proc" do
   before do
     class Test::Container < Dry::System::Container
@@ -5,9 +7,9 @@ RSpec.describe "Auto-registration / Custom auto_register proc" do
         config.root = SPEC_ROOT.join("fixtures").realpath
 
         config.component_dirs.add "components" do |dir|
-          dir.default_namespace = "test"
+          dir.namespaces.add "test", key: nil
           dir.auto_register = proc do |component|
-            !component.path.match?(/bar/)
+            !component.key.match?(/bar/)
           end
         end
       end

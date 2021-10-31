@@ -11,13 +11,23 @@ module Dry
       end
     end
 
+    # Error raised when a namespace for a component dir is added to configuration more
+    # than once
+    NamespaceAlreadyAddedError = Class.new(StandardError) do
+      def initialize(path)
+        path_label = path ? "path #{path.inspect}" : "root path"
+
+        super("Namespace for #{path_label} already added")
+      end
+    end
+
     # Error raised when booter file do not match with register component
     #
     # @api public
     ComponentFileMismatchError = Class.new(StandardError) do
       def initialize(component)
         super(<<-STR)
-          Bootable component '#{component.identifier}' not found
+          Bootable component '#{component.name}' not found
         STR
       end
     end
@@ -33,13 +43,13 @@ module Dry
       end
     end
 
-    # Error raised when component's identifier is not valid
+    # Error raised when component's name is not valid
     #
     # @api public
-    InvalidComponentIdentifierError = Class.new(ArgumentError) do
+    InvalidComponentNameError = Class.new(ArgumentError) do
       def initialize(name)
         super(
-          "component identifier +#{name}+ is invalid or boot file is missing"
+          "component +#{name}+ is invalid or boot file is missing"
         )
       end
     end

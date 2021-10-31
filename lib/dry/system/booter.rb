@@ -179,15 +179,15 @@ module Dry
       end
 
       def load_component(path)
-        identifier = Pathname(path).basename(RB_EXT).to_s.to_sym
+        name = Pathname(path).basename(RB_EXT).to_s.to_sym
 
-        Kernel.require path unless components.exists?(identifier)
+        Kernel.require path unless components.exists?(name)
 
         self
       end
 
-      def require_boot_file(identifier)
-        boot_file = find_boot_file(identifier)
+      def require_boot_file(name)
+        boot_file = find_boot_file(name)
 
         Kernel.require boot_file if boot_file
       end

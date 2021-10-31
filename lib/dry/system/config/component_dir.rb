@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 require "dry/configurable"
+require "dry/core/deprecations"
+require "dry/system/constants"
 require "dry/system/loader"
+require_relative "namespaces"
 
 module Dry
   module System
@@ -27,7 +32,7 @@ module Dry
         #
         #   @example
         #     dir.auto_register = proc do |component|
-        #       !component.start_with?("entities")
+        #       !component.identifier.start_with?("entities")
         #     end
         #
         #   @see auto_register
@@ -64,36 +69,6 @@ module Dry
         #
         #   @see add_to_load_path=
         setting :add_to_load_path, default: true
-
-        # @!method default_namespace=(leading_namespace)
-        #
-        #   Sets the leading namespace segments to be stripped when registering components
-        #   from the dir in the container.
-        #
-        #   This is useful to configure when the dir contains components in a module
-        #   namespace that you don't want repeated in their identifiers.
-        #
-        #   Defaults to `nil`.
-        #
-        #   @param leading_namespace [String, nil]
-        #   @return [String, nil]
-        #
-        #   @example
-        #     dir.default_namespace = "my_app"
-        #
-        #   @example
-        #     dir.default_namespace = "my_app.admin"
-        #
-        #   @see default_namespace
-        #
-        # @!method default_namespace
-        #
-        #   Returns the configured value.
-        #
-        #   @return [String, nil]
-        #
-        #   @see default_namespace=
-        setting :default_namespace
 
         # @!method loader=(loader)
         #
@@ -139,7 +114,7 @@ module Dry
         #
         #   @example
         #     dir.memoize = proc do |component|
-        #       !component.start_with?("providers")
+        #       !component.identifier.start_with?("providers")
         #     end
         #
         #   @see memoize
@@ -153,6 +128,49 @@ module Dry
         #
         #   @see memoize=
         setting :memoize, default: false
+
+        # @!method namespaces
+        #
+        #   Returns the configured namespaces for the component dir.
+        #
+        #   Allows namespaces to added on the returned object via {Namespaces#add}.
+        #
+        #   @see Namespaces#add
+        #
+        #   @return [Namespaces] the namespaces
+        setting :namespaces, default: Namespaces.new, cloneable: true
+
+        def default_namespace=(namespace)
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Config::ComponentDir#default_namespace=",
+            "Add a namespace instead: `dir.namespaces.add #{namespace.to_s.inspect}, key: nil`",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          # We don't have the configured separator here, so the best we can do is guess
+          # that it's a dot
+          namespace_path = namespace.gsub(".", PATH_SEPARATOR)
+
+          return if namespaces.namespaces[namespace_path]
+
+          namespaces.add namespace_path, key: nil
+        end
+
+        def default_namespace
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Config::ComponentDir#default_namespace",
+            "Use namespaces instead, e.g. `dir.namespaces`",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          ns_path = namespaces.to_a.reject(&:root?).first&.path
+
+          # We don't have the configured separator here, so the best we can do is guess
+          # that it's a dot
+          ns_path&.gsub(PATH_SEPARATOR, ".")
+        end
 
         # @!endgroup
 
@@ -173,15 +191,28 @@ module Dry
           !!config.auto_register
         end
 
-        # Returns true if a setting has been explicitly configured and is not returning
-        # just a default value.
+        # Returns true if the given setting has been explicitly configured by the user
         #
-        # This is used to determine which settings from `ComponentDirs` should be applied
-        # as additional defaults.
+        # This is used when determining whether to apply system-wide default values to a
+        # component dir (explicitly configured settings will not be overridden by
+        # defaults)
         #
+        # @param key [Symbol] the setting name
+        #
+        # @return [Boolean]
+        #
+        # @see Dry::System::Config::ComponentDirs#apply_defaults_to_dir
         # @api private
         def configured?(key)
-          config._settings[key].input_defined?
+          case key
+          when :namespaces
+            # Because we mutate the default value for the `namespaces` setting, rather
+            # than assign a new one, to check if it's configured we must see whether any
+            # namespaces have been added
+            !config.namespaces.empty?
+          else
+            config._settings[key].input_defined?
+          end
         end
 
         private

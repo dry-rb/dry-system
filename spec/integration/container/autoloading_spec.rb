@@ -12,7 +12,7 @@ RSpec.describe "Autoloading loader" do
         config.component_dirs.loader = Dry::System::Loader::Autoloading
         config.component_dirs.add "lib" do |dir|
           dir.add_to_load_path = false
-          dir.default_namespace = "test"
+          dir.namespaces.add "test", key: nil
         end
       end
     end
