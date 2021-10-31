@@ -5,7 +5,7 @@
 
 ### Added
 
-- Added **component dir namespaces** as a way to specify multiple, order, independent namespace rules within a given component dir. This replaces and expands upon the namespace support we previously provided via the singular `default_namespace` component dir setting (@timriley in #181)
+- Added **component dir namespaces** as a way to specify multiple, ordered, independent namespace rules within a given component dir. This replaces and expands upon the namespace support we previously provided via the singular `default_namespace` component dir setting (@timriley in #181)
 
 ### Changed
 
