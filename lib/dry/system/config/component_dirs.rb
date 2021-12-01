@@ -117,6 +117,16 @@ module Dry
           end
         end
 
+        # WIP
+        def add_dir(dir)
+          path = dir.path
+          raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
+
+          dirs[path] = dir.tap do |dir|
+            apply_defaults_to_dir(dir)
+          end
+        end
+
         # Returns the added component dirs, with default settings applied
         #
         # @return [Hash<String, ComponentDir>] the component dirs as a hash, keyed by path
