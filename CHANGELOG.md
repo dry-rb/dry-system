@@ -29,6 +29,40 @@
   (@timriley in #181)
 - `Dry::System::Component#path` has been removed and replaced by `Component#require_path` and `Component#const_path` (@timriley in #181)
 - Unused `Dry::System::FileNotFoundError` and `Dry::System::InvalidComponentIdentifierTypeError` errors have been removed (@timriley in #194)
+- Allow bootsnap for Rubies up to 3.0.x (via #196) (@pusewicz)
+
+[Compare v0.21.0...v0.21.0](https://github.com/dry-rb/dry-system/compare/v0.21.0...v0.21.0)
+
+## 0.21.0 2021-11-01
+
+
+### Added
+
+- Added **component dir namespaces** as a way to specify multiple, ordered, independent namespace rules within a given component dir. This replaces and expands upon the namespace support we previously provided via the singular `default_namespace` component dir setting (@timriley in #181)
+
+### Changed
+
+- `default_namespace` setting on component dirs has been deprecated. Add a component dir namespace instead, e.g. instead of:
+
+  ```ruby
+  # Inside Dry::System::Container.configure
+  config.component_dirs.add "lib" do |dir|
+    dir.default_namespace = "admin"
+  end
+  ```
+
+  Add this:
+
+  ```ruby
+  config.component_dirs.add "lib" do |dir|
+    dir.namespaces.add "admin", key: nil
+  end
+  ```
+
+  (@timriley in #181)
+- `Dry::System::Component#path` has been removed and replaced by `Component#require_path` and `Component#const_path` (@timriley in #181)
+- Unused `Dry::System::FileNotFoundError` and `Dry::System::InvalidComponentIdentifierTypeError` errors have been removed (@timriley in #194)
+- Allow bootsnap for Rubies up to 3.0.x (via #196) (@pusewicz)
 
 [Compare v0.20.0...v0.21.0](https://github.com/dry-rb/dry-system/compare/v0.20.0...v0.21.0)
 
