@@ -130,16 +130,6 @@ module Dry
           end
         end
 
-        # WIP
-        def add_dir(dir)
-          path = dir.path
-          raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
-
-          dirs[path] = dir.tap do |dir|
-            apply_defaults_to_dir(dir)
-          end
-        end
-
         def dir(path)
           @dirs.fetch(path).tap do |dir|
             yield dir if block_given?
