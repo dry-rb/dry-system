@@ -108,12 +108,25 @@ module Dry
         #   end
         #
         # @see ComponentDir
-        def add(path)
+        def add(path_or_dir)
+          path, dir = prepare_to_add(path_or_dir)
+
+          # TODO: is this worth even raising?
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
-          dirs[path] = ComponentDir.new(path).tap do |dir|
+          dirs[path] = dir.tap do |dir|
             yield dir if block_given?
             apply_defaults_to_dir(dir)
+          end
+        end
+
+        private def prepare_to_add(path_or_dir)
+          if path_or_dir.is_a?(ComponentDir)
+            dir = path_or_dir
+            [dir.path, dir]
+          else
+            path = path_or_dir
+            [path, ComponentDir.new(path)]
           end
         end
 
