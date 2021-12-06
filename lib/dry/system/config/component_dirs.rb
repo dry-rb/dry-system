@@ -140,6 +140,20 @@ module Dry
           end
         end
 
+        def dir(path)
+          @dirs.fetch(path).tap do |dir|
+            yield dir if block_given?
+          end
+        end
+
+        def remove(path)
+          @dirs.delete(path)
+        end
+
+        def paths
+          @dirs.keys
+        end
+
         # Returns the added component dirs, with default settings applied
         #
         # @return [Hash<String, ComponentDir>] the component dirs as a hash, keyed by path
