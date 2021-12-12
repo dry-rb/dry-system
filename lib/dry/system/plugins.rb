@@ -131,6 +131,9 @@ module Dry
 
       require "dry/system/plugins/dependency_graph"
       register(:dependency_graph, Plugins::DependencyGraph)
+
+      require "dry/system/plugins/zeitwerk"
+      register(:zeitwerk, Plugins::Zeitwerk)
     end
   end
 end

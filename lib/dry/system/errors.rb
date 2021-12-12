@@ -92,5 +92,24 @@ module Dry
         super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{details}")
       end
     end
+
+    # Exception raised when a component dir is configured with add_to_load_path
+    # when using zeitwerk plugin
+    #
+    # @api public
+    ZeitwerkAddToLoadPathError = Class.new(StandardError) do
+      # @api private
+      def initialize(component_dir)
+        message = <<~STR
+          Adding a component dir to the load path is not supported when using zeitwerk plugin
+
+          @example
+            config.component_dirs.add "#{component_dir.path}" do |dir|
+              dir.add_to_load_path = false # <-- make sure this is set to false
+            end
+        STR
+        super(message)
+      end
+    end
   end
 end

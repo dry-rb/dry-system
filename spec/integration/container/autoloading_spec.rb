@@ -5,6 +5,8 @@ require "dry/system/loader/autoloading"
 require "zeitwerk"
 
 RSpec.describe "Autoloading loader" do
+  include ZeitwerkHelpers
+
   specify "Resolving components using Zeitwerk" do
     module Test
       class Container < Dry::System::Container
@@ -28,17 +30,5 @@ RSpec.describe "Autoloading loader" do
     expect(entity).to be_a Test::Entities::FooEntity
 
     teardown_zeitwerk
-  end
-
-  def teardown_zeitwerk
-    # From zeitwerk's own test/support/loader_test
-
-    Zeitwerk::Registry.loaders.each(&:unload)
-
-    Zeitwerk::Registry.loaders.clear
-    Zeitwerk::Registry.loaders_managing_gems.clear
-
-    Zeitwerk::ExplicitNamespace.cpaths.clear
-    Zeitwerk::ExplicitNamespace.tracer.disable
   end
 end
