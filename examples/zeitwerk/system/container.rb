@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/events"
-require "dry/monitor/notifications"
 require "dry/system/container"
 
 class App < Dry::System::Container

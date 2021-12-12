@@ -22,6 +22,58 @@ App[:logger]
 App.logger           
 ```
 
+## Zeitwerk
+
+With `:zeitwerk` plugin you can easily use [Zeitwerk](https://github.com/fxn/zeitwerk) as your applications's code loader.
+
+> Given a conventional file structure, Zeitwerk is able to load your project's classes and modules on demand (autoloading), or upfront (eager loading). You don't need to write require calls for your own files, rather, you can streamline your programming knowing that your classes and modules are available everywhere. This feature is efficient, thread-safe, and matches Ruby's semantics for constants. (Zeitwerk docs)
+
+### Example
+
+Here is an example of using Zeitwerk plugin:
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk # magic!
+
+  configure do |config|
+    config.component_dirs.add "lib"
+  end
+end
+```
+
+For a more in depth and runnable example, [click here](https://github.com/dry-rb/dry-system/tree/master/examples/standalone).
+
+### Inflections 
+
+The plugin tries to handle most of the plumbing for you. For example, is uses the container's own inflector to resolve constant names. So if Zeitwerk is having trouble resolving some constants, just update the container's inflector like so:
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk 
+
+  configure do |config|
+    config.inflector = Dry::Inflector.new do |inflections|
+      inflections.acronym('API')
+    end
+
+    # ...
+  end
+end
+```
+
+### Advanced Configuration
+
+If you find you need to adjust Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container.
+
+```ruby
+# After you have configured the container
+
+MyContainer.autoloader.eager_load
+```
+
+
+
 ## Monitoring
 
 Another plugin is called `:monitoring` which allows you to enable object monitoring, which is built on top of dry-monitor’s instrumentation API. Let’s say you have an object registered under `"users.operations.create",` and you’d like to add additional logging:
