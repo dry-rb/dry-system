@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ZeitwerkHelpers
   def teardown_zeitwerk
     # From zeitwerk's own test/support/loader_test
