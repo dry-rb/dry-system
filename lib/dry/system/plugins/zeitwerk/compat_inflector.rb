@@ -4,7 +4,7 @@ module Dry
   module System
     module Plugins
       class Zeitwerk < Module
-				# @api private
+        # @api private
         class CompatInflector
           attr_reader :config
 
