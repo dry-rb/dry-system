@@ -34,7 +34,8 @@ Here is an example of using Zeitwerk plugin:
 
 ```ruby
 class App < Dry::System::Container
-  use :zeitwerk # magic!
+  use :env, inferrer: -> { ENV.fetch("RACK_ENV", :development).to_sym }
+  use :zeitwerk
 
   configure do |config|
     config.component_dirs.add "lib"
@@ -62,6 +63,26 @@ class App < Dry::System::Container
 end
 ```
 
+### Eager Loading
+
+By default, the plugin will have zeitwerk eager load when using the `:env` plugin sets the environment to `:production`. However, you can change this behavior by passing `:eager_load` option to the plugin:
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk, eager_load: true
+end
+```
+
+### Debugging
+
+When you are developing your application, you can enable the plugin's debugging mode by passing `:debug` option to the plugin:
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk, debug: true
+end
+```
+
 ### Advanced Configuration
 
 If you find you need to adjust Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container.
@@ -69,10 +90,8 @@ If you find you need to adjust Zeitwerk configuration, you can do so by accessin
 ```ruby
 # After you have configured the container
 
-MyContainer.autoloader.eager_load
+MyContainer.autoloader.ignore("./some_path.rb)
 ```
-
-
 
 ## Monitoring
 

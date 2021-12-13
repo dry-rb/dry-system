@@ -1,42 +1,42 @@
 # frozen_string_literal: true
 
+require "dry/system/plugins/zeitwerk/compat_inflector"
+
 module Dry
   module System
     module Plugins
-      module Zeitwerk
-        class CompatInflector
-          attr_reader :config
+      class Zeitwerk < Module
+        attr_reader :options
 
-          def initialize(config)
-            @config = config
-          end
-
-          def camelize(string, _)
-            config.inflector.camelize(string)
-          end
+        # @api private
+        def initialize(options)
+          @options = options
+          super
         end
 
         # @api private
-        def self.extended(system)
-          system.before(:configure, &:configure_autoloading)
-          system.after(:configure, &:setup_autoloader)
+        def extended(system)
+          system.before(:configure, &method(:configure_autoloading))
+          system.after(:configure, &method(:setup_autoloader))
 
           super
         end
+
+        private
 
         # Configure autoloading on the container
         #
         # @return [self]
         #
         # @api private
-        def configure_autoloading
+        def configure_autoloading(system)
           require "dry/system/loader/autoloading"
 
-          setting :autoloader, reader: true
+          system.setting :autoloader, reader: true
+          system.config.component_dirs.loader = Dry::System::Loader::Autoloading
+          system.config.component_dirs.add_to_load_path = false
 
-          config.component_dirs.loader = Dry::System::Loader::Autoloading
-          config.component_dirs.add_to_load_path = false
-          self
+          system
         end
 
         # Set a logger
@@ -46,16 +46,16 @@ module Dry
         # @return [self]
         #
         # @api private
-        def setup_autoloader
-          return self if registered?(:autoloader)
+        def setup_autoloader(system)
+          return system if system.registered?(:autoloader)
 
-          if config.autoloader
-            register(:autoloader, config.logger)
+          if system.config.autoloader
+            system.register(:autoloader, system.config.autoloader)
           else
-            config.autoloader = build_zeitwerk_loader
-            register(:autoloader, config.autoloader)
-            self
+            system.config.autoloader = build_zeitwerk_loader(system)
           end
+
+          system
         end
 
         # Build a zeitwerk loader with the configured component directories
@@ -63,18 +63,39 @@ module Dry
         # @return [Zeitwerk::Loader]
         #
         # @api private
-        def build_zeitwerk_loader
+        def build_zeitwerk_loader(system)
           require "zeitwerk"
 
-          loader = ::Zeitwerk::Loader.new
-          loader.inflector = CompatInflector.new(config)
-          config.component_dirs.each do |dir|
+          loader = options.fetch(:loader) { ::Zeitwerk::Loader.new }
+          loader.tag = system.config.name || system.name
+          loader.logger = method(:puts) if options[:debug]
+          loader.inflector = CompatInflector.new(system.config)
+          push_component_dirs_to_loader(system, loader)
+          loader.setup
+          system.after(:finalize) { loader.eager_load } if eager_load?(system)
+          loader
+        end
+
+        # Add component dirs to the zeitwerk loader
+        #
+        # @return [Zeitwerk::Loader]
+        #
+        # @api private
+        def push_component_dirs_to_loader(system, loader)
+          system.config.component_dirs.each do |dir|
             raise ZeitwerkAddToLoadPathError, dir if dir.add_to_load_path
 
-            loader.push_dir(config.root.join(dir.path))
+            loader.push_dir(system.config.root.join(dir.path))
           end
-          loader.setup
+
           loader
+        end
+
+        # @api private
+        def eager_load?(system)
+          options.fetch(:eager_load) do
+            system.config.respond_to?(:env) && system.config.env == :production
+          end
         end
       end
     end

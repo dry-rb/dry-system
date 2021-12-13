@@ -42,4 +42,45 @@ RSpec.describe "Zeitwerk plugin" do
       end
     end.to raise_error(Dry::System::ZeitwerkAddToLoadPathError)
   end
+
+  specify "Eager loads after finalization" do
+    app = Class.new(Dry::System::Container) do
+      use :zeitwerk, eager_load: true
+
+      configure do |config|
+        config.root = SPEC_ROOT.join("fixtures/zeitwerk_eager").realpath
+
+        config.component_dirs.add "lib"
+      end
+    end
+
+    expect { $zeitwerk_eager_loaded }
+      .to output(/\$zeitwerk_eager_loaded' not initialized/)
+      .to_stderr
+
+    app.finalize!
+
+    expect($zeitwerk_eager_loaded).to be(true)
+  end
+
+  specify "Eager loads in production by default" do
+    app = Class.new(Dry::System::Container) do
+      use :env, inferrer: -> { :production }
+      use :zeitwerk
+
+      configure do |config|
+        config.root = SPEC_ROOT.join("fixtures/zeitwerk_eager_load_production").realpath
+
+        config.component_dirs.add "lib"
+      end
+    end
+
+    expect { $zeitwerk_eager_load_production_loaded }
+      .to output(/\$zeitwerk_eager_load_production_loaded' not initialized/)
+      .to_stderr
+
+    app.finalize!
+
+    expect($zeitwerk_eager_load_production_loaded).to be(true)
+  end
 end

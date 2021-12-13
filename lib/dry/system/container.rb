@@ -379,6 +379,7 @@ module Dry
 
           configured!
 
+          hooks[:before_finalize].each { |hook| instance_eval(&hook) }
           yield(self) if block
 
           importer.finalize!
@@ -389,6 +390,7 @@ module Dry
           @__finalized__ = true
 
           self.freeze if freeze
+          hooks[:after_finalize].each { |hook| instance_eval(&hook) }
           self
         end
 
