@@ -11,7 +11,7 @@ module Dry
         # @api private
         def initialize(options)
           @options = options
-          super
+          super()
         end
 
         # @api private
