@@ -11,6 +11,12 @@ module Dry
       end
     end
 
+    NoComponentDirError = Class.new(StandardError) do
+      def initialize(path)
+        super("No component dir configured with path '#{path}'")
+      end
+    end
+
     # Error raised when a namespace for a component dir is added to configuration more
     # than once
     NamespaceAlreadyAddedError = Class.new(StandardError) do

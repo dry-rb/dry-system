@@ -121,6 +121,8 @@ module Dry
         end
 
         def dir(path)
+          raise NoComponentDirError, path unless @dirs.key?(path)
+
           @dirs.fetch(path).tap do |dir|
             yield dir if block_given?
           end
