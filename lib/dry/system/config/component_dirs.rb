@@ -119,6 +119,13 @@ module Dry
           end
         end
 
+        # Returns and optionally yields a previously configured component dir
+        #
+        # @param path [String] the path for the component dir
+        #
+        # @yield param dir [ComponentDir] the component dir
+        #
+        # @return [ComponentDir] the component dir
         def dir(path)
           raise NoComponentDirError, path unless @dirs.key?(path)
 
@@ -127,6 +134,11 @@ module Dry
           end
         end
 
+        # Removes a previously configured component dir
+        #
+        # @param path [String] the path for the component dir
+        #
+        # @return [ComponentDir] the removed component dir
         def remove(path)
           @dirs.delete(path)
         end
