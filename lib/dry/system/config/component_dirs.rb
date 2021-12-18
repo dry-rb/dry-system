@@ -111,7 +111,6 @@ module Dry
         def add(path_or_dir)
           path, dir_to_add = path_and_dir(path_or_dir)
 
-          # TODO: is this worth even raising?
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
           dirs[path] = dir_to_add.tap do |dir|
