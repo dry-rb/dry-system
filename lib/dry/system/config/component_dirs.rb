@@ -109,7 +109,7 @@ module Dry
         #
         # @see ComponentDir
         def add(path_or_dir)
-          path, dir_to_add = prepare_to_add(path_or_dir)
+          path, dir_to_add = path_and_dir(path_or_dir)
 
           # TODO: is this worth even raising?
           raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
@@ -117,16 +117,6 @@ module Dry
           dirs[path] = dir_to_add.tap do |dir|
             yield dir if block_given?
             apply_defaults_to_dir(dir)
-          end
-        end
-
-        private def prepare_to_add(path_or_dir)
-          if path_or_dir.is_a?(ComponentDir)
-            dir = path_or_dir
-            [dir.path, dir]
-          else
-            path = path_or_dir
-            [path, ComponentDir.new(path)]
           end
         end
 
@@ -167,6 +157,17 @@ module Dry
         end
 
         private
+
+        # TODO docs
+        def path_and_dir(path_or_dir)
+          if path_or_dir.is_a?(ComponentDir)
+            dir = path_or_dir
+            [dir.path, dir]
+          else
+            path = path_or_dir
+            [path, ComponentDir.new(path)]
+          end
+        end
 
         # Applies default settings to a component dir. This is run every time the dirs are
         # accessed to ensure defaults are applied regardless of when new component dirs
