@@ -189,6 +189,12 @@ module Dry
           to_a.each(&block)
         end
 
+        protected
+
+        def dirs
+          @dirs
+        end
+
         private
 
         # Converts a path string or pre-built component dir into a path and dir tuple
