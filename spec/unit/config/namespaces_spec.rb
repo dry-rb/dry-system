@@ -140,7 +140,11 @@ RSpec.describe Dry::System::Config::Namespaces do
   end
 
   describe "#empty?" do
-    it "returns true when a namespace has been added" do
+    it "returns true if there are no configured namespaces" do
+      expect(namespaces).to be_empty
+    end
+
+    it "returns false if a namespace has been added" do
       expect { namespaces.add "test/path" }
         .to change { namespaces.empty? }
         .from(true).to(false)
