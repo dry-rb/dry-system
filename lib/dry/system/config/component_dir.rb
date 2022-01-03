@@ -9,6 +9,7 @@ require_relative "namespaces"
 module Dry
   module System
     module Config
+      # @api public
       class ComponentDir
         include Dry::Configurable
 
@@ -37,6 +38,7 @@ module Dry
         #
         #   @see auto_register
         #   @see Component
+        #   @api public
         #
         # @!method auto_register
         #
@@ -45,6 +47,7 @@ module Dry
         #   @return [Boolean, Proc] the configured policy
         #
         #   @see auto_register=
+        #   @api public
         setting :auto_register, default: true
 
         # @!method add_to_load_path=(policy)
@@ -60,6 +63,7 @@ module Dry
         #
         #   @see add_to_load_path
         #   @see Container.configure
+        #   @api public
         #
         # @!method add_to_load_path
         #
@@ -68,6 +72,7 @@ module Dry
         #   @return [Boolean]
         #
         #   @see add_to_load_path=
+        #   @api public
         setting :add_to_load_path, default: true
 
         # @!method loader=(loader)
@@ -85,6 +90,7 @@ module Dry
         #   @see loader
         #   @see Loader
         #   @see Loader::Autoloading
+        #   @api public
         #
         # @!method loader
         #
@@ -93,6 +99,7 @@ module Dry
         #   @return [#call]
         #
         #   @see loader=
+        #   @api public
         setting :loader, default: Dry::System::Loader
 
         # @!method memoize=(policy)
@@ -119,6 +126,7 @@ module Dry
         #
         #   @see memoize
         #   @see Component
+        #   @api public
         #
         # @!method memoize
         #
@@ -127,6 +135,7 @@ module Dry
         #   @return [Boolean, Proc] the configured memoization policy
         #
         #   @see memoize=
+        #   @api public
         setting :memoize, default: false
 
         # @!method namespaces
@@ -135,11 +144,13 @@ module Dry
         #
         #   Allows namespaces to added on the returned object via {Namespaces#add}.
         #
-        #   @see Namespaces#add
-        #
         #   @return [Namespaces] the namespaces
+        #
+        #   @see Namespaces#add
+        #   @api public
         setting :namespaces, default: Namespaces.new, cloneable: true
 
+        # @api public
         def default_namespace=(namespace)
           Dry::Core::Deprecations.announce(
             "Dry::System::Config::ComponentDir#default_namespace=",
@@ -157,6 +168,7 @@ module Dry
           namespaces.add namespace_path, key: nil
         end
 
+        # @api public
         def default_namespace
           Dry::Core::Deprecations.announce(
             "Dry::System::Config::ComponentDir#default_namespace",
@@ -179,7 +191,7 @@ module Dry
         # @return [String] the path
         attr_reader :path
 
-        # @api private
+        # @api public
         def initialize(path)
           super()
           @path = path
