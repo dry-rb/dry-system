@@ -138,6 +138,14 @@ module Dry
           namespaces.delete(Namespace::ROOT_PATH)
         end
 
+        # Returns the paths of the configured namespaces
+        #
+        # @return [Array<String,nil>] the namespace paths, with nil representing the root
+        #   namespace
+        def paths
+          namespaces.keys
+        end
+
         # Returns the count of configured namespaces
         #
         # @return [Integer]
