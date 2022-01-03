@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "concurrent/map"
 require "dry/system/constants"
 require "dry/system/errors"
 require_relative "component_dir"
@@ -81,42 +80,16 @@ module Dry
         # @api private
         attr_reader :defaults
 
-        # @api private
+        # @api public
         def initialize
-          @dirs = Concurrent::Map.new
+          @dirs = {}
           @defaults = ComponentDir.new(nil)
         end
 
         # @api private
         def initialize_copy(source)
-          @dirs = source.dirs.dup
+          @dirs = source.dirs.map { |path, dir| [path, dir.dup] }.to_h
           @defaults = source.defaults.dup
-        end
-
-        # Adds and configures a component dir
-        #
-        # @param path [String] the path for the component dir, relative to the configured
-        #   container root
-        #
-        # @yieldparam dir [ComponentDir] the component dir to configure
-        #
-        # @return [ComponentDir] the added component dir
-        #
-        # @example
-        #   component_dirs.add "lib" do |dir|
-        #     dir.default_namespace = "my_app"
-        #   end
-        #
-        # @see ComponentDir
-        def add(path_or_dir)
-          path, dir_to_add = path_and_dir(path_or_dir)
-
-          raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
-
-          dirs[path] = dir_to_add.tap do |dir|
-            yield dir if block_given?
-            apply_defaults_to_dir(dir)
-          end
         end
 
         # Returns and optionally yields a previously configured component dir
@@ -127,38 +100,85 @@ module Dry
         #
         # @return [ComponentDir] the component dir
         def dir(path)
-          raise NoComponentDirError, path unless @dirs.key?(path)
-
-          @dirs.fetch(path).tap do |dir|
+          @dirs[path].tap do |dir|
+            # Defaults can be (re-)applied first, since the dir has already been added
+            apply_defaults_to_dir(dir) if dir
             yield dir if block_given?
           end
         end
 
-        # Removes a previously configured component dir
+        # (see #dir)
+        alias_method :[], :dir
+
+        # @overload add(path)
+        #   Adds and configures a component dir for the given path
+        #
+        #   @param path [String] the path for the component dir, relative to the configured
+        #     container root
+        #
+        #   @yieldparam dir [ComponentDir] the component dir to configure
+        #
+        #   @return [ComponentDir] the added component dir
+        #
+        #   @example
+        #     component_dirs.add "lib" do |dir|
+        #       dir.default_namespace = "my_app"
+        #     end
+        #
+        #   @see ComponentDir
+        #
+        # @overload add(dir)
+        #   Adds a configured component dir
+        #
+        #   @param dir [ComponentDir] the configured component dir
+        #
+        #   @return [ComponentDir] the added component dir
+        #
+        #   @example
+        #     dir = Dry::System::ComponentDir.new("lib")
+        #     component_dirs.add dir
+        #
+        #   @see ComponentDir
+        def add(path_or_dir)
+          path, dir_to_add = path_and_dir(path_or_dir)
+
+          raise ComponentDirAlreadyAddedError, path if @dirs.key?(path)
+
+          @dirs[path] = dir_to_add.tap do |dir|
+            # Defaults must be applied after yielding, since the dir is being newly added,
+            # and must have its configuration fully in place before we can know which
+            # defaults to apply
+            yield dir if path_or_dir == path && block_given?
+            apply_defaults_to_dir(dir)
+          end
+        end
+
+        # Deletes and returns a previously configured component dir
         #
         # @param path [String] the path for the component dir
         #
         # @return [ComponentDir] the removed component dir
-        def remove(path)
+        def delete(path)
           @dirs.delete(path)
         end
 
+        # Returns the paths of the configured component dirs
+        #
+        # @return [Array<String>] the component dir paths
         def paths
           @dirs.keys
         end
 
-        # Returns the added component dirs, with default settings applied
-        #
-        # @return [Hash<String, ComponentDir>] the component dirs as a hash, keyed by path
-        def dirs
-          @dirs.each { |_, dir| apply_defaults_to_dir(dir) }
+        def length
+          @dirs.length
         end
 
         # Returns the added component dirs, with default settings applied
         #
         # @return [Array<ComponentDir>]
         def to_a
-          dirs.values
+          @dirs.each { |_, dir| apply_defaults_to_dir(dir) }
+          @dirs.values
         end
 
         # Calls the given block once for each added component dir, passing the dir as an
@@ -171,7 +191,13 @@ module Dry
 
         private
 
-        # TODO docs
+        # Converts a path string or pre-built component dir into a path and dir tuple
+        #
+        # @param path_or_dir [String,ComponentDir]
+        #
+        # @return Array<(String, ComponentDir)>
+        #
+        # @see #add
         def path_and_dir(path_or_dir)
           if path_or_dir.is_a?(ComponentDir)
             dir = path_or_dir
