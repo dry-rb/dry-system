@@ -21,7 +21,7 @@ module Dry
       #
       # @see Namespaces#add
       #
-      # @api private
+      # @api public
       class Namespace
         ROOT_PATH = nil
 
