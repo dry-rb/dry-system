@@ -36,7 +36,7 @@ module Dry
           namespaces[path]
         end
 
-        # @api public
+        # (see #namespace)
         alias_method :[], :namespace
 
         # Returns the namespace configured for the root path, or nil if the root namespace
@@ -152,6 +152,12 @@ module Dry
         def length
           namespaces.length
         end
+
+        # Returns true if there are no configured namespaces
+        #
+        # @return [Boolean]
+        #
+        # @api public
         def empty?
           namespaces.empty?
         end
