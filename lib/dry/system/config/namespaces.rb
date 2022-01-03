@@ -138,7 +138,12 @@ module Dry
           namespaces.delete(Namespace::ROOT_PATH)
         end
 
-        # @api private
+        # Returns the count of configured namespaces
+        #
+        # @return [Integer]
+        def length
+          namespaces.length
+        end
         def empty?
           namespaces.empty?
         end

@@ -47,7 +47,7 @@ RSpec.describe Dry::System::Config::Namespaces do
       expect {
         namespaces.add "test/path", key: "key_ns", const: "const_ns"
       }
-        .to change { namespaces.namespaces.keys.length }
+        .to change { namespaces.length }
         .from(0).to(1)
 
       ns = namespaces.namespaces["test/path"]
@@ -69,7 +69,7 @@ RSpec.describe Dry::System::Config::Namespaces do
       expect {
         namespaces.add_root key: "key_ns", const: "const_ns"
       }
-        .to change { namespaces.namespaces.keys.length }
+        .to change { namespaces.length }
         .from(0).to(1)
 
       ns = namespaces.namespaces[nil]
@@ -95,7 +95,7 @@ RSpec.describe Dry::System::Config::Namespaces do
       expect {
         deleted_namespace = namespaces.delete("test/path")
       }
-        .to change { namespaces.namespaces.keys.length }
+        .to change { namespaces.length }
         .from(1).to(0)
 
       expect(deleted_namespace).to be added_namespace
@@ -115,7 +115,7 @@ RSpec.describe Dry::System::Config::Namespaces do
       expect {
         deleted_namespace = namespaces.delete_root
       }
-        .to change { namespaces.namespaces.keys.length }
+        .to change { namespaces.length }
         .from(1).to(0)
 
       expect(deleted_namespace).to be added_namespace
@@ -124,6 +124,18 @@ RSpec.describe Dry::System::Config::Namespaces do
     it "returns nil when no root namespace has been configured" do
       expect(namespaces.delete_root).to be nil
       expect(namespaces).to be_empty
+    end
+  end
+
+  describe "#length" do
+    it "returns the count of configured namespaces" do
+      namespaces.add "test/path_1"
+      namespaces.add "test/path_2"
+      expect(namespaces.length).to eq 2
+    end
+
+    it "returns 0 when there are no configured namespaces" do
+      expect(namespaces.length).to eq 0
     end
   end
 
