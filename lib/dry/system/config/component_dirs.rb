@@ -223,9 +223,7 @@ module Dry
         # @return Hash<String, ComponentDir>
         #
         # @api private
-        def dirs
-          @dirs
-        end
+        attr_reader :dirs
 
         private
 
