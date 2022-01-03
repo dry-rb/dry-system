@@ -118,4 +118,34 @@ RSpec.describe Dry::System::Config::ComponentDirs do
       expect(dir.memoize).to be false
     end
   end
+
+  describe "#delete" do
+    it "deletes and returns the component dir for the given path" do
+      added_dir = component_dirs.add("test/path")
+
+      deleted_dir = nil
+      expect { deleted_dir = component_dirs.delete("test/path") }
+        .to change { component_dirs.length }
+        .from(1).to(0)
+
+      expect(deleted_dir).to be added_dir
+    end
+
+    it "returns nil when no component dir has been added for the given path" do
+      expect(component_dirs.delete("test/path")).to be nil
+      expect(component_dirs.length).to eq 0
+    end
+  end
+
+  describe "#length" do
+    it "returns the count of component dirs" do
+      component_dirs.add "test/path_1"
+      component_dirs.add "test/path_2"
+      expect(component_dirs.length).to eq 2
+    end
+
+    it "returns 0 when there are no configured component dirs" do
+      expect(component_dirs.length).to eq 0
+    end
+  end
 end
