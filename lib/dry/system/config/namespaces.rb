@@ -26,6 +26,29 @@ module Dry
           @namespaces = source.namespaces.dup
         end
 
+        # Returns the namespace configured for the path, or nil if no such namespace has
+        # been configured
+        #
+        # @return [Namespace, nil] the namespace, if configured
+        #
+        # @api public
+        def namespace(path)
+          namespaces[path]
+        end
+
+        # @api public
+        alias_method :[], :namespace
+
+        # Returns the namespace configured for the root path, or nil if the root namespace
+        # has not been configured
+        #
+        # @return [Namespace, nil] the root namespace, if configured
+        #
+        # @api public
+        def root
+          namespaces[Namespace::ROOT_PATH]
+        end
+
         # rubocop:disable Layout/LineLength
 
         # Adds a component dir namespace
@@ -89,6 +112,30 @@ module Dry
         # @api public
         def add_root(key: nil, const: nil)
           add(Namespace::ROOT_PATH, key: key, const: const)
+        end
+
+        # Deletes the configured namespace for the given path and returns the namespace
+        #
+        # If no namespace was previously configured for the given path, returns nil
+        #
+        # @param path [String] the path for the namespace
+        #
+        # @return [Namespace, nil]
+        #
+        # @api public
+        def delete(path)
+          namespaces.delete(path)
+        end
+
+        # Deletes the configured root namespace and returns the namespace
+        #
+        # If no root namespace was previously configured, returns nil
+        #
+        # @return [Namespace, nil]
+        #
+        # @api public
+        def delete_root
+          namespaces.delete(Namespace::ROOT_PATH)
         end
 
         # @api private
