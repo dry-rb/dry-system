@@ -18,7 +18,7 @@ RSpec.describe Dry::System::Config::ComponentDirs do
     end
 
     it "applies global default values configured before retrieval" do
-      dir = component_dirs.add("test/path")
+      component_dirs.add("test/path")
       component_dirs.namespaces.add "global_default"
       expect(component_dirs.dir("test/path").namespaces.paths).to eq ["global_default"]
     end
@@ -40,7 +40,7 @@ RSpec.describe Dry::System::Config::ComponentDirs do
     end
 
     it "applies global default values configured before retrieval" do
-      dir = component_dirs.add("test/path")
+      component_dirs.add("test/path")
       component_dirs.namespaces.add "global_default"
       expect(component_dirs["test/path"].namespaces.paths).to eq ["global_default"]
     end
