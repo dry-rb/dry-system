@@ -69,9 +69,9 @@ RSpec.describe Dry::System::Config::ComponentDirs do
     end
 
     it "adds a pre-built component dir" do
-      dir = Dry::System::Config::ComponentDir.new("test/path").tap do |dir|
-        dir.auto_register = false
-        dir.add_to_load_path = false
+      dir = Dry::System::Config::ComponentDir.new("test/path").tap do |d|
+        d.auto_register = false
+        d.add_to_load_path = false
       end
 
       expect { component_dirs.add(dir) }
