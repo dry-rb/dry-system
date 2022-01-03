@@ -94,7 +94,6 @@ RSpec.describe Dry::System::Config::ComponentDirs do
         .to raise_error(Dry::System::ComponentDirAlreadyAddedError, %r{test/path})
     end
 
-
     it "applies default values configured before adding" do
       component_dirs.namespaces.add "global_default"
 
