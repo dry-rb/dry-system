@@ -106,7 +106,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     context "leading root namespace before configured path namespace" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.root
+          dir.namespaces.add_root
           dir.namespaces.add "test", key: nil
         }
       }
@@ -237,7 +237,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     context "leading root namespace" do
       let(:component_dir_config) {
         -> dir {
-          dir.namespaces.root
+          dir.namespaces.add_root
           dir.namespaces.add "admin", key: nil
           dir.namespaces.add "test", key: nil
         }
@@ -270,7 +270,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
       let(:component_dir_config) {
         -> dir {
           dir.namespaces.add "admin", key: nil
-          dir.namespaces.root
+          dir.namespaces.add_root
           dir.namespaces.add "test", key: nil
         }
       }

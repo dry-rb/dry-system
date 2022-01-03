@@ -28,10 +28,10 @@ RSpec.describe Dry::System::Config::Namespaces do
     end
   end
 
-  describe "#root" do
+  describe "#add_root" do
     it "adds a root namespace with the given configuration" do
       expect {
-        namespaces.root key: "key_ns", const: "const_ns"
+        namespaces.add_root key: "key_ns", const: "const_ns"
       }
         .to change { namespaces.namespaces.keys.length }
         .from(0).to(1)
@@ -45,9 +45,9 @@ RSpec.describe Dry::System::Config::Namespaces do
     end
 
     it "raises an exception when a root namespace is already added" do
-      namespaces.root
+      namespaces.add_root
 
-      expect { namespaces.root }.to raise_error(Dry::System::NamespaceAlreadyAddedError, /root path/)
+      expect { namespaces.add_root }.to raise_error(Dry::System::NamespaceAlreadyAddedError, /root path/)
     end
   end
 
@@ -62,7 +62,7 @@ RSpec.describe Dry::System::Config::Namespaces do
   describe "#to_a" do
     it "returns an array of the configured namespaces, in order of definition" do
       namespaces.add "test/path", key: "test_key_ns"
-      namespaces.root key: "root_key_ns"
+      namespaces.add_root key: "root_key_ns"
 
       arr = namespaces.to_a
 
@@ -104,7 +104,7 @@ RSpec.describe Dry::System::Config::Namespaces do
   describe "#each" do
     it "yields each configured namespace" do
       namespaces.add "test/path", key: "test_key_ns"
-      namespaces.root key: "root_key_ns"
+      namespaces.add_root key: "root_key_ns"
 
       expect { |b|
         namespaces.each(&b)

@@ -87,7 +87,7 @@ module Dry
         # @see #add
         #
         # @api public
-        def root(key: nil, const: nil)
+        def add_root(key: nil, const: nil)
           add(Namespace::ROOT_PATH, key: key, const: const)
         end
 

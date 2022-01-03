@@ -47,7 +47,7 @@ RSpec.describe Dry::System::Config::ComponentDirs do
       component_dirs.memoize = true
 
       component_dirs.add "test/path" do |dir|
-        dir.namespaces.root # force the default value
+        dir.namespaces.add_root # force the default value
         dir.memoize = false
       end
 
