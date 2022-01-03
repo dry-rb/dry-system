@@ -7,6 +7,9 @@ require_relative "component_dir"
 module Dry
   module System
     module Config
+      # The configured component dirs for a container
+      #
+      # @api public
       class ComponentDirs
         # @!group Settings
 
@@ -77,9 +80,12 @@ module Dry
         # A ComponentDir for configuring the default values to apply to all added
         # component dirs
         #
+        # @see #method_missing
         # @api private
         attr_reader :defaults
 
+        # Creates a new component dirs
+        #
         # @api public
         def initialize
           @dirs = {}
@@ -92,15 +98,16 @@ module Dry
           @defaults = source.defaults.dup
         end
 
-        # Returns and optionally yields a previously configured component dir
+        # Returns and optionally yields a previously added component dir
         #
         # @param path [String] the path for the component dir
-        #
-        # @yield param dir [ComponentDir] the component dir
+        # @yieldparam dir [ComponentDir] the component dir
         #
         # @return [ComponentDir] the component dir
+        #
+        # @api public
         def dir(path)
-          @dirs[path].tap do |dir|
+          dirs[path].tap do |dir|
             # Defaults can be (re-)applied first, since the dir has already been added
             apply_defaults_to_dir(dir) if dir
             yield dir if block_given?
@@ -115,7 +122,6 @@ module Dry
         #
         #   @param path [String] the path for the component dir, relative to the configured
         #     container root
-        #
         #   @yieldparam dir [ComponentDir] the component dir to configure
         #
         #   @return [ComponentDir] the added component dir
@@ -126,6 +132,7 @@ module Dry
         #     end
         #
         #   @see ComponentDir
+        #   @api public
         #
         # @overload add(dir)
         #   Adds a configured component dir
@@ -139,12 +146,13 @@ module Dry
         #     component_dirs.add dir
         #
         #   @see ComponentDir
+        #   @api public
         def add(path_or_dir)
           path, dir_to_add = path_and_dir(path_or_dir)
 
-          raise ComponentDirAlreadyAddedError, path if @dirs.key?(path)
+          raise ComponentDirAlreadyAddedError, path if dirs.key?(path)
 
-          @dirs[path] = dir_to_add.tap do |dir|
+          dirs[path] = dir_to_add.tap do |dir|
             # Defaults must be applied after yielding, since the dir is being newly added,
             # and must have its configuration fully in place before we can know which
             # defaults to apply
@@ -153,44 +161,68 @@ module Dry
           end
         end
 
-        # Deletes and returns a previously configured component dir
+        # Deletes and returns a previously added component dir
         #
         # @param path [String] the path for the component dir
         #
         # @return [ComponentDir] the removed component dir
+        #
+        # @api public
         def delete(path)
-          @dirs.delete(path)
+          dirs.delete(path)
         end
 
-        # Returns the paths of the configured component dirs
+        # Returns the paths of the component dirs
         #
         # @return [Array<String>] the component dir paths
+        #
+        # @api public
         def paths
-          @dirs.keys
+          dirs.keys
         end
 
+        # Returns the count of component dirs
+        #
+        # @return [Integer]
+        #
+        # @api public
         def length
-          @dirs.length
+          dirs.length
         end
 
         # Returns the added component dirs, with default settings applied
         #
         # @return [Array<ComponentDir>]
+        #
+        # @api public
         def to_a
-          @dirs.each { |_, dir| apply_defaults_to_dir(dir) }
-          @dirs.values
+          dirs.each { |_, dir| apply_defaults_to_dir(dir) }
+          dirs.values
         end
 
         # Calls the given block once for each added component dir, passing the dir as an
         # argument.
         #
         # @yieldparam dir [ComponentDir] the yielded component dir
+        #
+        # @api public
         def each(&block)
           to_a.each(&block)
         end
 
         protected
 
+        # Returns the hash of component dirs, keyed by their paths
+        #
+        # Recently changed default configuration may not be applied to these dirs. Use
+        # #to_a or #each
+        #
+        # This method exists to encapsulate the instance variable and to serve the needs
+        # of #initialize_copy
+        #
+        # @return Hash<String, ComponentDir>
+        #
+        # @api private
         def dirs
           @dirs
         end
