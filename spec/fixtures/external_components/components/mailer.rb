@@ -2,7 +2,7 @@
 
 require "dry/system"
 
-Dry::System.register_component(:mailer, provider: :external_components) do
+Dry::System.register_component(:mailer, provider: :external_components) do |container|
   init do
     module ExternalComponents
       class Mailer
@@ -18,6 +18,6 @@ Dry::System.register_component(:mailer, provider: :external_components) do
   start do
     use :client
 
-    register(:mailer, ExternalComponents::Mailer.new(client))
+    register(:mailer, ExternalComponents::Mailer.new(container["client"]))
   end
 end

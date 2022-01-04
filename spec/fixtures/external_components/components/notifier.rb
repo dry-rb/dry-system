@@ -2,7 +2,7 @@
 
 require "dry/system"
 
-Dry::System.register_component(:notifier, provider: :external_components) do
+Dry::System.register_component(:notifier, provider: :external_components) do |container|
   init do
     module ExternalComponents
       class Notifier
@@ -16,6 +16,6 @@ Dry::System.register_component(:notifier, provider: :external_components) do
   end
 
   start do
-    register(:notifier, ExternalComponents::Notifier.new(monitor))
+    register(:notifier, ExternalComponents::Notifier.new(container["monitor"]))
   end
 end

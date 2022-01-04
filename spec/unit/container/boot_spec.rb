@@ -17,7 +17,8 @@ RSpec.describe Dry::System::Container, ".boot" do
         end
 
         boot(:db) do
-          register(:db, Test::DB)
+          db = Test::DB
+          register(:db, db)
 
           init do
             db.establish_connection
@@ -33,7 +34,8 @@ RSpec.describe Dry::System::Container, ".boot" do
         end
 
         boot(:client) do
-          register(:client, Test::Client)
+          client = Test::Client
+          register(:client, client)
 
           init do
             client.establish_connection

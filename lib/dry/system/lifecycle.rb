@@ -109,7 +109,6 @@ module Dry
 
       private
 
-      # @api private
       def trigger!(name, &block)
         if triggers.key?(name)
           triggers[name].(target)
@@ -118,17 +117,16 @@ module Dry
         end
       end
 
-      # @api private
-      def method_missing(meth, *args, &block)
-        if target.registered?(meth)
-          target[meth]
-        elsif container.key?(meth)
-          container[meth]
-        elsif ::Kernel.respond_to?(meth)
-          ::Kernel.public_send(meth, *args, &block)
+      def method_missing(name, *args, &block)
+        if ::Kernel.respond_to?(name)
+          ::Kernel.public_send(name, *args, &block)
         else
           super
         end
+      end
+
+      def respond_to_missing?(name, include_all = false)
+        ::Kernel.respond_to?(name, include_all) || super
       end
     end
   end
