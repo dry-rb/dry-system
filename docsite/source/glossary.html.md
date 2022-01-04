@@ -44,7 +44,7 @@ name: dry-system
 
 ## Container lifecycle
 
-**Lazy loading:** Containers start in lazy loading mode, loading individual components just in time when you resolve them (as well as all the components for their dependencies, for components using **auto-injection**). This uses the same **auto-registration** process as when you **finalize** the container, ensuring your components are consistently available in both modes. Typically, you leave the container to lazy load when you want to optimize for fastest container load time, such as when running tests or your application in development mode.
+**Lazy loading:** Containers start in lazy loading mode, loading individual components just in time when you resolve them (as well as all the components for their dependencies, for components using **auto-injection**). This uses the same **auto-registration** process as when you **finalize** the container, ensuring your components are consistently available in both modes. Typically, you leave the container to lazy load when you want to optimize for fastest container load time, such as when running tests or during local development.
 
 **Finalization:** When you **finalize** a container, it **imports** other containers as required, starts each of its own **providers**, then begins a one-off process to **auto-register** components for all the **source files** in its **components dirs**, as well as any components specified in registration **manifests**. Once a container is finalized, it is frozen and no additional components can be registered. Typically, you finalize a container as part of booting a long-running application process.
 
