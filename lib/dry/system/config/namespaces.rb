@@ -135,7 +135,7 @@ module Dry
         #
         # @api public
         def delete_root
-          namespaces.delete(Namespace::ROOT_PATH)
+          delete(Namespace::ROOT_PATH)
         end
 
         # Returns the paths of the configured namespaces
