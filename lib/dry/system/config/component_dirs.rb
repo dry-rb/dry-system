@@ -65,6 +65,8 @@ module Dry
         #
         #   @see memoize=
 
+        # rubocop:disable Layout/LineLength
+
         # @!method namespaces
         #
         #   Returns the default configured namespaces for all added component dirs
@@ -74,6 +76,8 @@ module Dry
         #   @see Dry::System::Config::Namespaces#add
         #
         #   @return [Namespaces] the namespaces
+
+        # rubocop:enable Layout/LineLength
 
         # @!endgroup
 
