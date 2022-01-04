@@ -142,6 +142,8 @@ module Dry
         #
         # @return [Array<String,nil>] the namespace paths, with nil representing the root
         #   namespace
+        #
+        # @api public
         def paths
           namespaces.keys
         end
@@ -171,14 +173,14 @@ module Dry
         #
         # @return [Array<Namespace>] the namespaces
         #
-        # @api private
+        # @api public
         def to_a
           namespaces.values.tap do |arr|
             arr << Namespace.default_root unless arr.any?(&:root?)
           end
         end
 
-        # @api private
+        # @api public
         def each(&block)
           to_a.each(&block)
         end
