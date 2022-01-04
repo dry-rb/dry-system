@@ -189,6 +189,7 @@ module Dry
         def length
           dirs.length
         end
+        alias_method :size, :length
 
         # Returns the added component dirs, with default settings applied
         #

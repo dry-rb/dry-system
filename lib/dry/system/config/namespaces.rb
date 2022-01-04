@@ -152,6 +152,7 @@ module Dry
         def length
           namespaces.length
         end
+        alias_method :size, :length
 
         # Returns true if there are no configured namespaces
         #
