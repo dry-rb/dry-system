@@ -85,8 +85,8 @@ module Dry
         #
         # @param path [String] the path to the sub-directory of source files to which this
         #   namespace should apply, relative to the component dir
-        # @param identifier [String, nil] the leading namespace to apply to the registered
-        #   identifiers for the components. Set `nil` for the identifiers to be top-level.
+        # @param key [String, nil] the leading namespace to apply to the container keys
+        #   for the components. Set `nil` for the keys to be top-level.
         # @param const [String, nil] the Ruby constant namespace to expect for constants
         #   defined within the components. This should be provided in underscored string
         #   form, e.g. "hello_there/world" for a Ruby constant of `HelloThere::World`. Set
@@ -151,6 +151,8 @@ module Dry
         # Returns the count of configured namespaces
         #
         # @return [Integer]
+        #
+        # @api public
         def length
           namespaces.length
         end
@@ -167,9 +169,9 @@ module Dry
 
         # Returns the configured namespaces as an array
         #
-        # This adds a root namespace to the end of the array if one was not configured
-        # manually. This fallback ensures that all components in the component dir can be
-        # loaded.
+        # Adds a default root namespace to the end of the array if one was not added
+        # explicitly. This fallback ensures that all components in the component dir can
+        # be loaded.
         #
         # @return [Array<Namespace>] the namespaces
         #

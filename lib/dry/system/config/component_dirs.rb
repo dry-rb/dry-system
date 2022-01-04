@@ -69,9 +69,9 @@ module Dry
         #
         #   Returns the default configured namespaces for all added component dirs
         #
-        #   Allows namespaces to added on the returned object via {Namespaces#add}.
+        #   Allows namespaces to added on the returned object via {Dry::System::Config::Namespaces#add}.
         #
-        #   @see Namespaces#add
+        #   @see Dry::System::Config::Namespaces#add
         #
         #   @return [Namespaces] the namespaces
 
@@ -113,8 +113,6 @@ module Dry
             yield dir if block_given?
           end
         end
-
-        # (see #dir)
         alias_method :[], :dir
 
         # @overload add(path)
@@ -221,7 +219,7 @@ module Dry
         # This method exists to encapsulate the instance variable and to serve the needs
         # of #initialize_copy
         #
-        # @return Hash<String, ComponentDir>
+        # @return [Hash{String => ComponentDir}]
         #
         # @api private
         attr_reader :dirs
@@ -232,7 +230,7 @@ module Dry
         #
         # @param path_or_dir [String,ComponentDir]
         #
-        # @return Array<(String, ComponentDir)>
+        # @return [Array<(String, ComponentDir)>]
         #
         # @see #add
         def path_and_dir(path_or_dir)
