@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Dry::System.register_source_provider(:settings, group: :system) do
-  init do
+  prepare do
     require "dry/system/settings"
   end
 

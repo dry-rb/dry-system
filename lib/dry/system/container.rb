@@ -170,6 +170,8 @@ module Dry
           end
         end
 
+        # TODO: update docs
+
         # Registers finalization function for a bootable component
         #
         # By convention, boot files for components should be placed in a
@@ -346,6 +348,8 @@ module Dry
           self
         end
 
+        # TODO: update docs
+
         # Boots a specific component but calls only `init` lifecycle trigger
         #
         # This way of booting is useful in places where a heavy dependency is
@@ -359,8 +363,8 @@ module Dry
         # @return [self]
         #
         # @api public
-        def init(name)
-          booter.init(name)
+        def prepare(name)
+          booter.prepare(name)
           self
         end
 

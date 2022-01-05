@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Test::Container.register_provider(:bar, namespace: "test") do |_container|
-  init do
+  prepare do
     module Test
       module Bar
         # I shall be booted

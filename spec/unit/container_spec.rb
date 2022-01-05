@@ -48,7 +48,7 @@ RSpec.describe Dry::System::Container do
     end
 
     it "lazy-boot a given system" do
-      container.init(:bar)
+      container.prepare(:bar)
 
       expect(Test.const_defined?(:Bar)).to be(true)
       expect(container.registered?("test.bar")).to be(false)

@@ -19,7 +19,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
         register_provider(:db) do
           register(:db, Test::DB)
 
-          init do
+          prepare do
             db.establish_connection
           end
 
@@ -35,7 +35,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
         register_provider(:client) do
           register(:client, Test::Client)
 
-          init do
+          prepare do
             client.establish_connection
           end
 
@@ -53,7 +53,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
   describe "#init" do
     it "calls init function" do
-      system.booter.(:db).init
+      system.booter.(:db).prepare
       expect(db).to have_received(:establish_connection)
     end
   end
@@ -96,8 +96,8 @@ RSpec.describe Dry::System::Container, ".register_provider" do
     end
   end
 
-  specify "boot triggers init" do
-    system.booter.init(:db)
+  specify "boot triggers prepare" do
+    system.booter.prepare(:db)
 
     expect(db).to have_received(:establish_connection)
     expect(db).to_not have_received(:load)
@@ -130,13 +130,13 @@ RSpec.describe Dry::System::Container, ".register_provider" do
     system.booter.start(:db)
     system.booter.start(:db)
 
-    system.booter.init(:db)
-    system.booter.init(:db)
+    system.booter.prepare(:db)
+    system.booter.prepare(:db)
 
     expect(db).to have_received(:establish_connection).exactly(1)
     expect(db).to have_received(:load).exactly(1)
 
-    expect(system.booter.(:db).statuses).to eql(%i[init start])
+    expect(system.booter.(:db).statuses).to eql(%i[prepare start])
   end
 
   it "raises when a duplicated identifier was used" do

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Test::Container.register_provider(:kitten_service, namespace: true) do |_container|
-  init do
+  prepare do
     module KittenService
       class Client
       end

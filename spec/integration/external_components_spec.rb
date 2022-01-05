@@ -82,9 +82,9 @@ RSpec.describe "External Components" do
       expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
     end
 
-    it "allows calling :init manually" do
+    it "allows calling :prepare manually" do
       container.register_provider(:error_logger, from: :external_components, source: :logger) do
-        after(:init) do
+        after(:prepare) do
           ExternalComponents::Logger.default_level = :error
         end
 
@@ -93,7 +93,7 @@ RSpec.describe "External Components" do
         end
       end
 
-      container.init(:error_logger)
+      container.prepare(:error_logger)
 
       expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
       expect(container[:error_logger].class.default_level).to be(:error)

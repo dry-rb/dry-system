@@ -7,7 +7,7 @@ Dry::System.register_source_provider(:logger, group: :external_components) do
     key :log_level, Types::Symbol.default(:scream)
   end
 
-  init do
+  prepare do
     module ExternalComponents
       class Logger
         class << self

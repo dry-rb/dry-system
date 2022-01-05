@@ -7,7 +7,7 @@ module Dry
     # Lifecycle booting DSL
     #
     # Lifecycle objects are used in the boot files where you can register custom
-    # init/start/stop triggers
+    # prepare/start/stop triggers
     #
     # @see [Container.finalize]
     #
@@ -57,8 +57,8 @@ module Dry
       end
 
       # @api private
-      def init(&block)
-        trigger!(:init, &block)
+      def prepare(&block)
+        trigger!(:prepare, &block)
       end
 
       # @api private

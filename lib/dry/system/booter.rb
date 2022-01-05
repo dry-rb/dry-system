@@ -84,10 +84,10 @@ module Dry
       end
 
       # @api private
-      def init(name_or_provider)
+      def prepare(name_or_provider)
         with_provider(name_or_provider) do |provider|
           call(provider) do
-            provider.init.apply
+            provider.prepare.apply
             yield if block_given?
           end
 
@@ -100,7 +100,7 @@ module Dry
         with_provider(name_or_provider) do |provider|
           return self if booted.include?(provider)
 
-          init(name_or_provider) do
+          prepare(name_or_provider) do
             provider.start
           end
 

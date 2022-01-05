@@ -6,7 +6,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   subject(:system) { Test::Container }
   let(:setup_db) do
     system.register_provider(:db) do
-      init do
+      prepare do
         module Test
           class Db < OpenStruct
           end
@@ -25,7 +25,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
   let(:setup_client) do
     system.register_provider(:client) do
-      init do
+      prepare do
         module Test
           class Client < OpenStruct
           end
@@ -92,7 +92,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
     it "allows lazy-booting" do
       system.register_provider(:db) do
-        init do
+        prepare do
           module Test
             class Db < OpenStruct
             end

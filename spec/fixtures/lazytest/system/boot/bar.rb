@@ -2,7 +2,7 @@
 
 Test::Container.namespace(:test) do |container|
   container.register_provider(:bar) do
-    init do
+    prepare do
       module Test
         module Bar
           # I shall be booted

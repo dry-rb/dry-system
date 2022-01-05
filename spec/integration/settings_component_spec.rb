@@ -13,7 +13,7 @@ RSpec.describe "Settings component" do
       end
 
       register_provider(:settings, from: :system) do
-        before(:init) do
+        before(:prepare) do
           require_from_root "types"
         end
 
@@ -53,7 +53,7 @@ RSpec.describe "Settings component" do
         end
 
         register_provider(:settings, from: :system) do
-          before(:init) do
+          before(:prepare) do
             require_from_root "types"
           end
 
@@ -101,7 +101,7 @@ RSpec.describe "Settings component" do
         end
 
         register_provider(:settings, from: :system) do
-          before(:init) do
+          before(:prepare) do
             require_from_root "types"
           end
 

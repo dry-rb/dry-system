@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Test::Umbrella.register_provider(:db, namespace: "db") do
-  init do
+  prepare do
     module Db
       class Repo
       end

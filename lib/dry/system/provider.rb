@@ -18,7 +18,7 @@ module Dry
     # @example simple logger
     #   class App < Dry::System::Container
     #     boot(:logger) do
-    #       init do
+    #       prepare do
     #         require "logger"
     #       end
     #
@@ -85,15 +85,15 @@ module Dry
         instance_exec(&refinement_block) if refinement_block
       end
 
-      # Execute `init` step
+      # Execute `prepare` step
       #
       # @return [Bootable]
       #
       # @api public
-      def init
-        trigger(:before, :init)
-        lifecycle.(:init)
-        trigger(:after, :init)
+      def prepare
+        trigger(:before, :prepare)
+        lifecycle.(:prepare)
+        trigger(:after, :prepare)
         self
       end
 
