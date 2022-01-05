@@ -1,30 +1,28 @@
 # frozen_string_literal: true
 
-require "dry/system/provider"
-require "dry/system/provider_registry"
+require "dry/system/provider_source_registry"
 
 module Dry
   module System
+    # FIXME: update docs
+
     # Register external component provider
     #
     # @api public
-    def self.register_provider(name, options)
-      providers.register(name, options)
-      providers[name].load_components
-      self
+    def self.register_provider_sources(path)
+      provider_sources.load_sources(path)
     end
 
     # Register an external component that can be booted within other systems
     #
     # @api public
-    def self.register_component(name, provider:, &block)
-      providers[provider].register_component(name, block)
-      self
+    def self.register_provider_source(name, group:, &block)
+      provider_sources.register_source(name, group: group, &block)
     end
 
     # @api private
-    def self.providers
-      @providers ||= ProviderRegistry.new
+    def self.provider_sources
+      @provider_sources ||= ProviderSourceRegistry.new
     end
   end
 end

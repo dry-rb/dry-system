@@ -2,7 +2,7 @@
 
 require "dry/system"
 
-Dry::System.register_component(:notifier, provider: :external_components) do
+Dry::System.register_provider_source(:notifier, group: :external_components) do
   init do
     module ExternalComponents
       class Notifier
