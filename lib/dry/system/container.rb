@@ -582,8 +582,8 @@ module Dry
         def load_component(key)
           return self if registered?(key)
 
-          if (bootable_component = booter.find_component(key))
-            booter.start(bootable_component)
+          if (provider = booter.find_provider(key))
+            booter.start(provider)
             return self
           end
 
