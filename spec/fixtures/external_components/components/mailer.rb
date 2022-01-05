@@ -2,7 +2,7 @@
 
 require "dry/system"
 
-Dry::System.register_provider_source(:mailer, group: :external_components) do
+Dry::System.register_source_provider(:mailer, group: :external_components) do
   init do
     module ExternalComponents
       class Mailer

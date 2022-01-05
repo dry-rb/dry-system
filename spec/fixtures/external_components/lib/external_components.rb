@@ -2,5 +2,5 @@
 
 require "dry/system"
 
-Dry::System.register_provider_sources Pathname(__dir__).join("../components").realpath
-Dry::System.register_provider_sources Pathname(__dir__).join("../alt-components").realpath
+Dry::System.register_source_providers Pathname(__dir__).join("../components").realpath
+Dry::System.register_source_providers Pathname(__dir__).join("../alt-components").realpath

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system/provider_source_registry"
+require_relative "system/source_provider_registry"
 
 module Dry
   module System
@@ -9,20 +9,20 @@ module Dry
     # Register external component provider
     #
     # @api public
-    def self.register_provider_sources(path)
-      provider_sources.load_sources(path)
+    def self.register_source_providers(path)
+      source_providers.load_sources(path)
     end
 
     # Register an external component that can be booted within other systems
     #
     # @api public
-    def self.register_provider_source(name, group:, &block)
-      provider_sources.register_source(name, group: group, &block)
+    def self.register_source_provider(name, group:, &block)
+      source_providers.register(name: name, group: group, &block)
     end
 
     # @api private
-    def self.provider_sources
-      @provider_sources ||= ProviderSourceRegistry.new
+    def self.source_providers
+      @source_providers ||= SourceProviderRegistry.new
     end
   end
 end
