@@ -181,12 +181,14 @@ module Dry
         lifecycle.statuses
       end
 
+      # TODO: update docs
+
       # Automatically called by the booter object after starting a component
       #
       # @return [Bootable]
       #
       # @api private
-      def finalize
+      def apply
         lifecycle.container.each do |key, item|
           container.register(key, item) unless container.registered?(key)
         end

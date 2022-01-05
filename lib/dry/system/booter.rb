@@ -87,7 +87,7 @@ module Dry
       def init(name_or_provider)
         with_provider(name_or_provider) do |provider|
           call(provider) do
-            provider.init.finalize
+            provider.init.apply
             yield if block_given?
           end
 
@@ -104,7 +104,7 @@ module Dry
             provider.start
           end
 
-          booted << provider.finalize
+          booted << provider.apply
 
           self
         end
