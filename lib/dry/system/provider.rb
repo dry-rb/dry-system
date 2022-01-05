@@ -44,7 +44,7 @@ module Dry
     #
     # @api public
     class Provider
-      DEFAULT_SOURCE = proc {}.freeze
+      DEFAULT_REFINEMENT = proc {}.freeze
 
       # @!attribute [r] key
       #   @return [Symbol] component's unique name
@@ -73,8 +73,8 @@ module Dry
         @options = lifecycle_block ? options.merge(lifecycle_block: lifecycle_block) : options
         @namespace = options[:namespace]
 
-        source = options[:source] || DEFAULT_SOURCE
-        instance_exec(&source)
+        refinement_block = options[:refinement_block] || DEFAULT_REFINEMENT
+        instance_exec(&refinement_block)
       end
 
       # Execute `init` step

@@ -266,7 +266,7 @@ module Dry
 
         # @api private
         private def provider_from_source(name, from:, key: nil, namespace: nil, &block)
-          System.provider_sources.provider_source(name, from, key: key, namespace: namespace, container: self, source: block)
+          System.provider_sources.provider_source(name, from, key: key, namespace: namespace, container: self, refinement_block: block)
         end
 
         # @api private
