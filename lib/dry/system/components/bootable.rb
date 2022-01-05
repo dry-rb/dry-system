@@ -215,15 +215,6 @@ module Dry
           self.class.new(name, options.merge(new_options))
         end
 
-        # Return a new instance with updated options
-        #
-        # @return [Dry::Struct]
-        #
-        # @api private
-        def with(new_options)
-          self.class.new(name, options.merge(new_options))
-        end
-
         private
 
         # Return lifecycle object used for this component
