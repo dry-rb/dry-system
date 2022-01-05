@@ -65,12 +65,12 @@ module Dry
       TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
 
       # @api private
-      def initialize(name, options = {}, &block)
+      def initialize(name, options = {}, &lifecycle_block)
         @config = nil
         @config_block = nil
         @name = name
         @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
-        @options = block ? options.merge(block: block) : options
+        @options = lifecycle_block ? options.merge(lifecycle_block: lifecycle_block) : options
         @namespace = options[:namespace]
 
         source = options[:source] || DEFAULT_SOURCE
@@ -224,7 +224,7 @@ module Dry
       #
       # @api private
       def lifecycle
-        @lifecycle ||= Lifecycle.new(lf_container, component: self, &block)
+        @lifecycle ||= Lifecycle.new(lf_container, component: self, &lifecycle_block)
       end
 
       # Return configured container for the lifecycle object
@@ -263,8 +263,8 @@ module Dry
       # @return [Proc]
       #
       # @api private
-      def block
-        options.fetch(:block)
+      def lifecycle_block
+        options.fetch(:lifecycle_block)
       end
     end
   end
