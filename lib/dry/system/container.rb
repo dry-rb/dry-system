@@ -252,9 +252,9 @@ module Dry
 
           provider =
             if opts[:from]
-              boot_external_provider(name, **opts, &block)
+              provider_from_source(name, **opts, &block)
             else
-              boot_local_provider(name, **opts, &block)
+              provider(name, **opts, &block)
             end
 
           booter.register_provider provider
@@ -264,12 +264,12 @@ module Dry
         deprecate :finalize, :boot
 
         # @api private
-        def boot_external_provider(name, from:, key: nil, namespace: nil, &block)
+        private def provider_from_source(name, from:, key: nil, namespace: nil, &block)
           System.provider_sources.provider_source(name, from, key: key, namespace: namespace, container: self, source: block)
         end
 
         # @api private
-        def boot_local_provider(name, namespace: nil, &block)
+        private def provider(name, namespace: nil, &block)
           Components::Bootable.new(name, container: self, namespace: namespace, &block)
         end
 
