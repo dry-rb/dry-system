@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system/components/bootable"
+require "dry/system/provider"
 require "dry/system/errors"
 require "dry/system/constants"
 require "dry/system/lifecycle"
@@ -36,9 +36,11 @@ module Dry
         self
       end
 
+      # TODO: update docs
+
       # Returns a bootable component if it can be found or loaded, otherwise nil
       #
-      # @return [Dry::System::Components::Bootable, nil]
+      # @return [Dry::System::Provider, nil]
       # @api private
       def find_component(name)
         name = name.to_sym
@@ -169,7 +171,7 @@ module Dry
           when Symbol
             require_boot_file(id_or_component) unless components.exists?(id_or_component)
             components[id_or_component]
-          when Components::Bootable
+          when Provider
             id_or_component
           end
 

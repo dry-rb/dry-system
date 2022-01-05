@@ -21,6 +21,7 @@ require "dry/system/importer"
 require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
 require "dry/system/plugins"
+require "dry/system/provider"
 
 require_relative "component_dir"
 require_relative "config/component_dirs"
@@ -270,7 +271,7 @@ module Dry
 
         # @api private
         private def provider(name, namespace: nil, &block)
-          Components::Bootable.new(name, container: self, namespace: namespace, &block)
+          Provider.new(name, container: self, namespace: namespace, &block)
         end
 
         # Return if a container was finalized

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "constants"
-require_relative "components/bootable"
+require_relative "provider"
 
 module Dry
   module System
@@ -19,7 +19,7 @@ module Dry
       end
 
       def register_source(name, group:, &block)
-        sources[key(name, group)] = Components::Bootable.new(name, &block)
+        sources[key(name, group)] = Provider.new(name, &block)
       end
 
       # FIXME: better method name
