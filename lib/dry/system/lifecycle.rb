@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "concurrent/map"
-
 require "dry/system/settings"
 
 module Dry
@@ -22,18 +20,6 @@ module Dry
       attr_reader :triggers
 
       attr_reader :opts
-
-      # @api private
-      def self.new(container, opts = {}, &block)
-        cache.fetch_or_store([container, opts, block].hash) do
-          super
-        end
-      end
-
-      # @api private
-      def self.cache
-        @cache ||= ::Concurrent::Map.new
-      end
 
       # @api private
       def initialize(container, opts, &block)
