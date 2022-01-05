@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "constants"
-require_relative "provider"
+require_relative "source_provider"
 
 module Dry
   module System
@@ -19,14 +19,15 @@ module Dry
       end
 
       def register_source(name, group:, &block)
-        sources[key(name, group)] = Provider.new(name, &block)
+        sources[key(name, group)] = SourceProvider.new(name: name, lifecycle_block: block)
       end
 
       # FIXME: better method name
-      def provider_source(component_name, group, options = {})
-        # for now, nabbed this from the old Provider#component
-        component_key = options[:key] || component_name
-        sources[key(component_key, group)].new(component_name, options)
+      def provider_source(name, group, key: nil, **options)
+        # Nabbed this from the old Provider#component
+        # TODO: rename "key" to something else
+        component_key = key || name
+        sources[key(component_key, group)].to_provider(name: name, **options)
       end
 
       private

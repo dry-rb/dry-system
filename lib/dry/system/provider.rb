@@ -44,15 +44,11 @@ module Dry
     #
     # @api public
     class Provider
-      DEFAULT_REFINEMENT = proc {}.freeze
+      TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
 
       # @!attribute [r] key
       #   @return [Symbol] component's unique name
       attr_reader :name
-
-      # @!attribute [r] options
-      #   @return [Hash] component's options
-      attr_reader :options
 
       # @!attribute [r] triggers
       #   @return [Hash] lifecycle step after/before callbacks
@@ -62,19 +58,31 @@ module Dry
       #   @return [Symbol,String] default namespace for the container keys
       attr_reader :namespace
 
-      TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
+      # Return system's container used by this component
+      #
+      # @return [Dry::Struct]
+      #
+      # @api public
+      attr_reader :container
 
+      # Return block that will be evaluated in the lifecycle context
+      #
+      # @return [Proc]
+      #
       # @api private
-      def initialize(name, options = {}, &lifecycle_block)
+      attr_reader :lifecycle_block
+
+      def initialize(name:, namespace: nil, container:, lifecycle_block:, refinement_block: nil)
+        @name = name
+        @namespace = namespace
+        @container = container
+        @lifecycle_block = lifecycle_block
+
+        @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
         @config = nil
         @config_block = nil
-        @name = name
-        @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
-        @options = lifecycle_block ? options.merge(lifecycle_block: lifecycle_block) : options
-        @namespace = options[:namespace]
 
-        refinement_block = options[:refinement_block] || DEFAULT_REFINEMENT
-        instance_exec(&refinement_block)
+        instance_exec(&refinement_block) if refinement_block
       end
 
       # Execute `init` step
@@ -173,15 +181,6 @@ module Dry
         lifecycle.statuses
       end
 
-      # Return system's container used by this component
-      #
-      # @return [Dry::Struct]
-      #
-      # @api public
-      def container
-        options.fetch(:container)
-      end
-
       # Automatically called by the booter object after starting a component
       #
       # @return [Bootable]
@@ -204,16 +203,6 @@ module Dry
           container.instance_exec(lifecycle.container, &fn)
         end
         self
-      end
-
-      # Return a new instance with updated name and options
-      #
-      # @return [Dry::Struct]
-      #
-      # @api private
-      # WIP: I think this is only needed for provider sources
-      def new(name, new_options = EMPTY_HASH)
-        self.class.new(name, options.merge(new_options))
       end
 
       private
@@ -256,15 +245,6 @@ module Dry
       # @api private
       def configure!
         @config = settings.new(Components::Config.new(&@config_block)) if settings
-      end
-
-      # Return block that will be evaluated in the lifecycle context
-      #
-      # @return [Proc]
-      #
-      # @api private
-      def lifecycle_block
-        options.fetch(:lifecycle_block)
       end
     end
   end

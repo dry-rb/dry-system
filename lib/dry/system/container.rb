@@ -271,7 +271,7 @@ module Dry
 
         # @api private
         private def provider(name, namespace: nil, &block)
-          Provider.new(name, container: self, namespace: namespace, &block)
+          Provider.new(name: name, namespace: namespace, container: self, lifecycle_block: block)
         end
 
         # Return if a container was finalized
