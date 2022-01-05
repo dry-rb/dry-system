@@ -4,7 +4,7 @@ require "dry/system/provider"
 require "dry/system/errors"
 require "dry/system/constants"
 require "dry/system/lifecycle"
-require "dry/system/booter/component_registry"
+require "dry/system/booter/provider_registry"
 require "pathname"
 
 module Dry
@@ -27,7 +27,7 @@ module Dry
       def initialize(paths)
         @paths = paths
         @booted = []
-        @providers = ComponentRegistry.new
+        @providers = ProviderRegistry.new
       end
 
       # @api private
