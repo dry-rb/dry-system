@@ -247,7 +247,7 @@ module Dry
         def register_provider(name, **opts, &block)
           if providers.key?(name)
             raise DuplicatedProviderKeyError, <<-STR
-              Bootable component #{name.inspect} was already registered
+              Provider #{name.inspect} was already registered
             STR
           end
 
