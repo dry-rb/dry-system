@@ -265,7 +265,7 @@ module Dry
 
         # @api private
         def boot_external_provider(name, from:, key: nil, namespace: nil, &block)
-          System.provider_sources.provider_source(name, from, key: key, namespace: namespace, finalize: block, container: self)
+          System.provider_sources.provider_source(name, from, key: key, namespace: namespace, container: self, source: block)
         end
 
         # @api private

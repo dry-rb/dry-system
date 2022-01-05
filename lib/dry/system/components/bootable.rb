@@ -45,7 +45,7 @@ module Dry
       #
       # @api public
       class Bootable
-        DEFAULT_FINALIZE = proc {}
+        DEFAULT_SOURCE = proc {}.freeze
 
         # @!attribute [r] key
         #   @return [Symbol] component's unique name
@@ -73,8 +73,9 @@ module Dry
           @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
           @options = block ? options.merge(block: block) : options
           @namespace = options[:namespace]
-          finalize = options[:finalize] || DEFAULT_FINALIZE
-          instance_exec(&finalize)
+
+          source = options[:source] || DEFAULT_SOURCE
+          instance_exec(&source)
         end
 
         # Execute `init` step
