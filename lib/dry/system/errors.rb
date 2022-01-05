@@ -81,7 +81,7 @@ module Dry
       end
     end
 
-    DuplicatedComponentKeyError = Class.new(ArgumentError)
+    DuplicatedProviderKeyError = Class.new(ArgumentError)
 
     InvalidSettingsError = Class.new(ArgumentError) do
       # @api private

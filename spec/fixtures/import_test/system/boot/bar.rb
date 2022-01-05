@@ -7,7 +7,7 @@ Test::Container.namespace(:test) do |container|
     end
   end
 
-  container.boot(:bar) do
+  container.register_provider(:bar) do
     container.register(:bar, "I was finalized")
   end
 end

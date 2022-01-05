@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:client) do |container|
+Test::Container.register_provider(:client) do |container|
   module Test
     class Client
     end

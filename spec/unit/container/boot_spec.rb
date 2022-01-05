@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Dry::System::Container, ".boot" do
+RSpec.describe Dry::System::Container, ".register_provider" do
   subject(:system) { Test::App }
 
   let(:db) { spy(:db) }
@@ -16,7 +16,7 @@ RSpec.describe Dry::System::Container, ".boot" do
           config.root = SPEC_ROOT.join("fixtures/test")
         end
 
-        boot(:db) do
+        register_provider(:db) do
           register(:db, Test::DB)
 
           init do
@@ -32,7 +32,7 @@ RSpec.describe Dry::System::Container, ".boot" do
           end
         end
 
-        boot(:client) do
+        register_provider(:client) do
           register(:client, Test::Client)
 
           init do
@@ -112,12 +112,12 @@ RSpec.describe Dry::System::Container, ".boot" do
 
   specify "start raises error on undefined method or variable" do
     expect {
-      system.boot(:broken_1) { oops("arg") }
+      system.register_provider(:broken_1) { oops("arg") }
       system.booter.start(:broken_1)
     }.to raise_error(NoMethodError, /oops/)
 
     expect {
-      system.boot(:broken_2) { oops }
+      system.register_provider(:broken_2) { oops }
       system.booter.start(:broken_2)
     }.to raise_error(NameError, /oops/)
   end
@@ -140,15 +140,15 @@ RSpec.describe Dry::System::Container, ".boot" do
   end
 
   it "raises when a duplicated identifier was used" do
-    system.boot(:logger) {}
+    system.register_provider(:logger) {}
 
     expect {
-      system.boot(:logger) {}
-    }.to raise_error(Dry::System::DuplicatedComponentKeyError, /logger/)
+      system.register_provider(:logger) {}
+    }.to raise_error(Dry::System::DuplicatedProviderKeyError, /logger/)
   end
 
   it "allow setting namespace to true" do
-    system.boot(:api, namespace: true) do
+    system.register_provider(:api, namespace: true) do
       start do
         register(:client, "connected")
       end
@@ -158,7 +158,7 @@ RSpec.describe Dry::System::Container, ".boot" do
   end
 
   it "raises when namespace value is not valid" do
-    system.boot(:api, namespace: 312) do
+    system.register_provider(:api, namespace: 312) do
       start do
         register(:client, "connected")
       end

@@ -86,7 +86,7 @@ module Dry
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manual_registrar, default: Dry::System::ManualRegistrar
       setting :importer, default: Dry::System::Importer
-      setting :components, default: {}, reader: true, constructor: :dup.to_proc
+      setting :providers, default: {}, reader: true, constructor: :dup.to_proc
 
       class << self
         def strategies(value = nil)
@@ -243,35 +243,35 @@ module Dry
         # @return [self]
         #
         # @api public
-        def boot(name, **opts, &block)
-          if components.key?(name)
-            raise DuplicatedComponentKeyError, <<-STR
+        def register_provider(name, **opts, &block)
+          if providers.key?(name)
+            raise DuplicatedProviderKeyError, <<-STR
               Bootable component #{name.inspect} was already registered
             STR
           end
 
-          component =
+          provider =
             if opts[:from]
-              boot_external(name, **opts, &block)
+              boot_external_provider(name, **opts, &block)
             else
-              boot_local(name, **opts, &block)
+              boot_local_provider(name, **opts, &block)
             end
 
-          booter.register_component component
+          booter.register_provider provider
 
-          components[name] = component
+          providers[name] = provider
         end
         deprecate :finalize, :boot
 
         # @api private
-        def boot_external(name, from:, key: nil, namespace: nil, &block)
+        def boot_external_provider(name, from:, key: nil, namespace: nil, &block)
           System.providers[from].component(
             name, key: key, namespace: namespace, finalize: block, container: self
           )
         end
 
         # @api private
-        def boot_local(name, namespace: nil, &block)
+        def boot_local_provider(name, namespace: nil, &block)
           Components::Bootable.new(name, container: self, namespace: namespace, &block)
         end
 

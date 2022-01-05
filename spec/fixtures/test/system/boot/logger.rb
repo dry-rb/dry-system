@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:logger) do |container|
+Test::Container.register_provider(:logger) do |container|
   init do
     require "logger"
   end

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:heaven) do
+Test::Container.register_provider(:heaven) do
   register("heaven", "string")
 end

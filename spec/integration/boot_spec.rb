@@ -2,10 +2,10 @@
 
 require "ostruct"
 
-RSpec.describe Dry::System::Container, ".boot" do
+RSpec.describe Dry::System::Container, ".register_provider" do
   subject(:system) { Test::Container }
   let(:setup_db) do
-    system.boot(:db) do
+    system.register_provider(:db) do
       init do
         module Test
           class Db < OpenStruct
@@ -24,7 +24,7 @@ RSpec.describe Dry::System::Container, ".boot" do
   end
 
   let(:setup_client) do
-    system.boot(:client) do
+    system.register_provider(:client) do
       init do
         module Test
           class Client < OpenStruct
@@ -66,7 +66,7 @@ RSpec.describe Dry::System::Container, ".boot" do
     end
 
     it "uses defaults" do
-      system.boot(:api) do
+      system.register_provider(:api) do
         settings do
           key :token, Types::String.default("xxx")
         end
@@ -91,7 +91,7 @@ RSpec.describe Dry::System::Container, ".boot" do
     end
 
     it "allows lazy-booting" do
-      system.boot(:db) do
+      system.register_provider(:db) do
         init do
           module Test
             class Db < OpenStruct

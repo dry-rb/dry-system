@@ -31,7 +31,7 @@ module Dry
       end
 
       # @api private
-      def register_component(component)
+      def register_provider(component)
         components.register(component)
         self
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.boot(:client) do
+Test::Container.register_provider(:client) do
   use :logger
 
   Client = Struct.new(:logger)
