@@ -244,7 +244,7 @@ module Dry
         # @return [self]
         #
         # @api public
-        def register_provider(name, **opts, &block)
+        def register_provider(name, namespace: nil, from: nil, source: nil, &block)
           if providers.key?(name)
             raise DuplicatedProviderKeyError, <<-STR
               Provider #{name.inspect} was already registered
@@ -252,10 +252,10 @@ module Dry
           end
 
           provider =
-            if opts[:from]
-              provider_from_source(name, **opts, &block)
+            if from
+              provider_from_source(name, namespace: namespace, source: source || name, group: from, &block)
             else
-              provider(name, **opts, &block)
+              provider(name, namespace: namespace, &block)
             end
 
           booter.register_provider provider
@@ -265,14 +265,13 @@ module Dry
         deprecate :finalize, :boot
 
         # @api private
-        # TODO: use better name than `key`?
-        private def provider_from_source(name, from:, key: nil, namespace: nil, &block)
-          System.source_providers.resolve(name: key || name, group: from)
+        private def provider_from_source(name, source:, group:, namespace:, &block)
+          System.source_providers.resolve(name: source, group: group)
             .to_provider(name: name, namespace: namespace, container: self, refinement_block: block)
         end
 
         # @api private
-        private def provider(name, namespace: nil, &block)
+        private def provider(name, namespace:, &block)
           Provider.new(name: name, namespace: namespace, container: self, lifecycle_block: block)
         end
 

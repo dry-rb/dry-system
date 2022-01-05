@@ -13,7 +13,7 @@ RSpec.describe "External Components" do
 
         register_provider(:logger, from: :external_components)
 
-        register_provider(:my_logger, from: :external_components, key: :logger) do
+        register_provider(:my_logger, from: :external_components, source: :logger) do
           configure do |config|
             config.log_level = :debug
           end
@@ -71,7 +71,7 @@ RSpec.describe "External Components" do
 
   context "with customized booting" do
     it "allows aliasing external components" do
-      container.register_provider(:error_logger, from: :external_components, key: :logger) do
+      container.register_provider(:error_logger, from: :external_components, source: :logger) do
         after(:start) do |c|
           register(:error_logger, c[:logger])
         end
@@ -83,7 +83,7 @@ RSpec.describe "External Components" do
     end
 
     it "allows calling :init manually" do
-      container.register_provider(:error_logger, from: :external_components, key: :logger) do
+      container.register_provider(:error_logger, from: :external_components, source: :logger) do
         after(:init) do
           ExternalComponents::Logger.default_level = :error
         end
@@ -105,7 +105,7 @@ RSpec.describe "External Components" do
       Class.new(Dry::System::Container) do
         register_provider(:logger, from: :external_components)
 
-        register_provider(:conn, from: :alt, key: :db) do
+        register_provider(:conn, from: :alt, source: :db) do
           after(:start) do |c|
             register(:conn, c[:db_conn])
           end
