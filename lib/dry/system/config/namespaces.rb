@@ -35,8 +35,6 @@ module Dry
         def namespace(path)
           namespaces[path]
         end
-
-        # (see #namespace)
         alias_method :[], :namespace
 
         # Returns the namespace configured for the root path, or nil if the root namespace
@@ -182,6 +180,11 @@ module Dry
           end
         end
 
+        # Calls the given block once for each configured namespace, passing the namespace
+        # as an argument.
+        #
+        # @yieldparam namespace [Namespace] the yielded namespace
+        #
         # @api public
         def each(&block)
           to_a.each(&block)
