@@ -17,8 +17,8 @@ RSpec.describe "Plugins / Dependency Graph" do
           config.ignored_dependencies = ["ignored_spec_service"]
         end
 
-        boot(:mailer, from: :external_components)
-        boot(:logger, from: :external_components)
+        register_provider(:mailer, from: :external_components)
+        register_provider(:logger, from: :external_components)
       end
 
       Import = Container.injector

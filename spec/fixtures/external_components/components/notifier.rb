@@ -2,8 +2,8 @@
 
 require "dry/system"
 
-Dry::System.register_component(:notifier, provider: :external_components) do
-  init do
+Dry::System.register_source_provider(:notifier, group: :external_components) do
+  prepare do
     module ExternalComponents
       class Notifier
         attr_reader :monitor

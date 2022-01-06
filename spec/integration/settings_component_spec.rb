@@ -12,8 +12,8 @@ RSpec.describe "Settings component" do
         config.env = :test
       end
 
-      boot(:settings, from: :system) do
-        before(:init) do
+      register_provider(:settings, from: :system) do
+        before(:prepare) do
           require_from_root "types"
         end
 
@@ -52,8 +52,8 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        boot(:settings, from: :system) do
-          before(:init) do
+        register_provider(:settings, from: :system) do
+          before(:prepare) do
             require_from_root "types"
           end
 
@@ -80,12 +80,12 @@ RSpec.describe "Settings component" do
         settings.integer_value
       }.to raise_error(
         Dry::System::InvalidSettingsError,
-        <<~EOF
+        <<~TEXT
           Could not initialize settings. The following settings were invalid:
 
           integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
           coercible_value: invalid value for Integer(): "foo"
-        EOF
+        TEXT
       )
     end
   end
@@ -100,8 +100,8 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        boot(:settings, from: :system) do
-          before(:init) do
+        register_provider(:settings, from: :system) do
+          before(:prepare) do
             require_from_root "types"
           end
 

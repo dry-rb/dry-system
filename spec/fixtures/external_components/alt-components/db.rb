@@ -2,8 +2,8 @@
 
 require "dry/system"
 
-Dry::System.register_component(:db, provider: :alt) do
-  init do
+Dry::System.register_source_provider(:db, group: :alt) do
+  prepare do
     module AltComponents
       class DbConn
       end

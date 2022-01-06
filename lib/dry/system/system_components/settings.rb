@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-Dry::System.register_component(:settings, provider: :system) do
-  init do
+Dry::System.register_source_provider(:settings, group: :system) do
+  prepare do
     require "dry/system/settings"
   end
 

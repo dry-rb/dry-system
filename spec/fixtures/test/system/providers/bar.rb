@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Test::Container.register_provider(:bar, namespace: "test") do |_container|
+Test::Container.register_provider(:bar, namespace: "test") do
   prepare do
     module Test
       module Bar

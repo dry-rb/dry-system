@@ -1,30 +1,49 @@
 # frozen_string_literal: true
 
-require "dry/system/provider"
-require "dry/system/provider_registry"
+require "dry/core/deprecations"
+require_relative "system/source_provider_registry"
 
 module Dry
   module System
-    # Register external component provider
+    # Registers all the source providers in the files under the given path
     #
     # @api public
-    def self.register_provider(name, options)
-      providers.register(name, options)
-      providers[name].load_components
-      self
+    def self.register_source_providers(path)
+      source_providers.load_sources(path)
     end
 
-    # Register an external component that can be booted within other systems
+    def self.register_provider(_name, options)
+      Dry::Core::Deprecations.announce(
+        "Dry::System.register_provider",
+        "Use `Dry::System.register_source_providers` instead",
+        tag: "dry-system",
+        uplevel: 1
+      )
+
+      register_source_providers(options.fetch(:path))
+    end
+
+    # Registers a source provider, which can be used as the basis for other providers
     #
     # @api public
+    def self.register_source_provider(name, group:, &block)
+      source_providers.register(name: name, group: group, &block)
+    end
+
     def self.register_component(name, provider:, &block)
-      providers[provider].register_component(name, block)
-      self
+      Dry::Core::Deprecations.announce(
+        "Dry::System.register_component",
+        "Use `Dry::System.register_source_provider` instead",
+        tag: "dry-system",
+        uplevel: 1
+      )
+
+      register_source_provider(name, group: provider, &block)
     end
 
     # @api private
-    def self.providers
-      @providers ||= ProviderRegistry.new
+    def self.source_providers
+      @source_providers ||= SourceProviderRegistry.new
     end
   end
 end

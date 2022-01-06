@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require "dry/system/components/bootable"
+require "dry/system/provider"
 require "dry/system/errors"
 require "dry/system/constants"
-require "dry/system/lifecycle"
-require "dry/system/booter/component_registry"
+require "dry/system/booter/provider_registry"
 require "pathname"
 
 module Dry
@@ -21,45 +20,46 @@ module Dry
 
       attr_reader :booted
 
-      attr_reader :components
+      attr_reader :providers
 
       # @api private
       def initialize(paths)
         @paths = paths
         @booted = []
-        @components = ComponentRegistry.new
+        @providers = ProviderRegistry.new
       end
 
       # @api private
-      def register_component(component)
-        components.register(component)
+      def register_provider(provider)
+        providers.register(provider)
         self
       end
 
-      # Returns a bootable component if it can be found or loaded, otherwise nil
+      # Returns a provider if it can be found or loaded, otherwise nil
       #
-      # @return [Dry::System::Components::Bootable, nil]
+      # @return [Dry::System::Provider, nil]
+      #
       # @api private
-      def find_component(name)
+      def find_provider(name)
         name = name.to_sym
 
-        return components[name] if components.exists?(name)
+        return providers[name] if providers.exists?(name)
 
         return if finalized?
 
         require_boot_file(name)
 
-        components[name] if components.exists?(name)
+        providers[name] if providers.exists?(name)
       end
 
       # @api private
       def finalize!
         boot_files.each do |path|
-          load_component(path)
+          load_provider(path)
         end
 
-        components.each do |component|
-          start(component)
+        providers.each do |provider|
+          start(provider)
         end
 
         freeze
@@ -74,18 +74,18 @@ module Dry
 
       # @api private
       def shutdown
-        components.each do |component|
-          next unless booted.include?(component)
+        providers.each do |provider|
+          next unless booted.include?(provider)
 
-          stop(component)
+          stop(provider)
         end
       end
 
       # @api private
-      def init(name_or_component)
-        with_component(name_or_component) do |component|
-          call(component) do
-            component.init.finalize
+      def prepare(name_or_provider)
+        with_provider(name_or_provider) do |provider|
+          call(provider) do
+            provider.prepare.apply
             yield if block_given?
           end
 
@@ -94,47 +94,44 @@ module Dry
       end
 
       # @api private
-      def start(name_or_component)
-        with_component(name_or_component) do |component|
-          return self if booted.include?(component)
+      def start(name_or_provider)
+        with_provider(name_or_provider) do |provider|
+          return self if booted.include?(provider)
 
-          init(name_or_component) do
-            component.start
+          prepare(name_or_provider) do
+            provider.start
           end
 
-          booted << component.finalize
+          booted << provider.apply
 
           self
         end
       end
 
       # @api private
-      def stop(name_or_component)
-        call(name_or_component) do |component|
-          raise ComponentNotStartedError, name_or_component unless booted.include?(component)
+      def stop(name_or_provider)
+        call(name_or_provider) do |provider|
+          raise ProviderNotStartedError, name_or_provider unless booted.include?(provider)
 
-          component.stop
-          booted.delete(component)
+          provider.stop
+          booted.delete(provider)
 
           yield if block_given?
         end
       end
 
       # @api private
-      def call(name_or_component)
-        with_component(name_or_component) do |component|
-          raise ComponentFileMismatchError, name unless component
-
-          yield(component) if block_given?
-
-          component
+      def call(name_or_provider)
+        with_provider(name_or_provider) do |provider|
+          yield(provider) if block_given?
+          provider
         end
       end
 
       # @api private
       def boot_dependency(component)
-        if (component = find_component(component.root_key))
-          start(component)
+        if (provider = find_provider(component.root_key))
+          start(provider)
         end
       end
 
@@ -163,25 +160,25 @@ module Dry
 
       private
 
-      def with_component(id_or_component)
-        component =
-          case id_or_component
+      def with_provider(id_or_provider)
+        provider =
+          case id_or_provider
+          when Provider
+            id_or_provider
           when Symbol
-            require_boot_file(id_or_component) unless components.exists?(id_or_component)
-            components[id_or_component]
-          when Components::Bootable
-            id_or_component
+            require_boot_file(id_or_provider) unless providers.exists?(id_or_provider)
+            providers[id_or_provider]
           end
 
-        raise InvalidComponentError, id_or_component unless component
+        raise ProviderNotFoundError, id_or_provider unless provider
 
-        yield(component)
+        yield(provider)
       end
 
-      def load_component(path)
+      def load_provider(path)
         name = Pathname(path).basename(RB_EXT).to_s.to_sym
 
-        Kernel.require path unless components.exists?(name)
+        Kernel.require path unless providers.exists?(name)
 
         self
       end

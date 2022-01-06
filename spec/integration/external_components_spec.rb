@@ -11,9 +11,9 @@ RSpec.describe "External Components" do
           config.root = SPEC_ROOT.join("fixtures/app").realpath
         end
 
-        boot(:logger, from: :external_components)
+        register_provider(:logger, from: :external_components)
 
-        boot(:my_logger, from: :external_components, key: :logger) do
+        register_provider(:my_logger, from: :external_components, source: :logger) do
           configure do |config|
             config.log_level = :debug
           end
@@ -23,9 +23,9 @@ RSpec.describe "External Components" do
           end
         end
 
-        boot(:notifier, from: :external_components)
+        register_provider(:notifier, from: :external_components)
 
-        boot(:mailer, from: :external_components)
+        register_provider(:mailer, from: :external_components)
 
         register(:monitor, "a monitor")
       end
@@ -71,7 +71,7 @@ RSpec.describe "External Components" do
 
   context "with customized booting" do
     it "allows aliasing external components" do
-      container.boot(:error_logger, from: :external_components, key: :logger) do
+      container.register_provider(:error_logger, from: :external_components, source: :logger) do
         after(:start) do |c|
           register(:error_logger, c[:logger])
         end
@@ -82,9 +82,9 @@ RSpec.describe "External Components" do
       expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
     end
 
-    it "allows calling :init manually" do
-      container.boot(:error_logger, from: :external_components, key: :logger) do
-        after(:init) do
+    it "allows calling :prepare manually" do
+      container.register_provider(:error_logger, from: :external_components, source: :logger) do
+        after(:prepare) do
           ExternalComponents::Logger.default_level = :error
         end
 
@@ -93,7 +93,7 @@ RSpec.describe "External Components" do
         end
       end
 
-      container.init(:error_logger)
+      container.prepare(:error_logger)
 
       expect(container[:error_logger]).to be_instance_of(ExternalComponents::Logger)
       expect(container[:error_logger].class.default_level).to be(:error)
@@ -103,9 +103,9 @@ RSpec.describe "External Components" do
   context "customized registration from an alternative provider" do
     subject(:container) do
       Class.new(Dry::System::Container) do
-        boot(:logger, from: :external_components)
+        register_provider(:logger, from: :external_components)
 
-        boot(:conn, from: :alt, key: :db) do
+        register_provider(:conn, from: :alt, source: :db) do
           after(:start) do |c|
             register(:conn, c[:db_conn])
           end

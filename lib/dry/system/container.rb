@@ -21,6 +21,7 @@ require "dry/system/importer"
 require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
 require "dry/system/plugins"
+require "dry/system/provider"
 
 require_relative "component_dir"
 require_relative "config/component_dirs"
@@ -77,8 +78,8 @@ module Dry
 
       setting :name
       setting :root, default: Pathname.pwd.freeze, constructor: -> path { Pathname(path) }
-      setting :system_dir, default: "system"
-      setting :bootable_dirs, default: ["system/boot"]
+      setting :provider_dirs, default: ["system/providers"]
+      setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "container"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :inflector, default: Dry::Inflector.new
@@ -86,7 +87,7 @@ module Dry
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manual_registrar, default: Dry::System::ManualRegistrar
       setting :importer, default: Dry::System::Importer
-      setting :components, default: {}, reader: true, constructor: :dup.to_proc
+      setting :providers, default: {}, reader: true, constructor: :dup.to_proc
 
       class << self
         def strategies(value = nil)
@@ -169,110 +170,124 @@ module Dry
           end
         end
 
-        # Registers finalization function for a bootable component
+        # Registers a provider and its lifecycle hooks
         #
-        # By convention, boot files for components should be placed in a
-        # `bootable_dirs` entry and they will be loaded on demand when
-        # components are loaded in isolation, or during the finalization
-        # process.
+        # By convention, you should place a file for each provider in one of the
+        # configured `provider_dirs`, and they will be loaded on demand when components
+        # are loaded in isolation, or during container finalization.
         #
         # @example
         #   # system/container.rb
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :core
-        #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #
-        #   # system/boot/db.rb
+        #   # system/providers/db.rb
         #   #
-        #   # Simple component registration
-        #   MyApp.boot(:db) do |container|
-        #     require 'db'
-        #
-        #     container.register(:db, DB.new)
+        #   # Simple provider registration
+        #   MyApp.register_provider(:db) do
+        #     require "db"
+        #     register("db", DB.new)
         #   end
         #
-        #   # system/boot/db.rb
+        #   # system/providers/db.rb
         #   #
-        #   # Component registration with lifecycle triggers
-        #   MyApp.boot(:db) do |container|
+        #   # Provider registration with lifecycle triggers
+        #   MyApp.register_provider(:db) do |container|
         #     init do
-        #       require 'db'
-        #       DB.configure(ENV['DB_URL'])
-        #       container.register(:db, DB.new)
+        #       require "db"
+        #       DB.configure(ENV["DB_URL"])
+        #       container.register("db", DB.new)
         #     end
         #
         #     start do
-        #       db.establish_connection
+        #       container["db"].establish_connection
         #     end
         #
         #     stop do
-        #       db.close_connection
+        #       container["db"].close_connection
         #     end
         #   end
         #
-        #   # system/boot/db.rb
+        #   # system/providers/db.rb
         #   #
-        #   # Component registration which uses another bootable component
-        #   MyApp.boot(:db) do |container|
+        #   # Provider registration which uses another provider
+        #   MyApp.register_provider(:db) do |container|
         #     use :logger
         #
         #     start do
-        #       require 'db'
+        #       require "db"
         #       DB.configure(ENV['DB_URL'], logger: logger)
-        #       container.register(:db, DB.new)
+        #       container.register("db", DB.new)
         #     end
         #   end
         #
         #   # system/boot/db.rb
         #   #
-        #   # Component registration under a namespace. This will register the
-        #   # db object under `persistence.db` key
-        #   MyApp.namespace(:persistence) do |persistence|
-        #     require 'db'
-        #     DB.configure(ENV['DB_URL'], logger: logger)
-        #     persistence.register(:db, DB.new)
+        #   # Provider registration under a namespace. This will register the
+        #   # db object with the "persistence.db" key
+        #   MyApp.register_provider(:persistence, namespace: "db") do
+        #     require "db"
+        #     DB.configure(ENV["DB_URL"])
+        #     register("db", DB.new)
         #   end
         #
-        # @param name [Symbol] a unique name for a bootable component
+        # @param name [Symbol] a unique name for the provider
         #
-        # @see Lifecycle
+        # @see ProviderLifecycle
         #
         # @return [self]
         #
         # @api public
-        def boot(name, **opts, &block)
-          if components.key?(name)
-            raise DuplicatedComponentKeyError, <<-STR
-              Bootable component #{name.inspect} was already registered
-            STR
-          end
+        def register_provider(name, namespace: nil, from: nil, source: nil, &block)
+          raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
-          component =
-            if opts[:from]
-              boot_external(name, **opts, &block)
+          provider =
+            if from
+              provider_from_source(
+                name,
+                namespace: namespace,
+                source: source || name,
+                group: from,
+                &block
+              )
             else
-              boot_local(name, **opts, &block)
+              provider(name, namespace: namespace, &block)
             end
 
-          booter.register_component component
+          booter.register_provider provider
 
-          components[name] = component
+          providers[name] = provider
+        end
+
+        def boot(name, **opts, &block)
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Container.boot",
+            "Use `Dry::System::Container.register_provider` instead",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          register_provider(
+            name,
+            namespace: opts[:namespace],
+            from: opts[:from],
+            source: opts[:key],
+            &block
+          )
         end
         deprecate :finalize, :boot
 
         # @api private
-        def boot_external(name, from:, key: nil, namespace: nil, &block)
-          System.providers[from].component(
-            name, key: key, namespace: namespace, finalize: block, container: self
-          )
+        private def provider_from_source(name, source:, group:, namespace:, &block)
+          System.source_providers.resolve(name: source, group: group)
+            .to_provider(name: name, namespace: namespace, container: self, refinement_block: block)
         end
 
         # @api private
-        def boot_local(name, namespace: nil, &block)
-          Components::Bootable.new(name, container: self, namespace: namespace, &block)
+        private def provider(name, namespace:, &block)
+          Provider.new(name: name, namespace: namespace, container: self, lifecycle_block: block)
         end
 
         # Return if a container was finalized
@@ -329,14 +344,14 @@ module Dry
           self
         end
 
-        # Boots a specific component
+        # Starts a provider
         #
-        # As a result, `init` and `start` lifecycle triggers are called
+        # As a result, the provider's `prepare` and `start` lifecycle triggers are called
         #
         # @example
         #   MyApp.start(:persistence)
         #
-        # @param name [Symbol] the name of a registered bootable component
+        # @param name [Symbol] the name of a registered provider to start
         #
         # @return [self]
         #
@@ -346,23 +361,24 @@ module Dry
           self
         end
 
-        # Boots a specific component but calls only `init` lifecycle trigger
+        # Prepares a provider using its `prepare` lifecycle trigger
         #
-        # This way of booting is useful in places where a heavy dependency is
-        # needed but its started environment is not required
+        # Preparing (as opposed to starting) a provider is useful in places where some
+        # aspects of a heavier dependency are needed, but its fully started environment
         #
         # @example
-        #   MyApp.init(:persistence)
+        #   MyApp.prepare(:persistence)
         #
-        # @param [Symbol] name The name of a registered bootable component
+        # @param [Symbol] name The name of the registered provider to prepare
         #
         # @return [self]
         #
         # @api public
-        def init(name)
-          booter.init(name)
+        def prepare(name)
+          booter.prepare(name)
           self
         end
+        deprecate :init, :prepare
 
         # Stop a specific component but calls only `stop` lifecycle trigger
         #
@@ -519,12 +535,29 @@ module Dry
 
         # @api private
         def booter
-          @booter ||= config.booter.new(boot_paths)
+          @booter ||= config.booter.new(provider_paths)
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
         # @api private
-        def boot_paths
-          config.bootable_dirs.map { |dir|
+        def provider_paths
+          provider_dirs = config.provider_dirs
+          bootable_dirs = config.bootable_dirs || ["system/boot"]
+
+          if config.provider_dirs == ["system/providers"] && \
+             provider_dirs.none? { |d| root.join(d).exist? } && \
+             bootable_dirs.any? { |d| root.join(d).exist? }
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
+              "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
+              tag: "dry-system",
+              uplevel: 2
+            )
+
+            provider_dirs = bootable_dirs
+          end
+
+          provider_dirs.map { |dir|
             dir = Pathname(dir)
 
             if dir.relative?
@@ -534,6 +567,7 @@ module Dry
             end
           }
         end
+        # rubocop:enable Metrics/PerceivedComplexity, Layout/LineLength
 
         # @api private
         def auto_registrar
@@ -555,6 +589,7 @@ module Dry
           hooks[:"after_#{event}"] << block
         end
 
+        # @api private
         def before(event, &block)
           hooks[:"before_#{event}"] << block
         end
@@ -581,8 +616,8 @@ module Dry
         def load_component(key)
           return self if registered?(key)
 
-          if (bootable_component = booter.find_component(key))
-            booter.start(bootable_component)
+          if (provider = booter.find_provider(key))
+            booter.start(provider)
             return self
           end
 
