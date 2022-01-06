@@ -8,17 +8,17 @@ require "dry/system/constants"
 
 module Dry
   module System
-    # Bootable components can provide one or more objects and typically depend
-    # on 3rd-party code. A typical bootable component can be a database library,
-    # or an API client.
+    # Providers can prepare and register one or more objects and typically depend on
+    # 3rd-party code. A typical provider might be for a database library, or an API
+    # client.
     #
-    # These components can be registered via `Container.boot` and external component
-    # providers can register their components too, which then can be used and configured
-    # by your system.
+    # Providers can be registered via `Container.register_provider` and source providers
+    # can register their components too, which then can be used and configured by your
+    # system.
     #
     # @example simple logger
     #   class App < Dry::System::Container
-    #     boot(:logger) do
+    #     register_provider(:logger) do
     #       prepare do
     #         require "logger"
     #       end
@@ -31,9 +31,9 @@ module Dry
     #
     #   App[:logger] # returns configured logger
     #
-    # @example using built-in system components
+    # @example using first-party source providers
     #   class App < Dry::System::Container
-    #     boot(:settings, from: :system) do
+    #     register_provider(:settings, from: :system) do
     #       settings do
     #         key :database_url, Types::String.constrained(filled: true)
     #         key :session_secret, Types::String.constrained(filled: true)
@@ -48,7 +48,7 @@ module Dry
       TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
 
       # @!attribute [r] key
-      #   @return [Symbol] component's unique name
+      #   @return [Symbol] the provider's unique name
       attr_reader :name
 
       # @!attribute [r] triggers
@@ -59,14 +59,14 @@ module Dry
       #   @return [Symbol,String] default namespace for the container keys
       attr_reader :namespace
 
-      # Return system's container used by this component
+      # Returns the main container used by this provider
       #
       # @return [Dry::Struct]
       #
       # @api public
       attr_reader :container
 
-      # Return block that will be evaluated in the lifecycle context
+      # Returns the block that will be evaluated in the lifecycle context
       #
       # @return [Proc]
       #
@@ -88,7 +88,7 @@ module Dry
 
       # Execute `prepare` step
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api public
       def prepare
@@ -100,7 +100,7 @@ module Dry
 
       # Execute `start` step
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api public
       def start
@@ -112,7 +112,7 @@ module Dry
 
       # Execute `stop` step
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api public
       def stop
@@ -122,7 +122,7 @@ module Dry
 
       # Specify a before callback
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api public
       def before(event, &block)
@@ -143,7 +143,7 @@ module Dry
 
       # Specify an after callback
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api public
       def after(event, &block)
@@ -162,18 +162,17 @@ module Dry
         self
       end
 
-      # Configure a component
+      # Configures the provider
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api public
       def configure(&block)
         @config_block = block
+        self
       end
 
       # Define configuration settings with keys and types
-      #
-      # @return [Bootable]
       #
       # @api public
       def settings(&block)
@@ -186,7 +185,7 @@ module Dry
         end
       end
 
-      # Return component's configuration
+      # Returns the provider's configuration
       #
       # @return [Dry::Struct]
       #
@@ -195,7 +194,7 @@ module Dry
         @config || configure!
       end
 
-      # Return a list of lifecycle steps that were executed
+      # Returns a list of lifecycle steps that were executed
       #
       # @return [Array<Symbol>]
       #
@@ -204,12 +203,12 @@ module Dry
         lifecycle.statuses
       end
 
-      # Registers and components from the provider's container in the main container
+      # Registers any components from the provider's container in the main container
       #
       # Automatically called by the booter after the `prepare` and `start` lifecycle
       # triggers are run
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api private
       def apply
@@ -221,7 +220,7 @@ module Dry
 
       # Trigger a callback
       #
-      # @return [Bootable]
+      # @return [self]
       #
       # @api private
       def trigger(key, event)
