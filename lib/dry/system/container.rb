@@ -78,7 +78,6 @@ module Dry
 
       setting :name
       setting :root, default: Pathname.pwd.freeze, constructor: -> path { Pathname(path) }
-      setting :system_dir, default: "system"
       setting :bootable_dirs, default: ["system/boot"]
       setting :registrations_dir, default: "container"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
