@@ -21,16 +21,19 @@ module Dry
       #
       # @see Namespaces#add
       #
-      # @api private
+      # @api public
       class Namespace
         ROOT_PATH = nil
 
         include Dry::Equalizer(:path, :key, :const)
 
+        # @api public
         attr_reader :path
 
+        # @api public
         attr_reader :key
 
+        # @api public
         attr_reader :const
 
         # Returns a namespace configured to serve as the default root namespace for a
@@ -48,20 +51,24 @@ module Dry
           )
         end
 
+        # @api private
         def initialize(path:, key:, const:)
           @path = path
           @key = key
           @const = const
         end
 
+        # @api public
         def root?
           path == ROOT_PATH
         end
 
+        # @api public
         def path?
           !root?
         end
 
+        # @api private
         def default_key?
           key == path
         end

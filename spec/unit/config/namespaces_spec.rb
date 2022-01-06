@@ -6,12 +6,81 @@ require "dry/system/config/namespace"
 RSpec.describe Dry::System::Config::Namespaces do
   subject(:namespaces) { described_class.new }
 
+  describe "#namespace" do
+    it "returns the previously configured namespace for the given path" do
+      added_namespace = namespaces.add "test/path", key: "key_ns", const: "const_ns"
+
+      expect(namespaces.namespace("test/path")).to be added_namespace
+    end
+
+    it "returns nil when no namepace was previously configured for the given path" do
+      expect(namespaces.namespace("test/path")).to be nil
+    end
+  end
+
+  describe "#[]" do
+    it "returns the previously configured namespace for the given path" do
+      added_namespace = namespaces.add "test/path", key: "key_ns", const: "const_ns"
+
+      expect(namespaces["test/path"]).to be added_namespace
+    end
+
+    it "returns nil when no namepace was previously configured for the given path" do
+      expect(namespaces["test/path"]).to be nil
+    end
+  end
+
+  describe "#root" do
+    it "returns the previously configured root namespace" do
+      added_root_namespace = namespaces.add_root
+
+      expect(namespaces.root).to be added_root_namespace
+    end
+
+    it "returns nil when no root namespace was previously configured" do
+      expect(namespaces.root).to be nil
+    end
+  end
+
+  describe "#root with argumments (DEPRECATED for #add_root)" do
+    before do
+      # We don't care about the deprecation messages when we're not testing for them
+      # specifically
+      Dry::Core::Deprecations.set_logger!(StringIO.new)
+    end
+
+    it "adds a root namespace with the given configuration" do
+      expect {
+        namespaces.root key: "key_ns", const: "const_ns"
+      }
+        .to change { namespaces.length }
+        .from(0).to(1)
+
+      ns = namespaces.namespaces[nil]
+
+      expect(ns).to be_root
+      expect(ns.path).to be_nil
+      expect(ns.key).to eq "key_ns"
+      expect(ns.const).to eq "const_ns"
+    end
+
+    it "prints a deprecation warning" do
+      logger = StringIO.new
+      Dry::Core::Deprecations.set_logger! logger
+
+      namespaces.root key: "key_ns", const: "const_ns"
+
+      logger.rewind
+      expect(logger.string).to match(/Namespaces#root \(with arguments\) is deprecated/)
+    end
+  end
+
   describe "#add" do
     it "adds the namespace with the given configuration" do
       expect {
         namespaces.add "test/path", key: "key_ns", const: "const_ns"
       }
-        .to change { namespaces.namespaces.keys.length }
+        .to change { namespaces.length }
         .from(0).to(1)
 
       ns = namespaces.namespaces["test/path"]
@@ -28,12 +97,12 @@ RSpec.describe Dry::System::Config::Namespaces do
     end
   end
 
-  describe "#root" do
+  describe "#add_root" do
     it "adds a root namespace with the given configuration" do
       expect {
-        namespaces.root key: "key_ns", const: "const_ns"
+        namespaces.add_root key: "key_ns", const: "const_ns"
       }
-        .to change { namespaces.namespaces.keys.length }
+        .to change { namespaces.length }
         .from(0).to(1)
 
       ns = namespaces.namespaces[nil]
@@ -45,14 +114,70 @@ RSpec.describe Dry::System::Config::Namespaces do
     end
 
     it "raises an exception when a root namespace is already added" do
-      namespaces.root
+      namespaces.add_root
 
-      expect { namespaces.root }.to raise_error(Dry::System::NamespaceAlreadyAddedError, /root path/)
+      expect { namespaces.add_root }.to raise_error(Dry::System::NamespaceAlreadyAddedError, /root path/)
+    end
+  end
+
+  describe "#delete" do
+    it "deletes and returns the configured namespace for the given path" do
+      added_namespace = namespaces.add "test/path"
+
+      deleted_namespace = nil
+      expect {
+        deleted_namespace = namespaces.delete("test/path")
+      }
+        .to change { namespaces.length }
+        .from(1).to(0)
+
+      expect(deleted_namespace).to be added_namespace
+    end
+
+    it "returns nil when no namespace has been configured for the given path" do
+      expect(namespaces.delete("test/path")).to be nil
+      expect(namespaces).to be_empty
+    end
+  end
+
+  describe "#delete_root" do
+    it "deletes and returns the configured root namespace" do
+      added_namespace = namespaces.add_root
+
+      deleted_namespace = nil
+      expect {
+        deleted_namespace = namespaces.delete_root
+      }
+        .to change { namespaces.length }
+        .from(1).to(0)
+
+      expect(deleted_namespace).to be added_namespace
+    end
+
+    it "returns nil when no root namespace has been configured" do
+      expect(namespaces.delete_root).to be nil
+      expect(namespaces).to be_empty
+    end
+  end
+
+  describe "#length" do
+    it "returns the count of configured namespaces" do
+      namespaces.add "test/path_1"
+      namespaces.add "test/path_2"
+      expect(namespaces.length).to eq 2
+    end
+
+    it "returns 0 when there are no configured namespaces" do
+      expect(namespaces.length).to eq 0
     end
   end
 
   describe "#empty?" do
-    it "returns true when a namespace has been added" do
+    it "returns true if there are no configured namespaces" do
+      expect(namespaces).to be_empty
+    end
+
+    it "returns false if a namespace has been added" do
       expect { namespaces.add "test/path" }
         .to change { namespaces.empty? }
         .from(true).to(false)
@@ -62,7 +187,7 @@ RSpec.describe Dry::System::Config::Namespaces do
   describe "#to_a" do
     it "returns an array of the configured namespaces, in order of definition" do
       namespaces.add "test/path", key: "test_key_ns"
-      namespaces.root key: "root_key_ns"
+      namespaces.add_root key: "root_key_ns"
 
       arr = namespaces.to_a
 
@@ -104,7 +229,7 @@ RSpec.describe Dry::System::Config::Namespaces do
   describe "#each" do
     it "yields each configured namespace" do
       namespaces.add "test/path", key: "test_key_ns"
-      namespaces.root key: "root_key_ns"
+      namespaces.add_root key: "root_key_ns"
 
       expect { |b|
         namespaces.each(&b)

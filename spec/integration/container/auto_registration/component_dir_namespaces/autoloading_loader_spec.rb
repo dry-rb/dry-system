@@ -142,7 +142,7 @@ RSpec.describe "Component dir namespaces / Autoloading loader" do
   context "distinct constant namespace for root" do
     let(:component_dir_config) {
       -> dir {
-        dir.namespaces.root const: "my_namespace"
+        dir.namespaces.add_root const: "my_namespace"
       }
     }
 

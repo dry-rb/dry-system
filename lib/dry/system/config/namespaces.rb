@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
 require "dry/system/errors"
 require_relative "namespace"
 
@@ -24,6 +25,39 @@ module Dry
         def initialize_copy(source)
           super
           @namespaces = source.namespaces.dup
+        end
+
+        # Returns the namespace configured for the path, or nil if no such namespace has
+        # been configured
+        #
+        # @return [Namespace, nil] the namespace, if configured
+        #
+        # @api public
+        def namespace(path)
+          namespaces[path]
+        end
+        alias_method :[], :namespace
+
+        # Returns the namespace configured for the root path, or nil if the root namespace
+        # has not been configured
+        #
+        # @return [Namespace, nil] the root namespace, if configured
+        #
+        # @api public
+        def root(**options)
+          if options.any?
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Config::Namespaces#root (with arguments)",
+              "Use `#add_root(key: nil, const: nil)` instead",
+              tag: "dry-system",
+              uplevel: 1
+            )
+
+            add_root(**options)
+            return
+          end
+
+          namespaces[Namespace::ROOT_PATH]
         end
 
         # rubocop:disable Layout/LineLength
@@ -62,8 +96,8 @@ module Dry
         #
         # @param path [String] the path to the sub-directory of source files to which this
         #   namespace should apply, relative to the component dir
-        # @param identifier [String, nil] the leading namespace to apply to the registered
-        #   identifiers for the components. Set `nil` for the identifiers to be top-level.
+        # @param key [String, nil] the leading namespace to apply to the container keys
+        #   for the components. Set `nil` for the keys to be top-level.
         # @param const [String, nil] the Ruby constant namespace to expect for constants
         #   defined within the components. This should be provided in underscored string
         #   form, e.g. "hello_there/world" for a Ruby constant of `HelloThere::World`. Set
@@ -87,31 +121,84 @@ module Dry
         # @see #add
         #
         # @api public
-        def root(key: nil, const: nil)
+        def add_root(key: nil, const: nil)
           add(Namespace::ROOT_PATH, key: key, const: const)
         end
 
-        # @api private
+        # Deletes the configured namespace for the given path and returns the namespace
+        #
+        # If no namespace was previously configured for the given path, returns nil
+        #
+        # @param path [String] the path for the namespace
+        #
+        # @return [Namespace, nil]
+        #
+        # @api public
+        def delete(path)
+          namespaces.delete(path)
+        end
+
+        # Deletes the configured root namespace and returns the namespace
+        #
+        # If no root namespace was previously configured, returns nil
+        #
+        # @return [Namespace, nil]
+        #
+        # @api public
+        def delete_root
+          delete(Namespace::ROOT_PATH)
+        end
+
+        # Returns the paths of the configured namespaces
+        #
+        # @return [Array<String,nil>] the namespace paths, with nil representing the root
+        #   namespace
+        #
+        # @api public
+        def paths
+          namespaces.keys
+        end
+
+        # Returns the count of configured namespaces
+        #
+        # @return [Integer]
+        #
+        # @api public
+        def length
+          namespaces.length
+        end
+        alias_method :size, :length
+
+        # Returns true if there are no configured namespaces
+        #
+        # @return [Boolean]
+        #
+        # @api public
         def empty?
           namespaces.empty?
         end
 
         # Returns the configured namespaces as an array
         #
-        # This adds a root namespace to the end of the array if one was not configured
-        # manually. This fallback ensures that all components in the component dir can be
-        # loaded.
+        # Adds a default root namespace to the end of the array if one was not added
+        # explicitly. This fallback ensures that all components in the component dir can
+        # be loaded.
         #
         # @return [Array<Namespace>] the namespaces
         #
-        # @api private
+        # @api public
         def to_a
           namespaces.values.tap do |arr|
             arr << Namespace.default_root unless arr.any?(&:root?)
           end
         end
 
-        # @api private
+        # Calls the given block once for each configured namespace, passing the namespace
+        # as an argument.
+        #
+        # @yieldparam namespace [Namespace] the yielded namespace
+        #
+        # @api public
         def each(&block)
           to_a.each(&block)
         end
