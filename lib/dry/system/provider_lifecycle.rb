@@ -13,7 +13,7 @@ module Dry
     # @see [Container.finalize]
     #
     # @api private
-    class Lifecycle < BasicObject
+    class ProviderLifecycle < BasicObject
       extend ::Dry::Core::Deprecations["Dry::System::Lifecycle"]
 
       attr_reader :container

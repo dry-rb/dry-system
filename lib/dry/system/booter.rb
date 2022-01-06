@@ -3,7 +3,6 @@
 require "dry/system/provider"
 require "dry/system/errors"
 require "dry/system/constants"
-require "dry/system/lifecycle"
 require "dry/system/booter/provider_registry"
 require "pathname"
 

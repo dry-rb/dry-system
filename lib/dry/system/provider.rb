@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
-require "dry/system/lifecycle"
+require "dry/system/provider_lifecycle"
 require "dry/system/settings"
 require "dry/system/components/config"
 require "dry/system/constants"
@@ -233,13 +233,13 @@ module Dry
 
       private
 
-      # Return lifecycle object used for this component
+      # Returns the lifecycle object used for this provider
       #
-      # @return [Lifecycle]
+      # @return [ProviderLifecycle]
       #
       # @api private
       def lifecycle
-        @lifecycle ||= Lifecycle.new(lf_container, component: self, &lifecycle_block)
+        @lifecycle ||= ProviderLifecycle.new(lf_container, component: self, &lifecycle_block)
       end
 
       # Return configured container for the lifecycle object
