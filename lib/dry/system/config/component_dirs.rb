@@ -90,7 +90,7 @@ module Dry
 
         # Creates a new component dirs
         #
-        # @api public
+        # @api private
         def initialize
           @dirs = {}
           @defaults = ComponentDir.new(nil)
