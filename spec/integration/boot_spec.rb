@@ -127,7 +127,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
       expect {
         system.stop(:db)
-      }.to raise_error(Dry::System::ComponentNotStartedError)
+      }.to raise_error(Dry::System::ProviderNotStartedError)
     end
 
     describe "#shutdown!" do
