@@ -204,9 +204,10 @@ module Dry
         lifecycle.statuses
       end
 
-      # TODO: update docs
-
-      # Automatically called by the booter object after starting a component
+      # Registers and components from the provider's container in the main container
+      #
+      # Automatically called by the booter after the `prepare` and `start` lifecycle
+      # triggers are run
       #
       # @return [Bootable]
       #

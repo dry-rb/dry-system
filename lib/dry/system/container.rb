@@ -350,14 +350,14 @@ module Dry
           self
         end
 
-        # Boots a specific component
+        # Starts a provider
         #
-        # As a result, `init` and `start` lifecycle triggers are called
+        # As a result, the provider's `prepare` and `start` lifecycle triggers are called
         #
         # @example
         #   MyApp.start(:persistence)
         #
-        # @param name [Symbol] the name of a registered bootable component
+        # @param name [Symbol] the name of a registered provider to start
         #
         # @return [self]
         #
@@ -367,17 +367,15 @@ module Dry
           self
         end
 
-        # TODO: update docs
-
-        # Boots a specific component but calls only `init` lifecycle trigger
+        # Prepares a provider using its `prepare` lifecycle trigger
         #
-        # This way of booting is useful in places where a heavy dependency is
-        # needed but its started environment is not required
+        # Preparing (as opposed to starting) a provider is useful in places where some
+        # aspects of a heavier dependency are needed, but its fully started environment
         #
         # @example
-        #   MyApp.init(:persistence)
+        #   MyApp.prepare(:persistence)
         #
-        # @param [Symbol] name The name of a registered bootable component
+        # @param [Symbol] name The name of the registered provider to prepare
         #
         # @return [self]
         #

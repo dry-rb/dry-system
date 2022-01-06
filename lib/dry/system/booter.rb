@@ -36,11 +36,10 @@ module Dry
         self
       end
 
-      # TODO: update docs
-
-      # Returns a bootable component if it can be found or loaded, otherwise nil
+      # Returns a provider if it can be found or loaded, otherwise nil
       #
       # @return [Dry::System::Provider, nil]
+      #
       # @api private
       def find_provider(name)
         name = name.to_sym
