@@ -113,7 +113,7 @@ module Dry
       # @api private
       def stop(name_or_provider)
         call(name_or_provider) do |provider|
-          raise ComponentNotStartedError, name_or_provider unless booted.include?(provider) # TODO: update "ComponentFileMismatchError" name
+          raise ProviderNotStartedError, name_or_provider unless booted.include?(provider)
 
           provider.stop
           booted.delete(provider)
@@ -125,10 +125,7 @@ module Dry
       # @api private
       def call(name_or_provider)
         with_provider(name_or_provider) do |provider|
-          raise ComponentFileMismatchError, name unless provider # TODO: update "ComponentFileMismatchError" name
-
           yield(provider) if block_given?
-
           provider
         end
       end
@@ -168,14 +165,14 @@ module Dry
       def with_provider(id_or_provider)
         provider =
           case id_or_provider
+          when Provider
+            id_or_provider
           when Symbol
             require_boot_file(id_or_provider) unless providers.exists?(id_or_provider)
             providers[id_or_provider]
-          when Provider
-            id_or_provider
           end
 
-        raise InvalidComponentError, id_or_provider unless provider # TODO: update error name
+        raise ProviderNotFoundError, id_or_provider unless provider
 
         yield(provider)
       end

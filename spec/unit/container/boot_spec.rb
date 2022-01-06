@@ -144,7 +144,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
     expect {
       system.register_provider(:logger) {}
-    }.to raise_error(Dry::System::DuplicatedProviderKeyError, /logger/)
+    }.to raise_error(Dry::System::ProviderAlreadyRegisteredError, /logger/)
   end
 
   it "allow setting namespace to true" do

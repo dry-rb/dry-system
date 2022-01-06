@@ -67,17 +67,14 @@ RSpec.describe Dry::System::Container do
       it "expects name to point to an existing boot file" do
         expect {
           container.start(:foo)
-        }.to raise_error(
-          ArgumentError,
-          "component +foo+ is invalid or boot file is missing"
-        )
+        }.to raise_error(Dry::System::ProviderNotFoundError, "Provider :foo not found")
       end
 
       describe "mismatch between finalize name and registered component" do
         it "raises a meaningful error" do
           expect {
             container.start(:hell)
-          }.to raise_error(Dry::System::InvalidComponentNameError)
+          }.to raise_error(Dry::System::ProviderNotFoundError, "Provider :hell not found")
         end
       end
     end

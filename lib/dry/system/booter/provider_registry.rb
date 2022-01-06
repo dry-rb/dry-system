@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/system/errors"
+
 module Dry
   module System
     class Booter
@@ -25,9 +27,9 @@ module Dry
         end
 
         def [](name)
-          provider = providers.detect { |c| c.name == name }
+          provider = providers.detect { |provider| provider.name == name }
 
-          provider || raise(InvalidComponentNameError, name) # TODO: fix error name
+          provider || raise(ProviderNotFoundError, name)
         end
       end
     end

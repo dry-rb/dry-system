@@ -1,74 +1,17 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
+
 module Dry
   module System
+    extend Dry::Core::Deprecations[:"dry-system"]
+
     # Error raised when a component dir is added to configuration more than once
     #
     # @api public
     ComponentDirAlreadyAddedError = Class.new(StandardError) do
       def initialize(dir)
         super("Component directory #{dir.inspect} already added")
-      end
-    end
-
-    # Error raised when a namespace for a component dir is added to configuration more
-    # than once
-    NamespaceAlreadyAddedError = Class.new(StandardError) do
-      def initialize(path)
-        path_label = path ? "path #{path.inspect}" : "root path"
-
-        super("Namespace for #{path_label} already added")
-      end
-    end
-
-    # Error raised when booter file do not match with register component
-    #
-    # @api public
-    ComponentFileMismatchError = Class.new(StandardError) do
-      def initialize(component)
-        super(<<-STR)
-          Bootable component '#{component.name}' not found
-        STR
-      end
-    end
-
-    # Error raised when resolved component couldn't be loaded
-    #
-    # @api public
-    InvalidComponentError = Class.new(ArgumentError) do
-      def initialize(name, reason = nil)
-        super(
-          "Tried to create an invalid #{name.inspect} component - #{reason}"
-        )
-      end
-    end
-
-    # Error raised when component's name is not valid
-    #
-    # @api public
-    InvalidComponentNameError = Class.new(ArgumentError) do
-      def initialize(name)
-        super(
-          "component +#{name}+ is invalid or boot file is missing"
-        )
-      end
-    end
-
-    # Error raised when trying to stop a component that hasn't started yet
-    #
-    # @api public
-    ComponentNotStartedError = Class.new(StandardError) do
-      def initialize(component_name)
-        super("component +#{component_name}+ has not been started")
-      end
-    end
-
-    # Error raised when trying to use a plugin that does not exist.
-    #
-    # @api public
-    PluginNotFoundError = Class.new(StandardError) do
-      def initialize(plugin_name)
-        super("Plugin #{plugin_name.inspect} does not exist")
       end
     end
 
@@ -81,7 +24,60 @@ module Dry
       end
     end
 
-    DuplicatedProviderKeyError = Class.new(ArgumentError)
+    # Error raised when a namespace for a component dir is added to configuration more
+    # than once
+    #
+    # @api public
+    NamespaceAlreadyAddedError = Class.new(StandardError) do
+      def initialize(path)
+        path_label = path ? "path #{path.inspect}" : "root path"
+
+        super("Namespace for #{path_label} already added")
+      end
+    end
+
+    # Error raised when attempting to register provider using a name that has already been
+    # registered
+    #
+    # @api public
+    ProviderAlreadyRegisteredError = Class.new(ArgumentError) do
+      def initialize(provider_name)
+        super("Provider #{provider_name.inspect} has already been registered")
+      end
+    end
+    DuplicatedComponentKeyError = ProviderAlreadyRegisteredError
+    deprecate_constant :DuplicatedComponentKeyError
+
+    # Error raised when a named provider could not be found
+    #
+    # @api public
+    ProviderNotFoundError = Class.new(ArgumentError) do
+      def initialize(name)
+        super("Provider #{name.inspect} not found")
+      end
+    end
+    InvalidComponentError = ProviderNotFoundError
+    deprecate_constant :InvalidComponentError
+
+    # Error raised when trying to stop a provider that hasn't started yet
+    #
+    # @api public
+    ProviderNotStartedError = Class.new(StandardError) do
+      def initialize(provider_name)
+        super("Provider #{provider_name.inspect} has not been started")
+      end
+    end
+    ComponentNotStartedError = ProviderNotStartedError
+    deprecate_constant :ComponentNotStartedError
+
+    # Error raised when trying to use a plugin that does not exist.
+    #
+    # @api public
+    PluginNotFoundError = Class.new(StandardError) do
+      def initialize(plugin_name)
+        super("Plugin #{plugin_name.inspect} does not exist")
+      end
+    end
 
     InvalidSettingsError = Class.new(ArgumentError) do
       # @api private

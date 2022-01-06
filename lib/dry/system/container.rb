@@ -247,11 +247,7 @@ module Dry
         #
         # @api public
         def register_provider(name, namespace: nil, from: nil, source: nil, &block)
-          if providers.key?(name)
-            raise DuplicatedProviderKeyError, <<-STR
-              Provider #{name.inspect} was already registered
-            STR
-          end
+          raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
           provider =
             if from
