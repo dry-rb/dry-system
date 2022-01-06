@@ -218,7 +218,7 @@ module Dry
         # Returns the hash of component dirs, keyed by their paths
         #
         # Recently changed default configuration may not be applied to these dirs. Use
-        # #to_a or #each
+        # #to_a or #each to access dirs with default configuration fully applied.
         #
         # This method exists to encapsulate the instance variable and to serve the needs
         # of #initialize_copy
