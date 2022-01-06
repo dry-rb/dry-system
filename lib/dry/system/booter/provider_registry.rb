@@ -27,7 +27,7 @@ module Dry
         end
 
         def [](name)
-          provider = providers.detect { |provider| provider.name == name }
+          provider = providers.detect { |prov| prov.name == name }
 
           provider || raise(ProviderNotFoundError, name)
         end

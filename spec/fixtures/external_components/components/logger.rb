@@ -8,21 +8,23 @@ Dry::System.register_source_provider(:logger, group: :external_components) do
   end
 
   prepare do
-    module ExternalComponents
-      class Logger
-        class << self
-          attr_accessor :default_level
-        end
+    unless defined?(ExternalComponents)
+      module ExternalComponents
+        class Logger
+          class << self
+            attr_accessor :default_level
+          end
 
-        self.default_level = :scream
+          self.default_level = :scream
 
-        attr_reader :log_level
+          attr_reader :log_level
 
-        def initialize(log_level = Logger.default_level)
-          @log_level = log_level
+          def initialize(log_level = Logger.default_level)
+            @log_level = log_level
+          end
         end
       end
-    end unless defined?(ExternalComponents)
+    end
   end
 
   start do

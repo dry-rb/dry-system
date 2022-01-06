@@ -251,7 +251,13 @@ module Dry
 
           provider =
             if from
-              provider_from_source(name, namespace: namespace, source: source || name, group: from, &block)
+              provider_from_source(
+                name,
+                namespace: namespace,
+                source: source || name,
+                group: from,
+                &block
+              )
             else
               provider(name, namespace: namespace, &block)
             end

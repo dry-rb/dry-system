@@ -72,7 +72,7 @@ module Dry
       # @api private
       attr_reader :lifecycle_block
 
-      def initialize(name:, namespace: nil, container:, lifecycle_block:, refinement_block: nil)
+      def initialize(name:, namespace: nil, container:, lifecycle_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @container = container
