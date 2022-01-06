@@ -170,78 +170,72 @@ module Dry
           end
         end
 
-        # TODO: update docs
-
-        # Registers finalization function for a bootable component
+        # Registers a provider and its lifecycle hooks
         #
-        # By convention, boot files for components should be placed in a
-        # `bootable_dirs` entry and they will be loaded on demand when
-        # components are loaded in isolation, or during the finalization
-        # process.
+        # By convention, you should place a file for each provider in one of the
+        # configured `provider_dirs`, and they will be loaded on demand when components
+        # are loaded in isolation, or during container finalization.
         #
         # @example
         #   # system/container.rb
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
-        #       config.name = :core
-        #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #
-        #   # system/boot/db.rb
+        #   # system/providers/db.rb
         #   #
-        #   # Simple component registration
-        #   MyApp.boot(:db) do |container|
-        #     require 'db'
-        #
-        #     container.register(:db, DB.new)
+        #   # Simple provider registration
+        #   MyApp.register_provider(:db) do
+        #     require "db"
+        #     register("db", DB.new)
         #   end
         #
-        #   # system/boot/db.rb
+        #   # system/providers/db.rb
         #   #
-        #   # Component registration with lifecycle triggers
-        #   MyApp.boot(:db) do |container|
+        #   # Provider registration with lifecycle triggers
+        #   MyApp.register_provider(:db) do |container|
         #     init do
-        #       require 'db'
-        #       DB.configure(ENV['DB_URL'])
-        #       container.register(:db, DB.new)
+        #       require "db"
+        #       DB.configure(ENV["DB_URL"])
+        #       container.register("db", DB.new)
         #     end
         #
         #     start do
-        #       db.establish_connection
+        #       container["db"].establish_connection
         #     end
         #
         #     stop do
-        #       db.close_connection
+        #       container["db"].close_connection
         #     end
         #   end
         #
-        #   # system/boot/db.rb
+        #   # system/providers/db.rb
         #   #
-        #   # Component registration which uses another bootable component
-        #   MyApp.boot(:db) do |container|
+        #   # Provider registration which uses another provider
+        #   MyApp.register_provider(:db) do |container|
         #     use :logger
         #
         #     start do
-        #       require 'db'
+        #       require "db"
         #       DB.configure(ENV['DB_URL'], logger: logger)
-        #       container.register(:db, DB.new)
+        #       container.register("db", DB.new)
         #     end
         #   end
         #
         #   # system/boot/db.rb
         #   #
-        #   # Component registration under a namespace. This will register the
-        #   # db object under `persistence.db` key
-        #   MyApp.namespace(:persistence) do |persistence|
-        #     require 'db'
-        #     DB.configure(ENV['DB_URL'], logger: logger)
-        #     persistence.register(:db, DB.new)
+        #   # Provider registration under a namespace. This will register the
+        #   # db object with the "persistence.db" key
+        #   MyApp.register_provider(:persistence, namespace: "db") do
+        #     require "db"
+        #     DB.configure(ENV["DB_URL"])
+        #     register("db", DB.new)
         #   end
         #
-        # @param name [Symbol] a unique name for a bootable component
+        # @param name [Symbol] a unique name for the provider
         #
-        # @see Lifecycle
+        # @see ProviderLifecycle
         #
         # @return [self]
         #
