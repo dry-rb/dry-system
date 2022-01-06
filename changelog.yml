@@ -2,13 +2,13 @@
 - version: 0.21.0
   summary: 
   date: 2021-11-01
-  fixed: 
-  added: &1
+  fixed:
+  added:
   - 'Added **component dir namespaces** as a way to specify multiple, ordered, independent
     namespace rules within a given component dir. This replaces and expands upon the
     namespace support we previously provided via the singular `default_namespace`
     component dir setting (@timriley in #181)'
-  changed: &2
+  changed:
   - |-
     `default_namespace` setting on component dirs has been deprecated. Add a component dir namespace instead, e.g. instead of:
 
@@ -33,10 +33,6 @@
   - 'Unused `Dry::System::FileNotFoundError` and `Dry::System::InvalidComponentIdentifierTypeError`
     errors have been removed (@timriley in #194)'
   - 'Allow bootsnap for Rubies up to 3.0.x (via #196) (@pusewicz)'
-- version: 0.21.0
-  date: 2021-11-01
-  added: *1
-  changed: *2
 - version: 0.20.0
   summary: 
   date: '2021-09-12'
