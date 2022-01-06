@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
 require "dry/system/errors"
 require_relative "namespace"
 
@@ -43,7 +44,19 @@ module Dry
         # @return [Namespace, nil] the root namespace, if configured
         #
         # @api public
-        def root
+        def root(**options)
+          if options.any?
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Config::Namespaces#root (with arguments)",
+              "Use `#add_root(key: nil, const: nil)` instead",
+              tag: "dry-system",
+              uplevel: 1
+            )
+
+            add_root(**options)
+            return
+          end
+
           namespaces[Namespace::ROOT_PATH]
         end
 
