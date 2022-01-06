@@ -1,4 +1,13 @@
 ---
+- version: 0.22.0
+  summary:
+  date: 2022-01-06
+  fixed:
+  added:
+  - 'Expanded public interfaces for `Dry::System::Config::ComponentDirs` and `Dry::System::Config::Namespaces` to better support programmatic construction and inspection of these configs (@timriley in #195)'
+  changed:
+  - 'Deprecated `Dry::System::Config::Namespaces#root` as the way to add and configure a root namespace. Use `#add_root` instead (@timriley in #195)'
+  - 'Allow bootsnap plugin to use bootsnap on Ruby versions up to 3.0 (pusewicz in #196)'
 - version: 0.21.0
   summary: 
   date: 2021-11-01
