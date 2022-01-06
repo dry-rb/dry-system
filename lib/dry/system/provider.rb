@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
 require "dry/system/lifecycle"
 require "dry/system/settings"
 require "dry/system/components/config"
@@ -125,6 +126,17 @@ module Dry
       #
       # @api public
       def before(event, &block)
+        if event.to_sym == :init
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Provider before(:init) trigger",
+            "Use `before(:prepare)` trigger instead",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          event = :prepare
+        end
+
         triggers[:before][event] << block
         self
       end
@@ -135,6 +147,17 @@ module Dry
       #
       # @api public
       def after(event, &block)
+        if event.to_sym == :init
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Provider after(:init) trigger",
+            "Use `after(:prepare)` trigger instead",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          event = :prepare
+        end
+
         triggers[:after][event] << block
         self
       end

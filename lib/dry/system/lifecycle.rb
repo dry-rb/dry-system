@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
 require "dry/system/settings"
 
 module Dry
@@ -13,6 +14,8 @@ module Dry
     #
     # @api private
     class Lifecycle < BasicObject
+      extend ::Dry::Core::Deprecations["Dry::System::Lifecycle"]
+
       attr_reader :container
 
       attr_reader :statuses
@@ -60,6 +63,7 @@ module Dry
       def prepare(&block)
         trigger!(:prepare, &block)
       end
+      deprecate :init, :prepare
 
       # @api private
       def start(&block)

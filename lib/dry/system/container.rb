@@ -266,6 +266,23 @@ module Dry
 
           providers[name] = provider
         end
+
+        def boot(name, **opts, &block)
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Container.boot",
+            "Use `Dry::System::Container.register_provider` instead",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          register_provider(
+            name,
+            namespace: opts[:namespace],
+            from: opts[:from],
+            source: opts[:key],
+            &block
+          )
+        end
         deprecate :finalize, :boot
 
         # @api private
@@ -369,6 +386,7 @@ module Dry
           booter.prepare(name)
           self
         end
+        deprecate :init, :prepare
 
         # Stop a specific component but calls only `stop` lifecycle trigger
         #
@@ -561,6 +579,7 @@ module Dry
           hooks[:"after_#{event}"] << block
         end
 
+        # @api private
         def before(event, &block)
           hooks[:"before_#{event}"] << block
         end

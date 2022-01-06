@@ -4,7 +4,7 @@ require "dry/core/deprecations"
 
 module Dry
   module System
-    extend Dry::Core::Deprecations[:"dry-system"]
+    extend Dry::Core::Deprecations["dry-system"]
 
     # Error raised when a component dir is added to configuration more than once
     #
