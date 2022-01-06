@@ -78,7 +78,8 @@ module Dry
 
       setting :name
       setting :root, default: Pathname.pwd.freeze, constructor: -> path { Pathname(path) }
-      setting :bootable_dirs, default: ["system/boot"]
+      setting :provider_dirs, default: ["system/providers"]
+      setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "container"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :inflector, default: Dry::Inflector.new
@@ -540,12 +541,29 @@ module Dry
 
         # @api private
         def booter
-          @booter ||= config.booter.new(boot_paths)
+          @booter ||= config.booter.new(provider_paths)
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
         # @api private
-        def boot_paths
-          config.bootable_dirs.map { |dir|
+        def provider_paths
+          provider_dirs = config.provider_dirs
+          bootable_dirs = config.bootable_dirs || ["system/boot"]
+
+          if config.provider_dirs == ["system/providers"] && \
+             provider_dirs.none? { |d| root.join(d).exist? } && \
+             bootable_dirs.any? { |d| root.join(d).exist? }
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
+              "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
+              tag: "dry-system",
+              uplevel: 2
+            )
+
+            provider_dirs = bootable_dirs
+          end
+
+          provider_dirs.map { |dir|
             dir = Pathname(dir)
 
             if dir.relative?
@@ -555,6 +573,7 @@ module Dry
             end
           }
         end
+        # rubocop:enable Metrics/PerceivedComplexity, Layout/LineLength
 
         # @api private
         def auto_registrar
