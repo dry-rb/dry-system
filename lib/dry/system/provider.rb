@@ -95,10 +95,7 @@ module Dry
       #
       # @api public
       def prepare
-        run_step_callbacks(:before, :prepare)
-        lifecycle.(:prepare)
-        run_step_callbacks(:after, :prepare)
-        self
+        run_step(:prepare)
       end
 
       # Execute `start` step
@@ -107,10 +104,7 @@ module Dry
       #
       # @api public
       def start
-        run_step_callbacks(:before, :start)
-        lifecycle.(:start)
-        run_step_callbacks(:after, :start)
-        self
+        run_step(:start)
       end
 
       # Execute `stop` step
@@ -119,8 +113,7 @@ module Dry
       #
       # @api public
       def stop
-        lifecycle.(:stop)
-        self
+        run_step(:stop)
       end
 
       # Specify a before callback
@@ -222,6 +215,16 @@ module Dry
       end
 
       private
+
+      # Runs the given lifecycle step
+      #
+      # @return [self]
+      def run_step(step_name)
+        run_step_callbacks(:before, step_name)
+        lifecycle.(step_name)
+        run_step_callbacks(:after, step_name)
+        self
+      end
 
       # Invokes a step callback
       #
