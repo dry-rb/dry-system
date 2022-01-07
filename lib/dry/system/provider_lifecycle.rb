@@ -40,11 +40,6 @@ module Dry
       end
 
       # @api private
-      def configure(&block)
-        provider.configure(&block)
-      end
-
-      # @api private
       def config
         provider.config
       end
