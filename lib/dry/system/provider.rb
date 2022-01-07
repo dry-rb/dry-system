@@ -51,6 +51,14 @@ module Dry
       #   @return [Symbol] the provider's unique name
       attr_reader :name
 
+      # Returns a list of lifecycle steps that were executed
+      #
+      # @return [Array<Symbol>]
+      #
+      # @api public
+      attr_reader :step_statuses
+      alias_method :statuses, :step_statuses
+
       # @!attribute [r] step_callbacks
       #   @return [Hash] lifecycle step after/before callbacks
       attr_reader :step_callbacks
@@ -81,6 +89,7 @@ module Dry
         @target_container = target_container
 
         @container = build_container
+        @step_statuses = []
         @step_callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
         @config = nil
         @config_block = nil
@@ -190,15 +199,6 @@ module Dry
         @config || configure!
       end
 
-      # Returns a list of lifecycle steps that were executed
-      #
-      # @return [Array<Symbol>]
-      #
-      # @api public
-      def statuses
-        lifecycle.statuses
-      end
-
       # Registers any components from the provider's container in the main container
       #
       # Automatically called by the booter after the `prepare` and `start` lifecycle
@@ -220,9 +220,13 @@ module Dry
       #
       # @return [self]
       def run_step(step_name)
+        return self if step_statuses.include?(step_name)
+
         run_step_callbacks(:before, step_name)
         lifecycle.(step_name)
+        step_statuses << step_name
         run_step_callbacks(:after, step_name)
+
         self
       end
 

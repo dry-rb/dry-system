@@ -18,14 +18,11 @@ module Dry
 
       attr_reader :provider
 
-      attr_reader :statuses
-
       attr_reader :triggers
 
       # @api private
       def initialize(provider:, &lifecycle_block)
         @provider = provider
-        @statuses = []
         @triggers = {}
         instance_exec(target_container, &lifecycle_block)
       end
@@ -33,11 +30,7 @@ module Dry
       # @api private
       def call(*triggers)
         triggers.each do |trigger|
-          unless statuses.include?(trigger)
-            # TODO: make the triggers explicit, we shouldn't just allow arbitrary methods to run here
-            __send__(trigger)
-            statuses << trigger
-          end
+          __send__(trigger)
         end
       end
 
