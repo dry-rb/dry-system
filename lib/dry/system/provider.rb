@@ -238,7 +238,7 @@ module Dry
       #
       # @api private
       def lifecycle
-        @lifecycle ||= ProviderLifecycle.new(lf_container, component: self, &lifecycle_block)
+        @lifecycle ||= ProviderLifecycle.new(provider: self, container: lf_container, &lifecycle_block)
       end
 
       # Return configured container for the lifecycle object

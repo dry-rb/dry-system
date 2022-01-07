@@ -16,21 +16,21 @@ module Dry
     class ProviderLifecycle < BasicObject
       extend ::Dry::Core::Deprecations["Dry::System::Lifecycle"]
 
+      attr_reader :provider
+
       attr_reader :container
 
       attr_reader :statuses
 
       attr_reader :triggers
 
-      attr_reader :opts
-
       # @api private
-      def initialize(container, opts, &block)
+      def initialize(provider:, container:, &block)
+        @provider = provider
         @container = container
         @settings = nil
         @statuses = []
         @triggers = {}
-        @opts = opts
         instance_exec(target, &block)
       end
 
@@ -46,17 +46,17 @@ module Dry
 
       # @api private
       def settings(&block)
-        component.settings(&block)
+        provider.settings(&block)
       end
 
       # @api private
       def configure(&block)
-        component.configure(&block)
+        provider.configure(&block)
       end
 
       # @api private
       def config
-        component.config
+        provider.config
       end
 
       # @api private
@@ -88,13 +88,8 @@ module Dry
       end
 
       # @api private
-      def component
-        opts[:component]
-      end
-
-      # @api private
       def target
-        component.container
+        provider.container
       end
 
       private
