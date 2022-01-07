@@ -282,12 +282,12 @@ module Dry
         # @api private
         private def provider_from_source(name, source:, group:, namespace:, &block)
           System.source_providers.resolve(name: source, group: group)
-            .to_provider(name: name, namespace: namespace, container: self, refinement_block: block)
+            .to_provider(name: name, namespace: namespace, target_container: self, refinement_block: block)
         end
 
         # @api private
         private def provider(name, namespace:, &block)
-          Provider.new(name: name, namespace: namespace, container: self, lifecycle_block: block)
+          Provider.new(name: name, namespace: namespace, target_container: self, lifecycle_block: block)
         end
 
         # Return if a container was finalized

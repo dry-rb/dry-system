@@ -89,7 +89,7 @@ module Dry
 
       # @api private
       def target
-        provider.container
+        provider.target_container
       end
 
       private

@@ -64,7 +64,7 @@ module Dry
       # @return [Dry::Struct]
       #
       # @api public
-      attr_reader :container
+      attr_reader :target_container
 
       # Returns the block that will be evaluated in the lifecycle context
       #
@@ -73,10 +73,10 @@ module Dry
       # @api private
       attr_reader :lifecycle_block
 
-      def initialize(name:, namespace: nil, container:, lifecycle_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, lifecycle_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
-        @container = container
+        @target_container = target_container
         @lifecycle_block = lifecycle_block
 
         @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
@@ -213,7 +213,7 @@ module Dry
       # @api private
       def apply
         lifecycle.container.each do |key, item|
-          container.register(key, item) unless container.registered?(key)
+          target_container.register(key, item) unless target_container.registered?(key)
         end
         self
       end
@@ -227,7 +227,7 @@ module Dry
       # @api private
       def trigger(key, event)
         triggers[key][event].each do |fn|
-          container.instance_exec(lifecycle.container, &fn)
+          target_container.instance_exec(lifecycle.container, &fn)
         end
         self
       end

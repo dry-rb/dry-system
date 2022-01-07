@@ -6,6 +6,6 @@ Dry::System.register_source_provider(:settings, group: :system) do
   end
 
   start do
-    register(:settings, settings.init(target.root, target.config.env))
+    register(:settings, settings.init(target_container.root, target_container.config.env))
   end
 end
