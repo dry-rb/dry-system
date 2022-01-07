@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
-require "dry/system/settings"
 
 module Dry
   module System
@@ -26,7 +25,6 @@ module Dry
       # @api private
       def initialize(provider:, &lifecycle_block)
         @provider = provider
-        @settings = nil
         @statuses = []
         @triggers = {}
         instance_exec(target_container, &lifecycle_block)
