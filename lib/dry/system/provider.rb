@@ -59,6 +59,8 @@ module Dry
       #   @return [Symbol,String] default namespace for the container keys
       attr_reader :namespace
 
+      attr_reader :container
+
       # Returns the main container used by this provider
       #
       # @return [Dry::Struct]
@@ -79,6 +81,7 @@ module Dry
         @target_container = target_container
         @lifecycle_block = lifecycle_block
 
+        @container = build_container
         @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
         @config = nil
         @config_block = nil
@@ -212,7 +215,7 @@ module Dry
       #
       # @api private
       def apply
-        lifecycle.container.each do |key, item|
+        container.each do |key, item|
           target_container.register(key, item) unless target_container.registered?(key)
         end
         self
@@ -227,7 +230,7 @@ module Dry
       # @api private
       def trigger(key, event)
         triggers[key][event].each do |fn|
-          target_container.instance_exec(lifecycle.container, &fn)
+          target_container.instance_exec(container, &fn)
         end
         self
       end
@@ -238,7 +241,7 @@ module Dry
       #
       # @api private
       def lifecycle
-        @lifecycle ||= ProviderLifecycle.new(provider: self, container: lf_container, &lifecycle_block)
+        @lifecycle ||= ProviderLifecycle.new(provider: self, &lifecycle_block)
       end
 
       # Return configured container for the lifecycle object
@@ -246,7 +249,7 @@ module Dry
       # @return [Dry::Container]
       #
       # @api private
-      def lf_container
+      def build_container
         container = Dry::Container.new
 
         case namespace
@@ -257,9 +260,8 @@ module Dry
         when nil
           container
         else
-          raise <<-STR
-            +namespace+ boot option must be true, string or symbol #{namespace.inspect} given.
-          STR
+          raise ArgumentError,
+            "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
         end
       end
 

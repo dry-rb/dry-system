@@ -13,31 +13,30 @@ module Dry
     # @see [Container.finalize]
     #
     # @api private
+    # TODO: Make this not a BasicObject - tbh it's a pain in the butt to debug against
     class ProviderLifecycle < BasicObject
       extend ::Dry::Core::Deprecations["Dry::System::Lifecycle"]
 
       attr_reader :provider
-
-      attr_reader :container
 
       attr_reader :statuses
 
       attr_reader :triggers
 
       # @api private
-      def initialize(provider:, container:, &block)
+      def initialize(provider:, &block)
         @provider = provider
-        @container = container
         @settings = nil
         @statuses = []
         @triggers = {}
-        instance_exec(target, &block)
+        instance_exec(target_container, &block)
       end
 
       # @api private
       def call(*triggers)
         triggers.each do |trigger|
           unless statuses.include?(trigger)
+            # TODO: make the triggers explicit, we shouldn't just allow arbitrary methods to run here
             __send__(trigger)
             statuses << trigger
           end
@@ -78,7 +77,7 @@ module Dry
       # @api private
       def use(*names)
         names.each do |name|
-          target.start(name)
+          target_container.start(name)
         end
       end
 
@@ -87,17 +86,20 @@ module Dry
         container.register(*args, &block)
       end
 
-      # @api private
-      def target
-        provider.target_container
+      private
+
+      def container
+        provider.container
       end
 
-      private
+      def target_container
+        provider.target_container
+      end
 
       # @api private
       def trigger!(name, &block)
         if triggers.key?(name)
-          triggers[name].(target)
+          triggers[name].(target_container)
         elsif block
           triggers[name] = block
         end
@@ -105,19 +107,20 @@ module Dry
 
       # @api private
       def method_missing(name, *args, &block)
-        if target.registered?(name)
-          target[name]
+        if target_container.registered?(name)
+          target_container[name]
         elsif container.key?(name)
           container[name]
         elsif ::Kernel.respond_to?(name)
           ::Kernel.public_send(name, *args, &block)
         else
+          # ::Kernel.byebug
           super
         end
       end
 
       def respond_to_missing?(name, include_all = false)
-        target.registered?(name) || container.key?(name) || ::Kernel.respond_to?(name) || super
+        target_container.registered?(name) || container.key?(name) || ::Kernel.respond_to?(name) || super
       end
     end
   end

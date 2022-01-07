@@ -158,13 +158,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   end
 
   it "raises when namespace value is not valid" do
-    system.register_provider(:api, namespace: 312) do
-      start do
-        register(:client, "connected")
-      end
-    end
-
-    expect { system["api.client"] }
-      .to raise_error(RuntimeError, /\+namespace\+ boot option must be true, string or symbol/)
+    expect { system.register_provider(:api, namespace: 312) { } }
+      .to raise_error(ArgumentError, /\+namespace:\+ must be true, string or symbol/)
   end
 end
