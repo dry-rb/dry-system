@@ -5,7 +5,7 @@ Dry::System.register_source_provider(:settings, group: :system) do
     require "dry/system/settings"
   end
 
-  start do
+  start do |target_container|
     register(:settings, settings.init(target_container.root, target_container.config.env))
   end
 end

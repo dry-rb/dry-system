@@ -86,7 +86,7 @@ module Dry
         with_provider(name_or_provider) do |provider|
           call(provider) do
             provider.prepare.apply
-            yield if block_given?
+            # yield if block_given?
           end
 
           self
@@ -98,11 +98,7 @@ module Dry
         with_provider(name_or_provider) do |provider|
           return self if booted.include?(provider)
 
-          prepare(name_or_provider) do
-            provider.start
-          end
-
-          booted << provider.apply
+          booted << provider.start.apply
 
           self
         end

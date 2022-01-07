@@ -17,9 +17,8 @@ RSpec.describe Dry::System::Container, ".register_provider" do
         end
 
         register_provider(:db) do
-          register(:db, Test::DB)
-
           prepare do
+            register(:db, Test::DB)
             db.establish_connection
           end
 
@@ -33,9 +32,8 @@ RSpec.describe Dry::System::Container, ".register_provider" do
         end
 
         register_provider(:client) do
-          register(:client, Test::Client)
-
           prepare do
+            register(:client, Test::Client)
             client.establish_connection
           end
 
@@ -72,6 +70,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
   describe "#stop" do
     it "calls stop function" do
+      system.booter.(:db).start # FIXME: I had to add this line. Feels like we should actually have an error raised by the provider itself if you try to stop when it hasn't been started
       system.booter.(:db).stop
       expect(db).to have_received(:close_connection)
     end

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
-require "dry/system/provider_lifecycle"
 require "dry/system/settings"
 require "dry/system/components/config"
 require "dry/system/constants"
+require_relative "provider/lifecycle"
+require_relative "provider/step_evaluator"
 
 module Dry
   module System
@@ -51,6 +52,8 @@ module Dry
       #   @return [Symbol] the provider's unique name
       attr_reader :name
 
+      attr_reader :step_evaluator
+
       # Returns a list of lifecycle steps that were executed
       #
       # @return [Array<Symbol>]
@@ -89,12 +92,13 @@ module Dry
         @target_container = target_container
 
         @container = build_container
+        @step_evaluator = StepEvaluator.new(self)
         @step_statuses = []
         @step_callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
         @config = nil
         @config_block = nil
 
-        @lifecycle = ProviderLifecycle.new(provider: self, &lifecycle_block)
+        @lifecycle = Lifecycle.new(self, &lifecycle_block)
         instance_exec(&refinement_block) if refinement_block
       end
 
@@ -113,6 +117,7 @@ module Dry
       #
       # @api public
       def start
+        run_step(:prepare)
         run_step(:start)
       end
 
@@ -122,6 +127,8 @@ module Dry
       #
       # @api public
       def stop
+        raise "Why u trying to stop me when I haven't been started" unless statuses.include?(:start)
+
         run_step(:stop)
       end
 
@@ -223,7 +230,10 @@ module Dry
         return self if step_statuses.include?(step_name)
 
         run_step_callbacks(:before, step_name)
-        lifecycle.(step_name)
+        step_block = lifecycle.public_send(step_name)
+
+        step_evaluator.call(target_container, &step_block) if step_block
+
         step_statuses << step_name
         run_step_callbacks(:after, step_name)
 

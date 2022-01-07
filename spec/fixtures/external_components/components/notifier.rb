@@ -15,7 +15,8 @@ Dry::System.register_source_provider(:notifier, group: :external_components) do
     end
   end
 
-  start do
-    register(:notifier, ExternalComponents::Notifier.new(monitor))
+  # TODO: what would be the best name here??
+  start do |target_container|
+    register(:notifier, ExternalComponents::Notifier.new(target_container["monitor"]))
   end
 end
