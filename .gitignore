@@ -39,3 +39,5 @@ Gemfile.lock
 ## Specific to RubyMine
 .idea
 
+## Tests
+/spec/examples.txt
