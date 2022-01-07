@@ -13,6 +13,8 @@ gem "dry-monitor"
 gem "dry-types"
 gem "zeitwerk"
 
+gem "dry-configurable", github: "dry-rb/dry-configurable", branch: "allow-access-to-class-level-config-between-setting-definitions"
+
 group :tools do
   gem "pry-byebug", platforms: :mri
 end
