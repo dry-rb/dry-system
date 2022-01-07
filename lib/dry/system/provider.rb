@@ -218,6 +218,8 @@ module Dry
         self
       end
 
+      private
+
       # Trigger a callback
       #
       # @return [self]
@@ -229,8 +231,6 @@ module Dry
         end
         self
       end
-
-      private
 
       # Returns the lifecycle object used for this provider
       #
