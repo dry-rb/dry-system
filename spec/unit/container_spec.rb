@@ -93,13 +93,13 @@ RSpec.describe Dry::System::Container do
       end
     end
 
-    context "with a bootable dir" do
+    context "with a custom provider dir specified" do
       it_behaves_like "a booted system" do
         before do
           class Test::Container < Dry::System::Container
             configure do |config|
               config.root = SPEC_ROOT.join("fixtures/other").realpath
-              config.bootable_dirs = ["config/boot"]
+              config.provider_dirs = ["config/providers"]
             end
 
             add_to_load_path!("lib")
