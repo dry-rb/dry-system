@@ -24,12 +24,12 @@ module Dry
       attr_reader :triggers
 
       # @api private
-      def initialize(provider:, &block)
+      def initialize(provider:, &lifecycle_block)
         @provider = provider
         @settings = nil
         @statuses = []
         @triggers = {}
-        instance_exec(target_container, &block)
+        instance_exec(target_container, &lifecycle_block)
       end
 
       # @api private

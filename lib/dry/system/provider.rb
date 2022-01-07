@@ -68,24 +68,24 @@ module Dry
       # @api public
       attr_reader :target_container
 
-      # Returns the block that will be evaluated in the lifecycle context
+      # Returns the lifecycle object used for this provider
       #
-      # @return [Proc]
+      # @return [ProviderLifecycle]
       #
       # @api private
-      attr_reader :lifecycle_block
+      attr_reader :lifecycle
 
       def initialize(name:, namespace: nil, target_container:, lifecycle_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @target_container = target_container
-        @lifecycle_block = lifecycle_block
 
         @container = build_container
         @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
         @config = nil
         @config_block = nil
 
+        @lifecycle = ProviderLifecycle.new(provider: self, &lifecycle_block)
         instance_exec(&refinement_block) if refinement_block
       end
 
@@ -233,15 +233,6 @@ module Dry
           target_container.instance_exec(container, &fn)
         end
         self
-      end
-
-      # Returns the lifecycle object used for this provider
-      #
-      # @return [ProviderLifecycle]
-      #
-      # @api private
-      def lifecycle
-        @lifecycle ||= ProviderLifecycle.new(provider: self, &lifecycle_block)
       end
 
       # Return configured container for the lifecycle object
