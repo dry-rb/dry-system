@@ -73,7 +73,7 @@ RSpec.describe "Deprecated provider init event" do
       container.prepare :my_logger
 
       logger.rewind
-      expect(logger.string).to match(/Dry::System::Provider before\(:init\) trigger is deprecated.*Dry::System::Provider after\(:init\) trigger is deprecated/m)
+      expect(logger.string).to match(/Dry::System::Provider before\(:init\) callback is deprecated.*Dry::System::Provider after\(:init\) callback is deprecated/m)
     end
   end
 

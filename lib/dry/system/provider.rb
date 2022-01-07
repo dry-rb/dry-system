@@ -45,15 +45,15 @@ module Dry
     #
     # @api public
     class Provider
-      TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
+      CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
 
       # @!attribute [r] key
       #   @return [Symbol] the provider's unique name
       attr_reader :name
 
-      # @!attribute [r] triggers
+      # @!attribute [r] step_callbacks
       #   @return [Hash] lifecycle step after/before callbacks
-      attr_reader :triggers
+      attr_reader :step_callbacks
 
       # @!attribute [r] namespace
       #   @return [Symbol,String] default namespace for the container keys
@@ -81,7 +81,7 @@ module Dry
         @target_container = target_container
 
         @container = build_container
-        @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
+        @step_callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
         @config = nil
         @config_block = nil
 
@@ -95,9 +95,9 @@ module Dry
       #
       # @api public
       def prepare
-        trigger(:before, :prepare)
+        run_step_callbacks(:before, :prepare)
         lifecycle.(:prepare)
-        trigger(:after, :prepare)
+        run_step_callbacks(:after, :prepare)
         self
       end
 
@@ -107,9 +107,9 @@ module Dry
       #
       # @api public
       def start
-        trigger(:before, :start)
+        run_step_callbacks(:before, :start)
         lifecycle.(:start)
-        trigger(:after, :start)
+        run_step_callbacks(:after, :start)
         self
       end
 
@@ -131,8 +131,8 @@ module Dry
       def before(event, &block)
         if event.to_sym == :init
           Dry::Core::Deprecations.announce(
-            "Dry::System::Provider before(:init) trigger",
-            "Use `before(:prepare)` trigger instead",
+            "Dry::System::Provider before(:init) callback",
+            "Use `before(:prepare)` callback instead",
             tag: "dry-system",
             uplevel: 1
           )
@@ -140,7 +140,7 @@ module Dry
           event = :prepare
         end
 
-        triggers[:before][event] << block
+        step_callbacks[:before][event] << block
         self
       end
 
@@ -152,8 +152,8 @@ module Dry
       def after(event, &block)
         if event.to_sym == :init
           Dry::Core::Deprecations.announce(
-            "Dry::System::Provider after(:init) trigger",
-            "Use `after(:prepare)` trigger instead",
+            "Dry::System::Provider after(:init) callback",
+            "Use `after(:prepare)` callback instead",
             tag: "dry-system",
             uplevel: 1
           )
@@ -161,7 +161,7 @@ module Dry
           event = :prepare
         end
 
-        triggers[:after][event] << block
+        step_callbacks[:after][event] << block
         self
       end
 
@@ -209,7 +209,7 @@ module Dry
       # Registers any components from the provider's container in the main container
       #
       # Automatically called by the booter after the `prepare` and `start` lifecycle
-      # triggers are run
+      # steps are run
       #
       # @return [self]
       #
@@ -223,13 +223,13 @@ module Dry
 
       private
 
-      # Trigger a callback
+      # Invokes a step callback
       #
       # @return [self]
       #
       # @api private
-      def trigger(key, event)
-        triggers[key][event].each do |fn|
+      def run_step_callbacks(key, event)
+        step_callbacks[key][event].each do |fn|
           target_container.instance_exec(container, &fn)
         end
         self
