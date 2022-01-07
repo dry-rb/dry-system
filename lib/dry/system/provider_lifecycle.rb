@@ -58,18 +58,18 @@ module Dry
 
       # @api private
       def prepare(&block)
-        trigger!(:prepare, &block)
+        handle_trigger(:prepare, &block)
       end
       deprecate :init, :prepare
 
       # @api private
       def start(&block)
-        trigger!(:start, &block)
+        handle_trigger(:start, &block)
       end
 
       # @api private
       def stop(&block)
-        trigger!(:stop, &block)
+        handle_trigger(:stop, &block)
       end
 
       # @api private
@@ -95,7 +95,7 @@ module Dry
       end
 
       # @api private
-      def trigger!(name, &block)
+      def handle_trigger(name, &block)
         if triggers.key?(name)
           triggers[name].(target_container)
         elsif block
