@@ -2,7 +2,7 @@
 
 require "dry/system/components"
 
-RSpec.describe "Settings component" do
+RSpec.xdescribe "Settings component" do
   subject(:system) do
     Class.new(Dry::System::Container) do
       setting :env

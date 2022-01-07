@@ -19,7 +19,7 @@ module Dry
       end
 
       def register(name:, group:, &block)
-        providers[key(name, group)] = SourceProvider.new(name: name, lifecycle_block: block)
+        providers[key(name, group)] = SourceProvider.new(name: name, source_block: block)
       end
 
       def resolve(name:, group:)

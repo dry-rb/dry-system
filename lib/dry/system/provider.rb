@@ -4,7 +4,7 @@ require "dry/core/deprecations"
 require "dry/system/settings"
 require "dry/system/components/config"
 require "dry/system/constants"
-require_relative "provider/lifecycle"
+require_relative "provider/source_definition"
 require_relative "provider/step_evaluator"
 
 module Dry
@@ -84,9 +84,9 @@ module Dry
       # @return [ProviderLifecycle]
       #
       # @api private
-      attr_reader :lifecycle
+      attr_reader :source_definition
 
-      def initialize(name:, namespace: nil, target_container:, lifecycle_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, source_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @target_container = target_container
@@ -98,7 +98,7 @@ module Dry
         @config = nil
         @config_block = nil
 
-        @lifecycle = Lifecycle.new(self, &lifecycle_block)
+        @source_definition = SourceDefinition.new(self, &source_block)
         instance_exec(&refinement_block) if refinement_block
       end
 
@@ -127,6 +127,7 @@ module Dry
       #
       # @api public
       def stop
+        # FIXME real error
         raise "Why u trying to stop me when I haven't been started" unless statuses.include?(:start)
 
         run_step(:stop)
@@ -184,19 +185,6 @@ module Dry
         self
       end
 
-      # Define configuration settings with keys and types
-      #
-      # @api public
-      def settings(&block)
-        if block
-          @settings_block = block
-        elsif @settings_block
-          @settings = Settings::DSL.new(&@settings_block).call
-        else
-          @settings
-        end
-      end
-
       # Returns the provider's configuration
       #
       # @return [Dry::Struct]
@@ -230,11 +218,11 @@ module Dry
         return self if step_statuses.include?(step_name)
 
         run_step_callbacks(:before, step_name)
-        step_block = lifecycle.public_send(step_name)
 
+        step_block = source_definition.public_send(step_name)
         step_evaluator.call(target_container, &step_block) if step_block
-
         step_statuses << step_name
+
         run_step_callbacks(:after, step_name)
 
         self
@@ -279,7 +267,9 @@ module Dry
       #
       # @api private
       def configure!
-        @config = settings.new(Components::Config.new(&@config_block)) if settings
+        if source_definition.settings
+          @config = source_definition.settings.new(Components::Config.new(&@config_block))
+        end
       end
     end
   end

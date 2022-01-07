@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
+require "dry/system/settings"
 
 module Dry
   module System
@@ -13,16 +14,15 @@ module Dry
       # @see [Container.register_provider]
       #
       # @api private
-      class Lifecycle
+      class SourceDefinition
         extend ::Dry::Core::Deprecations["Dry::System::Lifecycle"]
 
         attr_reader :steps
 
         # @api private
-        def initialize(provider, &lifecycle_block)
-          @provider = provider
+        def initialize(provider, &source_block)
           @steps = {}
-          instance_exec(provider.target_container, &lifecycle_block)
+          instance_exec(provider.target_container, &source_block)
         end
 
         # @api private
@@ -32,9 +32,17 @@ module Dry
           end
         end
 
-        # @api private
+        # Define configuration settings with keys and types
+        #
+        # @api public
         def settings(&block)
-          @provider.settings(&block)
+          if block
+            @settings_block = block
+          elsif @settings_block
+            @settings = Settings::DSL.new(&@settings_block).call
+          else
+            @settings
+          end
         end
 
         # @api public
@@ -59,6 +67,7 @@ module Dry
         def step(name, &block)
           if block
             steps[name] = block
+            self
           else
             steps[name]
           end

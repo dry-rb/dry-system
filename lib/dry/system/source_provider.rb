@@ -5,15 +5,15 @@ require_relative "provider"
 module Dry
   module System
     class SourceProvider
-      attr_reader :name, :lifecycle_block
+      attr_reader :name, :source_block
 
-      def initialize(name:, lifecycle_block:)
+      def initialize(name:, source_block:)
         @name = name
-        @lifecycle_block = lifecycle_block
+        @source_block = source_block
       end
 
       def to_provider(**options)
-        Provider.new(name: name, lifecycle_block: lifecycle_block, **options)
+        Provider.new(name: name, source_block: source_block, **options)
       end
     end
   end
