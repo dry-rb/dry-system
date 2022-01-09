@@ -6,22 +6,16 @@ require "dry/system/settings"
 module Dry
   module System
     class Provider
-      # Lifecycle booting DSL
-      #
-      # Lifecycle objects are used in the boot files where you can register custom
-      # prepare/start/stop triggers
-      #
-      # @see [Container.register_provider]
-      #
-      # @api private
-      class SourceDefinition
-        extend ::Dry::Core::Deprecations["Dry::System::Lifecycle"]
+      class SourceEnvironment
+
 
         attr_reader :steps
 
         # @api private
         def initialize(provider, &source_block)
           @steps = {}
+
+          # TODO: figure out the best way to deal with this target_container business
           instance_exec(provider.target_container, &source_block)
         end
 
@@ -47,29 +41,28 @@ module Dry
 
         # @api public
         def prepare(&block)
-          step(:prepare, &block)
+          set_or_return_step(:prepare, &block)
         end
-        deprecate :init, :prepare
 
         # @api public
         def start(&block)
-          step(:start, &block)
+          set_or_return_step(:start, &block)
         end
 
         # @api public
         def stop(&block)
-          step(:stop, &block)
+          set_or_return_step(:stop, &block)
         end
 
         private
 
         # @api private
-        def step(name, &block)
+        def set_or_return_step(step_name, &block)
           if block
-            steps[name] = block
+            steps[step_name] = block
             self
           else
-            steps[name]
+            steps[step_name]
           end
         end
       end

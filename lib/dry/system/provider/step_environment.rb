@@ -4,10 +4,11 @@ module Dry
   module System
     class Provider
       # @api private
-      class StepEvaluator
+      class StepEnvironment
         # @api private
-        def initialize(provider)
+        def initialize(provider, exec_environment)
           @provider = provider
+          @exec_environment = exec_environment
         end
 
         # @api private
@@ -22,7 +23,7 @@ module Dry
 
         # @api public
         def config
-          @provider.config
+          @exec_environment.config
         end
 
         # @api public

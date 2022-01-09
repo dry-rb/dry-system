@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Deprecated provider init event" do
+RSpec.xdescribe "Deprecated provider init event" do
   before do
     Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
     require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
