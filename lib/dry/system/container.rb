@@ -12,7 +12,6 @@ require "dry/core/deprecations"
 
 require "dry/system"
 require "dry/system/auto_registrar"
-require "dry/system/booter"
 require "dry/system/component"
 require "dry/system/constants"
 require "dry/system/errors"
@@ -21,7 +20,7 @@ require "dry/system/importer"
 require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
 require "dry/system/plugins"
-require "dry/system/provider"
+require "dry/system/provider_registrar"
 
 require_relative "component_dir"
 require_relative "config/component_dirs"
@@ -83,11 +82,10 @@ module Dry
       setting :registrations_dir, default: "container"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :inflector, default: Dry::Inflector.new
-      setting :booter, default: Dry::System::Booter
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manual_registrar, default: Dry::System::ManualRegistrar
+      setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
-      setting :providers, default: {}, reader: true, constructor: :dup.to_proc
 
       class << self
         def strategies(value = nil)
@@ -256,9 +254,7 @@ module Dry
               provider(name, namespace: namespace, &block)
             end
 
-          booter.register_provider provider
-
-          providers[name] = provider
+          providers.register_provider provider
         end
 
         def boot(name, **opts, &block)
@@ -335,7 +331,7 @@ module Dry
           yield(self) if block
 
           importer.finalize!
-          booter.finalize!
+          providers.finalize!
           manual_registrar.finalize!
           auto_registrar.finalize!
 
@@ -358,7 +354,7 @@ module Dry
         #
         # @api public
         def start(name)
-          booter.start(name)
+          providers.start(name)
           self
         end
 
@@ -376,7 +372,7 @@ module Dry
         #
         # @api public
         def prepare(name)
-          booter.prepare(name)
+          providers.prepare(name)
           self
         end
         deprecate :init, :prepare
@@ -392,12 +388,12 @@ module Dry
         #
         # @api public
         def stop(name)
-          booter.stop(name)
+          providers.stop(name)
           self
         end
 
         def shutdown!
-          booter.shutdown
+          providers.shutdown
           self
         end
 
@@ -535,8 +531,8 @@ module Dry
         end
 
         # @api private
-        def booter
-          @booter ||= config.booter.new(provider_paths)
+        def providers
+          @providers ||= config.provider_registrar.new(provider_paths)
         end
 
         # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
@@ -617,14 +613,14 @@ module Dry
         def load_component(key)
           return self if registered?(key)
 
-          if (provider = booter.find_and_load_provider(key))
-            booter.start(provider)
+          if (provider = providers.find_and_load_provider(key))
+            providers.start(provider)
             return self
           end
 
           component = find_component(key)
 
-          booter.boot_dependency(component)
+          providers.boot_dependency(component)
           return self if registered?(key)
 
           if component.loadable?

@@ -51,49 +51,49 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
   describe "#init" do
     it "calls init function" do
-      system.booter.prepare(:db)
+      system.providers.prepare(:db)
       expect(db).to have_received(:establish_connection)
     end
   end
 
   describe "#start" do
     it "calls start function" do
-      system.booter.start(:db)
+      system.providers.start(:db)
       expect(db).to have_received(:load)
     end
 
     xit "store booted component" do
-      system.booter.start(:db)
-      expect(system.booter.booted.map(&:name)).to include(:db)
+      system.providers.start(:db)
+      expect(system.providers.booted.map(&:name)).to include(:db)
     end
   end
 
   describe "#stop" do
     it "calls stop function if the provider has been started" do
-      system.booter.start(:db)
-      system.booter.stop(:db)
+      system.providers.start(:db)
+      system.providers.stop(:db)
       expect(db).to have_received(:close_connection)
     end
 
     it "does not call stop function if the provider has not been started" do
-      system.booter.stop(:db)
+      system.providers.stop(:db)
       expect(db).not_to have_received(:close_connection)
     end
 
     xit "remove booted component" do
-      system.booter.start(:db)
-      expect(system.booter.booted).to_not be_empty
+      system.providers.start(:db)
+      expect(system.providers.booted).to_not be_empty
 
-      system.booter.stop(:db)
-      expect(system.booter.booted).to be_empty
+      system.providers.stop(:db)
+      expect(system.providers.booted).to be_empty
     end
   end
 
   describe "#shutdown" do
     it "calls stop function for every component" do
-      system.booter.start(:db)
-      system.booter.start(:client)
-      system.booter.shutdown
+      system.providers.start(:db)
+      system.providers.start(:client)
+      system.providers.shutdown
 
       expect(db).to have_received(:close_connection)
       expect(client).to have_received(:close_connection)
@@ -101,14 +101,14 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   end
 
   specify "boot triggers prepare" do
-    system.booter.prepare(:db)
+    system.providers.prepare(:db)
 
     expect(db).to have_received(:establish_connection)
     expect(db).to_not have_received(:load)
   end
 
   specify "start triggers init + start" do
-    system.booter.start(:db)
+    system.providers.start(:db)
 
     expect(db).to have_received(:establish_connection)
     expect(db).to have_received(:load)
@@ -117,26 +117,26 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   specify "start raises error on undefined method or variable" do
     expect {
       system.register_provider(:broken_1) { oops("arg") }
-      system.booter.start(:broken_1)
+      system.providers.start(:broken_1)
     }.to raise_error(NoMethodError, /oops/)
 
     expect {
       system.register_provider(:broken_2) { oops }
-      system.booter.start(:broken_2)
+      system.providers.start(:broken_2)
     }.to raise_error(NameError, /oops/)
   end
 
   specify "lifecycle triggers are called only once" do
-    system.booter.start(:db)
-    system.booter.start(:db)
+    system.providers.start(:db)
+    system.providers.start(:db)
 
-    system.booter.prepare(:db)
-    system.booter.prepare(:db)
+    system.providers.prepare(:db)
+    system.providers.prepare(:db)
 
     expect(db).to have_received(:establish_connection).exactly(1)
     expect(db).to have_received(:load).exactly(1)
 
-    expect(system.booter[:db].statuses).to eql(%i[prepare start])
+    expect(system.providers[:db].statuses).to eql(%i[prepare start])
   end
 
   it "raises when a duplicated identifier was used" do

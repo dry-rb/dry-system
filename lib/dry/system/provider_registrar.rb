@@ -1,22 +1,24 @@
 # frozen_string_literal: true
 
-require "dry/system/provider"
-require "dry/system/errors"
-require "dry/system/constants"
 require "pathname"
+require_relative "errors"
+require_relative "constants"
+require_relative "provider"
 
 module Dry
   module System
-    # Default booter implementation
+    # Default provider registrar implementation
     #
-    # This is currently configured by default for every System::Container.
-    # Booter objects are responsible for loading system/boot files and expose
-    # an API for calling lifecycle triggers.
+    # This is currently configured by default for every Dry::System::Container. The
+    # provider registrar is responsible for loading provider files and exposing an API for
+    # running the provider lifecycle steps.
     #
     # @api private
-    class Booter
+    class ProviderRegistrar
+      # @api private
       attr_reader :providers
 
+      # @api private
       attr_reader :provider_paths
 
       # @api private
@@ -44,6 +46,11 @@ module Dry
         providers[provider_name]
       end
       alias_method :provider, :[]
+
+      # @api private
+      def key?(provider_name)
+        providers.key?(provider_name)
+      end
 
       # Returns a provider if it can be found or loaded, otherwise nil
       #
