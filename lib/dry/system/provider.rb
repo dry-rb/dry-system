@@ -77,7 +77,7 @@ module Dry
 
       attr_reader :source
 
-      def initialize(name:, namespace: nil, target_container:, source_class: nil, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, source_class: nil, &block) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @target_container = target_container
@@ -85,7 +85,7 @@ module Dry
         @container = build_container
         @statuses = []
 
-        @source = source_class.new(provider_container: container, target_container: target_container, &refinement_block)
+        @source = source_class.new(provider_container: container, target_container: target_container, &block)
       end
 
       # Execute `prepare` step

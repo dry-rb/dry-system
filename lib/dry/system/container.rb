@@ -282,7 +282,7 @@ module Dry
         # @api private
         private def provider_from_source(name, source:, group:, namespace:, &block)
           source_class = System.source_providers.resolve(name: source, group: group)
-          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class, refinement_block: block)
+          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class, &block)
         end
 
         # @api private
