@@ -3,7 +3,7 @@
 require "dry/core/deprecations"
 require "dry/system/components/config"
 require "dry/system/constants"
-require_relative "provider/source_builder"
+require_relative "provider/source"
 
 module Dry
   module System
@@ -45,7 +45,7 @@ module Dry
     # @api public
     class Provider
       def self.source_class(name:, group: nil, &block)
-        SourceBuilder.source_class(name: name, group: group, &block)
+        Source.for(name: name, group: group, &block)
       end
 
       # @!attribute [r] key
@@ -74,13 +74,6 @@ module Dry
       # @api public
       attr_reader :target_container
 
-      # Returns the lifecycle object used for this provider
-      #
-      # @return [ProviderLifecycle]
-      #
-      # @api private
-      # attr_reader :source_environment, :exec_environment
-
       attr_reader :source
 
       def initialize(name:, namespace: nil, target_container:, source_class: nil, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
@@ -91,7 +84,6 @@ module Dry
         @container = build_container
         @statuses = []
 
-        source_class = source_class || SourceBuilder.source_class(name, &source_block)
         @source = source_class.new(provider_container: container, target_container: target_container, &refinement_block)
       end
 

@@ -1,23 +1,17 @@
-require_relative "source"
+# frozen_string_literal: true
 
 module Dry
   module System
     class Provider
-      class SourceBuilder
-        attr_reader :source_class
-
-        def self.source_class(name:, group: nil, &block)
-          dsl = new
-          # TODO: Find some nicer way to "name" the class
-          dsl.source_class.name = name
-          dsl.source_class.group = group
-          dsl.instance_eval(&block)
-          dsl.source_class
+      class SourceDSL
+        def self.evaluate(source_class, &block)
+          new(source_class).instance_eval(&block)
         end
 
-        def initialize
-          # TODO: should I use dry::core::classbuilder here?
-          @source_class = Class.new(Source)
+        attr_reader :source_class
+
+        def initialize(source_class)
+          @source_class = source_class
         end
 
         def setting(*args, **kwargs, &block)

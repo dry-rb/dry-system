@@ -1,32 +1,43 @@
 # frozen_string_literal: true
 
 require "dry/configurable"
+require "dry/core/class_attributes"
+require_relative "source_dsl"
 
 module Dry
   module System
     class Provider
       class Source
-        include Dry::Configurable
+        def self.for(name:, group: nil, &block)
+          Class.new(self).tap { |klass|
+            klass.source_name name
+            klass.source_group group
+            SourceDSL.evaluate(klass, &block) if block
+          }
+        end
 
-        class << self
-          # TODO: turn to class attributes
-          def name=(name)
-            @name = name
-          end
-          def name
-            @name
-          end
-          def group=(group)
-            @group = group
-          end
-          def group
-            @group
-          end
+        def self.name
+          source = "#{source_name}"
+          source = "#{source_group}->#{source}" if source_group
 
-          # TODO: custom class inspect
+          "Dry::System::Provider::Source[#{source}]"
+        end
+
+        def self.to_s
+          "#<#{name}>"
+        end
+
+        def self.inspect
+          to_s
         end
 
         CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
+
+        extend Dry::Core::ClassAttributes
+        include Dry::Configurable
+
+        defines :source_name, :source_group
+
         attr_reader :callbacks
 
         attr_reader :provider_container
@@ -41,6 +52,12 @@ module Dry
           @provider_container = provider_container
           @target_container = target_container
           instance_exec(&block) if block
+        end
+
+        def inspect
+          ivars = instance_variables.map { |ivar| "#{ivar}=#{instance_variable_get(ivar).inspect}"}.join(" ")
+
+          "#<#{self.class.name} #{ivars}>"
         end
 
         def prepare
