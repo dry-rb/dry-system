@@ -120,38 +120,14 @@ module Dry
       private def run_step(step_name)
         return self if statuses.include?(step_name)
 
-        # source_environment.public_send(step_name)
-
-        # WIP: hmmmmm, this right? We'll also need to provide access to the source
-        # environment eventually if we want to permit custom methods
-        # step = source_environment.method(step_name)
-        # step_environment.instance_exec(target_container, &step)
-
-        # exec_environment.call(step_name)
-
-        # run_step_callbacks(:before, step_name)
-
         source.run_callback(:before, step_name)
         source.public_send(step_name)
         source.run_callback(:after, step_name)
-
-        # step_block = source_environment.public_send(step_name) # TODO: wonder if there's a better way to retrieve this?
-        # step_environment.call(target_container, &step_block) if step_block
-        # self
-
-        # run_step_callbacks(:after, step_name)
 
         statuses << step_name
 
         self
       end
-
-      # private def run_step_callbacks(hook, step_name)
-      #   exec_environment.callbacks_for(hook, step_name).each do |fn|
-      #     target_container.instance_exec(container, &fn)
-      #   end
-      #   self
-      # end
 
       # Registers any components from the provider's container in the main container
       #
