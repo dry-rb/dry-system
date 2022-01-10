@@ -16,12 +16,12 @@ module Dry
           @source_class = Class.new(Source)
         end
 
-        def setting(*args, &block)
-          source_class.setting(*args, &block)
+        def setting(*args, **kwargs, &block)
+          source_class.setting(*args, **kwargs, &block)
         end
 
         def prepare(&block)
-          source_class.define_method(:add, &block)
+          source_class.define_method(:prepare, &block)
         end
 
         def start(&block)

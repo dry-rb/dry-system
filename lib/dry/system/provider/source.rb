@@ -11,12 +11,16 @@ module Dry
         CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
         attr_reader :callbacks
 
-        attr_reader :container
+        attr_reader :provider_container
+        alias_method :container, :provider_container
 
         attr_reader :target_container
+        alias_method :target, :target_container
 
-        def initialize(container:, target_container:, &block)
+        def initialize(provider_container:, target_container:, &block)
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
+          @provider_container = provider_container
+          @target_container = target_container
           instance_exec(&block) if block
         end
 
@@ -27,6 +31,12 @@ module Dry
         end
 
         def stop
+        end
+
+        def use(*names)
+          names.each do |name|
+            target_container.start(name)
+          end
         end
 
         def before(step, &block)
@@ -63,7 +73,7 @@ module Dry
 
         def run_callback(hook, step)
           callbacks[hook][step].each do |callback|
-            # TODO: Is it OK that these run in the same environment as the source?
+            # TODO: Is it OK that these run in the same environment as the source? I think so...
             instance_eval(&callback)
           end
         end
@@ -75,11 +85,16 @@ module Dry
         private
 
         def register(*args)
-          container.register(*args)
+          provider_container.register(*args)
         end
 
         def resolve(*args)
-          container.resolve(*args)
+          provider_container.resolve(*args)
+        end
+
+        def run_step_block(step_name)
+          step_block = self.class.step_blocks[step_name]
+          instance_eval(&step_block) if step_block
         end
       end
     end

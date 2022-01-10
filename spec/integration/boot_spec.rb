@@ -7,7 +7,6 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   let(:setup_db) do
     system.register_provider(:db) do
       prepare do
-        # TODO: work out how this stuff can be top-level by default? (Or is that not right?)
         module Test
           class Db < OpenStruct
           end
@@ -18,7 +17,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
         register("db.conn", Test::Db.new(established: true))
       end
 
-      stop do |container|
+      stop do
         container["db.conn"].established = false
       end
     end
@@ -37,7 +36,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
         register("client.conn", Test::Client.new(connected: true))
       end
 
-      stop do |container|
+      stop do
         container["client.conn"].connected = false
       end
     end
@@ -68,7 +67,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
     it "uses defaults" do
       system.register_provider(:api) do
-        setting :token, Types::String.default("xxx")
+        setting :token, default: "xxx"
 
         start do
           register(:client, OpenStruct.new(config.to_h))
