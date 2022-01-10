@@ -92,8 +92,8 @@ module Dry
       # @return [self]
       #
       # @api public
-      def prepare
-        run_step(:prepare)
+      def prepare(apply: true)
+        run_step(:prepare, apply)
       end
 
       # Execute `start` step
@@ -101,9 +101,9 @@ module Dry
       # @return [self]
       #
       # @api public
-      def start
-        run_step(:prepare)
-        run_step(:start)
+      def start(apply: true)
+        run_step(:prepare, apply)
+        run_step(:start, apply)
       end
 
       # Execute `stop` step
@@ -115,33 +115,6 @@ module Dry
         return unless statuses.include?(:start)
 
         run_step(:stop)
-      end
-
-      private def run_step(step_name)
-        return self if statuses.include?(step_name)
-
-        source.run_callback(:before, step_name)
-        source.public_send(step_name)
-        source.run_callback(:after, step_name)
-
-        statuses << step_name
-
-        self
-      end
-
-      # Registers any components from the provider's container in the main container
-      #
-      # Automatically called by the booter after the `prepare` and `start` lifecycle
-      # steps are run
-      #
-      # @return [self]
-      #
-      # @api private
-      def apply
-        container.each do |key, item|
-          target_container.register(key, item) unless target_container.registered?(key)
-        end
-        self
       end
 
       private
@@ -165,6 +138,36 @@ module Dry
           raise ArgumentError,
             "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
         end
+      end
+
+      def run_step(step_name, apply = false)
+        return self if statuses.include?(step_name)
+
+        source.run_callback(:before, step_name)
+        source.public_send(step_name)
+        source.run_callback(:after, step_name)
+
+        statuses << step_name
+
+        self.apply if apply
+
+        self
+      end
+
+      # Registers any components from the provider's container in the main container
+      #
+      # Automatically called by the booter after the `prepare` and `start` lifecycle
+      # steps are run
+      #
+      # @return [self]
+      #
+      # @api private
+      def apply
+        container.each do |key, item|
+          target_container.register(key, item) unless target_container.registered?(key)
+        end
+
+        self
       end
     end
   end

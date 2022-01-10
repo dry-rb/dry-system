@@ -59,17 +59,6 @@ module Dry
     InvalidComponentError = ProviderNotFoundError
     deprecate_constant :InvalidComponentError
 
-    # Error raised when trying to stop a provider that hasn't started yet
-    #
-    # @api public
-    ProviderNotStartedError = Class.new(StandardError) do
-      def initialize(provider_name)
-        super("Provider #{provider_name.inspect} has not been started")
-      end
-    end
-    ComponentNotStartedError = ProviderNotStartedError
-    deprecate_constant :ComponentNotStartedError
-
     # Error raised when trying to use a plugin that does not exist.
     #
     # @api public
