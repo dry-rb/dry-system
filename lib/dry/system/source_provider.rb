@@ -12,9 +12,9 @@ module Dry
         @source_block = source_block
       end
 
-      def to_provider(**options)
-        Provider.new(name: name, source_block: source_block, **options)
-      end
+      # def to_provider(**options)
+      #   Provider.new(name: name, source_block: source_block, **options)
+      # end
     end
   end
 end

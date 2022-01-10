@@ -103,7 +103,7 @@ module Dry
 
       attr_reader :source
 
-      def initialize(name:, namespace: nil, target_container:, source_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, source_class: nil, source_block: nil, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @target_container = target_container
@@ -111,8 +111,10 @@ module Dry
         @container = build_container
         @statuses = []
 
-        @source = SourceDSL.source_from(name, &source_block)
-          .new(name: name, namespace: namespace, provider_container: container, target_container: target_container, &refinement_block)
+        # TODO: work out how to handle either source_block/source_class stuff work
+
+        source_class = source_class || SourceDSL.source_from(name, &source_block)
+        @source = source_class.new(provider_container: container, target_container: target_container, &refinement_block)
 
         # @source_environment = SourceEnvironment.new(self, &source_block)
         # @exec_environment = ExecEnvironment.new(self, @source_environment, &refinement_block)

@@ -29,7 +29,7 @@ RSpec.describe "Deprecated Dry::System::Container.boot" do
           end
 
           after(:start) do
-            register(:my_logger, target_container[:logger])
+            register(:my_logger, container[:logger])
           end
         end
       end

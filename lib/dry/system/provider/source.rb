@@ -8,15 +8,23 @@ module Dry
       class Source
         include Dry::Configurable
 
-        # def self.name=(name)
-        #   @name = name
-        # end
+        class << self
+          # TODO: turn to class attributes
+          def name=(name)
+            @name = name
+          end
+          def name
+            @name
+          end
+          def group=(group)
+            @group = group
+          end
+          def group
+            @group
+          end
 
-        # def self.name
-        #   @name
-        # end
-
-        attr_reader :name, :namespace
+          # TODO: custom class inspect
+        end
 
         CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
         attr_reader :callbacks
@@ -27,14 +35,13 @@ module Dry
         attr_reader :target_container
         alias_method :target, :target_container
 
-        def initialize(name:, namespace:, provider_container:, target_container:, &block)
-          # I wonder if these are useful...
-          @name = name
-          @namespace = namespace
-
+        def initialize(provider_container:, target_container:, &block)
+          super()
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container
           @target_container = target_container
+          puts "initializing provider source #{self.class.group}/#{self.class.name}"
+          pp caller[0..10] if self.class.name == :logger
           instance_exec(&block) if block
         end
 

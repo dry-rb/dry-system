@@ -27,10 +27,10 @@ Dry::System.register_source_provider(:logger, group: :external_components) do
   end
 
   start do
-    puts "I am SOURCE start in class #{self.class.object_id}"
+    puts "I am SOURCE start in object #{self.object_id}"
     logger =
       if config.log_level
-        byebug
+        # byebug
         ExternalComponents::Logger.new(config.log_level)
       else
         ExternalComponents::Logger.new
