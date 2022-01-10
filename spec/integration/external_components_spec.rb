@@ -11,27 +11,14 @@ RSpec.describe "External Components" do
           config.root = SPEC_ROOT.join("fixtures/app").realpath
         end
 
-        # register_provider(:logger, from: :external_components)
+        register_provider(:logger, from: :external_components)
 
         register_provider(:my_logger, from: :external_components, source: :logger) do
           configure do |config|
-            # byebug
             config.log_level = :debug
-            # byebug
           end
 
-          puts "I am my_logger from source logger, in object #{self.object_id}"
-
-          puts "setting config (to log_level debug)"
-          # config.log_level = :debug
-          # p config
-          # p config.log_level
-          # p config.object_id
-          # p method(:config)
-          # byebug
-
           after(:start) do
-            # byebug
             register(:my_logger, container[:logger])
           end
         end

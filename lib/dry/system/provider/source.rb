@@ -40,8 +40,6 @@ module Dry
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container
           @target_container = target_container
-          puts "initializing provider source #{self.class.group}/#{self.class.name}"
-          pp caller[0..10] if self.class.name == :logger
           instance_exec(&block) if block
         end
 
