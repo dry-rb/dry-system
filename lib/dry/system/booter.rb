@@ -26,16 +26,50 @@ module Dry
       end
 
       # @api private
+      def freeze
+        providers.freeze
+        super
+      end
+
+      # @api private
       def register_provider(provider)
         providers[provider.name] = provider
         self
       end
 
-      # @api private
+      # Returns a provider for the given name, if it has already been loaded
+      #
+      # @api public
       def [](provider_name)
         providers[provider_name]
       end
       alias_method :provider, :[]
+
+      # Returns a provider if it can be found or loaded, otherwise nil
+      #
+      # @return [Dry::System::Provider, nil]
+      #
+      # @api private
+      def find_and_load_provider(name)
+        name = name.to_sym
+
+        if (provider = providers[name])
+          return provider
+        end
+
+        return if finalized?
+
+        require_provider_file(name)
+
+        providers[name]
+      end
+
+      # @api private
+      def boot_dependency(component)
+        if (provider = find_and_load_provider(component.root_key))
+          start(provider.name)
+        end
+      end
 
       # TODO: deprecate this as `boot_files`
       # TODO: leave a note in the documents as to why this is public (dry-rails)
@@ -62,23 +96,6 @@ module Dry
         }.first
       end
 
-      # Returns a provider if it can be found or loaded, otherwise nil
-      #
-      # @return [Dry::System::Provider, nil]
-      #
-      # @api private
-      def find_provider(name)
-        name = name.to_sym
-
-        return providers[name] if providers.key?(name)
-
-        return if finalized?
-
-        require_provider_file(name)
-
-        providers[name] if providers.key?(name)
-      end
-
       # @api private
       def finalize!
         provider_files.each do |path|
@@ -90,13 +107,6 @@ module Dry
         end
 
         freeze
-      end
-
-      # @api private
-      def boot_dependency(component)
-        if (provider = find_provider(component.root_key))
-          start(provider.name)
-        end
       end
 
       # @!method finalized?
