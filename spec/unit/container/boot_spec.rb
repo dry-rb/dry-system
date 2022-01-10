@@ -69,23 +69,33 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   end
 
   describe "#stop" do
-    it "calls stop function if the provider has been started" do
-      system.providers.start(:db)
-      system.providers.stop(:db)
-      expect(db).to have_received(:close_connection)
+    context "provider has started" do
+      it "calls stop function" do
+        system.providers.start(:db)
+        system.providers.stop(:db)
+        expect(db).to have_received(:close_connection)
+      end
+
+      it "marks the provider as stopped" do
+        expect {
+          system.providers.start(:db)
+          system.providers.stop(:db)
+        }
+          .to change { system.providers[:db].stopped? }
+          .from(false). to true
+      end
     end
 
-    it "does not call stop function if the provider has not been started" do
-      system.providers.stop(:db)
-      expect(db).not_to have_received(:close_connection)
-    end
+    context "provider has not started" do
+      it "does not call stop function" do
+        system.providers.stop(:db)
+        expect(db).not_to have_received(:close_connection)
+      end
 
-    xit "remove booted component" do
-      system.providers.start(:db)
-      expect(system.providers.booted).to_not be_empty
-
-      system.providers.stop(:db)
-      expect(system.providers.booted).to be_empty
+      it "does not mark the provider as stopped" do
+        expect { system.providers.stop(:db) }.not_to change { system.providers[:db].stopped? }
+        expect(system.providers[:db]).not_to be_stopped
+      end
     end
   end
 

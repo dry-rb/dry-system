@@ -132,6 +132,13 @@ module Dry
         statuses.include?(:start)
       end
 
+      # Returns true if the provider's `stop` step has run
+      #
+      # @api public
+      def stopped?
+        statuses.include?(:stop)
+      end
+
       private
 
       # Return configured container for the lifecycle object
