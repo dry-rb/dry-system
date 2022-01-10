@@ -51,14 +51,14 @@ RSpec.describe Dry::System::Container, ".register_provider" do
 
   describe "#init" do
     it "calls init function" do
-      system.booter.(:db).prepare
+      system.booter.prepare(:db)
       expect(db).to have_received(:establish_connection)
     end
   end
 
   describe "#start" do
     it "calls start function" do
-      system.booter.(:db).start
+      system.booter.start(:db)
       expect(db).to have_received(:load)
     end
 
@@ -69,10 +69,15 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   end
 
   describe "#stop" do
-    it "calls stop function" do
-      system.booter.(:db).start # FIXME: I had to add this line. Feels like we should actually have an error raised by the provider itself if you try to stop when it hasn't been started
-      system.booter.(:db).stop
+    it "calls stop function if the provider has been started" do
+      system.booter.start(:db)
+      system.booter.stop(:db)
       expect(db).to have_received(:close_connection)
+    end
+
+    it "does not call stop function if the provider has not been started" do
+      system.booter.stop(:db)
+      expect(db).not_to have_received(:close_connection)
     end
 
     xit "remove booted component" do
@@ -121,10 +126,6 @@ RSpec.describe Dry::System::Container, ".register_provider" do
     }.to raise_error(NameError, /oops/)
   end
 
-  specify "booter returns cached lifecycle objects" do
-    expect(system.booter.(:db)).to be(system.booter.(:db))
-  end
-
   specify "lifecycle triggers are called only once" do
     system.booter.start(:db)
     system.booter.start(:db)
@@ -135,7 +136,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
     expect(db).to have_received(:establish_connection).exactly(1)
     expect(db).to have_received(:load).exactly(1)
 
-    expect(system.booter.(:db).statuses).to eql(%i[prepare start])
+    expect(system.booter[:db].statuses).to eql(%i[prepare start])
   end
 
   it "raises when a duplicated identifier was used" do

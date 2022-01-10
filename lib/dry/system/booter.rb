@@ -137,16 +137,6 @@ module Dry
         end
       end
 
-      # @api private
-      # TODO: this can be deleted - it's only used in specs
-      # TBH it should just be replaced with #[](provider_name)
-      def call(name_or_provider)
-        with_provider(name_or_provider) do |provider|
-          yield(provider) if block_given?
-          provider
-        end
-      end
-
       private
 
       def with_provider(id_or_provider)
