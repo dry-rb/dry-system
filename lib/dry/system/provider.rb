@@ -22,9 +22,12 @@ require "dry/core/deprecations"
 require "dry/system/settings"
 require "dry/system/components/config"
 require "dry/system/constants"
-require_relative "provider/exec_environment"
-require_relative "provider/source_environment"
-require_relative "provider/step_environment"
+# require_relative "provider/exec_environment"
+# require_relative "provider/source_environment"
+# require_relative "provider/step_environment"
+
+require_relative "provider/source"
+require_relative "provider/source_dsl"
 
 module Dry
   module System
@@ -69,7 +72,7 @@ module Dry
       #   @return [Symbol] the provider's unique name
       attr_reader :name
 
-      attr_reader :step_environment
+      # attr_reader :step_environment
 
       # Returns a list of lifecycle steps that were executed
       #
@@ -96,7 +99,9 @@ module Dry
       # @return [ProviderLifecycle]
       #
       # @api private
-      attr_reader :source_environment, :exec_environment
+      # attr_reader :source_environment, :exec_environment
+
+      attr_reader :source
 
       def initialize(name:, namespace: nil, target_container:, source_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
         @name = name
@@ -106,9 +111,12 @@ module Dry
         @container = build_container
         @statuses = []
 
-        @source_environment = SourceEnvironment.new(self, &source_block)
-        @exec_environment = ExecEnvironment.new(self, @source_environment, &refinement_block)
-        @step_environment = StepEnvironment.new(self, @exec_environment)
+        @source = SourceDSL.source_from(&source_block)
+          .new(container: @container, target_container: @target_container, &refinement_block)
+
+        # @source_environment = SourceEnvironment.new(self, &source_block)
+        # @exec_environment = ExecEnvironment.new(self, @source_environment, &refinement_block)
+        # @step_environment = StepEnvironment.new(self, @exec_environment)
       end
 
       # Execute `prepare` step
@@ -136,11 +144,7 @@ module Dry
       #
       # @api public
       def stop
-
-        # byebug
-        # FIXME real error
-        # TODO: actually, this shouldn't error at all, it should just no op
-        raise "Why u trying to stop me when I haven't been started" unless statuses.include?(:start)
+        return unless statuses.include?(:start)
 
         run_step(:stop)
       end
@@ -157,25 +161,29 @@ module Dry
 
         # exec_environment.call(step_name)
 
-        run_step_callbacks(:before, step_name)
+        # run_step_callbacks(:before, step_name)
 
-        step_block = source_environment.public_send(step_name) # TODO: wonder if there's a better way to retrieve this?
-        step_environment.call(target_container, &step_block) if step_block
-        self
+        source.run_callback(:before, step_name)
+        source.public_send(step_name)
+        source.run_callback(:after, step_name)
 
-        run_step_callbacks(:after, step_name)
+        # step_block = source_environment.public_send(step_name) # TODO: wonder if there's a better way to retrieve this?
+        # step_environment.call(target_container, &step_block) if step_block
+        # self
+
+        # run_step_callbacks(:after, step_name)
 
         statuses << step_name
 
         self
       end
 
-      private def run_step_callbacks(hook, step_name)
-        exec_environment.callbacks_for(hook, step_name).each do |fn|
-          target_container.instance_exec(container, &fn)
-        end
-        self
-      end
+      # private def run_step_callbacks(hook, step_name)
+      #   exec_environment.callbacks_for(hook, step_name).each do |fn|
+      #     target_container.instance_exec(container, &fn)
+      #   end
+      #   self
+      # end
 
       # Registers any components from the provider's container in the main container
       #
