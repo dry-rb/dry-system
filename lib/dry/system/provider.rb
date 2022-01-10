@@ -3,7 +3,6 @@
 require "dry/core/deprecations"
 require "dry/system/components/config"
 require "dry/system/constants"
-require_relative "provider/source"
 require_relative "provider/source_builder"
 
 module Dry
@@ -45,6 +44,10 @@ module Dry
     #
     # @api public
     class Provider
+      def self.source_class(name:, group: nil, &block)
+        SourceBuilder.source_class(name: name, group: group, &block)
+      end
+
       # @!attribute [r] key
       #   @return [Symbol] the provider's unique name
       attr_reader :name

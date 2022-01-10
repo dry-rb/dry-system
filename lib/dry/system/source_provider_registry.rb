@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "constants"
-require_relative "source_provider"
-require_relative "provider/source"
-require_relative "provider/source_builder"
+require_relative "provider"
 
 module Dry
   module System
@@ -21,7 +19,7 @@ module Dry
       end
 
       def register(name:, group:, &block)
-        providers[key(name, group)] = Provider::SourceBuilder.source_class(name, group, &block)
+        providers[key(name, group)] = Provider.source_class(name: name, group: group, &block)
       end
 
       def resolve(name:, group:)
