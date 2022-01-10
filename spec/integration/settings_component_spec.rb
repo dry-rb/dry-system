@@ -2,7 +2,7 @@
 
 require "dry/system/components"
 
-RSpec.xdescribe "Settings component" do
+RSpec.describe "Settings component" do
   subject(:system) do
     Class.new(Dry::System::Container) do
       setting :env
@@ -14,12 +14,12 @@ RSpec.xdescribe "Settings component" do
 
       register_provider(:settings, from: :system) do
         before(:prepare) do
-          require_from_root "types"
+          target_container.require_from_root "types"
         end
 
         settings do
-          key :database_url, SettingsTest::Types::String.constrained(filled: true)
-          key :session_secret, SettingsTest::Types::String.constrained(filled: true)
+          setting :database_url, constructor: SettingsTest::Types::String.constrained(filled: true)
+          setting :session_secret, constructor: SettingsTest::Types::String.constrained(filled: true)
         end
       end
     end
@@ -54,12 +54,12 @@ RSpec.xdescribe "Settings component" do
 
         register_provider(:settings, from: :system) do
           before(:prepare) do
-            require_from_root "types"
+            target_container.require_from_root "types"
           end
 
           settings do
-            key :integer_value, SettingsTest::Types::Strict::Integer
-            key :coercible_value, SettingsTest::Types::Coercible::Integer
+            setting :integer_value, constructor: SettingsTest::Types::Strict::Integer
+            setting :coercible_value, constructor: SettingsTest::Types::Coercible::Integer
           end
         end
       end
@@ -101,18 +101,22 @@ RSpec.xdescribe "Settings component" do
         end
 
         register_provider(:settings, from: :system) do
-          before(:prepare) do
-            require_from_root "types"
+          after(:prepare) do
+            # byebug
+            target_container.require_from_root "types"
           end
 
+          # byebug
           settings do
-            key :number_of_workers, SettingsTest::Types::Coercible::Integer.default(14)
+            # byebug
+            setting :number_of_workers, default: 14, constructor: SettingsTest::Types::Coercible::Integer
           end
         end
       end
     end
 
     it "uses the default value" do
+      # binding.pry
       expect(settings.number_of_workers).to eql(14)
     end
 
