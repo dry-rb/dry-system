@@ -3,7 +3,6 @@
 require "dry/system/provider"
 require "dry/system/errors"
 require "dry/system/constants"
-require "dry/system/booter/provider_registry"
 require "pathname"
 
 module Dry
@@ -16,25 +15,30 @@ module Dry
     #
     # @api private
     class Booter
-      attr_reader :provider_paths
-
       attr_reader :providers
+
+      attr_reader :provider_paths
 
       # @api private
       def initialize(provider_paths)
+        @providers = {}
         @provider_paths = provider_paths
-
-        # TODO: can probably make that a plain hash tbh
-        # And then delegate to it via Dry::System::Container.providers
-        @providers = ProviderRegistry.new
       end
 
       # @api private
       def register_provider(provider)
-        providers.register(provider)
+        providers[provider.name] = provider
         self
       end
 
+      # @api private
+      def [](provider_name)
+        providers[provider_name]
+      end
+      alias_method :provider, :[]
+
+      # TODO: deprecate this as `boot_files`
+      # TODO: leave a note in the documents as to why this is public (dry-rails)
       # Returns all provider files within the configured provider_paths
       #
       # Searches for files in the order of the configured provider_paths. In the case of multiple
@@ -57,12 +61,6 @@ module Dry
           end
         }.first
       end
-      # TODO: deprecate as `boot_files`
-      # TODO: leave a note in the documents as to why this is public (dry-rails)
-
-      # def [](provider_name)
-      #   providers[]
-      # end
 
       # Returns a provider if it can be found or loaded, otherwise nil
       #
@@ -72,13 +70,13 @@ module Dry
       def find_provider(name)
         name = name.to_sym
 
-        return providers[name] if providers.exists?(name)
+        return providers[name] if providers.key?(name)
 
         return if finalized?
 
         require_provider_file(name)
 
-        providers[name] if providers.exists?(name)
+        providers[name] if providers.key?(name)
       end
 
       # @api private
@@ -87,7 +85,7 @@ module Dry
           load_provider(path)
         end
 
-        providers.each do |provider|
+        providers.values.each do |provider|
           start(provider)
         end
 
@@ -110,7 +108,7 @@ module Dry
 
       # @api private
       def shutdown
-        providers.each do |provider|
+        providers.values.each do |provider|
           stop(provider)
         end
       end
@@ -157,7 +155,7 @@ module Dry
           when Provider
             id_or_provider
           when Symbol
-            require_provider_file(id_or_provider) unless providers.exists?(id_or_provider)
+            require_provider_file(id_or_provider) unless providers.key?(id_or_provider)
             providers[id_or_provider]
           end
 
@@ -169,7 +167,7 @@ module Dry
       def load_provider(path)
         name = Pathname(path).basename(RB_EXT).to_s.to_sym
 
-        Kernel.require path unless providers.exists?(name)
+        Kernel.require path unless providers.key?(name)
 
         self
       end
