@@ -92,8 +92,8 @@ module Dry
       # @return [self]
       #
       # @api public
-      def prepare(apply: true)
-        run_step(:prepare, apply)
+      def prepare
+        run_step(:prepare)
       end
 
       # Execute `start` step
@@ -101,9 +101,9 @@ module Dry
       # @return [self]
       #
       # @api public
-      def start(apply: true)
-        run_step(:prepare, apply)
-        run_step(:start, apply)
+      def start
+        run_step(:prepare)
+        run_step(:start)
       end
 
       # Execute `stop` step
@@ -140,7 +140,7 @@ module Dry
         end
       end
 
-      def run_step(step_name, apply = false)
+      def run_step(step_name)
         return self if statuses.include?(step_name)
 
         source.run_callback(:before, step_name)
@@ -149,7 +149,7 @@ module Dry
 
         statuses << step_name
 
-        self.apply if apply
+        apply
 
         self
       end
