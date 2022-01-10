@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Deprecated Dry::System.register_provider and Dry::System.register_component" do
+RSpec.xdescribe "Deprecated Dry::System.register_provider and Dry::System.register_component" do
   before do
     Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
 

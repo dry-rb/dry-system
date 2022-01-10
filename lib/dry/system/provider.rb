@@ -111,8 +111,8 @@ module Dry
         @container = build_container
         @statuses = []
 
-        @source = SourceDSL.source_from(&source_block)
-          .new(provider_container: container, target_container: target_container, &refinement_block)
+        @source = SourceDSL.source_from(name, &source_block)
+          .new(name: name, namespace: namespace, provider_container: container, target_container: target_container, &refinement_block)
 
         # @source_environment = SourceEnvironment.new(self, &source_block)
         # @exec_environment = ExecEnvironment.new(self, @source_environment, &refinement_block)

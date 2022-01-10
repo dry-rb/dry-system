@@ -28,8 +28,8 @@ RSpec.describe "Deprecated Dry::System::Container.boot" do
             config.log_level = :debug
           end
 
-          after(:start) do |external_container|
-            register(:my_logger, external_container[:logger])
+          after(:start) do
+            register(:my_logger, target_container[:logger])
           end
         end
       end

@@ -6,8 +6,9 @@ module Dry
       class SourceDSL
         attr_reader :source_class
 
-        def self.source_from(&block)
+        def self.source_from(name, &block)
           dsl = new
+          # dsl.source_class.name = name
           dsl.instance_eval(&block)
           dsl.source_class
         end

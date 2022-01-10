@@ -3,9 +3,8 @@
 require "dry/system"
 
 Dry::System.register_source_provider(:logger, group: :external_components) do
-  settings do
-    key :log_level, Types::Symbol.default(:scream)
-  end
+
+  setting :log_level, default: :scream, constructor: Types::Symbol
 
   prepare do
     unless defined?(ExternalComponents)
@@ -28,8 +27,10 @@ Dry::System.register_source_provider(:logger, group: :external_components) do
   end
 
   start do
+    puts "I am SOURCE start in class #{self.class.object_id}"
     logger =
-      if config
+      if config.log_level
+        byebug
         ExternalComponents::Logger.new(config.log_level)
       else
         ExternalComponents::Logger.new

@@ -14,12 +14,25 @@ RSpec.describe "External Components" do
         register_provider(:logger, from: :external_components)
 
         register_provider(:my_logger, from: :external_components, source: :logger) do
-          configure do |config|
-            config.log_level = :debug
-          end
+          # configure do |config|
+          #   byebug
+          #   config.log_level = :debug
+          #   byebug
+          # end
 
-          after(:start) do |external_container|
-            register(:my_logger, external_container[:logger])
+          puts "I am my_logger from source logger, in class #{self.class.object_id}"
+
+          puts "setting config (to log_level debug)"
+          config.log_level = :debug
+          p config
+          p config.log_level
+          p config.object_id
+          p method(:config)
+          # byebug
+
+          after(:start) do
+            # byebug
+            register(:my_logger, target_container[:logger])
           end
         end
 
@@ -49,7 +62,7 @@ RSpec.describe "External Components" do
       my_logger = container[:my_logger]
 
       expect(my_logger).to be_instance_of(ExternalComponents::Logger)
-      expect(my_logger.log_level).to be(:debug)
+      expect(my_logger.log_level).to eq(:debug)
     end
 
     it "boots external notifier component which needs a local component" do
@@ -72,8 +85,8 @@ RSpec.describe "External Components" do
   context "with customized booting" do
     it "allows aliasing external components" do
       container.register_provider(:error_logger, from: :external_components, source: :logger) do
-        after(:start) do |c|
-          register(:error_logger, c[:logger])
+        after(:start) do
+          register(:error_logger, container[:logger])
         end
       end
 
@@ -88,8 +101,8 @@ RSpec.describe "External Components" do
           ExternalComponents::Logger.default_level = :error
         end
 
-        after(:start) do |c|
-          register(:error_logger, c[:logger])
+        after(:start) do
+          register(:error_logger, container[:logger])
         end
       end
 
@@ -106,8 +119,8 @@ RSpec.describe "External Components" do
         register_provider(:logger, from: :external_components)
 
         register_provider(:conn, from: :alt, source: :db) do
-          after(:start) do |c|
-            register(:conn, c[:db_conn])
+          after(:start) do
+            register(:conn, container[:db_conn])
           end
         end
       end

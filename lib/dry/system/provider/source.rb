@@ -8,6 +8,16 @@ module Dry
       class Source
         include Dry::Configurable
 
+        # def self.name=(name)
+        #   @name = name
+        # end
+
+        # def self.name
+        #   @name
+        # end
+
+        attr_reader :name, :namespace
+
         CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
         attr_reader :callbacks
 
@@ -17,7 +27,11 @@ module Dry
         attr_reader :target_container
         alias_method :target, :target_container
 
-        def initialize(provider_container:, target_container:, &block)
+        def initialize(name:, namespace:, provider_container:, target_container:, &block)
+          # I wonder if these are useful...
+          @name = name
+          @namespace = namespace
+
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container
           @target_container = target_container
@@ -95,6 +109,18 @@ module Dry
         def run_step_block(step_name)
           step_block = self.class.step_blocks[step_name]
           instance_eval(&step_block) if step_block
+        end
+
+        def method_missing(name, *args, &block)
+          if container.key?(name)
+            container[name]
+          else
+            super
+          end
+        end
+
+        def respond_to_missing?(name, include_all = false)
+          container.key?(name) || super
         end
       end
     end
