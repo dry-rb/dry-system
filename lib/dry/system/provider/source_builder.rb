@@ -3,7 +3,7 @@ require_relative "source"
 module Dry
   module System
     class Provider
-      class SourceDSL
+      class SourceBuilder
         attr_reader :source_class
 
         def self.source_from(name, group = nil, &block)
@@ -15,6 +15,7 @@ module Dry
         end
 
         def initialize
+          # TODO: should I use dry::core::classbuilder here?
           @source_class = Class.new(Source)
         end
 

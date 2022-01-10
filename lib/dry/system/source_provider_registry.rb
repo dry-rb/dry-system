@@ -3,7 +3,7 @@
 require_relative "constants"
 require_relative "source_provider"
 require_relative "provider/source"
-require_relative "provider/source_dsl"
+require_relative "provider/source_builder"
 
 module Dry
   module System
@@ -21,7 +21,7 @@ module Dry
       end
 
       def register(name:, group:, &block)
-        source_class = Provider::SourceDSL.source_from(name, group, &block)
+        source_class = Provider::SourceBuilder.source_from(name, group, &block)
         providers[key(name, group)] = source_class
 
         # @source = SourceDSL.source_from(name, &source_block)

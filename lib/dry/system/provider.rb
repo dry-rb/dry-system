@@ -26,7 +26,7 @@ require "dry/system/constants"
 # require_relative "provider/step_environment"
 
 require_relative "provider/source"
-require_relative "provider/source_dsl"
+require_relative "provider/source_builder"
 
 module Dry
   module System
@@ -112,7 +112,7 @@ module Dry
 
         # TODO: work out how to handle either source_block/source_class stuff work
 
-        source_class = source_class || SourceDSL.source_from(name, &source_block)
+        source_class = source_class || SourceBuilder.source_from(name, &source_block)
         @source = source_class.new(provider_container: container, target_container: target_container, &refinement_block)
 
         # @source_environment = SourceEnvironment.new(self, &source_block)
