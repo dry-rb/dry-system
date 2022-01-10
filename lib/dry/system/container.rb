@@ -22,6 +22,7 @@ require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
 require "dry/system/plugins"
 require "dry/system/provider"
+require "dry/system/provider/source_builder"
 
 require_relative "component_dir"
 require_relative "config/component_dirs"
@@ -288,7 +289,9 @@ module Dry
 
         # @api private
         private def provider(name, namespace:, &block)
-          Provider.new(name: name, namespace: namespace, target_container: self, source_block: block)
+          source_class = Provider::SourceBuilder.source_class(name, &block)
+
+          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class)
         end
 
         # Return if a container was finalized

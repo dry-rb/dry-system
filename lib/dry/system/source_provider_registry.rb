@@ -21,13 +21,7 @@ module Dry
       end
 
       def register(name:, group:, &block)
-        source_class = Provider::SourceBuilder.source_from(name, group, &block)
-        providers[key(name, group)] = source_class
-
-        # @source = SourceDSL.source_from(name, &source_block)
-        # .new(provider_container: container, target_container: target_container, &refinement_block)
-
-        # providers[key(name, group)] = SourceProvider.new(name: name, source_block: block)
+        providers[key(name, group)] = Provider::SourceBuilder.source_class(name, group, &block)
       end
 
       def resolve(name:, group:)
