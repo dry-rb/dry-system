@@ -1,30 +1,8 @@
 # frozen_string_literal: true
 
-# The source environment provides `settings do`, which saves a list of settings
-
-# The exec environment provides `configure do`, which _configures_ the previously saved
-# settings, and saves them as `config`
-
-# ---> .: the exec environment needs access to the source_environment
-
-# Then, the step environment needs access to `config` so that the configuration can be
-# used when setting up and registering components etc.
-
-# ---> .: the step environment needs access to the exec_enviroment
-
-# source_environment <- exec_environment <- step_environment
-
-# (Later on we can toy with the idea of a "context" that can be a formal channel for
-# extensible information sharing between these environments)
-
-
 require "dry/core/deprecations"
 require "dry/system/components/config"
 require "dry/system/constants"
-# require_relative "provider/exec_environment"
-# require_relative "provider/source_environment"
-# require_relative "provider/step_environment"
-
 require_relative "provider/source"
 require_relative "provider/source_builder"
 
@@ -114,10 +92,6 @@ module Dry
 
         source_class = source_class || SourceBuilder.source_from(name, &source_block)
         @source = source_class.new(provider_container: container, target_container: target_container, &refinement_block)
-
-        # @source_environment = SourceEnvironment.new(self, &source_block)
-        # @exec_environment = ExecEnvironment.new(self, @source_environment, &refinement_block)
-        # @step_environment = StepEnvironment.new(self, @exec_environment)
       end
 
       # Execute `prepare` step
