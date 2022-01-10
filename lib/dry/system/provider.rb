@@ -73,6 +73,7 @@ module Dry
       #
       # @api public
       attr_reader :target_container
+      alias_method :target, :target_container
 
       attr_reader :source
 
