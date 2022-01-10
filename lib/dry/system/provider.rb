@@ -118,6 +118,20 @@ module Dry
         run_step(:stop)
       end
 
+      # Returns true if the provider's `prepare` step has run
+      #
+      # @api public
+      def prepared?
+        statuses.include?(:prepare)
+      end
+
+      # Returns true if the provider's `start` step has run
+      #
+      # @api public
+      def started?
+        statuses.include?(:start)
+      end
+
       private
 
       # Return configured container for the lifecycle object
