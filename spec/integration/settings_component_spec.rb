@@ -58,7 +58,7 @@ RSpec.describe "Settings component" do
           end
 
           settings do
-            setting :integer_value, constructor: SettingsTest::Types::Strict::Integer
+            setting :integer_value, constructor: SettingsTest::Types::Integer
             setting :coercible_value, constructor: SettingsTest::Types::Coercible::Integer
           end
         end
@@ -79,9 +79,9 @@ RSpec.describe "Settings component" do
       expect {
         settings.integer_value
       }.to raise_error(
-        Dry::System::InvalidSettingsError,
+        Dry::System::SystemComponents::Settings::InvalidSettingsError,
         <<~TEXT
-          Could not initialize settings. The following settings were invalid:
+          Could not load settings. The following settings were invalid:
 
           integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
           coercible_value: invalid value for Integer(): "foo"
@@ -102,13 +102,10 @@ RSpec.describe "Settings component" do
 
         register_provider(:settings, from: :system) do
           after(:prepare) do
-            # byebug
             target_container.require_from_root "types"
           end
 
-          # byebug
           settings do
-            # byebug
             setting :number_of_workers, default: 14, constructor: SettingsTest::Types::Coercible::Integer
           end
         end
@@ -116,7 +113,6 @@ RSpec.describe "Settings component" do
     end
 
     it "uses the default value" do
-      # binding.pry
       expect(settings.number_of_workers).to eql(14)
     end
 

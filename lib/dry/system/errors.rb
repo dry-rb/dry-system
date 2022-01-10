@@ -79,24 +79,6 @@ module Dry
       end
     end
 
-    InvalidSettingsError = Class.new(ArgumentError) do
-      # @api private
-      def initialize(attributes)
-        message = <<~STR
-          Could not initialize settings. The following settings were invalid:
-
-          #{attributes_errors(attributes).join("\n")}
-        STR
-        super(message)
-      end
-
-      private
-
-      def attributes_errors(attributes)
-        attributes.map { |key, error| "#{key.name}: #{error}" }
-      end
-    end
-
     # Exception raise when a plugin dependency failed to load
     #
     # @api public

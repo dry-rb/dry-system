@@ -17,6 +17,7 @@ Dir[SPEC_ROOT.join("shared/*.rb").to_s].sort.each { |f| require f }
 require "dry/system/container"
 require "dry/system/stubs"
 require "dry/events"
+require "dry/types"
 
 # For specs that rely on `settings` DSL
 module Types

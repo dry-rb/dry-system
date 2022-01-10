@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: Just update this to try dotenv and be done with it
+
 module Dry
   module System
     module Settings

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system/settings/file_parser"
+require_relative "file_parser"
 
 module Dry
   module System

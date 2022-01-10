@@ -19,7 +19,6 @@
 
 
 require "dry/core/deprecations"
-require "dry/system/settings"
 require "dry/system/components/config"
 require "dry/system/constants"
 # require_relative "provider/exec_environment"
