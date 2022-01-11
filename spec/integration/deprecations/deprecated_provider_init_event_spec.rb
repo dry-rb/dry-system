@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.xdescribe "Deprecated provider init event" do
+RSpec.describe "Deprecated provider init event" do
   before do
     Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
     require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
@@ -55,7 +55,7 @@ RSpec.xdescribe "Deprecated provider init event" do
       container.init :blorp
 
       logger.rewind
-      expect(logger.string).to match(/Dry::System::Lifecycle.*#init is deprecated/m)
+      expect(logger.string).to match(/Dry::System::Provider::SourceDSL.*#init is deprecated/m)
     end
   end
 

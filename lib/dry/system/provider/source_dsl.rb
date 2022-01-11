@@ -10,6 +10,8 @@ module Dry
       #
       # @api private
       class SourceDSL
+        extend Dry::Core::Deprecations["Dry::System::Provider::SourceDSL"]
+
         def self.evaluate(source_class, &block)
           new(source_class).instance_eval(&block)
         end
@@ -27,6 +29,7 @@ module Dry
         def prepare(&block)
           source_class.define_method(:prepare, &block)
         end
+        deprecate :init, :prepare
 
         def start(&block)
           source_class.define_method(:start, &block)
