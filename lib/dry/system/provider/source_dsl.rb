@@ -37,6 +37,8 @@ module Dry
           source_class.setting(*args, **kwargs, &block)
         end
 
+        # rubocop:disable Layout/LineLength
+
         def settings(&block)
           Dry::Core::Deprecations.announce(
             "Dry::System.register_provider with nested settings block",
@@ -47,6 +49,8 @@ module Dry
 
           DeprecatedSettingsDSL.new(self).instance_eval(&block)
         end
+
+        # rubocop:enable Layout/LineLength
 
         class DeprecatedSettingsDSL
           def initialize(base_dsl)
