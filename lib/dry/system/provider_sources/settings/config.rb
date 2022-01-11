@@ -26,9 +26,7 @@ module Dry
           end
         end
 
-        class Settings
-          include Dry::Configurable
-
+        class Config
           class << self
             def load(root, env)
               env_data = load_files(root, env)
@@ -55,6 +53,22 @@ module Dry
             def load_files(root, env)
               FileLoader.new.(root, env)
             end
+          end
+
+          include Dry::Configurable
+
+          private
+
+          def method_missing(name, *args, &block)
+            if config.respond_to?(name)
+              config.public_send(name, *args, &block)
+            else
+              super
+            end
+          end
+
+          def respond_to_missing?(name, include_all = false)
+            config.respond_to?(name, include_all) || super
           end
         end
       end
