@@ -8,27 +8,38 @@ module Dry
   module System
     class Provider
       class Source
-        def self.for(name:, group: nil, &block)
-          Class.new(self).tap { |klass|
-            klass.source_name name
-            klass.source_group group
-            SourceDSL.evaluate(klass, &block) if block
-          }
-        end
+        class << self
+          # Returns a new Dry::System::Provider::Source subclass with its behavior supplied by the
+          # given block, which is evaluated using Dry::System::Provider::SourceDSL.
+          #
+          # @see Dry::System::Provider::SourceDSL
+          #
+          # @api private
+          def for(name:, group: nil, &block)
+            Class.new(self).tap { |klass|
+              klass.source_name name
+              klass.source_group group
+              SourceDSL.evaluate(klass, &block) if block
+            }
+          end
 
-        def self.name
-          source = "#{source_name}"
-          source = "#{source_group}->#{source}" if source_group
+          # @api private
+          def name
+            source = "#{source_name}"
+            source = "#{source_group}->#{source}" if source_group
 
-          "Dry::System::Provider::Source[#{source}]"
-        end
+            "Dry::System::Provider::Source[#{source}]"
+          end
 
-        def self.to_s
-          "#<#{name}>"
-        end
+          # @api private
+          def to_s
+            "#<#{name}>"
+          end
 
-        def self.inspect
-          to_s
+          # @api private
+          def inspect
+            to_s
+          end
         end
 
         CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
@@ -38,14 +49,22 @@ module Dry
 
         defines :source_name, :source_group
 
+        # @api private
         attr_reader :callbacks
 
+        # @api public
         attr_reader :provider_container
+
+        # @api public
         alias_method :container, :provider_container
 
+        # @api public
         attr_reader :target_container
+
+        # @api public
         alias_method :target, :target_container
 
+        # @api private
         def initialize(provider_container:, target_container:, &block)
           super()
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}

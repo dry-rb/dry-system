@@ -3,6 +3,12 @@
 module Dry
   module System
     class Provider
+      # Configures a Dry::System::Provider::Source subclass using a DSL that makes it
+      # nicer to define source behaviour via a single block.
+      #
+      # @see Dry::System::Container.register_provider
+      #
+      # @api private
       class SourceDSL
         def self.evaluate(source_class, &block)
           new(source_class).instance_eval(&block)
