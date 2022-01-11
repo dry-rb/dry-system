@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
-require "dry/system/components/config"
-require "dry/system/constants"
+require_relative "constants"
 require_relative "provider/source"
 
 module Dry
