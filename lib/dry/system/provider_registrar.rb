@@ -77,7 +77,7 @@ module Dry
       # @api private
       def start_provider_dependency(component)
         if (provider = find_and_load_provider(component.root_key))
-          start(provider.name)
+          provider.start
         end
       end
 
@@ -116,9 +116,7 @@ module Dry
           load_provider(path)
         end
 
-        providers.each_value do |provider|
-          start(provider)
-        end
+        providers.each_value(&:start)
 
         freeze
       end
@@ -132,53 +130,36 @@ module Dry
 
       # @api private
       def shutdown
-        providers.values.each do |provider|
-          stop(provider)
-        end
-
+        providers.each_value(&:stop)
         self
       end
 
       # @api private
-      def prepare(name_or_provider)
-        with_provider(name_or_provider) do |provider|
-          provider.prepare
-        end
-
+      def prepare(provider_name)
+        with_provider(provider_name, &:prepare)
         self
       end
 
       # @api private
-      def start(name_or_provider)
-        with_provider(name_or_provider) do |provider|
-          provider.start
-        end
-
+      def start(provider_name)
+        with_provider(provider_name, &:start)
         self
       end
 
       # @api private
-      def stop(name_or_provider)
-        with_provider(name_or_provider) do |provider|
-          provider.stop
-        end
-
+      def stop(provider_name)
+        with_provider(provider_name, &:stop)
         self
       end
 
       private
 
-      def with_provider(id_or_provider)
-        provider =
-          case id_or_provider
-          when Provider
-            id_or_provider
-          when Symbol
-            require_provider_file(id_or_provider) unless providers.key?(id_or_provider)
-            providers[id_or_provider]
-          end
+      def with_provider(provider_name)
+        require_provider_file(provider_name) unless providers.key?(provider_name)
 
-        raise ProviderNotFoundError, id_or_provider unless provider
+        provider = providers[provider_name]
+
+        raise ProviderNotFoundError, provider_name unless provider
 
         yield(provider)
       end

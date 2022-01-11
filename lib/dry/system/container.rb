@@ -617,7 +617,7 @@ module Dry
           return self if registered?(key)
 
           if (provider = providers.find_and_load_provider(key))
-            providers.start(provider)
+            provider.start
             return self
           end
 
