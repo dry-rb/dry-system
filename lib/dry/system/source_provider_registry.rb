@@ -5,6 +5,7 @@ require_relative "provider"
 
 module Dry
   module System
+    # @api private
     class SourceProviderRegistry
       attr_reader :providers
 
@@ -18,8 +19,12 @@ module Dry
         end
       end
 
-      def register(name:, group:, &block)
-        providers[key(name, group)] = Provider.source_class(name: name, group: group, &block)
+      def register(name:, group:, source:)
+        providers[key(name, group)] = source
+      end
+
+      def register_from_block(name:, group:, &block)
+        register(name: name, group: group, source: Provider.source_class(name: name, group: group, &block))
       end
 
       def resolve(name:, group:)

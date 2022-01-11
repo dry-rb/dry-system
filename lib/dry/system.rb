@@ -26,8 +26,16 @@ module Dry
     # Registers a source provider, which can be used as the basis for other providers
     #
     # @api public
-    def self.register_source_provider(name, group:, &block)
-      source_providers.register(name: name, group: group, &block)
+    def self.register_source_provider(name, group:, source: nil, &block)
+      if source && block
+        raise ArgumentError, "You must supply only a `source:` option or a block, not both"
+      end
+
+      if source
+        source_providers.register(name: name, group: group, source: source)
+      else
+        source_providers.register_from_block(name: name, group: group, &block)
+      end
     end
 
     def self.register_component(name, provider:, &block)
