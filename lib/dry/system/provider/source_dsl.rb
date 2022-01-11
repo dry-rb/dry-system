@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
+
 module Dry
   module System
     class Provider
@@ -33,6 +35,27 @@ module Dry
 
         def setting(*args, **kwargs, &block)
           source_class.setting(*args, **kwargs, &block)
+        end
+
+        def settings(&block)
+          Dry::Core::Deprecations.announce(
+            "Dry::System.register_provider with nested settings block",
+            "Use individual top-level `setting` declarations instead (see dry-configurable docs for details)",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          DeprecatedSettingsDSL.new(self).instance_eval(&block)
+        end
+
+        class DeprecatedSettingsDSL
+          def initialize(base_dsl)
+            @base_dsl = base_dsl
+          end
+
+          def key(name, type)
+            @base_dsl.setting(name, constructor: type)
+          end
         end
 
         def prepare(&block)
