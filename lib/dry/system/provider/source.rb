@@ -123,7 +123,7 @@ module Dry
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container
           @target_container = target_container
-          instance_exec(&block) if block # TODO: HOW IS THIS CALLED?
+          instance_exec(&block) if block
         end
 
         # Returns a string containing a human-readable representation of the provider.
