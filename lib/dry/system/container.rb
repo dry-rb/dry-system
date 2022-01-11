@@ -170,6 +170,8 @@ module Dry
           end
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity
+
         # Registers a provider and its lifecycle hooks
         #
         # By convention, you should place a file for each provider in one of the
@@ -240,7 +242,7 @@ module Dry
         # @return [self]
         #
         # @api public
-        def register_provider(name, namespace: nil, from: nil, source: nil, &block) # rubocop:disable Metrics/PerceivedComplexity
+        def register_provider(name, namespace: nil, from: nil, source: nil, &block)
           raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
           if from && source.is_a?(Class)
@@ -266,6 +268,7 @@ module Dry
 
           providers.register_provider provider
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def boot(name, **opts, &block)
           Dry::Core::Deprecations.announce(
