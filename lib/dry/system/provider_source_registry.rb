@@ -6,11 +6,11 @@ require_relative "provider"
 module Dry
   module System
     # @api private
-    class SourceProviderRegistry
-      attr_reader :providers
+    class ProviderSourceRegistry
+      attr_reader :sources
 
       def initialize
-        @providers = {}
+        @sources = {}
       end
 
       def load_sources(path)
@@ -20,7 +20,7 @@ module Dry
       end
 
       def register(name:, group:, source:)
-        providers[key(name, group)] = source
+        sources[key(name, group)] = source
       end
 
       def register_from_block(name:, group:, &block)
@@ -32,7 +32,7 @@ module Dry
       end
 
       def resolve(name:, group:)
-        providers[key(name, group)]
+        sources[key(name, group)]
       end
 
       private

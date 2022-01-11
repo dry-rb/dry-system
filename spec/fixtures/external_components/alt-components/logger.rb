@@ -2,7 +2,7 @@
 
 require "dry/system"
 
-Dry::System.register_source_provider(:logger, group: :alt) do
+Dry::System.register_provider_source(:logger, group: :alt) do
   prepare do
     module AltComponents
       class Logger

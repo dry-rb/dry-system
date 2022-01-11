@@ -31,7 +31,7 @@ RSpec.xdescribe "Deprecated Dry::System.register_provider and Dry::System.regist
     Test::Container
   end
 
-  it "registers source providers for the external components" do
+  it "registers provider sources for the external components" do
     require SPEC_ROOT.join("fixtures/external_components_deprecated/lib/external_components")
 
     my_logger = container[:my_logger]

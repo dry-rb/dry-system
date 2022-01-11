@@ -242,7 +242,7 @@ module Dry
           raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
           if from && source.is_a?(Class)
-            raise ArgumentError, "You must supply a block when using a source provider"
+            raise ArgumentError, "You must supply a block when using a provider source"
           end
 
           if block && source.is_a?(Class)
@@ -662,7 +662,9 @@ module Dry
         end
 
         def provider_from_source(name, source:, group:, namespace:, &block)
-          source_class = System.source_providers.resolve(name: source, group: group)
+          source_class = System.provider_sources.resolve(name: source, group: group)
+
+          # TODO: raise
 
           Provider.new(
             name: name,

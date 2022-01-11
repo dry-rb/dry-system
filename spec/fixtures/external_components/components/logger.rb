@@ -2,7 +2,7 @@
 
 require "dry/system"
 
-Dry::System.register_source_provider(:logger, group: :external_components) do
+Dry::System.register_provider_source(:logger, group: :external_components) do
   setting :log_level, default: :scream, constructor: Types::Symbol
 
   prepare do

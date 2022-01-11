@@ -24,7 +24,7 @@ module Dry
       #    `#initialize`) This approach may be useful for more complex providers.
       #
       # @see Dry::System::Container.register_provider
-      # @see Dry::System.register_source_provider
+      # @see Dry::System.register_provider_source
       # @see Dry::System::Source::ProviderDSL
       #
       # @api public

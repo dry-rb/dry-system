@@ -42,7 +42,7 @@ RSpec.describe "Deprecated Dry::System::Container.boot" do
     expect(container["blorp"]).to eq "my blorp"
   end
 
-  it "registers a provider using a source provider" do
+  it "registers a provider using a provider source" do
     my_logger = container[:my_logger]
 
     expect(my_logger).to be_instance_of(ExternalComponents::Logger)

@@ -32,7 +32,7 @@ module Dry
   end
 end
 
-Dry::System.register_source_provider(
+Dry::System.register_provider_source(
   :settings,
   group: :dry_system,
   source: Dry::System::ProviderSources::Settings::Source

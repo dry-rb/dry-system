@@ -10,7 +10,7 @@ module Dry
     # 3rd-party code. A typical provider might be for a database library, or an API
     # client.
     #
-    # Providers can be registered via `Container.register_provider` and source providers
+    # Providers can be registered via `Container.register_provider` and provider sources
     # can register their components too, which then can be used and configured by your
     # system.
     #
@@ -29,7 +29,7 @@ module Dry
     #
     #   App[:logger] # returns configured logger
     #
-    # @example using first-party source providers
+    # @example using first-party provider sources
     #   class App < Dry::System::Container
     #     register_provider(:settings, from: :dry_system) do
     #       settings do

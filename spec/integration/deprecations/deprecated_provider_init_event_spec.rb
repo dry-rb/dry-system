@@ -59,7 +59,7 @@ RSpec.xdescribe "Deprecated provider init event" do
     end
   end
 
-  describe "before/after init triggers in providers using source providers" do
+  describe "before/after init triggers in providers using provider sources" do
     it "triggers the hooks around the prepare event" do
       container.prepare :my_logger
       expect(container["before_init"]).to eq "my before init"

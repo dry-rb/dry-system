@@ -2,4 +2,4 @@
 
 require "dry/system"
 
-Dry::System.register_source_providers Pathname(__dir__).join("provider_sources").realpath
+Dry::System.register_provider_sources Pathname(__dir__).join("provider_sources").realpath
