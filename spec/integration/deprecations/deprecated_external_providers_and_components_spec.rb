@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.xdescribe "Deprecated Dry::System.register_provider and Dry::System.register_component" do
+RSpec.describe "Deprecated Dry::System.register_provider and Dry::System.register_component" do
   before do
     Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
 
@@ -21,8 +21,8 @@ RSpec.xdescribe "Deprecated Dry::System.register_provider and Dry::System.regist
             config.log_level = :debug
           end
 
-          after(:start) do |external_container|
-            register(:my_logger, external_container[:logger])
+          after(:start) do
+            register(:my_logger, resolve(:logger))
           end
         end
       end
