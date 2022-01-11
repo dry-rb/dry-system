@@ -369,7 +369,7 @@ module Dry
         # @example
         #   MyApp.prepare(:persistence)
         #
-        # @param [Symbol] name The name of the registered provider to prepare
+        # @param name [Symbol] The name of the registered provider to prepare
         #
         # @return [self]
         #
@@ -385,7 +385,7 @@ module Dry
         # @example
         #   MyApp.stop(:persistence)
         #
-        # @param [Symbol] name The name of a registered bootable component
+        # @param name [Symbol] The name of a registered bootable component
         #
         # @return [self]
         #
@@ -411,7 +411,7 @@ module Dry
         #     add_to_load_path!('lib')
         #   end
         #
-        # @param [Array<String>] dirs
+        # @param dirs [Array<String>]
         #
         # @return [self]
         #
@@ -507,7 +507,7 @@ module Dry
         #
         # @!method registered?(key)
         #   Whether a +key+ is registered (doesn't trigger loading)
-        #   @param [String,Symbol] key The key
+        #   @param key [String,Symbol] The key
         #   @return [Boolean]
         #   @api public
         #
@@ -515,7 +515,7 @@ module Dry
         # Check if identifier is registered.
         # If not, try to load the component
         #
-        # @param [String,Symbol] key Identifier
+        # @param key [String,Symbol] Identifier
         # @return [Boolean]
         #
         # @api public
