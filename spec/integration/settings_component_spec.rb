@@ -83,8 +83,8 @@ RSpec.describe "Settings component" do
         <<~TEXT
           Could not load settings. The following settings were invalid:
 
-          integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
           coercible_value: invalid value for Integer(): "foo"
+          integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
         TEXT
       )
     end

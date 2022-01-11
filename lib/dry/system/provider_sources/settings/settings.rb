@@ -22,7 +22,7 @@ module Dry
           private
 
           def setting_errors(errors)
-            errors.map { |key, error| "#{key}: #{error}" }
+            errors.sort_by { |k, _| k }.map { |key, error| "#{key}: #{error}" }
           end
         end
 
