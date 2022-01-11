@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
 require "pathname"
 require_relative "errors"
 require_relative "constants"
@@ -15,6 +16,8 @@ module Dry
     #
     # @api private
     class ProviderRegistrar
+      extend Dry::Core::Deprecations["Dry::System::Container"]
+
       # @api private
       attr_reader :providers
 
@@ -78,13 +81,16 @@ module Dry
         end
       end
 
-      # TODO: deprecate this as `boot_files`
-      # TODO: leave a note in the documents as to why this is public (dry-rails)
-      # Returns all provider files within the configured provider_paths
+      # Returns all provider files within the configured provider_paths.
       #
       # Searches for files in the order of the configured provider_paths. In the case of multiple
       # identically-named boot files within different provider_paths, the file found first will be
       # returned, and other matching files will be discarded.
+      #
+      # This method is public to allow other tools extending dry-system (like dry-rails)
+      # to access a canonical list of real, in-use provider files.
+      #
+      # @see Container.provider_paths
       #
       # @return [Array<Pathname>]
       # @api public
@@ -102,6 +108,7 @@ module Dry
           end
         }.first
       end
+      deprecate :boot_files, :provider_files
 
       # @api private
       def finalize!

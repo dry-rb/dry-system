@@ -531,6 +531,7 @@ module Dry
         def providers
           @providers ||= config.provider_registrar.new(provider_paths)
         end
+        deprecate :booter, :providers
 
         # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
         # @api private
