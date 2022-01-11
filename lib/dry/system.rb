@@ -34,7 +34,12 @@ module Dry
       if source
         provider_sources.register(name: name, group: group, source: source)
       else
-        provider_sources.register_from_block(name: name, group: group, &block)
+        provider_sources.register_from_block(
+          name: name,
+          group: group,
+          target_container: self,
+          &block
+        )
       end
     end
 

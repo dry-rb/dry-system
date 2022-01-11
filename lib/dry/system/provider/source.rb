@@ -36,11 +36,11 @@ module Dry
           # @see Dry::System::Provider::SourceDSL
           #
           # @api private
-          def for(name:, group: nil, &block)
+          def for(name:, group: nil, target_container:, &block) # rubocop:disable Style/KeywordParametersOrder
             Class.new(self).tap { |klass|
               klass.source_name name
               klass.source_group group
-              SourceDSL.evaluate(klass, &block) if block
+              SourceDSL.evaluate(klass, target_container, &block) if block
             }
           end
 
@@ -109,7 +109,7 @@ module Dry
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container
           @target_container = target_container
-          instance_exec(&block) if block
+          instance_exec(&block) if block # TODO: HOW IS THIS CALLED?
         end
 
         # Returns a string containing a human-readable representation of the provider.

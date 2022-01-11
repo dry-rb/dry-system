@@ -2,7 +2,7 @@
 
 require "dry/core/deprecations"
 require_relative "constants"
-require_relative "provider"
+require_relative "provider/source"
 
 module Dry
   module System
@@ -24,11 +24,16 @@ module Dry
         sources[key(name, group)] = source
       end
 
-      def register_from_block(name:, group:, &block)
+      def register_from_block(name:, group:, target_container:, &block)
         register(
           name: name,
           group: group,
-          source: Provider.source_class(name: name, group: group, &block)
+          source: Provider::Source.for(
+            name: name,
+            group: group,
+            target_container: target_container,
+            &block
+          )
         )
       end
 

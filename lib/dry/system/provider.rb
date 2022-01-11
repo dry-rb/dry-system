@@ -43,10 +43,6 @@ module Dry
     #
     # @api public
     class Provider
-      def self.source_class(name:, group: nil, &block)
-        Source.for(name: name, group: group, &block)
-      end
-
       # @!attribute [r] key
       #   @return [Symbol] the provider's unique name
       attr_reader :name

@@ -12,8 +12,17 @@ module Dry
       class SourceDSL
         extend Dry::Core::Deprecations["Dry::System::Provider::SourceDSL"]
 
-        def self.evaluate(source_class, &block)
-          new(source_class).instance_eval(&block)
+        def self.evaluate(source_class, target_container, &block)
+          if block.parameters.any?
+            Dry::Core::Deprecations.announce(
+              "Dry::System.register_provider with single block parameter",
+              "Use `target_container` (or `target` for short) inside your block instead",
+              tag: "dry-system"
+            )
+            new(source_class).instance_exec(target_container, &block)
+          else
+            new(source_class).instance_eval(&block)
+          end
         end
 
         attr_reader :source_class

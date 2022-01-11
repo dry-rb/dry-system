@@ -21,6 +21,8 @@ require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
 require "dry/system/plugins"
 require "dry/system/provider_registrar"
+require "dry/system/provider"
+require "dry/system/provider/source"
 
 require_relative "component_dir"
 require_relative "config/component_dirs"
@@ -675,7 +677,7 @@ module Dry
         end
 
         def provider(name, namespace:, source: nil, &block)
-          source_class = source || Provider.source_class(name: name, &block)
+          source_class = source || Provider::Source.for(name: name, target_container: self, &block)
 
           Provider.new(
             name: name,
