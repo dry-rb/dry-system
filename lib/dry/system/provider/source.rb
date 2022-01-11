@@ -12,7 +12,7 @@ module Dry
       # its purpose.
       #
       # Sources should be subclasses of `Dry::System::Source::Provider`, with instance
-      # methods for each lifecycle step providering their behavior: {#prepare}, {#start},
+      # methods for each lifecycle step providing their behavior: {#prepare}, {#start},
       # and {#stop}.
       #
       # Inside each of these methods, you should create and configure your provider's
