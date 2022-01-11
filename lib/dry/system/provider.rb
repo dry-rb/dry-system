@@ -37,7 +37,7 @@ module Dry
     #
     #   App[:logger] # returns configured logger
     #
-    # @example Using an external provider source
+    # @example Using an external Provider Source
     #   class App < Dry::System::Container
     #     register_provider(:logger, from: :some_external_provider_source) do
     #       configure do |config|
