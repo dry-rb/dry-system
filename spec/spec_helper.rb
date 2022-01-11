@@ -26,6 +26,6 @@ end
 
 RSpec.configure do |config|
   config.after do
-    Dry::System.source_providers.providers.delete_if { |k, _| k[:group] != :system }
+    Dry::System.source_providers.providers.delete_if { |k, _| k[:group] != :dry_system }
   end
 end

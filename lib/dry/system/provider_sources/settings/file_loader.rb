@@ -4,7 +4,7 @@ require_relative "file_parser"
 
 module Dry
   module System
-    module SystemComponents
+    module ProviderSources
       module Settings
         class FileLoader
           def call(root, env)

@@ -31,7 +31,7 @@ module Dry
     #
     # @example using first-party source providers
     #   class App < Dry::System::Container
-    #     register_provider(:settings, from: :system) do
+    #     register_provider(:settings, from: :dry_system) do
     #       settings do
     #         key :database_url, Types::String.constrained(filled: true)
     #         key :session_secret, Types::String.constrained(filled: true)

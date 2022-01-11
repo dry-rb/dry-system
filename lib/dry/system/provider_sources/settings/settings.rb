@@ -5,7 +5,7 @@ require_relative "file_loader"
 
 module Dry
   module System
-    module SystemComponents
+    module ProviderSources
       module Settings
         InvalidSettingsError = Class.new(ArgumentError) do
           # @api private

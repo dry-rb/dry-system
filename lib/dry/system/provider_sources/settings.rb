@@ -2,11 +2,11 @@
 
 module Dry
   module System
-    module SystemComponents
+    module ProviderSources
       module Settings
         class Source < Dry::System::Provider::Source
           def prepare
-            require "dry/system/system_components/settings/settings"
+            require "dry/system/provider_sources/settings/settings"
           end
 
           def start
@@ -23,10 +23,7 @@ module Dry
             elsif @settings_class
               @settings_class
             elsif @settings_block
-              @settings_class = Class.new(
-                Dry::System::SystemComponents::Settings::Settings,
-                &@settings_block
-              )
+              @settings_class = Class.new(ProviderSources::Settings::Settings, &@settings_block)
             end
           end
         end
@@ -37,6 +34,6 @@ end
 
 Dry::System.register_source_provider(
   :settings,
-  group: :system,
-  source: Dry::System::SystemComponents::Settings::Source
+  group: :dry_system,
+  source: Dry::System::ProviderSources::Settings::Source
 )

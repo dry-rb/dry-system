@@ -4,7 +4,7 @@
 
 module Dry
   module System
-    module SystemComponents
+    module ProviderSources
       module Settings
         class FileParser
           # rubocop:disable Style/RedundantRegexpEscape

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system/components"
+require "dry/system/provider_sources"
 
 RSpec.describe "Settings component" do
   subject(:system) do
@@ -12,7 +12,7 @@ RSpec.describe "Settings component" do
         config.env = :test
       end
 
-      register_provider(:settings, from: :system) do
+      register_provider(:settings, from: :dry_system) do
         before(:prepare) do
           target_container.require_from_root "types"
         end
@@ -52,7 +52,7 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        register_provider(:settings, from: :system) do
+        register_provider(:settings, from: :dry_system) do
           before(:prepare) do
             target_container.require_from_root "types"
           end
@@ -79,7 +79,7 @@ RSpec.describe "Settings component" do
       expect {
         settings.integer_value
       }.to raise_error(
-        Dry::System::SystemComponents::Settings::InvalidSettingsError,
+        Dry::System::ProviderSources::Settings::InvalidSettingsError,
         <<~TEXT
           Could not load settings. The following settings were invalid:
 
@@ -100,7 +100,7 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        register_provider(:settings, from: :system) do
+        register_provider(:settings, from: :dry_system) do
           after(:prepare) do
             target_container.require_from_root "types"
           end
