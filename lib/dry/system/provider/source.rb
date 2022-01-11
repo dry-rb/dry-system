@@ -12,17 +12,22 @@ module Dry
       # its purpose.
       #
       # Sources should be subclasses of `Dry::System::Source::Provider`, with instance
-      # methods for each lifecycle step providering their behavior: `#prepare`, `#start`,
-      # and `#stop`.
+      # methods for each lifecycle step providering their behavior: {#prepare}, {#start},
+      # and {#stop}.
+      #
+      # Inside each of these methods, you should create and configure your provider's
+      # objects as required, and then {#register} them with the {#provider_container}.
+      # When the provider's lifecycle steps are run (via {Dry::System::Provider}), these
+      # registered components will be merged into the target container.
       #
       # You can prepare a provider's source in two ways:
       #
       # 1. Passing a bock when registering the provider, which is then evaluated via
-      #    `Dry::System::Provider::SourceDSL` to prepare the provider subclass. This
+      #    {Dry::System::Provider::SourceDSL} to prepare the provider subclass. This
       #    approach is easiest for simple providers.
-      # 2. Manually creare your own subclass of `Dry::System::Provider` and implement your
+      # 2. Manually creare your own subclass of {Dry::System::Provider} and implement your
       #    own instance methods for the lifecycle steps (you should not implement your own
-      #    `#initialize`) This approach may be useful for more complex providers.
+      #    `#initialize`). This approach may be useful for more complex providers.
       #
       # @see Dry::System::Container.register_provider
       # @see Dry::System.register_provider_source
@@ -84,6 +89,7 @@ module Dry
         # @return [Dry::Container]
         #
         # @see #target_container
+        # @see Dry::System::Provider
         #
         # @api public
         attr_reader :provider_container
@@ -91,7 +97,8 @@ module Dry
 
         # Returns the target container for the provider.
         #
-        # This is the the container with which the provider is registered.
+        # This is the container with which the provider is registered (via
+        # {Dry::System::Container.register_provider}).
         #
         # Registered components from the provider's container will be merged into this
         # container after the `prepare` and `start` lifecycle steps.
@@ -99,6 +106,7 @@ module Dry
         # @return [Dry::System::Container]
         #
         # @see #provider_container
+        # @see Dry::System::Provider
         #
         # @api public
         attr_reader :target_container
@@ -143,7 +151,8 @@ module Dry
         # This should be implemented by your source subclass or specified by
         # `SourceDSL#start` when registering a provider using a block.
         #
-        # You can presume that {#prepare} has already run by the time this method is called.
+        # You can presume that {#prepare} has already run by the time this method is
+        # called.
         #
         # @return [void]
         #
@@ -167,7 +176,7 @@ module Dry
         # @api public
         def stop; end
 
-        # Starts the providers registered with the given names.
+        # Starts the other providers registered with the given names.
         #
         # Calling this method is helpful if your provider's source behavior depends on the
         # results of other providers.
@@ -263,14 +272,27 @@ module Dry
 
         private
 
+        # Registers a component in the provider container.
+        #
+        # When the provider's lifecycle steps are run (via {Dry::System::Provider}), these
+        # registered components will be merged into the target container.
+        #
+        # @return [Dry::Container] the provider container
+        #
         # @api public
         def register(*args)
           provider_container.register(*args)
         end
 
+        # Resolves a previously registered component from the provider container.
+        #
+        # @param key [String] the key for the component to resolve
+        #
+        # @return [Object] the previously registered component
+        #
         # @api public
-        def resolve(*args)
-          provider_container.resolve(*args)
+        def resolve(key)
+          provider_container.resolve(key)
         end
 
         # @api private

@@ -6,15 +6,23 @@ require_relative "provider/source"
 
 module Dry
   module System
-    # Providers can prepare and register one or more objects and typically depend on
-    # 3rd-party code. A typical provider might be for a database library, or an API
-    # client.
+    # Providers can prepare and register one or more objects and typically work with third
+    # party code. A typical provider might be for a database library, or an API client.
     #
-    # Providers can be registered via `Container.register_provider` and provider sources
-    # can register their components too, which then can be used and configured by your
-    # system.
+    # The particular behavior for any provider is defined in a {Provider::Source}, which
+    # is a subclass created when you run {Container.register_provider} or
+    # {Dry::System.register_provider_source}. The Source provides this behavior through
+    # methods for each of the steps in the provider lifecycle: `prepare`, `start`, and
+    # `run`. These methods typically create and configure various objects, then register
+    # them with the {#provider_container}.
     #
-    # @example simple logger
+    # The Provider manages this lifecycle by implementing common behavior around the
+    # lifecycle steps, such as running step callbacks, and only running steps when
+    # appropriate for the current status of the lifecycle.
+    #
+    # Providers can be registered via {Container.register_provider}.
+    #
+    # @example Simple provider
     #   class App < Dry::System::Container
     #     register_provider(:logger) do
     #       prepare do
@@ -29,49 +37,90 @@ module Dry
     #
     #   App[:logger] # returns configured logger
     #
-    # @example using first-party provider sources
+    # @example Using an external provider source
     #   class App < Dry::System::Container
-    #     register_provider(:settings, from: :dry_system) do
-    #       settings do
-    #         key :database_url, Types::String.constrained(filled: true)
-    #         key :session_secret, Types::String.constrained(filled: true)
+    #     register_provider(:logger, from: :some_external_provider_source) do
+    #       configure do |config|
+    #         config.log_level = :debug
+    #       end
+    #
+    #       after :start do
+    #         register(:my_extra_logger, resolve(:logger))
     #       end
     #     end
     #   end
     #
-    #   App[:settings] # returns loaded settings
+    #   App[:my_extra_logger] # returns the extra logger registered in the callback
     #
     # @api public
     class Provider
-      # @!attribute [r] key
-      #   @return [Symbol] the provider's unique name
+      # Returns the provider's unique name.
+      #
+      # @return [Symbol]
+      #
+      # @api public
       attr_reader :name
 
-      # attr_reader :step_environment
+      # Returns the default namespace for the provider's container keys.
+      #
+      # @return [Symbol,String]
+      #
+      # @api public
+      attr_reader :namespace
 
-      # Returns a list of lifecycle steps that were executed
+      # Returns an array of lifecycle steps that have been run.
       #
       # @return [Array<Symbol>]
+      #
+      # @example
+      #   provider.statuses # => [:prepare, :start]
       #
       # @api public
       attr_reader :statuses
 
-      # @!attribute [r] namespace
-      #   @return [Symbol,String] default namespace for the container keys
-      attr_reader :namespace
-
-      attr_reader :provider_container
-
-      # Returns the main container used by this provider
+      # Returns the container for the provider.
       #
-      # @return [Dry::Struct]
+      # This is where the provider's source will register its components, which are then
+      # later marged into the target container after the `prepare` and `start` lifecycle
+      # steps.
+      #
+      # @return [Dry::Container]
+      #
+      # @api public
+      attr_reader :provider_container
+      alias_method :container, :provider_container
+
+      # Returns the target container for the provider.
+      #
+      # This is the container with which the provider is registered (via
+      # {Dry::System::Container.register_provider}).
+      #
+      # Registered components from the provider's container will be merged into this
+      # container after the `prepare` and `start` lifecycle steps.
+      #
+      # @return [Dry::System::Container]
       #
       # @api public
       attr_reader :target_container
       alias_method :target, :target_container
 
+      # Returns the provider's source
+      #
+      # The source provides the specific behavior for the provider via methods
+      # implementing the lifecycle steps.
+      #
+      # The provider's source is defined when registering a provider with the container,
+      # or an external provider source.
+      #
+      # @see Dry::System::Container.register_provider
+      # @see Dry::System.register_provider_source
+      #
+      # @return [Dry::System::Provider::Source]
+      #
+      # @api private
       attr_reader :source
 
+      # @api private
       def initialize(name:, namespace: nil, target_container:, source_class: nil, &block) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
@@ -87,18 +136,24 @@ module Dry
         )
       end
 
-      # Execute `prepare` step
+      # Runs the `prepare` lifecycle step.
       #
-      # @return [self]
+      # Also runs any callbacks for the step, and then merges any registered components
+      # from the provider container into the target container.
+      #
+      # @return [void]
       #
       # @api public
       def prepare
         run_step(:prepare)
       end
 
-      # Execute `start` step
+      # Runs the `start` lifecycle step.
       #
-      # @return [self]
+      # Also runs any callbacks for the step, and then merges any registered components
+      # from the provider container into the target container.
+      #
+      # @return [void]
       #
       # @api public
       def start
@@ -106,9 +161,11 @@ module Dry
         run_step(:start)
       end
 
-      # Execute `stop` step
+      # Runs the `stop` lifecycle step.
       #
-      # @return [self]
+      # Also runs any callbacks for the step.
+      #
+      # @return [void]
       #
       # @api public
       def stop
@@ -117,21 +174,21 @@ module Dry
         run_step(:stop)
       end
 
-      # Returns true if the provider's `prepare` step has run
+      # Returns true if the provider's `prepare` lifecycle step has run
       #
       # @api public
       def prepared?
         statuses.include?(:prepare)
       end
 
-      # Returns true if the provider's `start` step has run
+      # Returns true if the provider's `start` lifecycle step has run
       #
       # @api public
       def started?
         statuses.include?(:start)
       end
 
-      # Returns true if the provider's `stop` step has run
+      # Returns true if the provider's `stop` lifecycle step has run
       #
       # @api public
       def stopped?
@@ -140,10 +197,6 @@ module Dry
 
       private
 
-      # Return configured container for the lifecycle object
-      #
-      # @return [Dry::Container]
-      #
       # @api private
       def build_provider_container
         container = Dry::Container.new
@@ -161,6 +214,7 @@ module Dry
         end
       end
 
+      # @api private
       def run_step(step_name)
         return self if statuses.include?(step_name)
 
@@ -175,12 +229,11 @@ module Dry
         self
       end
 
-      # Registers any components from the provider's container in the main container
+      # Registers any components from the provider's container in the main container.
       #
-      # Automatically called by the booter after the `prepare` and `start` lifecycle
-      # steps are run
+      # Called after each lifecycle step runs.
       #
-      # @return [self]
+      # @return [void]
       #
       # @api private
       def apply
