@@ -116,7 +116,7 @@ module Dry
           load_provider(path)
         end
 
-        providers.values.each do |provider|
+        providers.each_value do |provider|
           start(provider)
         end
 
@@ -135,30 +135,35 @@ module Dry
         providers.values.each do |provider|
           stop(provider)
         end
+
+        self
       end
 
       # @api private
       def prepare(name_or_provider)
         with_provider(name_or_provider) do |provider|
           provider.prepare
-          self
         end
+
+        self
       end
 
       # @api private
       def start(name_or_provider)
         with_provider(name_or_provider) do |provider|
           provider.start
-          self
         end
+
+        self
       end
 
       # @api private
       def stop(name_or_provider)
         with_provider(name_or_provider) do |provider|
           provider.stop
-          self
         end
+
+        self
       end
 
       private
