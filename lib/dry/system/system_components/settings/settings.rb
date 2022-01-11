@@ -53,7 +53,7 @@ module Dry
             private
 
             def load_files(root, env)
-              Dry::System::Settings::FileLoader.new.(root, env)
+              FileLoader.new.(root, env)
             end
           end
         end
