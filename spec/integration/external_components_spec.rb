@@ -132,4 +132,19 @@ RSpec.describe "External Components" do
       end
     end
   end
+
+  it "raises an error when specifying an unknown provider sourse" do
+    msgs = [
+      "Provider source not found: :logger, group: :not_found_components",
+      "Available provider sources:",
+      "- :logger, group: :external_components"
+    ]
+    error_re = /#{msgs.join('.*')}/m
+
+    expect {
+      Class.new(Dry::System::Container) {
+        register_provider(:logger, from: :not_found_components)
+      }
+    }.to raise_error Dry::System::ProviderSourceNotFoundError, error_re
+  end
 end

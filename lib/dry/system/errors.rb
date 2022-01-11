@@ -59,6 +59,20 @@ module Dry
     InvalidComponentError = ProviderNotFoundError
     deprecate_constant :InvalidComponentError
 
+    # Error raised when a named provider source could not be found
+    #
+    # @api public
+    ProviderSourceNotFoundError = Class.new(StandardError) do
+      def initialize(name:, group:, keys:)
+        msg = "Provider source not found: #{name.inspect}, group: #{group.inspect}"
+
+        key_list = keys.map { |key| "- #{key[:name].inspect}, group: #{key[:group].inspect}" }
+        msg += "Available provider sources:\n\n#{key_list}"
+
+        super(msg)
+      end
+    end
+
     # Error raised when trying to use a plugin that does not exist.
     #
     # @api public

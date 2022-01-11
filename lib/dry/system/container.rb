@@ -664,8 +664,6 @@ module Dry
         def provider_from_source(name, source:, group:, namespace:, &block)
           source_class = System.provider_sources.resolve(name: source, group: group)
 
-          # TODO: raise
-
           Provider.new(
             name: name,
             namespace: namespace,

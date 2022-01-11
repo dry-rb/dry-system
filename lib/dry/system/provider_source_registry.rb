@@ -32,7 +32,15 @@ module Dry
       end
 
       def resolve(name:, group:)
-        sources[key(name, group)]
+        sources[key(name, group)].tap { |source|
+          unless source
+            raise ProviderSourceNotFoundError.new(
+              name: name,
+              group: group,
+              keys: sources.keys
+            )
+          end
+        }
       end
 
       private
