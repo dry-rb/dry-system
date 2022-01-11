@@ -72,7 +72,7 @@ module Dry
       end
 
       # @api private
-      def boot_dependency(component)
+      def start_provider_dependency(component)
         if (provider = find_and_load_provider(component.root_key))
           start(provider.name)
         end

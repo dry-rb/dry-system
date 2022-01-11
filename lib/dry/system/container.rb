@@ -620,7 +620,7 @@ module Dry
 
           component = find_component(key)
 
-          providers.boot_dependency(component)
+          providers.start_provider_dependency(component)
           return self if registered?(key)
 
           if component.loadable?
