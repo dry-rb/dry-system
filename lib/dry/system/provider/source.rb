@@ -50,6 +50,12 @@ module Dry
             }
           end
 
+          def inherited(subclass)
+            # FIXME: This shouldn't _need_ to be in an inherited hook but right now it's
+            # the only way to prevent individual Source instances from sharing settings
+            subclass.include Dry::Configurable
+          end
+
           # @api private
           def name
             source_str = source_name
@@ -72,7 +78,6 @@ module Dry
         CALLBACK_MAP = Hash.new { |h, k| h[k] = [] }.freeze
 
         extend Dry::Core::ClassAttributes
-        include Dry::Configurable
 
         defines :source_name, :source_group
 
