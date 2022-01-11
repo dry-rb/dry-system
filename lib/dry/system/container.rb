@@ -241,6 +241,14 @@ module Dry
         def register_provider(name, namespace: nil, from: nil, source: nil, &block)
           raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
+          if from && source.is_a?(Class)
+            raise ArgumentError, "You must supply a block when using a source provider"
+          end
+
+          if block && source.is_a?(Class)
+            raise ArgumentError, "You must supply only a `source:` option or a block, not both"
+          end
+
           provider =
             if from
               provider_from_source(
@@ -251,7 +259,7 @@ module Dry
                 &block
               )
             else
-              provider(name, namespace: namespace, &block)
+              provider(name, namespace: namespace, source: source, &block)
             end
 
           providers.register_provider provider
@@ -274,18 +282,6 @@ module Dry
           )
         end
         deprecate :finalize, :boot
-
-        # @api private
-        private def provider_from_source(name, source:, group:, namespace:, &block)
-          source_class = System.source_providers.resolve(name: source, group: group)
-          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class, &block)
-        end
-
-        # @api private
-        private def provider(name, namespace:, &block)
-          source_class = Provider.source_class(name: name, &block)
-          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class)
-        end
 
         # Return if a container was finalized
         #
@@ -392,6 +388,7 @@ module Dry
           self
         end
 
+        # @api public
         def shutdown!
           providers.shutdown
           self
@@ -662,6 +659,16 @@ module Dry
               break component
             end
           } || IndirectComponent.new(Identifier.new(key, separator: config.namespace_separator))
+        end
+
+        def provider_from_source(name, source:, group:, namespace:, &block)
+          source_class = System.source_providers.resolve(name: source, group: group)
+          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class, &block)
+        end
+
+        def provider(name, namespace:, source: nil, &block)
+          source_class = source || Provider.source_class(name: name, &block)
+          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class)
         end
       end
 
