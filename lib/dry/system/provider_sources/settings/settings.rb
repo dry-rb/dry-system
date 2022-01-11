@@ -9,11 +9,11 @@ module Dry
       module Settings
         InvalidSettingsError = Class.new(ArgumentError) do
           # @api private
-          def initialize(attributes)
+          def initialize(errors)
             message = <<~STR
               Could not load settings. The following settings were invalid:
 
-              #{attributes_errors(attributes).join("\n")}
+              #{setting_errors(errors).join("\n")}
             STR
 
             super(message)
@@ -21,8 +21,8 @@ module Dry
 
           private
 
-          def attributes_errors(attributes)
-            attributes.map { |key, error| "#{key.name}: #{error}" }
+          def setting_errors(errors)
+            errors.map { |key, error| "#{key}: #{error}" }
           end
         end
 
