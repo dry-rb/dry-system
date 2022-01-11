@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/core/deprecations"
 require_relative "constants"
 require_relative "provider"
 
@@ -32,6 +33,17 @@ module Dry
       end
 
       def resolve(name:, group:)
+        if group == :system
+          Dry::Core::Deprecations.announce(
+            "Providers using `from: :system`",
+            "Use `from: :dry_system` instead",
+            tag: "dry-system",
+            uplevel: 1
+          )
+
+          group = :dry_system
+        end
+
         sources[key(name, group)].tap { |source|
           unless source
             raise ProviderSourceNotFoundError.new(
