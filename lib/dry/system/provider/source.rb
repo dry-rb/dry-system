@@ -46,10 +46,10 @@ module Dry
 
           # @api private
           def name
-            source = "#{source_name}"
-            source = "#{source_group}->#{source}" if source_group
+            source_str = source_name
+            source_str = "#{source_group}->#{source_str}" if source_group
 
-            "Dry::System::Provider::Source[#{source}]"
+            "Dry::System::Provider::Source[#{source_str}]"
           end
 
           # @api private
@@ -118,7 +118,9 @@ module Dry
         #
         # @api private
         def inspect
-          ivars = instance_variables.map { |ivar| "#{ivar}=#{instance_variable_get(ivar).inspect}"}.join(" ")
+          ivars = instance_variables.map { |ivar|
+            "#{ivar}=#{instance_variable_get(ivar).inspect}"
+          }.join(" ")
 
           "#<#{self.class.name} #{ivars}>"
         end
@@ -133,8 +135,7 @@ module Dry
         # @see SourceDSL#prepare
         #
         # @api public
-        def prepare
-        end
+        def prepare; end
 
         # Runs the behavior for the "start" lifecycle step.
         #
@@ -148,8 +149,7 @@ module Dry
         # @see SourceDSL#start
         #
         # @api public
-        def start
-        end
+        def start; end
 
         # Runs the behavior for the "stop" lifecycle step.
         #
@@ -164,8 +164,7 @@ module Dry
         # @see SourceDSL#stop
         #
         # @api public
-        def stop
-        end
+        def stop; end
 
         # Starts the providers registered with the given names.
         #

@@ -89,7 +89,7 @@ module Dry
       # @return [Array<Pathname>]
       # @api public
       def provider_files
-        @provider_files ||= provider_paths.each_with_object([[], []]) { |path, (provider_files, loaded)|
+        @provider_files ||= provider_paths.each_with_object([[], []]) { |path, (provider_files, loaded)| # rubocop:disable Layout/LineLength
           files = Dir["#{path}/#{RB_GLOB}"].sort
 
           files.each do |file|

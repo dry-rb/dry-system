@@ -64,7 +64,7 @@ module Dry
       #   @return [Symbol,String] default namespace for the container keys
       attr_reader :namespace
 
-      attr_reader :container
+      attr_reader :provider_container
 
       # Returns the main container used by this provider
       #
@@ -81,10 +81,14 @@ module Dry
         @namespace = namespace
         @target_container = target_container
 
-        @container = build_container
+        @provider_container = build_provider_container
         @statuses = []
 
-        @source = source_class.new(provider_container: container, target_container: target_container, &block)
+        @source = source_class.new(
+          provider_container: provider_container,
+          target_container: target_container,
+          &block
+        )
       end
 
       # Execute `prepare` step
@@ -145,7 +149,7 @@ module Dry
       # @return [Dry::Container]
       #
       # @api private
-      def build_container
+      def build_provider_container
         container = Dry::Container.new
 
         case namespace
@@ -157,7 +161,7 @@ module Dry
           container
         else
           raise ArgumentError,
-            "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
+                "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
         end
       end
 
@@ -184,7 +188,7 @@ module Dry
       #
       # @api private
       def apply
-        container.each do |key, item|
+        provider_container.each do |key, item|
           target_container.register(key, item) unless target_container.registered?(key)
         end
 

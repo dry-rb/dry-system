@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dry/configurable"
 require_relative "file_loader"
 
@@ -39,7 +41,7 @@ module Dry
 
                   begin
                     settings_obj.config.send(:"#{setting_name}=", value) if value
-                  rescue => e
+                  rescue => e # rubocop:disable Style/RescueStandardError
                     errors[setting_name] = e
                   end
                 end

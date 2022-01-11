@@ -238,7 +238,7 @@ module Dry
         # @return [self]
         #
         # @api public
-        def register_provider(name, namespace: nil, from: nil, source: nil, &block)
+        def register_provider(name, namespace: nil, from: nil, source: nil, &block) # rubocop:disable Metrics/PerceivedComplexity
           raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
           if from && source.is_a?(Class)
@@ -663,12 +663,25 @@ module Dry
 
         def provider_from_source(name, source:, group:, namespace:, &block)
           source_class = System.source_providers.resolve(name: source, group: group)
-          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class, &block)
+
+          Provider.new(
+            name: name,
+            namespace: namespace,
+            target_container: self,
+            source_class: source_class,
+            &block
+          )
         end
 
         def provider(name, namespace:, source: nil, &block)
           source_class = source || Provider.source_class(name: name, &block)
-          Provider.new(name: name, namespace: namespace, target_container: self, source_class: source_class)
+
+          Provider.new(
+            name: name,
+            namespace: namespace,
+            target_container: self,
+            source_class: source_class
+          )
         end
       end
 

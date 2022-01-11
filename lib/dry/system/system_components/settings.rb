@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module Dry
   module System
     module SystemComponents
@@ -24,7 +23,10 @@ module Dry
             elsif @settings_class
               @settings_class
             elsif @settings_block
-              @settings_class = Class.new(Dry::System::SystemComponents::Settings::Settings, &@settings_block)
+              @settings_class = Class.new(
+                Dry::System::SystemComponents::Settings::Settings,
+                &@settings_block
+              )
             end
           end
         end
@@ -33,4 +35,8 @@ module Dry
   end
 end
 
-Dry::System.register_source_provider(:settings, group: :system, source: Dry::System::SystemComponents::Settings::Source)
+Dry::System.register_source_provider(
+  :settings,
+  group: :system,
+  source: Dry::System::SystemComponents::Settings::Source
+)

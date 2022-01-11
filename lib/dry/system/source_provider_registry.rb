@@ -24,7 +24,11 @@ module Dry
       end
 
       def register_from_block(name:, group:, &block)
-        register(name: name, group: group, source: Provider.source_class(name: name, group: group, &block))
+        register(
+          name: name,
+          group: group,
+          source: Provider.source_class(name: name, group: group, &block)
+        )
       end
 
       def resolve(name:, group:)

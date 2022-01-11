@@ -168,7 +168,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
   end
 
   it "raises when namespace value is not valid" do
-    expect { system.register_provider(:api, namespace: 312) { } }
+    expect { system.register_provider(:api, namespace: 312) {} }
       .to raise_error(ArgumentError, /\+namespace:\+ must be true, string or symbol/)
   end
 end

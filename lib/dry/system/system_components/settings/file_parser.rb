@@ -6,6 +6,8 @@ module Dry
   module System
     module Settings
       class FileParser
+        # rubocop:disable Style/RedundantRegexpEscape
+
         # Regex extracted from dotenv gem
         # https://github.com/bkeepers/dotenv/blob/master/lib/dotenv/parser.rb#L14
         LINE = /
@@ -25,6 +27,8 @@ module Dry
           (?:\#.*)?         # optional comment
           \z
         /x.freeze
+
+        # rubocop:enable Style/RedundantRegexpEscape
 
         def call(file)
           File.readlines(file).each_with_object({}) do |line, hash|
