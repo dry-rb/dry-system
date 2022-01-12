@@ -190,7 +190,7 @@ module Dry
         #
         # @param provider_names [Array<Symbol>] Names of the other providers to start
         #
-        # @return [void]
+        # @return [self]
         #
         # @api public
         def use(*provider_names)
@@ -209,7 +209,7 @@ module Dry
         # @param step_name [Symbol]
         # @param block [Proc] the callback block
         #
-        # @return [void]
+        # @return [self]
         #
         # @see #after
         #
@@ -238,7 +238,7 @@ module Dry
         # @param step_name [Symbol]
         # @param block [Proc] the callback block
         #
-        # @return [void]
+        # @return [self]
         #
         # @see #before
         #

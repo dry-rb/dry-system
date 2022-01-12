@@ -141,7 +141,7 @@ module Dry
       # Also runs any callbacks for the step, and then merges any registered components
       # from the provider container into the target container.
       #
-      # @return [void]
+      # @return [self]
       #
       # @api public
       def prepare
@@ -153,7 +153,7 @@ module Dry
       # Also runs any callbacks for the step, and then merges any registered components
       # from the provider container into the target container.
       #
-      # @return [void]
+      # @return [self]
       #
       # @api public
       def start
@@ -165,7 +165,7 @@ module Dry
       #
       # Also runs any callbacks for the step.
       #
-      # @return [void]
+      # @return [self]
       #
       # @api public
       def stop
@@ -233,7 +233,7 @@ module Dry
       #
       # Called after each lifecycle step runs.
       #
-      # @return [void]
+      # @return [self]
       #
       # @api private
       def apply
