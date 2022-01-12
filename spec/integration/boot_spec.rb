@@ -54,7 +54,7 @@ RSpec.describe Dry::System::Container, ".register_provider" do
     it "auto-boots dependency of a bootable component" do
       system.start(:client)
 
-      expect(system[:client]).to be_a(Client)
+      expect(system[:client]).to be_a(Test::Client)
       expect(system[:client].logger).to be_a(Logger)
     end
   end
