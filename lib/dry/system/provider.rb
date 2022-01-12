@@ -121,7 +121,7 @@ module Dry
       attr_reader :source
 
       # @api private
-      def initialize(name:, namespace: nil, target_container:, source_class: nil, &block) # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, source_class:, &block) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @target_container = target_container
