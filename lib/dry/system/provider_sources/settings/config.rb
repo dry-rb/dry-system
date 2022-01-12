@@ -38,7 +38,7 @@ module Dry
                   value = ENV.fetch(setting_name.to_s.upcase) { env_data[setting_name.to_s.upcase] }
 
                   begin
-                    settings_obj.config.send(:"#{setting_name}=", value) if value
+                    settings_obj.config.public_send(:"#{setting_name}=", value) if value
                   rescue => e # rubocop:disable Style/RescueStandardError
                     errors[setting_name] = e
                   end
