@@ -169,7 +169,7 @@ module Dry
       #
       # @api public
       def stop
-        return unless statuses.include?(:start)
+        return unless started?
 
         run_step(:stop)
       end
