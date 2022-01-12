@@ -43,7 +43,7 @@ module Dry
           #
           # @api private
           def for(name:, group: nil, target_container:, &block) # rubocop:disable Style/KeywordParametersOrder
-            Class.new(self).tap { |klass|
+            Class.new(self) { |klass|
               klass.source_name name
               klass.source_group group
               SourceDSL.evaluate(klass, target_container, &block) if block
