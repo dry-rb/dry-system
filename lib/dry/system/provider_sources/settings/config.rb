@@ -31,9 +31,9 @@ module Dry
             def load(root, env)
               env_data = load_files(root, env)
 
-              errors = {}
-
               new.tap do |settings_obj|
+                errors = {}
+
                 settings.to_a.each do |setting_name|
                   value = ENV.fetch(setting_name.to_s.upcase) { env_data[setting_name.to_s.upcase] }
 
