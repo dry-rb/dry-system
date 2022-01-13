@@ -114,11 +114,30 @@ module Dry
         # @return [self]
         #
         # @api public
-        def configure(&block)
-          hooks[:before_configure].each { |hook| instance_eval(&hook) }
+        def configure(finalize_config: true, &block)
           super(&block)
-          hooks[:after_configure].each { |hook| instance_eval(&hook) }
+
+          unless configured?
+            hooks[:after_configure].each { |hook| instance_eval(&hook) }
+            config.finalize! if finalize_config
+            @__configured__ = true
+          end
+
           self
+        end
+
+        def configured!(finalize_config: true)
+          return self if configured?
+
+          config.finalize! if finalize_config
+          hooks[:after_configure].each { |hook| instance_eval(&hook) }
+          @__configured__ = true
+
+          self
+        end
+
+        def configured?
+          @__configured__.equal?(true)
         end
 
         # Registers another container for import
@@ -316,6 +335,8 @@ module Dry
         # @api public
         def finalize!(freeze: true, &block)
           return self if finalized?
+
+          configured!
 
           yield(self) if block
 
@@ -578,11 +599,6 @@ module Dry
         end
 
         # @api private
-        def before(event, &block)
-          hooks[:"before_#{event}"] << block
-        end
-
-        # @api private
         def hooks
           @hooks ||= Hash.new { |h, k| h[k] = [] }
         end
@@ -594,6 +610,7 @@ module Dry
           end
 
           klass.instance_variable_set(:@__finalized__, false)
+          # TODO: other ivars here too?
 
           super
         end
