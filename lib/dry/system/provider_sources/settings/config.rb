@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require "dry/configurable"
-require_relative "file_loader"
+require_relative "loader"
 
 module Dry
   module System
     module ProviderSources
+      # @api private
       module Settings
         InvalidSettingsError = Class.new(ArgumentError) do
           # @api private
@@ -26,32 +27,26 @@ module Dry
           end
         end
 
+        # @api private
         class Config
-          class << self
-            def load(root, env)
-              env_data = load_files(root, env)
+          # @api private
+          def self.load(root:, env:, loader: Loader)
+            loader = loader.new(root: root, env: env)
 
-              new.tap do |settings_obj|
-                errors = {}
+            new.tap do |settings_obj|
+              errors = {}
 
-                settings.to_a.each do |setting_name|
-                  value = ENV.fetch(setting_name.to_s.upcase) { env_data[setting_name.to_s.upcase] }
+              settings.to_a.each do |setting_name|
+                value = loader[setting_name.to_s.upcase]
 
-                  begin
-                    settings_obj.config.public_send(:"#{setting_name}=", value) if value
-                  rescue => e # rubocop:disable Style/RescueStandardError
-                    errors[setting_name] = e
-                  end
+                begin
+                  settings_obj.config.public_send(:"#{setting_name}=", value) if value
+                rescue => e # rubocop:disable Style/RescueStandardError
+                  errors[setting_name] = e
                 end
-
-                raise InvalidSettingsError, errors unless errors.empty?
               end
-            end
 
-            private
-
-            def load_files(root, env)
-              FileLoader.new.(root, env)
+              raise InvalidSettingsError, errors unless errors.empty?
             end
           end
 
