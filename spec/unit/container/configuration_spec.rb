@@ -132,4 +132,45 @@ RSpec.describe Dry::System::Container, "configuration phase" do
       expect { container.config.root = "/root" }.not_to raise_error
     end
   end
+
+  describe "#finalize!" do
+    it "marks the container as configured if not configured prior" do
+      expect { container.finalize! }
+        .to change { container.configured? }.from(false).to true
+    end
+
+    it "runs after configure hooks if not run prior" do
+      container.instance_eval do
+        def hooks_trace
+          @hooks_trace ||= []
+        end
+
+        after :configure do
+          hooks_trace << :after_configure
+        end
+      end
+
+      expect { container.finalize! }
+        .to change { container.hooks_trace }
+        .from([])
+        .to [:after_configure]
+    end
+
+    it "does not run after configure hooks when run a second time" do
+      container.instance_eval do
+        def hooks_trace
+          @hooks_trace ||= []
+        end
+
+        after :configure do
+          hooks_trace << :after_configure
+        end
+      end
+
+      expect { container.finalize!; container.finalize! }
+        .to change { container.hooks_trace }
+        .from([])
+        .to [:after_configure]
+    end
+  end
 end
