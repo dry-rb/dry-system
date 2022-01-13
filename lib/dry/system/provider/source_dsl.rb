@@ -33,8 +33,8 @@ module Dry
           @source_class = source_class
         end
 
-        def setting(*args, **kwargs, &block)
-          source_class.setting(*args, **kwargs, &block)
+        def setting(...)
+          source_class.setting(...)
         end
 
         # rubocop:disable Layout/LineLength
