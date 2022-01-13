@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core/equalizer"
+require "dry/system/constants"
 
 module Dry
   module System
@@ -54,7 +55,9 @@ module Dry
         # @api private
         def initialize(path:, key:, const:)
           @path = path
-          @key = key
+          # Default keys (i.e. when the user does not explicitly provide one) for non-root
+          # paths will include path separators, which we must convert into key separators
+          @key = key && key == path ? key.gsub(PATH_SEPARATOR, KEY_SEPARATOR) : key
           @const = const
         end
 
@@ -66,11 +69,6 @@ module Dry
         # @api public
         def path?
           !root?
-        end
-
-        # @api private
-        def default_key?
-          key == path
         end
       end
     end

@@ -13,20 +13,15 @@ module Dry
     #
     # @api public
     class Identifier
-      include Dry::Equalizer(:key, :separator)
+      include Dry::Equalizer(:key)
 
       # @return [String] the identifier's string key
       # @api public
       attr_reader :key
 
-      # @return [String] the configured namespace separator
-      # @api public
-      attr_reader :separator
-
       # @api private
-      def initialize(key, separator: DEFAULT_SEPARATOR)
+      def initialize(key)
         @key = key.to_s
-        @separator = separator
       end
 
       # @!method to_s
@@ -68,7 +63,7 @@ module Dry
       # @api public
       def start_with?(leading_namespaces)
         leading_namespaces.nil? ||
-          key.start_with?("#{leading_namespaces}#{separator}") ||
+          key.start_with?("#{leading_namespaces}#{KEY_SEPARATOR}") ||
           key.eql?(leading_namespaces)
       end
 
@@ -108,27 +103,27 @@ module Dry
       def namespaced(from:, to:)
         return self if from == to
 
-        separated_to = "#{to}#{separator}" if to
+        separated_to = "#{to}#{KEY_SEPARATOR}" if to
 
         new_key =
           if from.nil?
             "#{separated_to}#{key}"
           else
             key.sub(
-              /^#{Regexp.escape(from.to_s)}#{Regexp.escape(separator)}/,
+              /^#{Regexp.escape(from.to_s)}#{Regexp.escape(KEY_SEPARATOR)}/,
               separated_to || EMPTY_STRING
             )
           end
 
         return self if new_key == key
 
-        self.class.new(new_key, separator: separator)
+        self.class.new(new_key)
       end
 
       private
 
       def segments
-        @segments ||= key.split(separator)
+        @segments ||= key.split(KEY_SEPARATOR)
       end
     end
   end
