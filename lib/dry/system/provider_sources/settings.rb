@@ -5,12 +5,14 @@ module Dry
     module ProviderSources
       module Settings
         class Source < Dry::System::Provider::Source
+          setting :store
+
           def prepare
             require "dry/system/provider_sources/settings/config"
           end
 
           def start
-            register(:settings, settings.load(target.root, target.config.env))
+            register(:settings, settings.load(root: target.root, env: target.config.env))
           end
 
           def settings(&block)
@@ -22,7 +24,7 @@ module Dry
             elsif @settings_class
               @settings_class
             elsif @settings_block
-              @settings_class = Class.new(ProviderSources::Settings::Config, &@settings_block)
+              @settings_class = Class.new(Settings::Config, &@settings_block)
             end
           end
         end
