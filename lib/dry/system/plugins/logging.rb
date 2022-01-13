@@ -8,7 +8,7 @@ module Dry
       module Logging
         # @api private
         def self.extended(system)
-          system.before(:configure) do
+          system.instance_eval do
             setting :logger, reader: true
 
             setting :log_dir, default: "log"

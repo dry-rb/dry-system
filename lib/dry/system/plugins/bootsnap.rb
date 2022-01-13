@@ -15,8 +15,9 @@ module Dry
         # @api private
         def self.extended(system)
           super
+
           system.use(:env)
-          system.before(:configure) { setting :bootsnap, default: DEFAULT_OPTIONS }
+          system.setting :bootsnap, default: DEFAULT_OPTIONS
           system.after(:configure, &:setup_bootsnap)
         end
 
