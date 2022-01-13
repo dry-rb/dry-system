@@ -609,8 +609,8 @@ module Dry
             klass.hooks[event].concat blocks.dup
           end
 
+          klass.instance_variable_set(:@__configured__, false)
           klass.instance_variable_set(:@__finalized__, false)
-          # TODO: other ivars here too?
 
           super
         end
