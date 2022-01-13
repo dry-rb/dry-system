@@ -1,22 +1,28 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
-require "dry/system/provider_lifecycle"
-require "dry/system/settings"
-require "dry/system/components/config"
-require "dry/system/constants"
+require_relative "constants"
+require_relative "provider/source"
 
 module Dry
   module System
-    # Providers can prepare and register one or more objects and typically depend on
-    # 3rd-party code. A typical provider might be for a database library, or an API
-    # client.
+    # Providers can prepare and register one or more objects and typically work with third
+    # party code. A typical provider might be for a database library, or an API client.
     #
-    # Providers can be registered via `Container.register_provider` and source providers
-    # can register their components too, which then can be used and configured by your
-    # system.
+    # The particular behavior for any provider is defined in a {Provider::Source}, which
+    # is a subclass created when you run {Container.register_provider} or
+    # {Dry::System.register_provider_source}. The Source provides this behavior through
+    # methods for each of the steps in the provider lifecycle: `prepare`, `start`, and
+    # `run`. These methods typically create and configure various objects, then register
+    # them with the {#provider_container}.
     #
-    # @example simple logger
+    # The Provider manages this lifecycle by implementing common behavior around the
+    # lifecycle steps, such as running step callbacks, and only running steps when
+    # appropriate for the current status of the lifecycle.
+    #
+    # Providers can be registered via {Container.register_provider}.
+    #
+    # @example Simple provider
     #   class App < Dry::System::Container
     #     register_provider(:logger) do
     #       prepare do
@@ -31,222 +37,168 @@ module Dry
     #
     #   App[:logger] # returns configured logger
     #
-    # @example using first-party source providers
+    # @example Using an external Provider Source
     #   class App < Dry::System::Container
-    #     register_provider(:settings, from: :system) do
-    #       settings do
-    #         key :database_url, Types::String.constrained(filled: true)
-    #         key :session_secret, Types::String.constrained(filled: true)
+    #     register_provider(:logger, from: :some_external_provider_source) do
+    #       configure do |config|
+    #         config.log_level = :debug
+    #       end
+    #
+    #       after :start do
+    #         register(:my_extra_logger, resolve(:logger))
     #       end
     #     end
     #   end
     #
-    #   App[:settings] # returns loaded settings
+    #   App[:my_extra_logger] # returns the extra logger registered in the callback
     #
     # @api public
     class Provider
-      TRIGGER_MAP = Hash.new { |h, k| h[k] = [] }.freeze
-
-      # @!attribute [r] key
-      #   @return [Symbol] the provider's unique name
-      attr_reader :name
-
-      # @!attribute [r] triggers
-      #   @return [Hash] lifecycle step after/before callbacks
-      attr_reader :triggers
-
-      # @!attribute [r] namespace
-      #   @return [Symbol,String] default namespace for the container keys
-      attr_reader :namespace
-
-      # Returns the main container used by this provider
+      # Returns the provider's unique name.
       #
-      # @return [Dry::Struct]
+      # @return [Symbol]
       #
       # @api public
-      attr_reader :container
+      attr_reader :name
 
-      # Returns the block that will be evaluated in the lifecycle context
+      # Returns the default namespace for the provider's container keys.
       #
-      # @return [Proc]
+      # @return [Symbol,String]
+      #
+      # @api public
+      attr_reader :namespace
+
+      # Returns an array of lifecycle steps that have been run.
+      #
+      # @return [Array<Symbol>]
+      #
+      # @example
+      #   provider.statuses # => [:prepare, :start]
+      #
+      # @api public
+      attr_reader :statuses
+
+      # Returns the container for the provider.
+      #
+      # This is where the provider's source will register its components, which are then
+      # later marged into the target container after the `prepare` and `start` lifecycle
+      # steps.
+      #
+      # @return [Dry::Container]
+      #
+      # @api public
+      attr_reader :provider_container
+      alias_method :container, :provider_container
+
+      # Returns the target container for the provider.
+      #
+      # This is the container with which the provider is registered (via
+      # {Dry::System::Container.register_provider}).
+      #
+      # Registered components from the provider's container will be merged into this
+      # container after the `prepare` and `start` lifecycle steps.
+      #
+      # @return [Dry::System::Container]
+      #
+      # @api public
+      attr_reader :target_container
+      alias_method :target, :target_container
+
+      # Returns the provider's source
+      #
+      # The source provides the specific behavior for the provider via methods
+      # implementing the lifecycle steps.
+      #
+      # The provider's source is defined when registering a provider with the container,
+      # or an external provider source.
+      #
+      # @see Dry::System::Container.register_provider
+      # @see Dry::System.register_provider_source
+      #
+      # @return [Dry::System::Provider::Source]
       #
       # @api private
-      attr_reader :lifecycle_block
+      attr_reader :source
 
-      def initialize(name:, namespace: nil, container:, lifecycle_block:, refinement_block: nil) # rubocop:disable Style/KeywordParametersOrder
+      # @api private
+      def initialize(name:, namespace: nil, target_container:, source_class:, &block) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
-        @container = container
-        @lifecycle_block = lifecycle_block
+        @target_container = target_container
 
-        @triggers = {before: TRIGGER_MAP.dup, after: TRIGGER_MAP.dup}
-        @config = nil
-        @config_block = nil
+        @provider_container = build_provider_container
+        @statuses = []
 
-        instance_exec(&refinement_block) if refinement_block
+        @source = source_class.new(
+          provider_container: provider_container,
+          target_container: target_container,
+          &block
+        )
       end
 
-      # Execute `prepare` step
+      # Runs the `prepare` lifecycle step.
+      #
+      # Also runs any callbacks for the step, and then merges any registered components
+      # from the provider container into the target container.
       #
       # @return [self]
       #
       # @api public
       def prepare
-        trigger(:before, :prepare)
-        lifecycle.(:prepare)
-        trigger(:after, :prepare)
-        self
+        run_step(:prepare)
       end
 
-      # Execute `start` step
+      # Runs the `start` lifecycle step.
+      #
+      # Also runs any callbacks for the step, and then merges any registered components
+      # from the provider container into the target container.
       #
       # @return [self]
       #
       # @api public
       def start
-        trigger(:before, :start)
-        lifecycle.(:start)
-        trigger(:after, :start)
-        self
+        run_step(:prepare)
+        run_step(:start)
       end
 
-      # Execute `stop` step
+      # Runs the `stop` lifecycle step.
+      #
+      # Also runs any callbacks for the step.
       #
       # @return [self]
       #
       # @api public
       def stop
-        lifecycle.(:stop)
-        self
+        return unless started?
+
+        run_step(:stop)
       end
 
-      # Specify a before callback
-      #
-      # @return [self]
+      # Returns true if the provider's `prepare` lifecycle step has run
       #
       # @api public
-      def before(event, &block)
-        if event.to_sym == :init
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Provider before(:init) trigger",
-            "Use `before(:prepare)` trigger instead",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          event = :prepare
-        end
-
-        triggers[:before][event] << block
-        self
+      def prepared?
+        statuses.include?(:prepare)
       end
 
-      # Specify an after callback
-      #
-      # @return [self]
+      # Returns true if the provider's `start` lifecycle step has run
       #
       # @api public
-      def after(event, &block)
-        if event.to_sym == :init
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Provider after(:init) trigger",
-            "Use `after(:prepare)` trigger instead",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          event = :prepare
-        end
-
-        triggers[:after][event] << block
-        self
+      def started?
+        statuses.include?(:start)
       end
 
-      # Configures the provider
-      #
-      # @return [self]
+      # Returns true if the provider's `stop` lifecycle step has run
       #
       # @api public
-      def configure(&block)
-        @config_block = block
-        self
-      end
-
-      # Define configuration settings with keys and types
-      #
-      # @api public
-      def settings(&block)
-        if block
-          @settings_block = block
-        elsif @settings_block
-          @settings = Settings::DSL.new(&@settings_block).call
-        else
-          @settings
-        end
-      end
-
-      # Returns the provider's configuration
-      #
-      # @return [Dry::Struct]
-      #
-      # @api public
-      def config
-        @config || configure!
-      end
-
-      # Returns a list of lifecycle steps that were executed
-      #
-      # @return [Array<Symbol>]
-      #
-      # @api public
-      def statuses
-        lifecycle.statuses
-      end
-
-      # Registers any components from the provider's container in the main container
-      #
-      # Automatically called by the booter after the `prepare` and `start` lifecycle
-      # triggers are run
-      #
-      # @return [self]
-      #
-      # @api private
-      def apply
-        lifecycle.container.each do |key, item|
-          container.register(key, item) unless container.registered?(key)
-        end
-        self
-      end
-
-      # Trigger a callback
-      #
-      # @return [self]
-      #
-      # @api private
-      def trigger(key, event)
-        triggers[key][event].each do |fn|
-          container.instance_exec(lifecycle.container, &fn)
-        end
-        self
+      def stopped?
+        statuses.include?(:stop)
       end
 
       private
 
-      # Returns the lifecycle object used for this provider
-      #
-      # @return [ProviderLifecycle]
-      #
       # @api private
-      def lifecycle
-        @lifecycle ||= ProviderLifecycle.new(lf_container, component: self, &lifecycle_block)
-      end
-
-      # Return configured container for the lifecycle object
-      #
-      # @return [Dry::Container]
-      #
-      # @api private
-      def lf_container
+      def build_provider_container
         container = Dry::Container.new
 
         case namespace
@@ -257,19 +209,39 @@ module Dry
         when nil
           container
         else
-          raise <<-STR
-            +namespace+ boot option must be true, string or symbol #{namespace.inspect} given.
-          STR
+          raise ArgumentError,
+                "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
         end
       end
 
-      # Set config object
+      # @api private
+      def run_step(step_name)
+        return self if statuses.include?(step_name)
+
+        source.run_callback(:before, step_name)
+        source.public_send(step_name)
+        source.run_callback(:after, step_name)
+
+        statuses << step_name
+
+        apply
+
+        self
+      end
+
+      # Registers any components from the provider's container in the main container.
       #
-      # @return [Dry::Struct]
+      # Called after each lifecycle step runs.
+      #
+      # @return [self]
       #
       # @api private
-      def configure!
-        @config = settings.new(Components::Config.new(&@config_block)) if settings
+      def apply
+        provider_container.each do |key, item|
+          target_container.register(key, item) unless target_container.registered?(key)
+        end
+
+        self
       end
     end
   end

@@ -12,7 +12,6 @@ require "dry/core/deprecations"
 
 require "dry/system"
 require "dry/system/auto_registrar"
-require "dry/system/booter"
 require "dry/system/component"
 require "dry/system/constants"
 require "dry/system/errors"
@@ -21,7 +20,9 @@ require "dry/system/importer"
 require "dry/system/indirect_component"
 require "dry/system/manual_registrar"
 require "dry/system/plugins"
+require "dry/system/provider_registrar"
 require "dry/system/provider"
+require "dry/system/provider/source"
 
 require_relative "component_dir"
 require_relative "config/component_dirs"
@@ -83,11 +84,10 @@ module Dry
       setting :registrations_dir, default: "container"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :inflector, default: Dry::Inflector.new
-      setting :booter, default: Dry::System::Booter
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manual_registrar, default: Dry::System::ManualRegistrar
+      setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
-      setting :providers, default: {}, reader: true, constructor: :dup.to_proc
 
       class << self
         def strategies(value = nil)
@@ -170,6 +170,8 @@ module Dry
           end
         end
 
+        # rubocop:disable Metrics/PerceivedComplexity
+
         # Registers a provider and its lifecycle hooks
         #
         # By convention, you should place a file for each provider in one of the
@@ -243,6 +245,14 @@ module Dry
         def register_provider(name, namespace: nil, from: nil, source: nil, &block)
           raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
+          if from && source.is_a?(Class)
+            raise ArgumentError, "You must supply a block when using a provider source"
+          end
+
+          if block && source.is_a?(Class)
+            raise ArgumentError, "You must supply only a `source:` option or a block, not both"
+          end
+
           provider =
             if from
               provider_from_source(
@@ -253,13 +263,12 @@ module Dry
                 &block
               )
             else
-              provider(name, namespace: namespace, &block)
+              provider(name, namespace: namespace, source: source, &block)
             end
 
-          booter.register_provider provider
-
-          providers[name] = provider
+          providers.register_provider provider
         end
+        # rubocop:enable Metrics/PerceivedComplexity
 
         def boot(name, **opts, &block)
           Dry::Core::Deprecations.announce(
@@ -278,17 +287,6 @@ module Dry
           )
         end
         deprecate :finalize, :boot
-
-        # @api private
-        private def provider_from_source(name, source:, group:, namespace:, &block)
-          System.source_providers.resolve(name: source, group: group)
-            .to_provider(name: name, namespace: namespace, container: self, refinement_block: block)
-        end
-
-        # @api private
-        private def provider(name, namespace:, &block)
-          Provider.new(name: name, namespace: namespace, container: self, lifecycle_block: block)
-        end
 
         # Return if a container was finalized
         #
@@ -334,7 +332,7 @@ module Dry
           yield(self) if block
 
           importer.finalize!
-          booter.finalize!
+          providers.finalize!
           manual_registrar.finalize!
           auto_registrar.finalize!
 
@@ -357,7 +355,7 @@ module Dry
         #
         # @api public
         def start(name)
-          booter.start(name)
+          providers.start(name)
           self
         end
 
@@ -375,7 +373,7 @@ module Dry
         #
         # @api public
         def prepare(name)
-          booter.prepare(name)
+          providers.prepare(name)
           self
         end
         deprecate :init, :prepare
@@ -391,12 +389,13 @@ module Dry
         #
         # @api public
         def stop(name)
-          booter.stop(name)
+          providers.stop(name)
           self
         end
 
+        # @api public
         def shutdown!
-          booter.shutdown
+          providers.shutdown
           self
         end
 
@@ -534,9 +533,10 @@ module Dry
         end
 
         # @api private
-        def booter
-          @booter ||= config.booter.new(provider_paths)
+        def providers
+          @providers ||= config.provider_registrar.new(provider_paths)
         end
+        deprecate :booter, :providers
 
         # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
         # @api private
@@ -616,14 +616,14 @@ module Dry
         def load_component(key)
           return self if registered?(key)
 
-          if (provider = booter.find_provider(key))
-            booter.start(provider)
+          if (provider = providers.find_and_load_provider(key))
+            provider.start
             return self
           end
 
           component = find_component(key)
 
-          booter.boot_dependency(component)
+          providers.start_provider_dependency(component)
           return self if registered?(key)
 
           if component.loadable?
@@ -665,6 +665,29 @@ module Dry
               break component
             end
           } || IndirectComponent.new(Identifier.new(key, separator: config.namespace_separator))
+        end
+
+        def provider_from_source(name, source:, group:, namespace:, &block)
+          source_class = System.provider_sources.resolve(name: source, group: group)
+
+          Provider.new(
+            name: name,
+            namespace: namespace,
+            target_container: self,
+            source_class: source_class,
+            &block
+          )
+        end
+
+        def provider(name, namespace:, source: nil, &block)
+          source_class = source || Provider::Source.for(name: name, target_container: self, &block)
+
+          Provider.new(
+            name: name,
+            namespace: namespace,
+            target_container: self,
+            source_class: source_class
+          )
         end
       end
 

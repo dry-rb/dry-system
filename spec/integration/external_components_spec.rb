@@ -18,8 +18,8 @@ RSpec.describe "External Components" do
             config.log_level = :debug
           end
 
-          after(:start) do |external_container|
-            register(:my_logger, external_container[:logger])
+          after(:start) do
+            register(:my_logger, container[:logger])
           end
         end
 
@@ -30,6 +30,8 @@ RSpec.describe "External Components" do
         register(:monitor, "a monitor")
       end
     end
+
+    Test::Container
   end
 
   before do
@@ -49,7 +51,7 @@ RSpec.describe "External Components" do
       my_logger = container[:my_logger]
 
       expect(my_logger).to be_instance_of(ExternalComponents::Logger)
-      expect(my_logger.log_level).to be(:debug)
+      expect(my_logger.log_level).to eq(:debug)
     end
 
     it "boots external notifier component which needs a local component" do
@@ -72,8 +74,8 @@ RSpec.describe "External Components" do
   context "with customized booting" do
     it "allows aliasing external components" do
       container.register_provider(:error_logger, from: :external_components, source: :logger) do
-        after(:start) do |c|
-          register(:error_logger, c[:logger])
+        after(:start) do
+          register(:error_logger, container[:logger])
         end
       end
 
@@ -88,8 +90,8 @@ RSpec.describe "External Components" do
           ExternalComponents::Logger.default_level = :error
         end
 
-        after(:start) do |c|
-          register(:error_logger, c[:logger])
+        after(:start) do
+          register(:error_logger, container[:logger])
         end
       end
 
@@ -106,8 +108,8 @@ RSpec.describe "External Components" do
         register_provider(:logger, from: :external_components)
 
         register_provider(:conn, from: :alt, source: :db) do
-          after(:start) do |c|
-            register(:conn, c[:db_conn])
+          after(:start) do
+            register(:conn, container[:db_conn])
           end
         end
       end
@@ -129,5 +131,20 @@ RSpec.describe "External Components" do
         expect(container[:logger]).to be_instance_of(ExternalComponents::Logger)
       end
     end
+  end
+
+  it "raises an error when specifying an unknown provider sourse" do
+    msgs = [
+      "Provider source not found: :logger, group: :not_found_components",
+      "Available provider sources:",
+      "- :logger, group: :external_components"
+    ]
+    error_re = /#{msgs.join('.*')}/m
+
+    expect {
+      Class.new(Dry::System::Container) {
+        register_provider(:logger, from: :not_found_components)
+      }
+    }.to raise_error Dry::System::ProviderSourceNotFoundError, error_re
   end
 end

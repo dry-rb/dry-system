@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system/components"
+require "dry/system/provider_sources"
 
 RSpec.describe "Settings component" do
   subject(:system) do
@@ -12,14 +12,14 @@ RSpec.describe "Settings component" do
         config.env = :test
       end
 
-      register_provider(:settings, from: :system) do
+      register_provider(:settings, from: :dry_system) do
         before(:prepare) do
-          require_from_root "types"
+          target_container.require_from_root "types"
         end
 
         settings do
-          key :database_url, SettingsTest::Types::String.constrained(filled: true)
-          key :session_secret, SettingsTest::Types::String.constrained(filled: true)
+          setting :database_url, constructor: SettingsTest::Types::String.constrained(filled: true)
+          setting :session_secret, constructor: SettingsTest::Types::String.constrained(filled: true)
         end
       end
     end
@@ -52,14 +52,14 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        register_provider(:settings, from: :system) do
+        register_provider(:settings, from: :dry_system) do
           before(:prepare) do
-            require_from_root "types"
+            target_container.require_from_root "types"
           end
 
           settings do
-            key :integer_value, SettingsTest::Types::Strict::Integer
-            key :coercible_value, SettingsTest::Types::Coercible::Integer
+            setting :integer_value, constructor: SettingsTest::Types::Integer
+            setting :coercible_value, constructor: SettingsTest::Types::Coercible::Integer
           end
         end
       end
@@ -79,12 +79,12 @@ RSpec.describe "Settings component" do
       expect {
         settings.integer_value
       }.to raise_error(
-        Dry::System::InvalidSettingsError,
+        Dry::System::ProviderSources::Settings::InvalidSettingsError,
         <<~TEXT
-          Could not initialize settings. The following settings were invalid:
+          Could not load settings. The following settings were invalid:
 
-          integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
           coercible_value: invalid value for Integer(): "foo"
+          integer_value: "foo" violates constraints (type?(Integer, "foo") failed)
         TEXT
       )
     end
@@ -100,13 +100,13 @@ RSpec.describe "Settings component" do
           config.env = :test
         end
 
-        register_provider(:settings, from: :system) do
-          before(:prepare) do
-            require_from_root "types"
+        register_provider(:settings, from: :dry_system) do
+          after(:prepare) do
+            target_container.require_from_root "types"
           end
 
           settings do
-            key :number_of_workers, SettingsTest::Types::Coercible::Integer.default(14)
+            setting :number_of_workers, default: 14, constructor: SettingsTest::Types::Coercible::Integer
           end
         end
       end

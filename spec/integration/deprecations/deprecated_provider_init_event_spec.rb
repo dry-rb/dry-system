@@ -55,11 +55,11 @@ RSpec.describe "Deprecated provider init event" do
       container.init :blorp
 
       logger.rewind
-      expect(logger.string).to match(/Dry::System::Lifecycle.*#init is deprecated/m)
+      expect(logger.string).to match(/Dry::System::Provider::SourceDSL.*#init is deprecated/m)
     end
   end
 
-  describe "before/after init triggers in providers using source providers" do
+  describe "before/after init triggers in providers using provider sources" do
     it "triggers the hooks around the prepare event" do
       container.prepare :my_logger
       expect(container["before_init"]).to eq "my before init"
@@ -73,7 +73,7 @@ RSpec.describe "Deprecated provider init event" do
       container.prepare :my_logger
 
       logger.rewind
-      expect(logger.string).to match(/Dry::System::Provider before\(:init\) trigger is deprecated.*Dry::System::Provider after\(:init\) trigger is deprecated/m)
+      expect(logger.string).to match(/Dry::System::Provider before\(:init\) callback is deprecated.*Dry::System::Provider after\(:init\) callback is deprecated/m)
     end
   end
 

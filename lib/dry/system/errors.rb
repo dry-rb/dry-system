@@ -59,16 +59,19 @@ module Dry
     InvalidComponentError = ProviderNotFoundError
     deprecate_constant :InvalidComponentError
 
-    # Error raised when trying to stop a provider that hasn't started yet
+    # Error raised when a named provider source could not be found
     #
     # @api public
-    ProviderNotStartedError = Class.new(StandardError) do
-      def initialize(provider_name)
-        super("Provider #{provider_name.inspect} has not been started")
+    ProviderSourceNotFoundError = Class.new(StandardError) do
+      def initialize(name:, group:, keys:)
+        msg = "Provider source not found: #{name.inspect}, group: #{group.inspect}"
+
+        key_list = keys.map { |key| "- #{key[:name].inspect}, group: #{key[:group].inspect}" }
+        msg += "Available provider sources:\n\n#{key_list}"
+
+        super(msg)
       end
     end
-    ComponentNotStartedError = ProviderNotStartedError
-    deprecate_constant :ComponentNotStartedError
 
     # Error raised when trying to use a plugin that does not exist.
     #
@@ -76,24 +79,6 @@ module Dry
     PluginNotFoundError = Class.new(StandardError) do
       def initialize(plugin_name)
         super("Plugin #{plugin_name.inspect} does not exist")
-      end
-    end
-
-    InvalidSettingsError = Class.new(ArgumentError) do
-      # @api private
-      def initialize(attributes)
-        message = <<~STR
-          Could not initialize settings. The following settings were invalid:
-
-          #{attributes_errors(attributes).join("\n")}
-        STR
-        super(message)
-      end
-
-      private
-
-      def attributes_errors(attributes)
-        attributes.map { |key, error| "#{key.name}: #{error}" }
       end
     end
 

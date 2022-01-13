@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
-RSpec.describe "Deprecated Dry::System.register_provider and Dry::System.register_component" do
+RSpec.describe "Deprecated provider callback block arg" do
   before do
     Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
+    require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
 
     # We don't care about the deprecation messages when we're not testing for them
     # specifically
     Dry::Core::Deprecations.set_logger!(StringIO.new)
   end
 
-  subject(:container) do
+  subject(:container) {
     module Test
       class Container < Dry::System::Container
         configure do |config|
@@ -21,32 +22,27 @@ RSpec.describe "Deprecated Dry::System.register_provider and Dry::System.registe
             config.log_level = :debug
           end
 
-          after(:start) do
-            register(:my_logger, resolve(:logger))
+          after(:start) do |arg1|
+            arg1.register(:my_logger, arg1.resolve(:logger))
           end
         end
       end
     end
 
     Test::Container
+  }
+
+  it "still allows access to the provider container via a provider step callback block arg" do
+    expect(container[:my_logger]).to be_instance_of(ExternalComponents::Logger)
   end
 
-  it "registers provider sources for the external components" do
-    require SPEC_ROOT.join("fixtures/external_components_deprecated/lib/external_components")
-
-    my_logger = container[:my_logger]
-
-    expect(my_logger).to be_instance_of(ExternalComponents::Logger)
-    expect(my_logger.log_level).to be(:debug)
-  end
-
-  it "prints deprecation warnings" do
+  it "prints a deprecation notice" do
     logger = StringIO.new
     Dry::Core::Deprecations.set_logger! logger
 
-    require SPEC_ROOT.join("fixtures/external_components_deprecated/lib/external_components")
+    container.start(:my_logger)
 
     logger.rewind
-    expect(logger.string).to match(/Dry::System\.register_provider is deprecated.*Dry::System\.register_component is deprecated/m)
+    expect(logger.string).to match(/Dry::System::Provider::Source.before and .after callbacks with single block parameter is deprecated.*Use `provider_container` \(or `container` for short\) inside your block instead/m)
   end
 end

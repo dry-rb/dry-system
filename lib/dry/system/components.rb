@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
-require "dry/system"
+require "dry/core/deprecations"
 
-Dry::System.register_source_providers Pathname(__dir__).join("system_components").realpath
+Dry::Core::Deprecations.announce(
+  "require \"dry/system/components\"",
+  "Use `require \"dry/system/provider_sources\"` instead",
+  tag: "dry-system",
+  uplevel: 1
+)
+
+require_relative "provider_sources"
