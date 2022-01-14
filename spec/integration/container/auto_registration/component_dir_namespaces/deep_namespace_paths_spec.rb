@@ -32,7 +32,7 @@ RSpec.describe "Component dir namespaces / Deep namespace paths" do
     end
 
     context "lazy loading" do
-      it "registers components using the container's configured namespace_separator, not the path separator used for the namespace path" do
+      it "registers components using the key namespace separator ('.'), not the path separator used for the namespace path" do
         expect(container["ns.nested.component"]).to be_an_instance_of Component
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe "Component dir namespaces / Deep namespace paths" do
         container.finalize!
       end
 
-      it "registers components using the container's configured namespace_separator, not the path separator used for the namespace path" do
+      it "registers components using the key namespace separator ('.'), not the path separator used for the namespace path" do
         expect(container["ns.nested.component"]).to be_an_instance_of Component
       end
     end

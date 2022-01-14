@@ -89,6 +89,10 @@ module Dry
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
 
+      # We presume "." as key namespace separator. This is not intended to be
+      # user-configurable.
+      config.namespace_separator = KEY_SEPARATOR
+
       class << self
         def strategies(value = nil)
           if value
@@ -652,7 +656,7 @@ module Dry
             if (component = dir.component_for_key(key))
               break component
             end
-          } || IndirectComponent.new(Identifier.new(key, separator: config.namespace_separator))
+          } || IndirectComponent.new(Identifier.new(key))
         end
 
         def provider_from_source(name, source:, group:, namespace:, &block)

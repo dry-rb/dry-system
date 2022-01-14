@@ -20,7 +20,6 @@ module Dry
       include Dry::Equalizer(:identifier, :namespace, :options)
 
       DEFAULT_OPTIONS = {
-        separator: DEFAULT_SEPARATOR,
         inflector: Dry::Inflector.new,
         loader: Loader
       }.freeze
@@ -137,7 +136,7 @@ module Dry
       #
       # @api public
       def const_path
-        namespace_const_path = namespace.const&.gsub(identifier.separator, PATH_SEPARATOR)
+        namespace_const_path = namespace.const&.gsub(KEY_SEPARATOR, PATH_SEPARATOR)
 
         if namespace_const_path
           "#{namespace_const_path}#{PATH_SEPARATOR}#{path_in_namespace}"

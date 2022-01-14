@@ -3,10 +3,9 @@
 require "dry/system/identifier"
 
 RSpec.describe Dry::System::Identifier do
-  subject(:identifier) { described_class.new(key, separator: separator) }
+  subject(:identifier) { described_class.new(key) }
 
   let(:key) { "kittens.operations.belly_rub" }
-  let(:separator) { "." }
 
   describe "#key" do
     it "returns the identifier's key" do
@@ -53,23 +52,6 @@ RSpec.describe Dry::System::Identifier do
 
     it "returns true when the provided string matches all segments of the identifier string" do
       expect(identifier.start_with?("kittens.operations.belly_rub")).to be true
-    end
-
-    describe "alternative separators" do
-      let(:key) { "kittens->operations->belly_rub" }
-      let(:separator) { "->" }
-
-      it "returns true when the given string matches the base segment of the key" do
-        expect(identifier.start_with?("kittens")).to be true
-      end
-
-      it "returns true when the given string matches multiple base segments of the key" do
-        expect(identifier.start_with?("kittens->operations")).to be true
-      end
-
-      it "returns false when a non-matching separator is given" do
-        expect(identifier.start_with?("kittens/operations")).to be false
-      end
     end
 
     it "returns true when the provided string is nil" do
@@ -132,10 +114,6 @@ RSpec.describe Dry::System::Identifier do
       it "adds the namespace" do
         expect(new_identifier.key).to eq "cats.kittens.operations.belly_rub"
       end
-    end
-
-    it "preserves other attributes" do
-      expect(new_identifier.separator).to eq identifier.separator
     end
 
     it "returns itself if the key is unchanged" do

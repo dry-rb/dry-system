@@ -13,14 +13,11 @@ module Dry
     class Importer
       attr_reader :container
 
-      attr_reader :separator
-
       attr_reader :registry
 
       # @api private
       def initialize(container)
         @container = container
-        @separator = container.config.namespace_separator
         @registry = {}
       end
 

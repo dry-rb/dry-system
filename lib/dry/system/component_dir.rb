@@ -42,8 +42,8 @@ module Dry
       #
       # @api private
       def component_for_key(key)
-        namespaces.each do |namespace|
-          identifier = Identifier.new(key, separator: container.config.namespace_separator)
+        config.namespaces.each do |namespace|
+          identifier = Identifier.new(key)
 
           next unless identifier.start_with?(namespace.key)
 
@@ -65,37 +65,12 @@ module Dry
 
       private
 
-      def namespaces
-        config.namespaces.to_a.map { |namespace| normalize_namespace(namespace) }
-      end
-
-      # Returns an array of "normalized" namespaces, safe for loading components
-      #
-      # This works around the issue of a namespace being added for a nested path but
-      # _without_ specifying a key namespace. In this case, the key namespace will defaut
-      # to match the path, meaning it will contain path separators instead of the
-      # container's configured `namespace_separator` (due to `Config::Namespaces` not
-      # being able to know the configured `namespace_separator`), so we need to replace
-      # the path separators with the proper `namespace_separator` here (where we _do_ know
-      # what it is).
-      def normalize_namespace(namespace)
-        if namespace.path&.include?(PATH_SEPARATOR) && namespace.default_key?
-          namespace = namespace.class.new(
-            path: namespace.path,
-            key: namespace.key.gsub(PATH_SEPARATOR, container.config.namespace_separator),
-            const: namespace.const
-          )
-        end
-
-        namespace
-      end
-
       def each_file
         return enum_for(:each_file) unless block_given?
 
         raise ComponentDirNotFoundError, full_path unless Dir.exist?(full_path)
 
-        namespaces.each do |namespace|
+        config.namespaces.each do |namespace|
           files(namespace).each do |file|
             yield file, namespace
           end
@@ -106,7 +81,7 @@ module Dry
         if namespace.path?
           Dir[File.join(full_path, namespace.path, "**", RB_GLOB)].sort
         else
-          non_root_paths = namespaces.to_a.reject(&:root?).map(&:path)
+          non_root_paths = config.namespaces.to_a.reject(&:root?).map(&:path)
 
           Dir[File.join(full_path, "**", RB_GLOB)].reject { |file_path|
             Pathname(file_path).relative_path_from(full_path).to_s.start_with?(*non_root_paths)
@@ -126,16 +101,14 @@ module Dry
       # @param path [String] the full path to the file
       # @return [Dry::System::Component] the component
       def component_for_path(path, namespace)
-        separator = container.config.namespace_separator
-
         key = Pathname(path).relative_path_from(full_path).to_s
           .sub(RB_EXT, EMPTY_STRING)
           .scan(WORD_REGEX)
-          .join(separator)
+          .join(KEY_SEPARATOR)
 
-        identifier = Identifier.new(key, separator: separator)
+        identifier = Identifier.new(key)
           .namespaced(
-            from: namespace.path&.gsub(PATH_SEPARATOR, separator),
+            from: namespace.path&.gsub(PATH_SEPARATOR, KEY_SEPARATOR),
             to: namespace.key
           )
 
