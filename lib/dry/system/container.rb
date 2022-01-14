@@ -104,25 +104,77 @@ module Dry
 
         extend Dry::Core::Deprecations["Dry::System::Container"]
 
-        # Configures the container
+        # @!method config
+        #   Returns the configuration for the container
+        #
+        #   @example
+        #     container.config.root = "/path/to/app"
+        #     container.config.root # => #<Pathname:/path/to/app>
+        #
+        #   @return [Dry::Configurable::Config]
+        #
+        #   @api public
+
+        # Yields a configuration object for the container, which you can use to modify the
+        # configuration, then runs the after-`configured` hooks and finalizes (freezes)
+        # the {config}.
+        #
+        # Does not finalize the config when given `finalize_config: false`
         #
         # @example
         #   class MyApp < Dry::System::Container
         #     configure do |config|
         #       config.root = Pathname("/path/to/app")
         #       config.name = :my_app
-        #       config.auto_register = %w(lib/apis lib/core)
         #     end
         #   end
         #
+        # @param finalize_config [Boolean]
+        #
         # @return [self]
         #
+        # @see after
+        #
         # @api public
-        def configure(&block)
-          hooks[:before_configure].each { |hook| instance_eval(&hook) }
+        def configure(finalize_config: true, &block)
           super(&block)
-          hooks[:after_configure].each { |hook| instance_eval(&hook) }
+
+          unless configured?
+            hooks[:after_configure].each { |hook| instance_eval(&hook) }
+            config.finalize! if finalize_config
+            @__configured__ = true
+          end
+
           self
+        end
+
+        # Marks the container as configured, runs the after-`configured` hooks, then
+        # finalizes (freezes) the {config}.
+        #
+        # This method is useful to call if you're modifying the container's {config}
+        # directly, rather than via the config object yielded when calling {configure}.
+        #
+        # Does not finalize the config if given `finalize_config: false`.
+        #
+        # @param finalize_config [Boolean]
+        #
+        # @return [self]
+        #
+        # @see after
+        #
+        # @api public
+        def configured!(finalize_config: true)
+          return self if configured?
+
+          config.finalize! if finalize_config
+          hooks[:after_configure].each { |hook| instance_eval(&hook) }
+          @__configured__ = true
+
+          self
+        end
+
+        def configured?
+          @__configured__.equal?(true)
         end
 
         # Registers another container for import
@@ -320,6 +372,8 @@ module Dry
         # @api public
         def finalize!(freeze: true, &block)
           return self if finalized?
+
+          configured!
 
           yield(self) if block
 
@@ -576,14 +630,24 @@ module Dry
           @importer ||= config.importer.new(self)
         end
 
-        # @api private
+        # Registers a callback hook to run afer container lifecycle events.
+        #
+        # Currently the only supported event is `:configured`. This hook is called after
+        # running {configure} or {configured!}, or when running {finalize!} and neither of
+        # the prior two methods have been called.
+        #
+        # When the block is run, `self` is the container class, and no block arguments are
+        # given.
+        #
+        # @param event [Symbol] the event name
+        # @param block [Proc] the callback hook to run
+        #
+        # @return [self]
+        #
+        # @api public
         def after(event, &block)
           hooks[:"after_#{event}"] << block
-        end
-
-        # @api private
-        def before(event, &block)
-          hooks[:"before_#{event}"] << block
+          self
         end
 
         # @api private
@@ -597,6 +661,7 @@ module Dry
             klass.hooks[event].concat blocks.dup
           end
 
+          klass.instance_variable_set(:@__configured__, false)
           klass.instance_variable_set(:@__finalized__, false)
 
           super

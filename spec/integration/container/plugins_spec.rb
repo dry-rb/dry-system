@@ -174,12 +174,10 @@ RSpec.describe Dry::System::Container, ".use" do
     context "inheritance" do
       before do
         Dry::System::Plugins.register(:test_plugin, plugin) do
-          before(:configure) do
-            setting :trace, default: []
-          end
+          setting :trace, default: []
 
           after(:configure) do
-            config.trace << :works
+            config.trace << :test_plugin_configured
           end
         end
       end
@@ -192,8 +190,8 @@ RSpec.describe Dry::System::Container, ".use" do
         system.configure {}
         descendant.configure {}
 
-        expect(system.config.trace).to eql([:works])
-        expect(descendant.config.trace).to eql([:works])
+        expect(system.config.trace).to eql([:test_plugin_configured])
+        expect(descendant.config.trace).to eql([:test_plugin_configured])
       end
     end
 
@@ -203,7 +201,7 @@ RSpec.describe Dry::System::Container, ".use" do
           setting :trace, default: []
 
           after(:configure) do
-            config.trace << :works
+            config.trace << :test_plugin_configured
           end
         end
       end
@@ -211,7 +209,7 @@ RSpec.describe Dry::System::Container, ".use" do
       it "enables the plugin only once" do
         system.use(:test_plugin).use(:test_plugin).configure {}
 
-        expect(system.config.trace).to eql([:works])
+        expect(system.config.trace).to eql([:test_plugin_configured])
       end
     end
   end

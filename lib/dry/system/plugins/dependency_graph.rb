@@ -14,9 +14,7 @@ module Dry
 
           system.use(:notifications)
 
-          system.before(:configure) do
-            setting :ignored_dependencies, default: []
-          end
+          system.setting :ignored_dependencies, default: []
 
           system.after(:configure) do
             self[:notifications].register_event(:resolved_dependency)

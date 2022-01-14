@@ -8,7 +8,7 @@ module Dry
       module Logging
         # @api private
         def self.extended(system)
-          system.before(:configure) do
+          system.instance_eval do
             setting :logger, reader: true
 
             setting :log_dir, default: "log"
@@ -40,7 +40,7 @@ module Dry
           elsif config.logger
             register(:logger, config.logger)
           else
-            config.logger = logger = config.logger_class.new(log_file_path)
+            config.logger = config.logger_class.new(log_file_path)
             config.logger.level = log_level
 
             register(:logger, config.logger)
