@@ -4,19 +4,21 @@ require "dry/system/constants"
 
 module Dry
   module System
-    # Default manual registration implementation
+    # Default manifest registration implementation
     #
-    # This is currently configured by default for every System::Container.
-    # Manual registrar objects are responsible for loading files from configured
-    # manual registration paths, which should hold code to explicitly register
+    # This is configured by default for every System::Container. The manifest registrar is
+    # responsible for loading manifest files that contain code to manually register
     # certain objects with the container.
     #
     # @api private
-    class ManualRegistrar
+    class ManifestRegistrar
+      # @api private
       attr_reader :container
 
+      # @api private
       attr_reader :config
 
+      # @api private
       def initialize(container)
         @container = container
         @config = container.config
@@ -34,6 +36,7 @@ module Dry
         require(root.join(config.registrations_dir, component.root_key.to_s))
       end
 
+      # @api private
       def file_exists?(component)
         File.exist?(File.join(registrations_dir, "#{component.root_key}#{RB_EXT}"))
       end

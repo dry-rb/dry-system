@@ -6,7 +6,7 @@ module Dry
   module System
     # An indirect component is a component that cannot be directly from a source file
     # directly managed by the container. It may be component that needs to be loaded
-    # indirectly, either via a manual registration file or an imported container
+    # indirectly, either via a registration manifest file or an imported container
     #
     # Indirect components are an internal abstraction and, unlike ordinary components, are
     # not exposed to users via component dir configuration hooks.
