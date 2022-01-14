@@ -18,7 +18,7 @@ require "dry/system/errors"
 require "dry/system/identifier"
 require "dry/system/importer"
 require "dry/system/indirect_component"
-require "dry/system/manual_registrar"
+require "dry/system/manifest_registrar"
 require "dry/system/plugins"
 require "dry/system/provider_registrar"
 require "dry/system/provider"
@@ -81,11 +81,11 @@ module Dry
       setting :root, default: Pathname.pwd.freeze, constructor: -> path { Pathname(path) }
       setting :provider_dirs, default: ["system/providers"]
       setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
-      setting :registrations_dir, default: "container"
+      setting :registrations_dir, default: "system/registrations"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :inflector, default: Dry::Inflector.new
       setting :auto_registrar, default: Dry::System::AutoRegistrar
-      setting :manual_registrar, default: Dry::System::ManualRegistrar
+      setting :manifest_registrar, default: Dry::System::ManifestRegistrar
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
 
@@ -321,7 +321,7 @@ module Dry
 
           importer.finalize!
           providers.finalize!
-          manual_registrar.finalize!
+          manifest_registrar.finalize!
           auto_registrar.finalize!
 
           @__finalized__ = true
@@ -412,7 +412,7 @@ module Dry
 
         # @api public
         def load_registrations!(name)
-          manual_registrar.(name)
+          manifest_registrar.(name)
           self
         end
 
@@ -563,8 +563,8 @@ module Dry
         end
 
         # @api private
-        def manual_registrar
-          @manual_registrar ||= config.manual_registrar.new(self)
+        def manifest_registrar
+          @manifest_registrar ||= config.manifest_registrar.new(self)
         end
 
         # @api private
@@ -616,8 +616,8 @@ module Dry
 
           if component.loadable?
             load_local_component(component)
-          elsif manual_registrar.file_exists?(component)
-            manual_registrar.(component)
+          elsif manifest_registrar.file_exists?(component)
+            manifest_registrar.(component)
           elsif importer.key?(component.identifier.root_key)
             load_imported_component(component.identifier)
           end
@@ -646,8 +646,8 @@ module Dry
         def find_component(key)
           # Find the first matching component from within the configured component dirs.
           # If no matching component is found, return a null component; this fallback is
-          # important because the component may still be loadable via the manual registrar
-          # or an imported container.
+          # important because the component may still be loadable via the manifest
+          # registrar or an imported container.
           component_dirs.detect { |dir|
             if (component = dir.component_for_key(key))
               break component
