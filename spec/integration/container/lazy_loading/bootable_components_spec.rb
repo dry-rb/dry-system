@@ -31,11 +31,27 @@ RSpec.describe "Lazy loading bootable components" do
         end
       end
 
-      it "boots the component and can resolve multiple other components registered using the same root key" do
-        expect(Test::AnotherContainer["core.kitten_service.fetch_kitten"]).to be
-        expect(Test::AnotherContainer.keys).to include("core.kitten_service.client", "core.kitten_service.fetch_kitten")
-        expect(Test::AnotherContainer["core.kitten_service.submit_kitten"]).to be
-        expect(Test::AnotherContainer.keys).to include("core.kitten_service.client", "core.kitten_service.fetch_kitten", "core.kitten_service.submit_kitten")
+      context "lazy loading" do
+        it "boots the component and can resolve multiple other components registered using the same root key" do
+          expect(Test::AnotherContainer["core.kitten_service.fetch_kitten"]).to be
+          expect(Test::AnotherContainer.keys).to include("core.kitten_service.fetch_kitten")
+
+          expect(Test::AnotherContainer["core.kitten_service.submit_kitten"]).to be
+          expect(Test::AnotherContainer.keys).to include("core.kitten_service.submit_kitten")
+
+          expect(Test::AnotherContainer["core.kitten_service.client"]).to be
+          expect(Test::AnotherContainer.keys).to include("core.kitten_service.client")
+        end
+      end
+
+      context "finalized" do
+        before do
+          Test::AnotherContainer.finalize!
+        end
+
+        it "boots the component in the imported container and imports the bootable component's registered components" do
+          expect(Test::AnotherContainer.keys).to include("core.kitten_service.fetch_kitten", "core.kitten_service.submit_kitten", "core.kitten_service.client")
+        end
       end
     end
   end

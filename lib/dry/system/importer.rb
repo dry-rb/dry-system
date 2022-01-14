@@ -56,6 +56,17 @@ module Dry
         end
       end
 
+      def import_component(namespace, other_container, key)
+        # TODO: really need methods exposing this logic
+        return if !other_container.config.exports.nil? && other_container.config.exports.empty?
+        return if Array(other_container.config.exports).any? && !other_container.config.exports.include?(key)
+
+        value = other_container[key]
+
+        # TODO: better way of constructing key?
+        container.register("#{namespace}.#{key}", value)
+      end
+
       # @api private
       def register(other)
         registry.update(other)

@@ -48,7 +48,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
     }
   }
 
-  context "exports configured" do
+  context "exports configured as a list of keys" do
     before do
       # I wonder if this should be a class-level thing rather than config... that'd make
       # it symmetrical with `import`
@@ -61,40 +61,59 @@ RSpec.describe "Container / Imports / Explicit exports" do
       ]
     end
 
-    it "imports only the components explicitly marked as exports" do
-      expect(importing_container.key?("other.exportable_component_a")).to be true
-      expect(importing_container.key?("other.nested.exportable_component_b")).to be true
-      expect(importing_container.key?("other.private_component")).to be false
+    context "importing container is lazy loading" do
+      it "can import only the components marked as exports" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(importing_container.key?("other.nested.exportable_component_b")).to be true
+        expect(importing_container.key?("other.private_component")).to be false
+      end
+
+      it "only loads imported components as required (in both containers)" do
+        importing_container["other.exportable_component_a"]
+
+        expect(importing_container.keys).to eq ["other.exportable_component_a"]
+        expect(exporting_container.keys).to eq ["exportable_component_a"]
+      end
     end
 
-    it "does not finalize the exporting container" do
-      importing_container.importer.finalize!
+    context "importing container is finalized" do
+      before do
+        importing_container.finalize!
+      end
 
-      expect(exporting_container).not_to be_finalized
-    end
+      it "can import only the components explicitly marked as exports" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(importing_container.key?("other.nested.exportable_component_b")).to be true
+        expect(importing_container.key?("other.private_component")).to be false
+      end
 
-    it "does not load components not marked for export" do
-      importing_container.importer.finalize!
+      it "does not finalize the exporting container" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(exporting_container).not_to be_finalized
+      end
 
-      expect(exporting_container.registered?("exportable_component_a")).to be true
-      expect(exporting_container.registered?("private_component")).to be false
+      it "does not load components not marked for export" do
+        expect(exporting_container.keys).to eq [
+          "exportable_component_a",
+          "nested.exportable_component_b"
+        ]
+      end
     end
   end
 
-  context "empty exports configured" do
+  context "exports configured as an empty array" do
     before do
       exporting_container.config.exports = []
     end
 
-    it "imports nothing" do
+    it "cannot import anything" do
       expect(importing_container.key?("other.exportable_component_a")).to be false
       expect(importing_container.key?("other.nested.exportable_component_b")).to be false
       expect(importing_container.key?("other.private_component")).to be false
     end
 
     it "does not finalize the exporting container" do
-      importing_container.importer.finalize!
-
+      expect(importing_container.key?("other.exportable_component_a")).to be false
       expect(exporting_container).not_to be_finalized
     end
 
@@ -103,7 +122,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
     end
   end
 
-  context "exports not configured" do
+  context "exports not configured (defaulting to nil)" do
     it "imports all components" do
       expect(importing_container.key?("other.exportable_component_a")).to be true
       expect(importing_container.key?("other.nested.exportable_component_b")).to be true

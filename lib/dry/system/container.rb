@@ -698,11 +698,11 @@ module Dry
         def load_imported_component(identifier)
           import_namespace = identifier.root_key
 
-          container = importer[import_namespace]
+          other_container = importer[import_namespace]
 
-          container.load_component(identifier.namespaced(from: import_namespace, to: nil).key)
+          other_container_key = identifier.namespaced(from: import_namespace, to: nil).key
 
-          importer.(import_namespace, container)
+          importer.import_component(import_namespace, other_container, other_container_key)
         end
 
         def find_component(key)
