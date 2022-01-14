@@ -199,7 +199,7 @@ module Dry
         def import(other)
           case other
           when Hash then importer.register(other)
-          when Dry::Container::Namespace then super
+          when Dry::Container::Namespace then super # FIXME: I don't like that this results in immediate import
           else
             raise ArgumentError, <<-STR
               +other+ must be a hash of names and systems, or a Dry::Container namespace
