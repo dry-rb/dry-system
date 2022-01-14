@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/container"
+
 module Dry
   module System
     # Default importer implementation
@@ -23,8 +25,8 @@ module Dry
 
       # @api private
       def finalize!
-        registry.each do |name, container|
-          call(name, container.finalize!)
+        registry.each do |namespace, container|
+          call(namespace, container)
         end
         self
       end
@@ -40,8 +42,18 @@ module Dry
       end
 
       # @api private
-      def call(ns, other)
-        container.merge(other, namespace: ns)
+      def call(namespace, other)
+        if other.config.exports.nil?
+          container.merge(other.finalize!, namespace: namespace)
+        else
+          # This has the work to generate the import container within the importer.
+          # Another approach could be to have that on the containers themselves, e.g.
+          # `some_container.export_container` or similar
+          import_container = other.config.exports.each_with_object(Dry::Container.new) { |key, ic|
+            ic.register(key, other[key])
+          }
+          container.merge(import_container, namespace: namespace)
+        end
       end
 
       # @api private

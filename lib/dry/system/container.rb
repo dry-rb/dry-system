@@ -88,6 +88,7 @@ module Dry
       setting :manifest_registrar, default: Dry::System::ManifestRegistrar
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
+      setting :exports
 
       # We presume "." as key namespace separator. This is not intended to be
       # user-configurable.
