@@ -50,10 +50,13 @@ module Dry
           # Another approach could be to have that on the containers themselves, e.g.
           # `some_container.export_container` or similar
           import_container = other.config.exports.each_with_object(Dry::Container.new) { |key, ic|
-            ic.register(key, other[key])
+            ic.register(key, other[key]) if other.key?(key)
           }
           container.merge(import_container, namespace: namespace)
         end
+
+        # TODO: return self?
+        self
       end
 
       def import_component(namespace, other_container, key)
@@ -61,10 +64,13 @@ module Dry
         return if !other_container.config.exports.nil? && other_container.config.exports.empty?
         return if Array(other_container.config.exports).any? && !other_container.config.exports.include?(key)
 
-        value = other_container[key]
+        if other_container.key?(key)
+          # TODO: better way of constructing key?
+          container.register("#{namespace}.#{key}", other_container[key])
+        end
 
-        # TODO: better way of constructing key?
-        container.register("#{namespace}.#{key}", value)
+        # TODO: return self?
+        self
       end
 
       # @api private

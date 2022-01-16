@@ -98,6 +98,33 @@ RSpec.describe "Container / Imports / Explicit exports" do
     end
   end
 
+  context "non-existent exports configured" do
+    let(:exports) {
+      %w[
+        exportable_component_a
+        non_existent_component
+      ]
+    }
+
+    context "importing container is lazy loading" do
+      it "ignores the non-existent keys" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(importing_container.key?("other.non_existent_component")).to be false
+      end
+    end
+
+    context "importing container is finalize" do
+      before do
+        importing_container.finalize!
+      end
+
+      it "ignores the non-existent keys" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(importing_container.key?("other.non_existent_component")).to be false
+      end
+    end
+  end
+
   context "exports configured as an empty array" do
     let(:exports) { [] }
 
