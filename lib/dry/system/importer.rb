@@ -59,7 +59,9 @@ module Dry
         self
       end
 
-      def import_component(namespace, other_container, key)
+      def import_component(namespace, key)
+        other_container = self[namespace]
+
         # TODO: really need methods exposing this logic
         return if !other_container.config.exports.nil? && other_container.config.exports.empty?
         return if Array(other_container.config.exports).any? && !other_container.config.exports.include?(key)

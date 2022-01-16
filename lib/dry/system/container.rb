@@ -704,11 +704,10 @@ module Dry
         def load_imported_component(identifier)
           import_namespace = identifier.root_key
 
-          other_container = importer[import_namespace]
+          return unless importer.key?(import_namespace)
 
-          other_container_key = identifier.namespaced(from: import_namespace, to: nil).key
-
-          importer.import_component(import_namespace, other_container, other_container_key)
+          import_key = identifier.namespaced(from: import_namespace, to: nil).key
+          importer.import_component(import_namespace, import_key)
         end
 
         def find_component(key)
