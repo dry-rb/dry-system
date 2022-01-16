@@ -237,8 +237,21 @@ module Dry
       #
       # @api private
       def apply
-        provider_container.each do |key, item|
-          target_container.register(key, item) unless target_container.registered?(key)
+        provider_container.each_key do |key|
+          next if target_container.registered?(key)
+
+          # Access the provider's container items directly so that we can preserve all
+          # their options when we merge them with the target container (e.g. if a
+          # component in the provider container was registered with a block, we want block
+          # registration behavior to be exhibited when later resolving that component from
+          # the target container).
+          item = provider_container._container[key]
+
+          if item.callable?
+            target_container.register(key, **item.options, &item.item)
+          else
+            target_container.register(key, item.item, **item.options)
+          end
         end
 
         self
