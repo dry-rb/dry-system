@@ -2,7 +2,7 @@
 
 Test::Container.register_provider(:client) do
   start do
-    use :logger
+    target.start :logger
 
     Test::Client = Struct.new(:logger)
 

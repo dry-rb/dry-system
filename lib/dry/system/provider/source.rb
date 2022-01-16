@@ -183,24 +183,6 @@ module Dry
         # @api public
         def stop; end
 
-        # Starts the other providers registered with the given names.
-        #
-        # Calling this method is helpful if your provider's source behavior depends on the
-        # results of other providers.
-        #
-        # @param provider_names [Array<Symbol>] Names of the other providers to start
-        #
-        # @return [self]
-        #
-        # @api public
-        def use(*provider_names)
-          provider_names.each do |name|
-            target_container.start(name)
-          end
-
-          self
-        end
-
         # Registers a "before" callback for the given lifecycle step.
         #
         # The given block will be run before the lifecycle step method is run. The block

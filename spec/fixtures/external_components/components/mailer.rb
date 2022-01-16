@@ -16,7 +16,7 @@ Dry::System.register_provider_source(:mailer, group: :external_components) do
   end
 
   start do
-    use :client
+    target.start :client
 
     register(:mailer, ExternalComponents::Mailer.new(target_container["client"]))
   end
