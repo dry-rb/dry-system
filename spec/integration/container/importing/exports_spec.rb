@@ -29,6 +29,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
 
   let(:exporting_container) {
     root = @dir
+    exports = self.exports if respond_to?(:exports)
 
     Class.new(Dry::System::Container) {
       configure do |config|
@@ -36,6 +37,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
         config.component_dirs.add "lib" do |dir|
           dir.namespaces.add_root const: "test"
         end
+        config.exports = exports if exports
       end
     }
   }
@@ -49,17 +51,12 @@ RSpec.describe "Container / Imports / Explicit exports" do
   }
 
   context "exports configured as a list of keys" do
-    before do
-      # I wonder if this should be a class-level thing rather than config... that'd make
-      # it symmetrical with `import`
-      #
-      # Another question to consider here is whether anything registering an
-      # after_configure hook might want access to these
-      exporting_container.config.exports = %w[
+    let(:exports) {
+      %w[
         exportable_component_a
         nested.exportable_component_b
       ]
-    end
+    }
 
     context "importing container is lazy loading" do
       it "can import only the components marked as exports" do
@@ -102,9 +99,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
   end
 
   context "exports configured as an empty array" do
-    before do
-      exporting_container.config.exports = []
-    end
+    let(:exports) { [] }
 
     it "cannot import anything" do
       expect(importing_container.key?("other.exportable_component_a")).to be false
