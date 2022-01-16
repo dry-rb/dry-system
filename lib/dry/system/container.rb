@@ -94,14 +94,6 @@ module Dry
       config.namespace_separator = KEY_SEPARATOR
 
       class << self
-        def strategies(value = nil)
-          if value
-            @strategies = value
-          else
-            @strategies ||= Dry::AutoInject::Strategies
-          end
-        end
-
         extend Dry::Core::Deprecations["Dry::System::Container"]
 
         # @!method config
@@ -499,8 +491,8 @@ module Dry
         # @param options [Hash] injector options
         #
         # @api public
-        def injector(options = {strategies: strategies})
-          Dry::AutoInject(self, options)
+        def injector(**options)
+          Dry::AutoInject(self, **options)
         end
 
         # Requires one or more files relative to the container's root
