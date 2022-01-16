@@ -269,8 +269,8 @@ module Dry
         # @return [Dry::Container] the provider container
         #
         # @api public
-        def register(*args)
-          provider_container.register(*args)
+        def register(...)
+          provider_container.register(...)
         end
 
         # Resolves a previously registered component from the provider container.
