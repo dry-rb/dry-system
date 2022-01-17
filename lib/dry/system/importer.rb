@@ -49,38 +49,13 @@ module Dry
       #
       # @api private
       def call(other:, namespace:, keys: Undefined)
-        if other.config.exports.nil?
-          # WIP TODO: import the select keys
-
-          if keys == Undefined
-            container.merge(other.finalize!, namespace: namespace)
-          else
-            # WIP
-          end
+        if keys == Undefined
+          import_all(other, namespace)
         else
-          if keys == Undefined
-            import_container = other.config.exports.each_with_object(Dry::Container.new) { |key, ic|
-              # TODO: this needs to be made from the items, not by re-registering and re-resolving
-              ic.register(key, other[key]) if other.key?(key)
-            }
-            container.merge(import_container, namespace: namespace)
-          else
-            import_container = keys_to_import(keys, other.config.exports).each_with_object(Dry::Container.new) { |key, ic|
-              # In this case, where keys have been provided, we should raise an error if other.key?(key) is nil
-              ic.register(key, other[key]) if other.key?(key)
-            }
-            container.merge(import_container, namespace: namespace)
-            # byebug
-          end
+          import_keys(keys, other, namespace)
         end
 
-        # TODO: return self?
         self
-      end
-
-      def keys_to_import(keys, export_keys)
-        # TODO: raise error if `keys` includes keys that are not in `export_keys`
-        keys & export_keys
       end
 
       def import_component(namespace, key)
@@ -111,6 +86,47 @@ module Dry
       def old_register(other)
         registry.update(other)
       end
+
+      private
+
+      def import_all(other, namespace)
+        if other.config.exports.nil?
+          container.merge(other.finalize!, namespace: namespace)
+        else
+          import_container = other.config.exports.each_with_object(Dry::Container.new) { |key, ic|
+            # TODO: this should be made from the container _items_, not by re-registering
+            # and re-resolving
+            ic.register(key, other[key]) if other.key?(key)
+          }
+          container.merge(import_container, namespace: namespace)
+        end
+
+        self
+      end
+
+      def import_keys(keys, other, namespace)
+        if other.config.exports.nil?
+          import_container = keys.each_with_object(Dry::Container.new) { |key, ic|
+            ic.register(key, other[key]) if other.key?(key)
+          }
+
+          container.merge(import_container, namespace: namespace)
+        else
+          import_container = keys_to_import(keys, other.config.exports).each_with_object(Dry::Container.new) { |key, ic|
+            # In this case, where keys have been provided, we should raise an error if other.key?(key) is nil
+            ic.register(key, other[key]) if other.key?(key)
+          }
+          container.merge(import_container, namespace: namespace)
+        end
+
+        self
+      end
+
+      def keys_to_import(keys, export_keys)
+        # TODO: raise error if `keys` includes keys that are not in `export_keys`
+        keys & export_keys
+      end
+
     end
   end
 end

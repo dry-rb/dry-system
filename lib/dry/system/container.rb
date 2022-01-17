@@ -204,6 +204,9 @@ module Dry
           importer.register(container: from, namespace: as, keys: keys)
         end
 
+        # TODO: do we need to find some way to preserve the original dry-container
+        # `import` functionality? Maybe via another method altogether?
+
         def old_import(other)
           case other
           when Hash then importer.register(other)
