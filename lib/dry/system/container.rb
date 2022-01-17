@@ -5,10 +5,8 @@ require "pathname"
 require "dry-auto_inject"
 require "dry-configurable"
 require "dry-container"
-require "dry/inflector"
-
-require "dry/core/constants"
 require "dry/core/deprecations"
+require "dry/inflector"
 
 require "dry/system"
 require "dry/system/auto_registrar"
@@ -202,7 +200,11 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(other)
+        def import(keys: Undefined, from:, as:)
+          importer.register(container: from, namespace: as, keys: keys)
+        end
+
+        def old_import(other)
           case other
           when Hash then importer.register(other)
           when Dry::Container::Namespace then super # FIXME: I don't like that this results in immediate import

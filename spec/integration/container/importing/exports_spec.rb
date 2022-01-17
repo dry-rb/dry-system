@@ -46,7 +46,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
     exporting_container = self.exporting_container
 
     Class.new(Dry::System::Container) {
-      import other: exporting_container
+      import from: exporting_container, as: :other
     }
   }
 
@@ -107,6 +107,9 @@ RSpec.describe "Container / Imports / Explicit exports" do
     }
 
     context "importing container is lazy loading" do
+      # TODO: this might be fine when the importing container is importing all, but we
+      # should raise an error if the importing container is explicitly requesting an
+      # export that is listed but non-existent
       it "ignores the non-existent keys" do
         expect(importing_container.key?("other.exportable_component_a")).to be true
         expect(importing_container.key?("other.non_existent_component")).to be false
