@@ -14,6 +14,17 @@ module Dry
     #
     # @api private
     class Importer
+      # @api private
+      class Item
+        attr_reader :namespace, :container, :keys
+
+        def initialize(namespace:, container:, keys:)
+          @namespace = namespace
+          @container = container
+          @keys = keys
+        end
+      end
+
       attr_reader :container
 
       attr_reader :registry
@@ -25,13 +36,7 @@ module Dry
       end
 
       def register(container:, namespace:, keys: Undefined)
-        # TODO: maybe we want a better data structure for this
-        registry[namespace] = {container: container, keys: keys}
-      end
-
-      # @api private
-      def old_register(other)
-        registry.update(other)
+        registry[namespace] = Item.new(namespace: namespace, container: container, keys: keys)
       end
 
       # @api private
@@ -43,6 +48,7 @@ module Dry
       def key?(name)
         registry.key?(name)
       end
+      alias_method :namespace?, :key?
 
       # @api private
       def finalize!
@@ -52,35 +58,18 @@ module Dry
 
       # @api private
       def import(namespace, keys: Undefined)
-        item = registry.fetch(namespace)
-        other = item.fetch(:container)
-        keys = Undefined.default(keys) { item.fetch(:keys) }
+        item = self[namespace]
+        keys = Undefined.default(keys, item.keys)
 
         if keys
-          import_keys(other, namespace, keys)
+          # Ensure we're only importing exported keys
+          keys = keys & item.keys if item.keys
+
+          import_keys(item.container, namespace, keys)
         else
-          import_all(other, namespace)
+          import_all(item.container, namespace)
         end
 
-        self
-      end
-
-      def import_component(namespace:, key:)
-        opts = self[namespace]
-        other_container = opts.fetch(:container)
-        keys = opts.fetch(:keys)
-
-        # TODO: really need methods exposing this logic
-        return self if !other_container.config.exports.nil? && other_container.config.exports.empty?
-        return self if Array(other_container.config.exports).any? && !other_container.config.exports.include?(key)
-        return self if keys && !keys.include?(key) # TODO: this should raise error?
-
-        if other_container.key?(key)
-          # TODO: better way of constructing key?
-          container.register("#{namespace}.#{key}", other_container[key])
-        end
-
-        # TODO: return self?
         self
       end
 

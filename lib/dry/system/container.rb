@@ -691,7 +691,7 @@ module Dry
             load_local_component(component)
           elsif manifest_registrar.file_exists?(component)
             manifest_registrar.(component)
-          elsif importer.key?(component.identifier.root_key)
+          elsif importer.namespace?(component.identifier.root_key)
             load_imported_component(component.identifier)
           end
 
@@ -709,10 +709,11 @@ module Dry
         def load_imported_component(identifier)
           import_namespace = identifier.root_key
 
-          return unless importer.key?(import_namespace)
+          return unless importer.namespace?(import_namespace)
 
           import_key = identifier.namespaced(from: import_namespace, to: nil).key
-          importer.import_component(namespace: import_namespace, key: import_key)
+
+          importer.import(import_namespace, keys: [import_key])
         end
 
         def find_component(key)
