@@ -712,7 +712,7 @@ module Dry
           return unless importer.key?(import_namespace)
 
           import_key = identifier.namespaced(from: import_namespace, to: nil).key
-          importer.import_component(import_namespace, import_key)
+          importer.import_component(namespace: import_namespace, key: import_key)
         end
 
         def find_component(key)

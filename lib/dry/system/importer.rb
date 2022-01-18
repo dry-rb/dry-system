@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/container"
+require_relative "constants"
 
 module Dry
   module System
@@ -23,15 +24,14 @@ module Dry
         @registry = {}
       end
 
-      # @api private
-      def finalize!
-        registry.each do |namespace, opts|
-          container = opts.fetch(:container)
-          keys = opts.fetch(:keys)
+      def register(container:, namespace:, keys: Undefined)
+        # TODO: maybe we want a better data structure for this
+        registry[namespace] = {container: container, keys: keys}
+      end
 
-          call(other: container, namespace: namespace, keys: keys)
-        end
-        self
+      # @api private
+      def old_register(other)
+        registry.update(other)
       end
 
       # @api private
@@ -44,10 +44,18 @@ module Dry
         registry.key?(name)
       end
 
-      # TODO: I have a feeling that "call" isn't the best name for this anymore
-      #
       # @api private
-      def call(other:, namespace:, keys: nil)
+      def finalize!
+        registry.each_key { import(_1) }
+        self
+      end
+
+      # @api private
+      def import(namespace, keys: Undefined)
+        item = registry.fetch(namespace)
+        other = item.fetch(:container)
+        keys = Undefined.default(keys) { item.fetch(:keys) }
+
         if keys
           import_keys(other, namespace, keys)
         else
@@ -57,7 +65,7 @@ module Dry
         self
       end
 
-      def import_component(namespace, key)
+      def import_component(namespace:, key:)
         opts = self[namespace]
         other_container = opts.fetch(:container)
         keys = opts.fetch(:keys)
@@ -74,16 +82,6 @@ module Dry
 
         # TODO: return self?
         self
-      end
-
-      def register(container:, namespace:, keys: Undefined)
-        # TODO: maybe we want a better data structure for this
-        registry[namespace] = {container: container, keys: keys}
-      end
-
-      # @api private
-      def old_register(other)
-        registry.update(other)
       end
 
       private
