@@ -172,7 +172,6 @@ RSpec.describe "Container / Imports / Explicit exports" do
         expect(exporting_container.keys).to be_empty
       end
     end
-
   end
 
   context "exports not configured (defaulting to nil)" do

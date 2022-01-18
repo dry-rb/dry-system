@@ -45,7 +45,7 @@ RSpec.describe "Container / Imports / Partial imports" do
     }
   }
 
-  let(:import_keys) { ["exportable_component_a"] }
+  let(:import_keys) { %w[exportable_component_a] }
 
   context "no exports configured (whole container export)" do
     context "lazy loading" do
@@ -68,7 +68,7 @@ RSpec.describe "Container / Imports / Partial imports" do
   end
 
   context "exports configured (with import keys included)" do
-    let(:exports) { ["exportable_component_a", "exportable_component_b"] }
+    let(:exports) { %w[exportable_component_a exportable_component_b] }
 
     context "lazy loading" do
       it "imports the specified components only" do
@@ -90,7 +90,7 @@ RSpec.describe "Container / Imports / Partial imports" do
   end
 
   context "exports configured (with import keys not included)" do
-    let(:exports) { ["exportable_component_b"] }
+    let(:exports) { %w[exportable_component_b] }
 
     context "lazy loading" do
       it "does not import any components" do
@@ -110,7 +110,7 @@ RSpec.describe "Container / Imports / Partial imports" do
   end
 
   context "import keys specified that do not exist in exporting container" do
-    let(:import_keys) { ["exportable_component_a", "non_existent_key"] }
+    let(:import_keys) { %w[exportable_component_a non_existent_key] }
 
     context "lazy loading" do
       it "imports the existent components only" do
