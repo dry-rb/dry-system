@@ -40,7 +40,7 @@ RSpec.describe "Lazy-booting external deps" do
 
     before do
       module Test
-        Umbrella.import(main: App)
+        Umbrella.import(from: App, as: :main)
         Import = Umbrella.injector
       end
     end
@@ -65,7 +65,7 @@ RSpec.describe "Lazy-booting external deps" do
 
     before do
       module Test
-        App.import(core: Umbrella)
+        App.import(from: Umbrella, as: :core)
         Import = App.injector
       end
     end

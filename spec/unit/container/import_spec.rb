@@ -12,7 +12,7 @@ RSpec.describe Dry::System::Container, ".import" do
   end
 
   it "imports one container into another" do
-    app.import(persistence: db)
+    app.import(from: db, as: :persistence)
 
     expect(app.registered?("persistence.users")).to be(false)
 
@@ -36,7 +36,7 @@ RSpec.describe Dry::System::Container, ".import" do
           config.component_dirs.add "lib"
         end
 
-        import other: Test::Other
+        import from: Test::Other, as: :other
       end
 
       module Test

@@ -26,7 +26,7 @@ RSpec.describe "Lazy loading bootable components" do
       before do
         module Test
           class AnotherContainer < Dry::System::Container
-            import core: Container
+            import from: Container, as: :core
           end
         end
       end
