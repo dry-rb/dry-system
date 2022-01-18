@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Container / Imports / Explicit exports" do
+RSpec.describe "Container / Imports / Registration" do
   let(:exporting_container) {
     Class.new(Dry::System::Container) {
       register "block_component" do
