@@ -16,12 +16,12 @@ module Dry
     class Importer
       # @api private
       class Item
-        attr_reader :namespace, :container, :keys
+        attr_reader :namespace, :container, :import_keys
 
-        def initialize(namespace:, container:, keys:)
+        def initialize(namespace:, container:, import_keys:)
           @namespace = namespace
           @container = container
-          @keys = keys
+          @import_keys = import_keys
         end
       end
 
@@ -36,7 +36,7 @@ module Dry
       end
 
       def register(container:, namespace:, keys: Undefined)
-        registry[namespace] = Item.new(namespace: namespace, container: container, keys: keys)
+        registry[namespace] = Item.new(namespace: namespace, container: container, import_keys: keys)
       end
 
       # @api private
@@ -59,13 +59,10 @@ module Dry
       # @api private
       def import(namespace, keys: Undefined)
         item = self[namespace]
-        keys = Undefined.default(keys, item.keys)
+        keys = Undefined.default(keys, item.import_keys)
 
         if keys
-          # Ensure we're only importing exported keys
-          keys = keys & item.keys if item.keys
-
-          import_keys(item.container, namespace, keys)
+          import_keys(item.container, namespace, keys_to_import(keys, item))
         else
           import_all(item.container, namespace)
         end
@@ -98,7 +95,7 @@ module Dry
 
           container.merge(import_container, namespace: namespace)
         else
-          import_container = keys_to_import(keys, other.config.exports).each_with_object(Dry::Container.new) { |key, ic|
+          import_container = keys.each_with_object(Dry::Container.new) { |key, ic|
             # In this case, where keys have been provided, we should raise an error if other.key?(key) is nil
             ic.register(key, other[key]) if other.key?(key)
           }
@@ -108,11 +105,11 @@ module Dry
         self
       end
 
-      def keys_to_import(keys, export_keys)
-        # TODO: raise error if `keys` includes keys that are not in `export_keys`
-        keys & export_keys
+      def keys_to_import(keys, item)
+        keys
+          .then { (arr = item.import_keys) ? _1 & arr : _1 }
+          .then { (arr = item.container.config.exports) ? _1 & arr : _1 }
       end
-
     end
   end
 end
