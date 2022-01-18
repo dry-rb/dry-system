@@ -71,6 +71,13 @@ RSpec.describe "Container / Imports / Explicit exports" do
         expect(importing_container.keys).to eq ["other.exportable_component_a"]
         expect(exporting_container.keys).to eq ["exportable_component_a"]
       end
+
+      it "does not finalize either container" do
+        importing_container["other.exportable_component_a"]
+
+        expect(importing_container).not_to be_finalized
+        expect(exporting_container).not_to be_finalized
+      end
     end
 
     context "importing container is finalized" do
@@ -98,7 +105,7 @@ RSpec.describe "Container / Imports / Explicit exports" do
     end
   end
 
-  context "non-existent exports configured" do
+  context "exports configured with non-existent components included" do
     let(:exports) {
       %w[
         exportable_component_a
@@ -107,16 +114,13 @@ RSpec.describe "Container / Imports / Explicit exports" do
     }
 
     context "importing container is lazy loading" do
-      # TODO: this might be fine when the importing container is importing all, but we
-      # should raise an error if the importing container is explicitly requesting an
-      # export that is listed but non-existent
       it "ignores the non-existent keys" do
         expect(importing_container.key?("other.exportable_component_a")).to be true
         expect(importing_container.key?("other.non_existent_component")).to be false
       end
     end
 
-    context "importing container is finalize" do
+    context "importing container is finalized" do
       before do
         importing_container.finalize!
       end
@@ -131,33 +135,83 @@ RSpec.describe "Container / Imports / Explicit exports" do
   context "exports configured as an empty array" do
     let(:exports) { [] }
 
-    it "cannot import anything" do
-      expect(importing_container.key?("other.exportable_component_a")).to be false
-      expect(importing_container.key?("other.nested.exportable_component_b")).to be false
-      expect(importing_container.key?("other.private_component")).to be false
+    context "importing container is lazy loading" do
+      it "cannot import anything" do
+        expect(importing_container.key?("other.exportable_component_a")).to be false
+        expect(importing_container.key?("other.nested.exportable_component_b")).to be false
+        expect(importing_container.key?("other.private_component")).to be false
+      end
+
+      it "does not finalize the exporting container" do
+        expect(importing_container.key?("other.exportable_component_a")).to be false
+        expect(exporting_container).not_to be_finalized
+      end
+
+      it "does not load any components in the exporting container" do
+        expect(exporting_container.keys).to be_empty
+      end
     end
 
-    it "does not finalize the exporting container" do
-      expect(importing_container.key?("other.exportable_component_a")).to be false
-      expect(exporting_container).not_to be_finalized
+    context "importing container is finalized" do
+      before do
+        importing_container.finalize!
+      end
+
+      it "cannot import anything" do
+        expect(importing_container.key?("other.exportable_component_a")).to be false
+        expect(importing_container.key?("other.nested.exportable_component_b")).to be false
+        expect(importing_container.key?("other.private_component")).to be false
+      end
+
+      it "does not finalize the exporting container" do
+        expect(importing_container.key?("other.exportable_component_a")).to be false
+        expect(exporting_container).not_to be_finalized
+      end
+
+      it "does not load any components in the exporting container" do
+        expect(exporting_container.keys).to be_empty
+      end
     end
 
-    it "does not load any components in the exporting container" do
-      expect(exporting_container.keys).to be_empty
-    end
   end
 
   context "exports not configured (defaulting to nil)" do
-    it "imports all components" do
-      expect(importing_container.key?("other.exportable_component_a")).to be true
-      expect(importing_container.key?("other.nested.exportable_component_b")).to be true
-      expect(importing_container.key?("other.private_component")).to be true
+    context "importing container is lazy loading" do
+      it "can import all components" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(importing_container.key?("other.nested.exportable_component_b")).to be true
+        expect(importing_container.key?("other.private_component")).to be true
+      end
+
+      it "only loads imported components as required (in both containers)" do
+        importing_container["other.exportable_component_a"]
+
+        expect(importing_container.keys).to eq ["other.exportable_component_a"]
+        expect(exporting_container.keys).to eq ["exportable_component_a"]
+      end
+
+      it "does not finalize either container" do
+        importing_container["other.exportable_component_a"]
+
+        expect(importing_container).not_to be_finalized
+        expect(exporting_container).not_to be_finalized
+      end
     end
 
-    it "finalizes the exporting container" do
-      importing_container.importer.finalize!
+    context "importing container is finalized" do
+      before do
+        importing_container.finalize!
+      end
 
-      expect(exporting_container).to be_finalized
+      it "imports all components" do
+        expect(importing_container.key?("other.exportable_component_a")).to be true
+        expect(importing_container.key?("other.nested.exportable_component_b")).to be true
+        expect(importing_container.key?("other.private_component")).to be true
+      end
+
+      it "finalizes the exporting container" do
+        expect(exporting_container).to be_finalized
+      end
     end
   end
 end
