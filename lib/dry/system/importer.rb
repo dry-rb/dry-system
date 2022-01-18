@@ -35,8 +35,13 @@ module Dry
         @registry = {}
       end
 
-      def register(container:, namespace:, keys: Undefined)
-        registry[namespace] = Item.new(namespace: namespace, container: container, import_keys: keys)
+      # @api private
+      def register(namespace:, container:, keys: nil)
+        registry[namespace] = Item.new(
+          namespace: namespace,
+          container: container,
+          import_keys: keys
+        )
       end
 
       # @api private
