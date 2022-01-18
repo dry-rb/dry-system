@@ -200,7 +200,7 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(keys: Undefined, from:, as:)
+        def import(keys: nil, from:, as:)
           importer.register(container: from, namespace: as, keys: keys)
         end
 

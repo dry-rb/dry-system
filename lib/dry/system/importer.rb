@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/container"
-require_relative "constants"
 
 module Dry
   module System
@@ -48,11 +47,11 @@ module Dry
       # TODO: I have a feeling that "call" isn't the best name for this anymore
       #
       # @api private
-      def call(other:, namespace:, keys: Undefined)
-        if keys == Undefined
-          import_all(other, namespace)
-        else
+      def call(other:, namespace:, keys: nil)
+        if keys
           import_keys(keys, other, namespace)
+        else
+          import_all(other, namespace)
         end
 
         self
@@ -66,7 +65,7 @@ module Dry
         # TODO: really need methods exposing this logic
         return self if !other_container.config.exports.nil? && other_container.config.exports.empty?
         return self if Array(other_container.config.exports).any? && !other_container.config.exports.include?(key)
-        return self if keys != Undefined && !keys.include?(key) # TODO: this should raise error?
+        return self if keys && !keys.include?(key) # TODO: this should raise error?
 
         if other_container.key?(key)
           # TODO: better way of constructing key?
