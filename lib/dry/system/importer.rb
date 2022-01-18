@@ -72,43 +72,41 @@ module Dry
 
       private
 
-      def import_all(other, namespace)
-        if other.config.exports.nil?
-          container.merge(other.finalize!, namespace: namespace)
-        else
-          import_container = other.config.exports.each_with_object(Dry::Container.new) { |key, ic|
-            # TODO: this should be made from the container _items_, not by re-registering
-            # and re-resolving
-            ic.register(key, other[key]) if other.key?(key)
-          }
-          container.merge(import_container, namespace: namespace)
-        end
-
-        self
-      end
-
-      def import_keys(other, namespace, keys)
-        if other.config.exports.nil?
-          import_container = keys.each_with_object(Dry::Container.new) { |key, ic|
-            ic.register(key, other[key]) if other.key?(key)
-          }
-
-          container.merge(import_container, namespace: namespace)
-        else
-          import_container = keys.each_with_object(Dry::Container.new) { |key, ic|
-            # In this case, where keys have been provided, we should raise an error if other.key?(key) is nil
-            ic.register(key, other[key]) if other.key?(key)
-          }
-          container.merge(import_container, namespace: namespace)
-        end
-
-        self
-      end
-
       def keys_to_import(keys, item)
         keys
           .then { (arr = item.import_keys) ? _1 & arr : _1 }
           .then { (arr = item.container.config.exports) ? _1 & arr : _1 }
+      end
+
+      def import_keys(other, namespace, keys)
+        container.merge(build_merge_container(other, keys), namespace: namespace)
+      end
+
+      def import_all(other, namespace)
+        if other.config.exports.nil?
+          container.merge(other.finalize!, namespace: namespace)
+        else
+          container.merge(build_merge_container(other, other.config.exports), namespace: namespace)
+        end
+      end
+
+      def build_merge_container(other, keys)
+        keys.each_with_object(Dry::Container.new) { |key, ic|
+          next unless other.key?(key)
+
+          # Access the other container's items directly so that we can preserve all their
+          # options when we merge them with the target container (e.g. if a component in
+          # the provider container was registered with a block, we want block registration
+          # behavior to be exhibited when later resolving that component from the target
+          # container).
+          item = other._container[key]
+
+          if item.callable?
+            ic.register(key, **item.options, &item.item)
+          else
+            ic.register(key, item.item, **item.options)
+          end
+        }
       end
     end
   end
