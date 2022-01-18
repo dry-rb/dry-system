@@ -203,7 +203,7 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(direct_container_namespace = nil, keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder
+        def import(direct_container_namespace = nil, keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder, Layout/LineLength
           if direct_container_namespace
             Dry::Core::Deprecations.announce(
               "Dry::System::Container.import with Dry::Container::Namespace",
