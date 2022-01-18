@@ -81,18 +81,12 @@ module Dry
       setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "system/registrations"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
+      setting :exports
       setting :inflector, default: Dry::Inflector.new
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manifest_registrar, default: Dry::System::ManifestRegistrar
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
-
-      # I wonder if this should be a class-level thing rather than config... that'd make
-      # it symmetrical with `import`
-      #
-      # Another question to consider here is whether anything registering an
-      # after_configure hook might want access to these
-      setting :exports
 
       # We presume "." as key namespace separator. This is not intended to be
       # user-configurable.
