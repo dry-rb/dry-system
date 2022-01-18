@@ -203,8 +203,11 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder
-          if deprecated_import_hash.any?
+        def import(direct_container_namespace = nil, keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder
+          if direct_container_namespace
+            container_import(direct_container_namespace)
+            return self
+          elsif deprecated_import_hash.any?
             deprecated_import_hash.each do |namespace, container|
               importer.register(container: container, namespace: namespace)
             end
