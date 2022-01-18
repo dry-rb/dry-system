@@ -49,7 +49,7 @@ module Dry
       # @api private
       def call(other:, namespace:, keys: nil)
         if keys
-          import_keys(keys, other, namespace)
+          import_keys(other, namespace, keys)
         else
           import_all(other, namespace)
         end
@@ -103,7 +103,7 @@ module Dry
         self
       end
 
-      def import_keys(keys, other, namespace)
+      def import_keys(other, namespace, keys)
         if other.config.exports.nil?
           import_container = keys.each_with_object(Dry::Container.new) { |key, ic|
             ic.register(key, other[key]) if other.key?(key)
