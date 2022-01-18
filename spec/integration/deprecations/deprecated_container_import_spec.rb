@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe "Deprecated Dry::System::Container.import" do
+  before do
+    Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
+    require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
+
+    # We don't care about the deprecation messages when we're not testing for them
+    # specifically
+    Dry::Core::Deprecations.set_logger!(StringIO.new)
+  end
+
   describe "container imports" do
     let(:exporting_container) {
       Class.new(Dry::System::Container) {
@@ -20,19 +29,41 @@ RSpec.describe "Deprecated Dry::System::Container.import" do
       expect(importing_container["other.foo"]).to eq "foo"
       expect(importing_container["again.foo"]).to eq "foo"
     end
+
+    it "prints deprecation warnings" do
+      logger = StringIO.new
+      Dry::Core::Deprecations.set_logger! logger
+
+      importing_container
+
+      logger.rewind
+      expect(logger.string).to match(/Dry::System::Container\.import with \{namespace => container\} hash is deprecated/m)
+    end
   end
 
   describe "direct namespace imports" do
     let(:importing_container) { Class.new(Dry::System::Container) }
 
-    it "imports the namespace" do
-      ns = Dry::Container::Namespace.new("other") do
+    let(:namespace) {
+      Dry::Container::Namespace.new("other") do
         register("foo", "foo")
       end
+    }
 
-      importing_container.import(ns)
+    it "imports the namespace" do
+      importing_container.import(namespace)
 
       expect(importing_container["other.foo"]).to eq "foo"
+    end
+
+    it "prints deprecation warnings" do
+      logger = StringIO.new
+      Dry::Core::Deprecations.set_logger! logger
+
+      importing_container.import(namespace)
+
+      logger.rewind
+      expect(logger.string).to match(/Dry::System::Container\.import with Dry::Container::Namespace is deprecated/m)
     end
   end
 end

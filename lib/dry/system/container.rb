@@ -175,7 +175,7 @@ module Dry
         end
 
         # @api private
-        alias_method :container_import, :import
+        alias_method :import_direct_namespace, :import
 
         # Registers another container for import
         #
@@ -205,9 +205,23 @@ module Dry
         # @api public
         def import(direct_container_namespace = nil, keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder
           if direct_container_namespace
-            container_import(direct_container_namespace)
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Container.import with Dry::Container::Namespace",
+              "Use Dry::System::Container.import_direct_namespace instead",
+              tag: "dry-system",
+              uplevel: 1
+            )
+
+            import_direct_namespace(direct_container_namespace)
             return self
           elsif deprecated_import_hash.any?
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Container.import with {namespace => container} hash",
+              "Use Dry::System::Container.import(from: container, as: namespace) instead",
+              tag: "dry-system",
+              uplevel: 1
+            )
+
             deprecated_import_hash.each do |namespace, container|
               importer.register(container: container, namespace: namespace)
             end
