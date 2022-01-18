@@ -174,6 +174,9 @@ module Dry
           @__configured__.equal?(true)
         end
 
+        # @api private
+        alias_method :container_import, :import
+
         # Registers another container for import
         #
         # @example
@@ -200,22 +203,21 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(keys: nil, from:, as:)
-          importer.register(container: from, namespace: as, keys: keys)
-        end
-
-        # TODO: do we need to find some way to preserve the original dry-container
-        # `import` functionality? Maybe via another method altogether?
-
-        def old_import(other)
-          case other
-          when Hash then importer.register(other)
-          when Dry::Container::Namespace then super # FIXME: I don't like that this results in immediate import
-          else
-            raise ArgumentError, <<-STR
-              +other+ must be a hash of names and systems, or a Dry::Container namespace
-            STR
+        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder
+          if deprecated_import_hash.any?
+            deprecated_import_hash.each do |namespace, container|
+              importer.register(container: container, namespace: namespace)
+            end
+            return self
+          elsif from.nil? || as.nil?
+            # These keyword arguments can become properly required in the params list once
+            # we remove the deprecation shim above
+            raise ArgumentError, "required keyword arguments: :from, :as"
           end
+
+          importer.register(container: from, namespace: as, keys: keys)
+
+          self
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
