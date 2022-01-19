@@ -80,7 +80,7 @@ module Dry
       def keys_to_import(keys, item)
         keys
           .then { (arr = item.import_keys) ? _1 & arr : _1 }
-          .then { (arr = item.container.config.exports) ? _1 & arr : _1 }
+          .then { (arr = item.container.exports) ? _1 & arr : _1 }
       end
 
       def import_keys(other, namespace, keys)
@@ -88,10 +88,10 @@ module Dry
       end
 
       def import_all(other, namespace)
-        if other.config.exports.nil?
+        if other.exports.nil?
           container.merge(other.finalize!, namespace: namespace)
         else
-          container.merge(build_merge_container(other, other.config.exports), namespace: namespace)
+          container.merge(build_merge_container(other, other.exports), namespace: namespace)
         end
       end
 

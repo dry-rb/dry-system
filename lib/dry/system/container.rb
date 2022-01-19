@@ -81,7 +81,7 @@ module Dry
       setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "system/registrations"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
-      setting :exports
+      setting :exports, reader: true
       setting :inflector, default: Dry::Inflector.new
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manifest_registrar, default: Dry::System::ManifestRegistrar
