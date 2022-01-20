@@ -84,18 +84,24 @@ module Dry
       end
 
       def import_keys(other, namespace, keys)
-        container.merge(build_merge_container(other, keys, force = !!other.exports), namespace: namespace)
+        container.merge(
+          build_merge_container(other, keys, include_imported: !!other.exports),
+          namespace: namespace
+        )
       end
 
       def import_all(other, namespace)
-        if other.exports.nil?
-          container.merge(build_merge_container(other.finalize!, other.keys, force = false), namespace: namespace)
-        else
-          container.merge(build_merge_container(other, other.exports, force = !!other.exports), namespace: namespace)
-        end
+        merge_container =
+          if other.exports
+            build_merge_container(other, other.exports, include_imported: true)
+          else
+            build_merge_container(other.finalize!, other.keys, include_imported: false)
+          end
+
+        container.merge(merge_container, namespace: namespace)
       end
 
-      def build_merge_container(other, keys, force = false)
+      def build_merge_container(other, keys, include_imported:)
         keys.each_with_object(Dry::Container.new) { |key, ic|
           next unless other.key?(key)
 
@@ -106,12 +112,15 @@ module Dry
           # container).
           item = other._container[key]
 
-          next if !force && item.options.key?(:export) && !item.options[:export]
+          # By default, we "protect" components imported into the other container being
+          # implicitly exported again. Imported components are considered "private" and
+          # must be explicitly included the exports list to be exported.
+          next if item.options[:imported] && !include_imported
 
           if item.callable?
-            ic.register(key, **item.options, export: false, &item.item)
+            ic.register(key, **item.options, imported: true, &item.item)
           else
-            ic.register(key, item.item, **item.options, export: false)
+            ic.register(key, item.item, **item.options, imported: true)
           end
         }
       end
