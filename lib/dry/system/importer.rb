@@ -84,18 +84,18 @@ module Dry
       end
 
       def import_keys(other, namespace, keys)
-        container.merge(build_merge_container(other, keys), namespace: namespace)
+        container.merge(build_merge_container(other, keys, force = !!other.exports), namespace: namespace)
       end
 
       def import_all(other, namespace)
         if other.exports.nil?
-          container.merge(other.finalize!, namespace: namespace)
+          container.merge(build_merge_container(other.finalize!, other.keys, force = false), namespace: namespace)
         else
-          container.merge(build_merge_container(other, other.exports), namespace: namespace)
+          container.merge(build_merge_container(other, other.exports, force = !!other.exports), namespace: namespace)
         end
       end
 
-      def build_merge_container(other, keys)
+      def build_merge_container(other, keys, force = false)
         keys.each_with_object(Dry::Container.new) { |key, ic|
           next unless other.key?(key)
 
@@ -106,10 +106,12 @@ module Dry
           # container).
           item = other._container[key]
 
+          next if !force && item.options.key?(:export) && !item.options[:export]
+
           if item.callable?
-            ic.register(key, **item.options, &item.item)
+            ic.register(key, **item.options, export: false, &item.item)
           else
-            ic.register(key, item.item, **item.options)
+            ic.register(key, item.item, **item.options, export: false)
           end
         }
       end

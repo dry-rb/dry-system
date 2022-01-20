@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Container / Imports / Explicit exports" do
+RSpec.describe "Container / Imports / Exports" do
   before :context do
     @dir = make_tmp_directory
 
