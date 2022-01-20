@@ -84,24 +84,21 @@ module Dry
       end
 
       def import_keys(other, namespace, keys)
-        container.merge(
-          build_merge_container(other, keys, include_imported: !!other.exports),
-          namespace: namespace
-        )
+        container.merge(build_merge_container(other, keys), namespace: namespace)
       end
 
       def import_all(other, namespace)
         merge_container =
           if other.exports
-            build_merge_container(other, other.exports, include_imported: true)
+            build_merge_container(other, other.exports)
           else
-            build_merge_container(other.finalize!, other.keys, include_imported: false)
+            build_merge_container(other.finalize!, other.keys)
           end
 
         container.merge(merge_container, namespace: namespace)
       end
 
-      def build_merge_container(other, keys, include_imported:)
+      def build_merge_container(other, keys)
         keys.each_with_object(Dry::Container.new) { |key, ic|
           next unless other.key?(key)
 
@@ -112,10 +109,11 @@ module Dry
           # container).
           item = other._container[key]
 
-          # By default, we "protect" components imported into the other container being
-          # implicitly exported again. Imported components are considered "private" and
-          # must be explicitly included the exports list to be exported.
-          next if item.options[:imported] && !include_imported
+          # By default, we "protect" components that were themselves imported into the
+          # other container from being implicitly exported; imported components are
+          # considered "private" and must be explicitly included in `exports` to be
+          # exported.
+          next if item.options[:imported] && !other.exports
 
           if item.callable?
             ic.register(key, **item.options, imported: true, &item.item)
