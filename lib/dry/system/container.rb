@@ -168,9 +168,6 @@ module Dry
           @__configured__.equal?(true)
         end
 
-        # @api private
-        alias_method :import_direct_namespace, :import
-
         # Registers another container for import
         #
         # @example
