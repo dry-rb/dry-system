@@ -244,7 +244,7 @@ module Dry
           # their options when we merge them with the target container (e.g. if a
           # component in the provider container was registered with a block, we want block
           # registration behavior to be exhibited when later resolving that component from
-          # the target container).
+          # the target container). TODO: Make this part of dry-system's public API.
           item = provider_container._container[key]
 
           if item.callable?

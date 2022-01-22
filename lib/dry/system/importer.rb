@@ -106,7 +106,7 @@ module Dry
           # options when we merge them with the target container (e.g. if a component in
           # the provider container was registered with a block, we want block registration
           # behavior to be exhibited when later resolving that component from the target
-          # container).
+          # container). TODO: Make this part of dry-system's public API.
           item = other._container[key]
 
           # By default, we "protect" components that were themselves imported into the
