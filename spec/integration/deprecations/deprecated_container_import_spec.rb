@@ -40,30 +40,4 @@ RSpec.describe "Deprecated Dry::System::Container.import" do
       expect(logger.string).to match(/Dry::System::Container\.import with \{namespace => container\} hash is deprecated/m)
     end
   end
-
-  describe "direct namespace imports" do
-    let(:importing_container) { Class.new(Dry::System::Container) }
-
-    let(:namespace) {
-      Dry::Container::Namespace.new("other") do
-        register("foo", "foo")
-      end
-    }
-
-    it "imports the namespace" do
-      importing_container.import(namespace)
-
-      expect(importing_container["other.foo"]).to eq "foo"
-    end
-
-    it "prints deprecation warnings" do
-      logger = StringIO.new
-      Dry::Core::Deprecations.set_logger! logger
-
-      importing_container.import(namespace)
-
-      logger.rewind
-      expect(logger.string).to match(/Dry::System::Container\.import with Dry::Container::Namespace is deprecated/m)
-    end
-  end
 end

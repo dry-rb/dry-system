@@ -194,18 +194,8 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(direct_container_namespace = nil, keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder, Layout/LineLength
-          if direct_container_namespace
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Container.import with Dry::Container::Namespace",
-              "Use Dry::System::Container.import_direct_namespace instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            import_direct_namespace(direct_container_namespace)
-            return self
-          elsif deprecated_import_hash.any?
+        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder, Layout/LineLength
+          if deprecated_import_hash.any?
             Dry::Core::Deprecations.announce(
               "Dry::System::Container.import with {namespace => container} hash",
               "Use Dry::System::Container.import(from: container, as: namespace) instead",
