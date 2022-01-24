@@ -1,69 +1,123 @@
 # frozen_string_literal: true
 
 RSpec.describe "Plugins / Dependency Graph" do
-  before do
-    Object.send(:remove_const, :ExternalComponents) if defined? ExternalComponents
-  end
-  before do
-    require SPEC_ROOT.join("fixtures/external_components/lib/external_components")
+  let(:container) { Test::Container }
+  subject(:events) { [] }
 
-    module Test
-      class Container < Dry::System::Container
-        use :dependency_graph
+  before :context do
+    with_directory(@dir = make_tmp_directory) do
+      write "system/providers/mailer.rb", <<~RUBY
+        Test::Container.register_provider :mailer do
+          start do
+            register "mailer", Object.new
+          end
 
-        configure do |config|
-          config.root = SPEC_ROOT.join("fixtures/app").realpath
-          config.component_dirs.add "lib"
-          config.dependency_graph.ignored_dependencies = ["ignored_spec_service"]
         end
+      RUBY
 
-        register_provider(:mailer, from: :external_components)
-        register_provider(:logger, from: :external_components)
+      write "lib/foo.rb", <<~RUBY
+        module Test
+          class Foo
+            include Deps["mailer"]
+          end
+        end
+      RUBY
+
+      write "lib/bar.rb", <<~RUBY
+        module Test
+          class Bar
+            include Deps["foo"]
+          end
+        end
+      RUBY
+    end
+  end
+
+  before do
+    root = @dir
+    Test::Container = Class.new(Dry::System::Container) {
+      use :dependency_graph
+
+      configure do |config|
+        config.root = root
+        config.component_dirs.add "lib" do |dir|
+          dir.namespaces.add_root const: "test"
+        end
+      end
+    }
+  end
+
+  before do
+    container[:notifications].subscribe(:resolved_dependency) { events << _1 }
+    container[:notifications].subscribe(:registered_dependency) { events << _1 }
+  end
+
+  shared_examples "dependency graph notifications" do
+    context "lazy loading" do
+      it "emits dependency notifications for the resolved component" do
+        container["foo"]
+
+        expect(events.map { [_1.id, _1.payload] }).to eq [
+          [:resolved_dependency, {dependency_map: {mailer: "mailer"}, target_class: Test::Foo}],
+          [:registered_dependency, {class: Object, key: "mailer"}],
+          [:registered_dependency, {class: Test::Foo, key: "foo"}],
+        ]
+      end
+    end
+
+    context "finalized" do
+      before do
+        container.finalize!
       end
 
-      Import = Container.injector
+      it "emits dependency notifications for all components" do
+        expect(events.map { [_1.id, _1.payload] }).to eq [
+          [:registered_dependency, {key: "mailer", class: Object}],
+          [:resolved_dependency, {dependency_map: {foo: "foo"}, target_class: Test::Bar}],
+          [:resolved_dependency, {dependency_map: {mailer: "mailer"}, target_class: Test::Foo}],
+          [:registered_dependency, {key: "foo", class: Test::Foo}],
+          [:registered_dependency, {key: "bar", class: Test::Bar}]
+        ]
+      end
     end
   end
 
-  subject(:container) { Test::Container }
-
-  let(:events) { [] }
-  let(:service) { Class.new { include Test::Import["logger"] }.new }
-
-  before do
-    container[:notifications].subscribe(:resolved_dependency) do |e|
-      events << e
+  describe "default (kwargs) injector" do
+    before do
+      Test::Deps = Test::Container.injector
     end
 
-    container[:notifications].subscribe(:registered_dependency) do |e|
-      events << e
+    specify "objects receive dependencies via keyword arguments" do
+      expect(container["bar"].method(:initialize).parameters).to eq(
+        [[:keyrest, :kwargs], [:block, :block]]
+      )
     end
 
-    container.register(:service, service)
-    container.finalize!
+    it_behaves_like "dependency graph notifications"
   end
 
-  it "broadcasts dependency graph events of not ignored dependencies" do
-    expect(events.count).to eq(6)
+  describe "hash injector" do
+    before do
+      Test::Deps = Test::Container.injector.hash
+    end
 
-    expect(events.map(&:id)).to eq(
-      %i[
-        resolved_dependency
-        registered_dependency
-        registered_dependency
-        registered_dependency
-        registered_dependency
-        registered_dependency
-      ]
-    )
+    specify "objects receive dependencies via a single options hash argument" do
+      expect(container["bar"].method(:initialize).parameters).to eq [[:req, :options]]
+    end
 
-    expect(events.map(&:payload)).to eq([
-      {dependency_map: {logger: "logger"}, target_class: service.class},
-      {key: "logger", class: ExternalComponents::Logger},
-      {key: "service", class: container["service"].class},
-      {key: "client", class: Test::Client},
-      {key: "mailer", class: ExternalComponents::Mailer},
-      {key: "spec_service", class: SpecService}
-    ])
+    it_behaves_like "dependency graph notifications"
+  end
+
+  describe "args injector" do
+    before do
+      Test::Deps = Test::Container.injector.args
+    end
+
+    specify "objects receive dependencies via positional arguments" do
+      expect(container["bar"].method(:initialize).parameters).to eq [[:req, :foo]]
+    end
+
+    it_behaves_like "dependency graph notifications"
   end
 end
+
