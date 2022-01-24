@@ -16,28 +16,18 @@ module Dry
 
         # @api private
         def extended(system)
-          system.before(:configure, &method(:configure_autoloading))
-          system.after(:configure, &method(:setup_autoloader))
-
-          super
-        end
-
-        private
-
-        # Configure autoloading on the container
-        #
-        # @return [self]
-        #
-        # @api private
-        def configure_autoloading(system)
           require "dry/system/loader/autoloading"
 
           system.setting :autoloader, reader: true
           system.config.component_dirs.loader = Dry::System::Loader::Autoloading
           system.config.component_dirs.add_to_load_path = false
 
-          system
+          system.after(:configure, &method(:setup_autoloader))
+
+          super
         end
+
+        private
 
         # Set a logger
         #
