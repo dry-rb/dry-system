@@ -20,7 +20,7 @@ module Dry
         #   Sets the auto-registration policy for the component dir.
         #
         #   This may be a simple boolean to enable or disable auto-registration for all
-        #   components, or a proc accepting a `Dry::Sytem::Component` and returning a
+        #   components, or a proc accepting a {Dry::System::Component} and returning a
         #   boolean to configure auto-registration on a per-component basis
         #
         #   Defaults to `true`.
@@ -50,30 +50,48 @@ module Dry
         #   @api public
         setting :auto_register, default: true
 
-        # @!method add_to_load_path=(policy)
+        # @!method instance=(instance_proc)
         #
-        #   Sets whether the dir should be added to the `$LOAD_PATH` after the container
-        #   is configured.
+        #   Sets a proc used to return the instance of any component within the component
+        #   dir.
         #
-        #   Defaults to `true`. This may need to be set to `false` when using a class
-        #   autoloading system.
+        #   This proc should accept a {Dry::System::Component} and return the object to
+        #   serve as the component's instance.
         #
-        #   @param policy [Boolean]
-        #   @return [Boolean]
+        #   When you provide an instance proc, it will be used in preference to the
+        #   {loader} (either the default loader or an explicitly configured one). Provide
+        #   an instance proc when you want a simple way to customize the instance for
+        #   certain components. For complete control, provide a replacement loader via
+        #   {loader=}.
         #
-        #   @see add_to_load_path
-        #   @see Container.configure
+        #   Defaults to `nil`.
+        #
+        #   @param instance_proc [Proc, nil]
+        #   @return [Proc]
+        #
+        #   @example
+        #     dir.instance = proc do |component|
+        #       if component.key.match?(/workers\./)
+        #         # Register classes for jobs
+        #         component.loader.constant(component)
+        #       else
+        #         # Otherwise register regular instances per default loader
+        #         component.loader.call(component)
+        #       end
+        #     end
+        #
+        #   @see Component, Loader
         #   @api public
         #
-        # @!method add_to_load_path
+        # @!method instance
         #
-        #   Returns the configured value.
+        #   Returns the configured instance proc.
         #
-        #   @return [Boolean]
+        #   @return [Proc, nil]
         #
-        #   @see add_to_load_path=
+        #   @see instance=
         #   @api public
-        setting :add_to_load_path, default: true
+        setting :instance
 
         # @!method loader=(loader)
         #
@@ -82,7 +100,8 @@ module Dry
         #
         #   Defaults to `Dry::System::Loader`.
         #
-        #   When using a class autoloader, consider using `Dry::System::Loader::Autoloading`
+        #   When using an autoloader like Zeitwerk, consider using
+        #   `Dry::System::Loader::Autoloading`
         #
         #   @param loader [#call] the loader
         #   @return [#call] the configured loader
@@ -149,6 +168,31 @@ module Dry
         #   @see Namespaces#add
         #   @api public
         setting :namespaces, default: Namespaces.new, cloneable: true
+
+        # @!method add_to_load_path=(policy)
+        #
+        #   Sets whether the dir should be added to the `$LOAD_PATH` after the container
+        #   is configured.
+        #
+        #   Defaults to `true`. This may need to be set to `false` when using a class
+        #   autoloading system.
+        #
+        #   @param policy [Boolean]
+        #   @return [Boolean]
+        #
+        #   @see add_to_load_path
+        #   @see Container.configure
+        #   @api public
+        #
+        # @!method add_to_load_path
+        #
+        #   Returns the configured value.
+        #
+        #   @return [Boolean]
+        #
+        #   @see add_to_load_path=
+        #   @api public
+        setting :add_to_load_path, default: true
 
         # @api public
         def default_namespace=(namespace)

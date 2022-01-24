@@ -60,7 +60,7 @@ module Dry
       # @return [Object] component's class instance
       # @api public
       def instance(*args)
-        loader.call(self, *args)
+        options[:instance]&.call(self, *args) || loader.call(self, *args)
       end
       ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
