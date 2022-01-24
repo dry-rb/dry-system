@@ -78,6 +78,14 @@ module Dry
       # @api public
       attr_reader :statuses
 
+      # Returns the name of the currently running step, if any.
+      #
+      # @return [Symbol, nil]
+      #
+      # @api private
+      attr_reader :step_running
+      private :step_running
+
       # Returns the container for the provider.
       #
       # This is where the provider's source will register its components, which are then
@@ -128,6 +136,7 @@ module Dry
 
         @provider_container = build_provider_container
         @statuses = []
+        @step_running = nil
 
         @source = source_class.new(
           provider_container: provider_container,
@@ -169,7 +178,7 @@ module Dry
       #
       # @api public
       def stop
-        return unless started?
+        return self unless started?
 
         run_step(:stop)
       end
@@ -216,7 +225,9 @@ module Dry
 
       # @api private
       def run_step(step_name)
-        return self if statuses.include?(step_name)
+        return self if step_running? || statuses.include?(step_name)
+
+        @step_running = step_name
 
         source.run_callback(:before, step_name)
         source.public_send(step_name)
@@ -226,7 +237,25 @@ module Dry
 
         apply
 
+        @step_running = nil
+
         self
+      end
+
+      # Returns true if a step is currenly running.
+      #
+      # This is important for short-circuiting the invocation of {#run_step} and avoiding
+      # infinite loops if a provider step happens to result in resolution of a component
+      # with the same root key as the provider's own name (which ordinarily results in
+      # that provider being started).
+      #
+      # @return [Boolean]
+      #
+      # @see {#run_step}
+      #
+      # @api private
+      def step_running?
+        !!step_running
       end
 
       # Registers any components from the provider's container in the main container.
