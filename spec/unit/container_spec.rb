@@ -171,7 +171,7 @@ RSpec.describe Dry::System::Container do
           config.component_dirs.add "lib"
         end
 
-        importer.registry.update(falses: Test::FalseyContainer)
+        import from: Test::FalseyContainer, as: :falses
       end
     end
 

@@ -10,7 +10,7 @@ module RSpec
       private
 
       def with_tmp_directory(&block)
-        Dir.mktmpdir(&block)
+        with_directory(make_tmp_directory, &block)
       end
 
       def with_directory(dir, &block)

@@ -5,10 +5,8 @@ require "pathname"
 require "dry-auto_inject"
 require "dry-configurable"
 require "dry-container"
-require "dry/inflector"
-
-require "dry/core/constants"
 require "dry/core/deprecations"
+require "dry/inflector"
 
 require "dry/system"
 require "dry/system/auto_registrar"
@@ -83,6 +81,7 @@ module Dry
       setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "system/registrations"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
+      setting :exports, reader: true
       setting :inflector, default: Dry::Inflector.new
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manifest_registrar, default: Dry::System::ManifestRegistrar
@@ -195,15 +194,28 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(other)
-          case other
-          when Hash then importer.register(other)
-          when Dry::Container::Namespace then super
-          else
-            raise ArgumentError, <<-STR
-              +other+ must be a hash of names and systems, or a Dry::Container namespace
-            STR
+        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder, Layout/LineLength
+          if deprecated_import_hash.any?
+            Dry::Core::Deprecations.announce(
+              "Dry::System::Container.import with {namespace => container} hash",
+              "Use Dry::System::Container.import(from: container, as: namespace) instead",
+              tag: "dry-system",
+              uplevel: 1
+            )
+
+            deprecated_import_hash.each do |namespace, container|
+              importer.register(container: container, namespace: namespace)
+            end
+            return self
+          elsif from.nil? || as.nil?
+            # These keyword arguments can become properly required in the params list once
+            # we remove the deprecation shim above
+            raise ArgumentError, "required keyword arguments: :from, :as"
           end
+
+          importer.register(container: from, namespace: as, keys: keys)
+
+          self
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
@@ -679,7 +691,7 @@ module Dry
             load_local_component(component)
           elsif manifest_registrar.file_exists?(component)
             manifest_registrar.(component)
-          elsif importer.key?(component.identifier.root_key)
+          elsif importer.namespace?(component.identifier.root_key)
             load_imported_component(component.identifier)
           end
 
@@ -697,11 +709,11 @@ module Dry
         def load_imported_component(identifier)
           import_namespace = identifier.root_key
 
-          container = importer[import_namespace]
+          return unless importer.namespace?(import_namespace)
 
-          container.load_component(identifier.namespaced(from: import_namespace, to: nil).key)
+          import_key = identifier.namespaced(from: import_namespace, to: nil).key
 
-          importer.(import_namespace, container)
+          importer.import(import_namespace, keys: [import_key])
         end
 
         def find_component(key)
