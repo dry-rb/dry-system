@@ -47,14 +47,17 @@ module Dry
         def build_zeitwerk_loader(system)
           require "zeitwerk"
 
-          loader = options.fetch(:loader) { ::Zeitwerk::Loader.new }
-          loader.tag = system.config.name || system.name
-          loader.logger = method(:puts) if options[:debug]
-          loader.inflector = CompatInflector.new(system.config)
-          push_component_dirs_to_loader(system, loader)
-          loader.setup
-          system.after(:finalize) { loader.eager_load } if eager_load?(system)
-          loader
+          options.fetch(:loader) { ::Zeitwerk::Loader.new }.tap do |loader|
+            loader.tag = system.config.name || system.name
+            loader.inflector = CompatInflector.new(system.config)
+            loader.logger = method(:puts) if options[:debug]
+
+            push_component_dirs_to_loader(system, loader)
+
+            loader.setup
+
+            system.after(:finalize) { loader.eager_load } if eager_load?(system)
+          end
         end
 
         # Add component dirs to the zeitwerk loader
@@ -74,9 +77,9 @@ module Dry
 
         # @api private
         def eager_load?(system)
-          options.fetch(:eager_load) do
+          options.fetch(:eager_load) {
             system.config.respond_to?(:env) && system.config.env == :production
-          end
+          }
         end
       end
     end
