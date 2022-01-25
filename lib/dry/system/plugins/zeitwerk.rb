@@ -81,7 +81,7 @@ module Dry
 
         # @api private
         def module_for_namespace(namespace, inflector)
-          return unless namespace.const
+          return Object unless namespace.const
 
           begin
             inflector.constantize(inflector.camelize(namespace.const))
