@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/system/constants"
 require "dry/system/plugins/zeitwerk/compat_inflector"
 
 module Dry
@@ -67,10 +68,28 @@ module Dry
         # @api private
         def push_component_dirs_to_loader(system, loader)
           system.config.component_dirs.each do |dir|
-            loader.push_dir(system.config.root.join(dir.path))
+            dir.namespaces.each do |ns|
+              loader.push_dir(
+                system.root.join(dir.path, ns.path.to_s),
+                namespace: module_for_namespace(ns, system.config.inflector)
+              )
+            end
           end
 
           loader
+        end
+
+        # @api private
+        def module_for_namespace(namespace, inflector)
+          return unless namespace.const
+
+          begin
+            inflector.constantize(inflector.camelize(namespace.const))
+          rescue NameError
+            namespace.const.split(PATH_SEPARATOR).reduce(Object) { |parent_mod, mod_path|
+              parent_mod.const_set(inflector.camelize(mod_path), Module.new)
+            }
+          end
         end
 
         # @api private
