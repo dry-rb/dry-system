@@ -5,6 +5,7 @@ require "dry/system/plugins/zeitwerk/compat_inflector"
 module Dry
   module System
     module Plugins
+      # @api private
       class Zeitwerk < Module
         attr_reader :options
 
@@ -29,12 +30,6 @@ module Dry
 
         private
 
-        # Set a logger
-        #
-        # This is invoked automatically when a container is being configured
-        #
-        # @return [self]
-        #
         # @api private
         def setup_autoloader(system)
           return system if system.registered?(:autoloader)
