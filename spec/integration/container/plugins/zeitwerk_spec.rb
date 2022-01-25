@@ -54,13 +54,9 @@ RSpec.describe "Zeitwerk plugin" do
       end
     end
 
-    expect { $zeitwerk_eager_loaded }
-      .to output(/\$zeitwerk_eager_loaded' not initialized/)
-      .to_stderr
-
-    app.finalize!
-
-    expect($zeitwerk_eager_loaded).to be(true)
+    expect { app.finalize! }
+      .to change { global_variables }
+      .to(a_collection_including(:$zeitwerk_eager_loaded))
   end
 
   specify "Eager loads in production by default" do
