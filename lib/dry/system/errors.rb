@@ -92,5 +92,44 @@ module Dry
         super("dry-system plugin #{plugin.inspect} failed to load its dependencies: #{details}")
       end
     end
+
+    # Exception raised when auto-registerable component is not loadable
+    #
+    # @api public
+    ComponentNotLoadableError = Class.new(NameError) do
+      # @api private
+      def initialize(component, error,
+                     corrections: DidYouMean::ClassNameChecker.new(error).corrections)
+        full_class_name = [error.receiver, error.name].join("::")
+
+        message = [
+          "Component '#{component.key}' is not loadable.",
+          "Looking for #{full_class_name}."
+        ]
+
+        if corrections.any?
+          case_correction = corrections.find { |correction| correction.casecmp?(full_class_name) }
+          if case_correction
+            acronyms_needed = case_correction.split("::").difference(full_class_name.split("::"))
+            stringified_acronyms_needed = acronyms_needed.map { |acronym|
+              "'#{acronym}'"
+            } .join(", ")
+            message <<
+              <<~ERROR_MESSAGE
+
+                You likely need to add:
+
+                    acronym(#{stringified_acronyms_needed})
+
+                to your container's inflector, since we found a #{case_correction} class.
+              ERROR_MESSAGE
+          else
+            message << DidYouMean.formatter.message_for(corrections)
+          end
+        end
+
+        super message.join("\n")
+      end
+    end
   end
 end

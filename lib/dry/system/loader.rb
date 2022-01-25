@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/system/errors"
+
 module Dry
   module System
     # Default component loader implementation
@@ -61,7 +63,10 @@ module Dry
         # @api public
         def constant(component)
           inflector = component.inflector
-          inflector.constantize(inflector.camelize(component.const_path))
+          const_name = inflector.camelize(component.const_path)
+          inflector.constantize(const_name)
+        rescue NameError => e
+          raise ComponentNotLoadableError.new(component, e)
         end
 
         private

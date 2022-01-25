@@ -117,4 +117,42 @@ RSpec.describe Dry::System::Loader do
       it_behaves_like "object loader"
     end
   end
+
+  describe "#constant" do
+    let(:component) {
+      Dry::System::Component.new(
+        Dry::System::Identifier.new("test.api_bar"),
+        namespace: Dry::System::Config::Namespace.default_root,
+        inflector: Dry::Inflector.new { |i| i.acronym("API") }
+      )
+    }
+    describe "successful constant loading" do
+      before do
+        Test::APIBar = Class.new
+      end
+
+      it "returns the constant" do
+        expect(loader.constant(component)).to eq(Test::APIBar)
+      end
+    end
+
+    describe "unsuccessful constant loading" do
+      before do
+        Test::APIBoo = Class.new
+      end
+
+      it "raises custom error" do
+        expect { loader.constant(component) }.to raise_error(
+          Dry::System::ComponentNotLoadableError
+        ).with_message(
+          <<~ERROR_MESSAGE.chomp
+            Component 'test.api_bar' is not loadable.
+            Looking for Test::APIBar.
+
+            Did you mean?  Test::APIBoo
+          ERROR_MESSAGE
+        )
+      end
+    end
+  end
 end
