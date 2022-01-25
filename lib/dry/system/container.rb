@@ -157,8 +157,8 @@ module Dry
         def configured!(finalize_config: true)
           return self if configured?
 
-          config.finalize! if finalize_config
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
+          config.finalize! if finalize_config
           @__configured__ = true
 
           self
