@@ -17,7 +17,7 @@ module Dry
         #
         #   Sets a default `auto_register` for all added component dirs
         #
-        #   @see ComponentDir.auto_register
+        #   @see ComponentDir.auto_register=
         #   @see auto_register
         #
         # @!method auto_register
@@ -26,24 +26,24 @@ module Dry
         #
         #   @see auto_register=
 
-        # @!method add_to_load_path=(value)
+        # @!method instance=(value)
         #
-        #   Sets a default `add_to_load_path` value for all added component dirs
+        #   Sets a default `instance` for all added component dirs
         #
-        #   @see ComponentDir.add_to_load_path
-        #   @see add_to_load_path
+        #   @see ComponentDir.instance=
+        #   @see auto_register
         #
-        # @!method add_to_load_path
+        # @!method auto_register
         #
-        #   Returns the configured default `add_to_load_path`
+        #   Returns the configured default `instance`
         #
-        #   @see add_to_load_path=
+        #   @see instance=
 
         # @!method loader=(value)
         #
         #   Sets a default `loader` value for all added component dirs
         #
-        #   @see ComponentDir.loader
+        #   @see ComponentDir.loader=
         #   @see loader
         #
         # @!method loader
@@ -56,7 +56,7 @@ module Dry
         #
         #   Sets a default `memoize` value for all added component dirs
         #
-        #   @see ComponentDir.memoize
+        #   @see ComponentDir.memoize=
         #   @see memoize
         #
         # @!method memoize
@@ -76,6 +76,19 @@ module Dry
         #   @see Dry::System::Config::Namespaces#add
         #
         #   @return [Namespaces] the namespaces
+
+        # @!method add_to_load_path=(value)
+        #
+        #   Sets a default `add_to_load_path` value for all added component dirs
+        #
+        #   @see ComponentDir.add_to_load_path=
+        #   @see add_to_load_path
+        #
+        # @!method add_to_load_path
+        #
+        #   Returns the configured default `add_to_load_path`
+        #
+        #   @see add_to_load_path=
 
         # rubocop:enable Layout/LineLength
 
