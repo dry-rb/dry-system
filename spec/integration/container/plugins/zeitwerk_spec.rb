@@ -27,22 +27,6 @@ RSpec.describe "Zeitwerk plugin" do
     expect(entity).to be_a Test::Entities::FooEntity
   end
 
-  specify "Error is thrown when add_to_load_path is true" do
-    expect do
-      Class.new(Dry::System::Container) do
-        use :zeitwerk
-
-        configure do |config|
-          config.root = SPEC_ROOT.join("fixtures/zeitwerk").realpath
-
-          config.component_dirs.add "lib" do |dir|
-            dir.add_to_load_path = true
-          end
-        end
-      end
-    end.to raise_error(Dry::System::ZeitwerkAddToLoadPathError)
-  end
-
   specify "Eager loads after finalization" do
     app = Class.new(Dry::System::Container) do
       use :zeitwerk, eager_load: true

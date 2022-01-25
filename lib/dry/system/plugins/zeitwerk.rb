@@ -67,8 +67,6 @@ module Dry
         # @api private
         def push_component_dirs_to_loader(system, loader)
           system.config.component_dirs.each do |dir|
-            raise ZeitwerkAddToLoadPathError, dir if dir.add_to_load_path
-
             loader.push_dir(system.config.root.join(dir.path))
           end
 
