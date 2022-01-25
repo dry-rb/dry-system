@@ -32,11 +32,7 @@ module Dry
 
         # @api private
         def setup_autoloader(system)
-          return system if system.registered?(:autoloader)
-
-          if system.config.autoloader
-            system.register(:autoloader, system.config.autoloader)
-          else
+          unless system.autoloader
             system.config.autoloader = build_zeitwerk_loader(system)
           end
 
