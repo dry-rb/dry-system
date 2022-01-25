@@ -8,6 +8,11 @@ module Dry
     module Plugins
       # @api private
       class Zeitwerk < Module
+        # @api private
+        def self.dependencies
+          ["dry/system/loader/autoloading", {"zeitwerk" => "zeitwerk"}]
+        end
+
         attr_reader :options
 
         # @api private
@@ -18,8 +23,6 @@ module Dry
 
         # @api private
         def extended(system)
-          require "dry/system/loader/autoloading"
-
           system.setting :autoloader, reader: true
           system.config.component_dirs.loader = Dry::System::Loader::Autoloading
           system.config.component_dirs.add_to_load_path = false
@@ -46,8 +49,6 @@ module Dry
         #
         # @api private
         def build_zeitwerk_loader(system)
-          require "zeitwerk"
-
           options.fetch(:loader) { ::Zeitwerk::Loader.new }.tap do |loader|
             loader.tag = system.config.name || system.name
             loader.inflector = CompatInflector.new(system.config)
