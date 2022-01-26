@@ -24,7 +24,7 @@ App.logger
 
 ## Zeitwerk
 
-With `:zeitwerk` plugin you can easily use [Zeitwerk](https://github.com/fxn/zeitwerk) as your applications's code loader.
+With `:zeitwerk` plugin you can easily use [Zeitwerk](https://github.com/fxn/zeitwerk) as your applications's code loader:
 
 > Given a conventional file structure, Zeitwerk is able to load your project's classes and modules on demand (autoloading), or upfront (eager loading). You don't need to write require calls for your own files, rather, you can streamline your programming knowing that your classes and modules are available everywhere. This feature is efficient, thread-safe, and matches Ruby's semantics for constants. (Zeitwerk docs)
 
@@ -43,15 +43,15 @@ class App < Dry::System::Container
 end
 ```
 
-For a more in depth and runnable example, [click here](https://github.com/dry-rb/dry-system/tree/master/examples/standalone).
+For a more in depth and runnable example, [see here](https://github.com/dry-rb/dry-system/tree/master/examples/zeitwerk).
 
-### Inflections 
+### Inflections
 
-The plugin tries to handle most of the plumbing for you. For example, is uses the container's own inflector to resolve constant names. So if Zeitwerk is having trouble resolving some constants, just update the container's inflector like so:
+The plugin passes the containeer's inflector to the Zeitwerk loader for resolving constants from file names. If Zeitwerk has resolving some constants, you can update the container's inflector like so:
 
 ```ruby
 class App < Dry::System::Container
-  use :zeitwerk 
+  use :zeitwerk
 
   configure do |config|
     config.inflector = Dry::Inflector.new do |inflections|
@@ -75,7 +75,7 @@ end
 
 ### Debugging
 
-When you are developing your application, you can enable the plugin's debugging mode by passing `:debug` option to the plugin:
+When you are developing your application, you can enable the plugin's debugging mode by passing `debug: true` option to the plugin, which will print Zeitwerk's logs to the standard output.
 
 ```ruby
 class App < Dry::System::Container
@@ -85,7 +85,7 @@ end
 
 ### Advanced Configuration
 
-If you find you need to adjust Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container.
+If you find you need to adjust Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container, as `.autoloader`:
 
 ```ruby
 # After you have configured the container
