@@ -32,7 +32,7 @@ module Dry
 
         # @api private
         def injector(**options)
-          super(**options.merge(strategies: DependencyGraph::Strategies))
+          super(**options, strategies: DependencyGraph::Strategies)
         end
 
         # @api private
