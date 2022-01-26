@@ -13,6 +13,7 @@ module Dry
           ["dry/system/loader/autoloading", {"zeitwerk" => "zeitwerk"}]
         end
 
+        # @api private
         attr_reader :options
 
         # @api private
