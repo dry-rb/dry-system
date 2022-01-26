@@ -36,9 +36,14 @@ module Dry
 
         # @api private
         def setup_autoloader(system)
-          unless system.autoloader
+          if !system.autoloader
             system.config.autoloader = build_zeitwerk_loader(system)
           end
+
+          push_component_dirs_to_loader(system, system.autoloader)
+
+          system.autoloader.setup
+          system.after(:finalize) { system.autoloader.eager_load } if eager_load?(system)
 
           system
         end
@@ -53,12 +58,6 @@ module Dry
             loader.tag = system.config.name || system.name
             loader.inflector = CompatInflector.new(system.config)
             loader.logger = method(:puts) if options[:debug]
-
-            push_component_dirs_to_loader(system, loader)
-
-            loader.setup
-
-            system.after(:finalize) { loader.eager_load } if eager_load?(system)
           end
         end
 
