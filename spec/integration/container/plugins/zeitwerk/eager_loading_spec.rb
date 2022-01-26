@@ -3,38 +3,60 @@
 RSpec.describe "Zeitwerk plugin / Eager loading" do
   include ZeitwerkHelpers
 
+  before do
+    $eager_loaded = false
+  end
+
   after { teardown_zeitwerk }
 
   it "Eager loads after finalization" do
-    app = Class.new(Dry::System::Container) do
-      use :zeitwerk, eager_load: true
+    with_tmp_directory do |tmp_dir|
+      write "lib/zeitwerk_eager.rb", <<~RUBY
+        $eager_loaded = true
 
-      configure do |config|
-        config.root = SPEC_ROOT.join("fixtures/zeitwerk_eager").realpath
+        module Test
+          class ZeitwerkEager; end
+        end
+      RUBY
 
-        config.component_dirs.add "lib"
+      container = Class.new(Dry::System::Container) do
+        use :zeitwerk, eager_load: true
+
+        configure do |config|
+          config.root = tmp_dir
+          config.component_dirs.add "lib" do |dir|
+            dir.namespaces.add_root const: "test"
+          end
+        end
       end
-    end
 
-    expect { app.finalize! }
-      .to change { global_variables }
-      .to(a_collection_including(:$zeitwerk_eager_loaded))
+      expect { container.finalize! }.to change { $eager_loaded }.to true
+    end
   end
 
   it "Eager loads in production by default" do
-    app = Class.new(Dry::System::Container) do
-      use :env, inferrer: -> { :production }
-      use :zeitwerk
+    with_tmp_directory do |tmp_dir|
+      write "lib/zeitwerk_eager.rb", <<~RUBY
+        $eager_loaded = true
 
-      configure do |config|
-        config.root = SPEC_ROOT.join("fixtures/zeitwerk_eager_load_production").realpath
+        module Test
+          class ZeitwerkEager; end
+        end
+      RUBY
 
-        config.component_dirs.add "lib"
+      container = Class.new(Dry::System::Container) do
+        use :env, inferrer: -> { :production }
+        use :zeitwerk
+
+        configure do |config|
+          config.root = tmp_dir
+          config.component_dirs.add "lib" do |dir|
+            dir.namespaces.add_root const: "test"
+          end
+        end
       end
-    end
 
-    expect { app.finalize! }
-      .to change { global_variables }
-      .to(a_collection_including(:$zeitwerk_eager_load_production_loaded))
+      expect { container.finalize! }.to change { $eager_loaded }.to true
+    end
   end
 end

@@ -6,22 +6,41 @@ RSpec.describe "Zeitwerk plugin / Resolving components" do
   after { teardown_zeitwerk }
 
   specify "Resolving components using Zeitwerk" do
-    app = Class.new(Dry::System::Container) do
-      use :zeitwerk
+    with_tmp_directory do |tmp_dir|
+      write "lib/foo.rb", <<~RUBY
+        module Test
+          class Foo
+            def call
+              Entities::FooEntity.new
+            end
+          end
+        end
+      RUBY
 
-      configure do |config|
-        config.root = SPEC_ROOT.join("fixtures/zeitwerk").realpath
+      write "lib/entities/foo_entity.rb", <<~RUBY
+        module Test
+          module Entities
+            class FooEntity; end
+          end
+        end
+      RUBY
 
-        config.component_dirs.add "lib" do |dir|
-          dir.namespaces.add "test", key: nil
+      container = Class.new(Dry::System::Container) do
+        use :zeitwerk
+
+        configure do |config|
+          config.root = tmp_dir
+          config.component_dirs.add "lib" do |dir|
+            dir.namespaces.add_root const: "test"
+          end
         end
       end
+
+      foo = container["foo"]
+      entity = foo.call
+
+      expect(foo).to be_a Test::Foo
+      expect(entity).to be_a Test::Entities::FooEntity
     end
-
-    foo = app["foo"]
-    entity = foo.call
-
-    expect(foo).to be_a Test::Foo
-    expect(entity).to be_a Test::Entities::FooEntity
   end
 end
