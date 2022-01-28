@@ -85,10 +85,10 @@ end
 
 ### Advanced Configuration
 
-If you find you need to adjust Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container, as `.autoloader`:
+If you need to adjust the Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container, as `.autoloader`:
 
 ```ruby
-# After you have configured the container
+# After you have configured the container but before you have finalized it
 
 MyContainer.autoloader.ignore("./some_path.rb)
 ```
