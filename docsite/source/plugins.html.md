@@ -55,7 +55,7 @@ class App < Dry::System::Container
 
   configure do |config|
     config.inflector = Dry::Inflector.new do |inflections|
-      inflections.acronym('API')
+      inflections.acronym('REST')
     end
 
     # ...
