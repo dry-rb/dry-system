@@ -157,8 +157,8 @@ module Dry
         def configured!(finalize_config: true)
           return self if configured?
 
-          config.finalize! if finalize_config
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
+          config.finalize! if finalize_config
           @__configured__ = true
 
           self
@@ -379,6 +379,7 @@ module Dry
 
           configured!
 
+          hooks[:before_finalize].each { |hook| instance_eval(&hook) }
           yield(self) if block
 
           importer.finalize!
@@ -389,6 +390,7 @@ module Dry
           @__finalized__ = true
 
           self.freeze if freeze
+          hooks[:after_finalize].each { |hook| instance_eval(&hook) }
           self
         end
 
@@ -634,14 +636,35 @@ module Dry
           @importer ||= config.importer.new(self)
         end
 
-        # Registers a callback hook to run afer container lifecycle events.
+        # Registers a callback hook to run before container lifecycle events.
         #
-        # Currently the only supported event is `:configured`. This hook is called after
-        # running {configure} or {configured!}, or when running {finalize!} and neither of
-        # the prior two methods have been called.
+        # Currently, the only supported event is `:finalized`. This hook is called when
+        # you run `{finalize!}`.
         #
-        # When the block is run, `self` is the container class, and no block arguments are
-        # given.
+        # When the given block is called, `self` is the container class, and no block
+        # arguments are given.
+        #
+        # @param event [Symbol] the event name
+        # @param block [Proc] the callback hook to run
+        #
+        # @return [self]
+        #
+        # @api public
+        def before(event, &block)
+          hooks[:"before_#{event}"] << block
+          self
+        end
+
+        # Registers a callback hook to run after container lifecycle events.
+        #
+        # The supported events are:
+        #
+        # - `:configured`, called when you run {configure} or {configured!}, or when
+        #   running {finalize!} and neither of the prior two methods have been called.
+        # - `:finalized`, called when you run {finalize!}.
+        #
+        # When the given block is called, `self` is the container class, and no block
+        # arguments are given.
         #
         # @param event [Symbol] the event name
         # @param block [Proc] the callback hook to run

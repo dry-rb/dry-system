@@ -22,6 +22,77 @@ App[:logger]
 App.logger           
 ```
 
+## Zeitwerk
+
+With `:zeitwerk` plugin you can easily use [Zeitwerk](https://github.com/fxn/zeitwerk) as your applications's code loader:
+
+> Given a conventional file structure, Zeitwerk is able to load your project's classes and modules on demand (autoloading), or upfront (eager loading). You don't need to write require calls for your own files, rather, you can streamline your programming knowing that your classes and modules are available everywhere. This feature is efficient, thread-safe, and matches Ruby's semantics for constants. (Zeitwerk docs)
+
+### Example
+
+Here is an example of using Zeitwerk plugin:
+
+```ruby
+class App < Dry::System::Container
+  use :env, inferrer: -> { ENV.fetch("RACK_ENV", :development).to_sym }
+  use :zeitwerk
+
+  configure do |config|
+    config.component_dirs.add "lib"
+  end
+end
+```
+
+For a more in depth and runnable example, [see here](https://github.com/dry-rb/dry-system/tree/master/examples/zeitwerk).
+
+### Inflections
+
+The plugin passes the container's inflector to the Zeitwerk loader for resolving constants from file names. If Zeitwerk has trouble resolving some constants, you can update the container's inflector like so:
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk
+
+  configure do |config|
+    config.inflector = Dry::Inflector.new do |inflections|
+      inflections.acronym('REST')
+    end
+
+    # ...
+  end
+end
+```
+
+### Eager Loading
+
+By default, the plugin will have Zeitwerk eager load when using the `:env` plugin sets the environment to `:production`. However, you can change this behavior by passing `:eager_load` option to the plugin:
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk, eager_load: true
+end
+```
+
+### Debugging
+
+When you are developing your application, you can enable the plugin's debugging mode by passing `debug: true` option to the plugin, which will print Zeitwerk's logs to the standard output.
+
+```ruby
+class App < Dry::System::Container
+  use :zeitwerk, debug: true
+end
+```
+
+### Advanced Configuration
+
+If you need to adjust the Zeitwerk configuration, you can do so by accessing the `Zeitwerk::Loader` instance directly on the container, as `.autoloader`:
+
+```ruby
+# After you have configured the container but before you have finalized it
+
+MyContainer.autoloader.ignore("./some_path.rb)
+```
+
 ## Monitoring
 
 Another plugin is called `:monitoring` which allows you to enable object monitoring, which is built on top of dry-monitor’s instrumentation API. Let’s say you have an object registered under `"users.operations.create",` and you’d like to add additional logging:

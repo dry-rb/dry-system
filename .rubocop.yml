@@ -260,3 +260,8 @@ Naming/VariableNumber:
 
 Naming/BinaryOperatorParameterName:
   Enabled: false
+
+Style/GlobalVars:
+  Exclude:
+    - "spec/integration/container/plugins/zeitwerk_spec.rb"
+    - "spec/fixtures/**/*.rb"
