@@ -65,7 +65,7 @@ end
 
 ### Eager Loading
 
-By default, the plugin will have zeitwerk eager load when using the `:env` plugin sets the environment to `:production`. However, you can change this behavior by passing `:eager_load` option to the plugin:
+By default, the plugin will have Zeitwerk eager load when using the `:env` plugin sets the environment to `:production`. However, you can change this behavior by passing `:eager_load` option to the plugin:
 
 ```ruby
 class App < Dry::System::Container
