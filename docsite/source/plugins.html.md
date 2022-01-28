@@ -47,7 +47,7 @@ For a more in depth and runnable example, [see here](https://github.com/dry-rb/d
 
 ### Inflections
 
-The plugin passes the containeer's inflector to the Zeitwerk loader for resolving constants from file names. If Zeitwerk has resolving some constants, you can update the container's inflector like so:
+The plugin passes the container's inflector to the Zeitwerk loader for resolving constants from file names. If Zeitwerk has trouble resolving some constants, you can update the container's inflector like so:
 
 ```ruby
 class App < Dry::System::Container
