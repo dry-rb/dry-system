@@ -217,80 +217,101 @@ module Dry
           self
         end
 
-        # Registers a provider and its lifecycle hooks
+        # rubocop:disable Layout/LineLength
+
+        # @overload register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
+        #   Registers a provider and its lifecycle hooks
         #
-        # By convention, you should place a file for each provider in one of the
-        # configured `provider_dirs`, and they will be loaded on demand when components
-        # are loaded in isolation, or during container finalization.
+        #   By convention, you should place a file for each provider in one of the
+        #   configured `provider_dirs`, and they will be loaded on demand when components
+        #   are loaded in isolation, or during container finalization.
         #
-        # @example
-        #   # system/container.rb
-        #   class MyApp < Dry::System::Container
-        #     configure do |config|
-        #       config.root = Pathname("/path/to/app")
+        #   @example
+        #     # system/container.rb
+        #     class MyApp < Dry::System::Container
+        #       configure do |config|
+        #         config.root = Pathname("/path/to/app")
+        #       end
         #     end
         #
-        #   # system/providers/db.rb
-        #   #
-        #   # Simple provider registration
-        #   MyApp.register_provider(:db) do
-        #     require "db"
-        #     register("db", DB.new)
-        #   end
-        #
-        #   # system/providers/db.rb
-        #   #
-        #   # Provider registration with lifecycle triggers
-        #   MyApp.register_provider(:db) do |container|
-        #     init do
-        #       require "db"
-        #       DB.configure(ENV["DB_URL"])
-        #       container.register("db", DB.new)
+        #     # system/providers/db.rb
+        #     #
+        #     # Simple provider registration
+        #     MyApp.register_provider(:db) do
+        #       start do
+        #         require "db"
+        #         register("db", DB.new)
+        #       end
         #     end
         #
-        #     start do
-        #       container["db"].establish_connection
+        #     # system/providers/db.rb
+        #     #
+        #     # Provider registration with lifecycle triggers
+        #     MyApp.register_provider(:db) do |container|
+        #       init do
+        #         require "db"
+        #         DB.configure(ENV["DB_URL"])
+        #         container.register("db", DB.new)
+        #       end
+        #
+        #       start do
+        #         container["db"].establish_connection
+        #       end
+        #
+        #       stop do
+        #         container["db"].close_connection
+        #       end
         #     end
         #
-        #     stop do
-        #       container["db"].close_connection
+        #     # system/providers/db.rb
+        #     #
+        #     # Provider registration which uses another provider
+        #     MyApp.register_provider(:db) do |container|
+        #       start do
+        #         use :logger
+        #
+        #         require "db"
+        #         DB.configure(ENV['DB_URL'], logger: logger)
+        #         container.register("db", DB.new)
+        #       end
         #     end
-        #   end
         #
-        #   # system/providers/db.rb
-        #   #
-        #   # Provider registration which uses another provider
-        #   MyApp.register_provider(:db) do |container|
-        #     use :logger
-        #
-        #     start do
-        #       require "db"
-        #       DB.configure(ENV['DB_URL'], logger: logger)
-        #       container.register("db", DB.new)
+        #     # system/boot/db.rb
+        #     #
+        #     # Provider registration under a namespace. This will register the
+        #     # db object with the "persistence.db" key
+        #     MyApp.register_provider(:persistence, namespace: "db") do
+        #       start do
+        #         require "db"
+        #         DB.configure(ENV["DB_URL"])
+        #         register("db", DB.new)
+        #       end
         #     end
-        #   end
         #
-        #   # system/boot/db.rb
-        #   #
-        #   # Provider registration under a namespace. This will register the
-        #   # db object with the "persistence.db" key
-        #   MyApp.register_provider(:persistence, namespace: "db") do
-        #     require "db"
-        #     DB.configure(ENV["DB_URL"])
-        #     register("db", DB.new)
-        #   end
+        #   @param name [Symbol] a unique name for the provider
+        #   @param namespace [String, nil] the key namespace to use for any registrations
+        #     made during the provider's lifecycle
+        #   @param from [Symbol, nil] the group for the external provider source (with the
+        #     provider source name inferred from `name` or passsed explicitly as
+        #     `source:`)
+        #   @param source [Symbol, nil] the name of the external provider source to use
+        #     (if different from the value provided as `name`)
+        #   @param if [Boolean] a boolean to determine whether to register the provider
         #
-        # @param name [Symbol] a unique name for the provider
+        #   @see Provider
+        #   @see Provider::Source
         #
-        # @see ProviderLifecycle
+        #   @return [self]
         #
-        # @return [self]
-        #
-        # @api public
+        #   @api public
         def register_provider(...)
           providers.register_provider(...)
         end
 
+        # rubocop:enable Layout/LineLength
+
+        # @see .register_provider
+        # @api public
         def boot(name, **opts, &block)
           Dry::Core::Deprecations.announce(
             "Dry::System::Container.boot",
