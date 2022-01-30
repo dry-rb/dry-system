@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
+require "dry/system"
 require "pathname"
 require_relative "errors"
 require_relative "constants"
@@ -22,12 +23,12 @@ module Dry
       attr_reader :providers
 
       # @api private
-      attr_reader :provider_paths
+      attr_reader :container
 
       # @api private
-      def initialize(provider_paths)
+      def initialize(container)
         @providers = {}
-        @provider_paths = provider_paths
+        @container = container
       end
 
       # @api private
@@ -36,11 +37,42 @@ module Dry
         super
       end
 
+      # rubocop:disable Metrics/PerceivedComplexity
+
+      # @see Container.register_provider
       # @api private
-      def register_provider(provider)
+      def register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
+        raise ProviderAlreadyRegisteredError, name if providers.key?(name)
+
+        if from && source.is_a?(Class)
+          raise ArgumentError, "You must supply a block when using a provider source"
+        end
+
+        if block && source.is_a?(Class)
+          raise ArgumentError, "You must supply only a `source:` option or a block, not both"
+        end
+
+        return self unless binding.local_variable_get(:if)
+
+        provider =
+          if from
+            build_provider_from_source(
+              name,
+              namespace: namespace,
+              source: source || name,
+              group: from,
+              &block
+            )
+          else
+            build_provider(name, namespace: namespace, source: source, &block)
+          end
+
         providers[provider.name] = provider
+
         self
       end
+
+      # rubocop:enable Metrics/PerceivedComplexity
 
       # Returns a provider for the given name, if it has already been loaded
       #
@@ -153,6 +185,60 @@ module Dry
       end
 
       private
+
+      # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
+      # @api private
+      def provider_paths
+        provider_dirs = container.config.provider_dirs
+        bootable_dirs = container.config.bootable_dirs || ["system/boot"]
+
+        if container.config.provider_dirs == ["system/providers"] && \
+            provider_dirs.none? { |d| container.root.join(d).exist? } && \
+            bootable_dirs.any? { |d| container.root.join(d).exist? }
+          Dry::Core::Deprecations.announce(
+            "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
+            "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
+            tag: "dry-system",
+            uplevel: 2
+          )
+
+          provider_dirs = bootable_dirs
+        end
+
+        provider_dirs.map { |dir|
+          dir = Pathname(dir)
+
+          if dir.relative?
+            container.root.join(dir)
+          else
+            dir
+          end
+        }
+      end
+      # rubocop:enable Metrics/PerceivedComplexity, Layout/LineLength
+
+      def build_provider(name, namespace:, source: nil, &block)
+        source_class = source || Provider::Source.for(name: name, target_container: container, &block)
+
+        Provider.new(
+          name: name,
+          namespace: namespace,
+          target_container: container,
+          source_class: source_class
+        )
+      end
+
+      def build_provider_from_source(name, source:, group:, namespace:, &block)
+        source_class = System.provider_sources.resolve(name: source, group: group)
+
+        Provider.new(
+          name: name,
+          namespace: namespace,
+          target_container: container,
+          source_class: source_class,
+          &block
+        )
+      end
 
       def with_provider(provider_name)
         require_provider_file(provider_name) unless providers.key?(provider_name)

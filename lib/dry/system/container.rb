@@ -8,7 +8,6 @@ require "dry-container"
 require "dry/core/deprecations"
 require "dry/inflector"
 
-require "dry/system"
 require "dry/system/auto_registrar"
 require "dry/system/component"
 require "dry/system/constants"
@@ -218,8 +217,6 @@ module Dry
           self
         end
 
-        # rubocop:disable Metrics/PerceivedComplexity
-
         # Registers a provider and its lifecycle hooks
         #
         # By convention, you should place a file for each provider in one of the
@@ -290,37 +287,9 @@ module Dry
         # @return [self]
         #
         # @api public
-        def register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
-          raise ProviderAlreadyRegisteredError, name if providers.key?(name)
-
-          if from && source.is_a?(Class)
-            raise ArgumentError, "You must supply a block when using a provider source"
-          end
-
-          if block && source.is_a?(Class)
-            raise ArgumentError, "You must supply only a `source:` option or a block, not both"
-          end
-
-          return self unless binding.local_variable_get(:if)
-
-          provider =
-            if from
-              provider_from_source(
-                name,
-                namespace: namespace,
-                source: source || name,
-                group: from,
-                &block
-              )
-            else
-              provider(name, namespace: namespace, source: source, &block)
-            end
-
-          providers.register_provider provider
-
-          self
+        def register_provider(...)
+          providers.register_provider(...)
         end
-        # rubocop:enable Metrics/PerceivedComplexity
 
         def boot(name, **opts, &block)
           Dry::Core::Deprecations.announce(
@@ -590,40 +559,9 @@ module Dry
 
         # @api private
         def providers
-          @providers ||= config.provider_registrar.new(provider_paths)
+          @providers ||= config.provider_registrar.new(self)
         end
         deprecate :booter, :providers
-
-        # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
-        # @api private
-        def provider_paths
-          provider_dirs = config.provider_dirs
-          bootable_dirs = config.bootable_dirs || ["system/boot"]
-
-          if config.provider_dirs == ["system/providers"] && \
-             provider_dirs.none? { |d| root.join(d).exist? } && \
-             bootable_dirs.any? { |d| root.join(d).exist? }
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
-              "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
-              tag: "dry-system",
-              uplevel: 2
-            )
-
-            provider_dirs = bootable_dirs
-          end
-
-          provider_dirs.map { |dir|
-            dir = Pathname(dir)
-
-            if dir.relative?
-              root.join(dir)
-            else
-              dir
-            end
-          }
-        end
-        # rubocop:enable Metrics/PerceivedComplexity, Layout/LineLength
 
         # @api private
         def auto_registrar
@@ -753,29 +691,6 @@ module Dry
               break component
             end
           } || IndirectComponent.new(Identifier.new(key))
-        end
-
-        def provider_from_source(name, source:, group:, namespace:, &block)
-          source_class = System.provider_sources.resolve(name: source, group: group)
-
-          Provider.new(
-            name: name,
-            namespace: namespace,
-            target_container: self,
-            source_class: source_class,
-            &block
-          )
-        end
-
-        def provider(name, namespace:, source: nil, &block)
-          source_class = source || Provider::Source.for(name: name, target_container: self, &block)
-
-          Provider.new(
-            name: name,
-            namespace: namespace,
-            target_container: self,
-            source_class: source_class
-          )
         end
       end
 
