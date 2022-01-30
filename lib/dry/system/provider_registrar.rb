@@ -186,15 +186,15 @@ module Dry
 
       private
 
-      # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
+      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
       # @api private
       def provider_paths
         provider_dirs = container.config.provider_dirs
         bootable_dirs = container.config.bootable_dirs || ["system/boot"]
 
         if container.config.provider_dirs == ["system/providers"] && \
-            provider_dirs.none? { |d| container.root.join(d).exist? } && \
-            bootable_dirs.any? { |d| container.root.join(d).exist? }
+           provider_dirs.none? { |d| container.root.join(d).exist? } && \
+           bootable_dirs.any? { |d| container.root.join(d).exist? }
           Dry::Core::Deprecations.announce(
             "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
             "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
@@ -215,10 +215,14 @@ module Dry
           end
         }
       end
-      # rubocop:enable Metrics/PerceivedComplexity, Layout/LineLength
+      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
 
       def build_provider(name, namespace:, source: nil, &block)
-        source_class = source || Provider::Source.for(name: name, target_container: container, &block)
+        source_class = source || Provider::Source.for(
+          name: name,
+          target_container: container,
+          &block
+        )
 
         Provider.new(
           name: name,
