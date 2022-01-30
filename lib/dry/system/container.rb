@@ -302,7 +302,11 @@ module Dry
           end
 
           provider_if = binding.local_variable_get(:if)
-          return self unless provider_if
+          if provider_if.respond_to?(:call)
+            return self unless provider_if.call(self)
+          else
+            return self unless provider_if
+          end
 
           provider =
             if from
