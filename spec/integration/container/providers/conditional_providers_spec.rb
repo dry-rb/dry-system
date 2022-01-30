@@ -4,10 +4,6 @@ RSpec.describe "Providers / Conditional providers" do
   let(:container) {
     provider_if = self.provider_if
     Class.new(Dry::System::Container) {
-      def self.load_the_provider?(name)
-        false
-      end
-
       register_provider :provided, if: provider_if do
         start do
           register "provided", Object.new
@@ -36,82 +32,29 @@ RSpec.describe "Providers / Conditional providers" do
     end
   end
 
-  describe "conditional on simple values" do
-    describe "true" do
-      let(:provider_if) { true }
+  describe "true" do
+    let(:provider_if) { true }
 
-      context "lazy loading" do
-        include_examples "loads the provider"
-      end
-
-      context "finalized" do
-        before { container.finalize! }
-        include_examples "loads the provider"
-      end
+    context "lazy loading" do
+      include_examples "loads the provider"
     end
 
-    describe "false" do
-      let(:provider_if) { false }
-
-      context "lazy loading" do
-        include_examples "does not load the provider"
-      end
-
-      context "finalized" do
-        before { container.finalize! }
-        include_examples "does not load the provider"
-      end
+    context "finalized" do
+      before { container.finalize! }
+      include_examples "loads the provider"
     end
   end
 
-  describe "conditional on proc" do
-    describe "proc returns true" do
-      let(:provider_if) { proc { true } }
+  describe "false" do
+    let(:provider_if) { false }
 
-      context "lazy loading" do
-        include_examples "loads the provider"
-      end
-
-      context "finalized" do
-        before { container.finalize! }
-        include_examples "loads the provider"
-      end
+    context "lazy loading" do
+      include_examples "does not load the provider"
     end
 
-    describe "proc returns false" do
-      let(:provider_if) { proc { false } }
-
-      context "lazy loading" do
-        include_examples "does not load the provider"
-      end
-
-      context "finalized" do
-        before { container.finalize! }
-        include_examples "does not load the provider"
-      end
-    end
-
-    describe "lambda (or proc) accepting container as argument" do
-      let(:provider_if) {
-        lambda { |container| container.load_the_provider?(:provided) }
-      }
-
-      context "lazy loading" do
-        include_examples "does not load the provider"
-      end
-
-      context "finalized" do
-        before { container.finalize! }
-        include_examples "does not load the provider"
-      end
-    end
-
-    describe "lambda without arguments" do
-      let(:provider_if) { lambda { false } }
-
-      it "raises an argument error" do
-        expect { container }.to raise_error ArgumentError, /given 1, expected 0/
-      end
+    context "finalized" do
+      before { container.finalize! }
+      include_examples "does not load the provider"
     end
   end
 end

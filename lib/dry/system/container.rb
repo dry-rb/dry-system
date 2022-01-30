@@ -301,12 +301,7 @@ module Dry
             raise ArgumentError, "You must supply only a `source:` option or a block, not both"
           end
 
-          provider_if = binding.local_variable_get(:if)
-          if provider_if.respond_to?(:call)
-            return self unless provider_if.call(self)
-          else
-            return self unless provider_if
-          end
+          return self unless binding.local_variable_get(:if)
 
           provider =
             if from
