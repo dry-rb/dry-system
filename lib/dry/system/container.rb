@@ -290,7 +290,7 @@ module Dry
         # @return [self]
         #
         # @api public
-        def register_provider(name, namespace: nil, from: nil, source: nil, &block)
+        def register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
           raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
           if from && source.is_a?(Class)
@@ -300,6 +300,9 @@ module Dry
           if block && source.is_a?(Class)
             raise ArgumentError, "You must supply only a `source:` option or a block, not both"
           end
+
+          provider_if = binding.local_variable_get(:if)
+          return self unless provider_if
 
           provider =
             if from
@@ -315,6 +318,8 @@ module Dry
             end
 
           providers.register_provider provider
+
+          self
         end
         # rubocop:enable Metrics/PerceivedComplexity
 
