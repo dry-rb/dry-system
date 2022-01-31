@@ -67,6 +67,46 @@ RSpec.describe Dry::System::Identifier do
 
       it "returns false when the provided string does not match the identifier string" do
         expect(identifier.start_with?("belly_ruby")).to be false
+
+  describe "#end_with?" do
+    it "returns true when the given string matches the last segment of the key" do
+      expect(identifier.end_with?("belly_rub")).to be true
+    end
+
+    it "returns true when the given string matches multiple trailing segments of the key" do
+      expect(identifier.end_with?("operations.belly_rub")).to be true
+    end
+
+    it "returns false if the given string is only part of a trailing segment" do
+      expect(identifier.end_with?("rub")).to be false
+      expect(identifier.end_with?("ations.belly_rub")).to be false
+    end
+
+    it "return false if the given string is not part of any trailing segment" do
+      expect(identifier.end_with?("head_scratch")).to be false
+    end
+
+    it "returns true if the given string matches all segments of the key" do
+      expect(identifier.end_with?("kittens.operations.belly_rub")).to be true
+    end
+
+    it "returns true if the given string is nil" do
+      expect(identifier.end_with?(nil)).to be true
+    end
+
+    it "returns true if the given string is empty" do
+      expect(identifier.end_with?("")).to be true
+    end
+
+    context "component key with only a single segment" do
+      let(:key) { "belly_rub" }
+
+      it "returns true when the given string matches the key" do
+        expect(identifier.end_with?("belly_rub")).to be true
+      end
+
+      it "returns false when the given string does not match the key" do
+        expect(identifier.end_with?("head_scratch")).to be false
       end
     end
   end

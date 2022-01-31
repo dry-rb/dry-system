@@ -67,6 +67,28 @@ module Dry
           key.eql?(leading_namespaces)
       end
 
+      # Returns true if the given trailing segments string is the end part of the
+      # identifier's key.
+      #
+      # Also returns true if nil or an empty string is given.
+      #
+      # @example
+      #   identifier.key # => "articles.operations.create"
+      #
+      #   identifier.end_with?("create") # => true
+      #   identifier.end_with?("operations.create") # => true
+      #   identifier.end_with?("ate") # => true
+      #
+      # @param trailing_segments [String] the one or more trailing key segments to check
+      # @return [Boolean]
+      # @api public
+      def end_with?(trailing_segments)
+        trailing_segments.nil? ||
+          trailing_segments.empty? ||
+          key.end_with?("#{KEY_SEPARATOR}#{trailing_segments}") ||
+          key.eql?(trailing_segments)
+      end
+
       # Returns the key with its segments separated by the given separator
       #
       # @example
