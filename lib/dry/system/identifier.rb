@@ -44,11 +44,9 @@ module Dry
         segments.first.to_sym
       end
 
-      # Returns true if the given leading namespaces are a leading part of the
-      # identifier's key
+      # Returns true if the given leading segments string is a leading part of the {key}.
       #
-      # Also returns true if nil is given (technically, from nothing everything is
-      # wrought)
+      # Also returns true if nil or an empty string is given.
       #
       # @example
       #   identifier.key # => "articles.operations.create"
@@ -58,17 +56,16 @@ module Dry
       #   identifier.start_with?("article") # => false
       #   identifier.start_with?(nil) # => true
       #
-      # @param leading_namespaces [String] the one or more leading namespaces to check
+      # @param leading_segments [String] the one or more leading segments to check
       # @return [Boolean]
       # @api public
-      def start_with?(leading_namespaces)
-        leading_namespaces.nil? ||
-          key.start_with?("#{leading_namespaces}#{KEY_SEPARATOR}") ||
-          key.eql?(leading_namespaces)
+      def start_with?(leading_segments)
+        leading_segments.to_s.empty? ||
+          key.start_with?("#{leading_segments}#{KEY_SEPARATOR}") ||
+          key.eql?(leading_segments)
       end
 
-      # Returns true if the given trailing segments string is the end part of the
-      # identifier's key.
+      # Returns true if the given trailing segments string is the end part of the {key}.
       #
       # Also returns true if nil or an empty string is given.
       #
@@ -83,8 +80,7 @@ module Dry
       # @return [Boolean]
       # @api public
       def end_with?(trailing_segments)
-        trailing_segments.nil? ||
-          trailing_segments.empty? ||
+        trailing_segments.to_s.empty? ||
           key.end_with?("#{KEY_SEPARATOR}#{trailing_segments}") ||
           key.eql?(trailing_segments)
       end
