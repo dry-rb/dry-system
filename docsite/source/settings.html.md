@@ -6,69 +6,62 @@ name: dry-system
 
 ## Basic usage
 
-dry-system provides a built-in `:settings` component which you can use in your application. In order to set it up, simply define a bootable `:settings` component and import it from the `:system` provider:
+dry-system provides a `:settings` provider source that you can use to load settings and share them throughout your application. To use this provider source, create your own `:settings` provider using the provider source from `:dry_system`, then declare your settings inside `settings` block (using [dry-configurable’s](/gems/dry-configurable) `setting` API):
 
 ```ruby
-# in system/boot/settings.rb
-require "dry/system/components"
-require "path/to/dry/types/file"
+# system/providers/settings.rb:
 
-Application.boot(:settings, from: :system) do
+require "dry/system/provider_sources"
+
+Application.register_provider(:settings, from: :dry_system) do
+  before :prepare do
+    # Change this to load your own `Types` module if you want type-checked settings
+    require "your/types/module"
+  end
+
   settings do
-    key :database_url, Types::String.constrained(filled: true)
-    key :logger_level, Types::Symbol.constructor { |value| value.to_s.downcase.to_sym }
-                                    .default(:info)
-                                    .enum(:trace, :unknown, :error, :fatal, :warn, :info, :debug)
+    setting :database_url, constructor: Types::String.constrained(filled: true)
+
+    setting :logger_level, default: :info, constructor: Types::Symbol
+      .constructor { |value| value.to_s.downcase.to_sym }
+      .enum(:trace, :unknown, :error, :fatal, :warn, :info, :debug)
   end
 end
 ```
 
-Now, dry-system will map values from `ENV` variable to `settings` struct and allows you to use it in the application:
+Your provider will then map `ENV` variables to a struct object giving access to your settings as their own methods, which you can use throughout your application:
 
 ```ruby
-Application[:settings] # => dry-struct object with settings
+Application[:settings].database_url # => "postgres://..."
+Application[:settings].logger_level # => :info
 ```
 
-You can also use settings object in other bootable dependencies:
+You can use this settings object in other providers:
 
 ```ruby
-Application.boot(:redis) do |container|
-  init do
+Application.register_provider(:redis) do
+  start do
     use :settings
 
-    uri = URI.parse(container[:settings].redis_url)
+    uri = URI.parse(target[:settings].redis_url)
     redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
-    container.register('persistance.redis', redis)
+    register('persistance.redis', redis)
   end
 end
 ```
 
-Or use `:settings` as an injectible dependency in your classes:
+Or as an injected dependency in your classes:
 
 ```ruby
   module Operations
     class CreateUser
-      include Import[:settings, :repository]
+      include Import[:settings]
 
-      def call(id:)
-        settings # => dry-struct object with settings
-
-        # ...
+      def call(params)
+        settings # => your settings struct
       end
     end
   end
 end
 ```
-
-## Default values
-
-You can [use dry-types](https://dry-rb.org/gems/dry-types/master/default-values/) for provide default value for specific setting:
-
-```ruby
-settings do
-  key :redis_url, Types::Coercible::String.default('')
-end
-```
-
-In this case, if you don't have `ENV['REDIS_URL']` value, you get `''` as the default value for `settings.redis_url` calls.

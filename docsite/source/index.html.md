@@ -6,10 +6,10 @@ type: gem
 sections:
   - container
   - component-dirs
-  - booting
-  - auto-import
-  - component-providers
+  - providers
+  - dependency-auto-injection
   - plugins
+  - external-provider-sources
   - settings
   - test-mode
 ---
@@ -21,8 +21,7 @@ This library relies on very basic mechanisms provided by Ruby, specifically `req
 It does a couple of things for you:
 
 * Provides an abstract dependency container implementation
-* Handles `$LOAD_PATH` configuration
-* Loads needed files using `require`
+* Integrates with an autoloader, or handles `$LOAD_PATH` for you and loads needed files using `require`
 * Resolves object dependencies automatically
 * Supports auto-registration of dependencies via file/dir naming conventions
 * Supports multi-system setups (ie your application is split into multiple sub-systems)
