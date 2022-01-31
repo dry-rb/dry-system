@@ -134,6 +134,9 @@ module Dry
 
       require "dry/system/plugins/zeitwerk"
       register(:zeitwerk, Plugins::Zeitwerk)
+
+      require_relative "plugins/injector_mixin"
+      register(:injector_mixin, Plugins::InjectorMixin)
     end
   end
 end
