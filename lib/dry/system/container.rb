@@ -8,7 +8,6 @@ require "dry-container"
 require "dry/core/deprecations"
 require "dry/inflector"
 
-require "dry/system"
 require "dry/system/auto_registrar"
 require "dry/system/component"
 require "dry/system/constants"
@@ -218,106 +217,101 @@ module Dry
           self
         end
 
-        # rubocop:disable Metrics/PerceivedComplexity
+        # rubocop:disable Layout/LineLength
 
-        # Registers a provider and its lifecycle hooks
+        # @overload register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
+        #   Registers a provider and its lifecycle hooks
         #
-        # By convention, you should place a file for each provider in one of the
-        # configured `provider_dirs`, and they will be loaded on demand when components
-        # are loaded in isolation, or during container finalization.
+        #   By convention, you should place a file for each provider in one of the
+        #   configured `provider_dirs`, and they will be loaded on demand when components
+        #   are loaded in isolation, or during container finalization.
         #
-        # @example
-        #   # system/container.rb
-        #   class MyApp < Dry::System::Container
-        #     configure do |config|
-        #       config.root = Pathname("/path/to/app")
+        #   @example
+        #     # system/container.rb
+        #     class MyApp < Dry::System::Container
+        #       configure do |config|
+        #         config.root = Pathname("/path/to/app")
+        #       end
         #     end
         #
-        #   # system/providers/db.rb
-        #   #
-        #   # Simple provider registration
-        #   MyApp.register_provider(:db) do
-        #     require "db"
-        #     register("db", DB.new)
-        #   end
-        #
-        #   # system/providers/db.rb
-        #   #
-        #   # Provider registration with lifecycle triggers
-        #   MyApp.register_provider(:db) do |container|
-        #     init do
-        #       require "db"
-        #       DB.configure(ENV["DB_URL"])
-        #       container.register("db", DB.new)
+        #     # system/providers/db.rb
+        #     #
+        #     # Simple provider registration
+        #     MyApp.register_provider(:db) do
+        #       start do
+        #         require "db"
+        #         register("db", DB.new)
+        #       end
         #     end
         #
-        #     start do
-        #       container["db"].establish_connection
+        #     # system/providers/db.rb
+        #     #
+        #     # Provider registration with lifecycle triggers
+        #     MyApp.register_provider(:db) do |container|
+        #       init do
+        #         require "db"
+        #         DB.configure(ENV["DB_URL"])
+        #         container.register("db", DB.new)
+        #       end
+        #
+        #       start do
+        #         container["db"].establish_connection
+        #       end
+        #
+        #       stop do
+        #         container["db"].close_connection
+        #       end
         #     end
         #
-        #     stop do
-        #       container["db"].close_connection
+        #     # system/providers/db.rb
+        #     #
+        #     # Provider registration which uses another provider
+        #     MyApp.register_provider(:db) do |container|
+        #       start do
+        #         use :logger
+        #
+        #         require "db"
+        #         DB.configure(ENV['DB_URL'], logger: logger)
+        #         container.register("db", DB.new)
+        #       end
         #     end
-        #   end
         #
-        #   # system/providers/db.rb
-        #   #
-        #   # Provider registration which uses another provider
-        #   MyApp.register_provider(:db) do |container|
-        #     use :logger
-        #
-        #     start do
-        #       require "db"
-        #       DB.configure(ENV['DB_URL'], logger: logger)
-        #       container.register("db", DB.new)
+        #     # system/boot/db.rb
+        #     #
+        #     # Provider registration under a namespace. This will register the
+        #     # db object with the "persistence.db" key
+        #     MyApp.register_provider(:persistence, namespace: "db") do
+        #       start do
+        #         require "db"
+        #         DB.configure(ENV["DB_URL"])
+        #         register("db", DB.new)
+        #       end
         #     end
-        #   end
         #
-        #   # system/boot/db.rb
-        #   #
-        #   # Provider registration under a namespace. This will register the
-        #   # db object with the "persistence.db" key
-        #   MyApp.register_provider(:persistence, namespace: "db") do
-        #     require "db"
-        #     DB.configure(ENV["DB_URL"])
-        #     register("db", DB.new)
-        #   end
+        #   @param name [Symbol] a unique name for the provider
+        #   @param namespace [String, nil] the key namespace to use for any registrations
+        #     made during the provider's lifecycle
+        #   @param from [Symbol, nil] the group for the external provider source (with the
+        #     provider source name inferred from `name` or passsed explicitly as
+        #     `source:`)
+        #   @param source [Symbol, nil] the name of the external provider source to use
+        #     (if different from the value provided as `name`)
+        #   @param if [Boolean] a boolean to determine whether to register the provider
         #
-        # @param name [Symbol] a unique name for the provider
+        #   @see Provider
+        #   @see Provider::Source
         #
-        # @see ProviderLifecycle
+        #   @return [self]
         #
-        # @return [self]
-        #
-        # @api public
-        def register_provider(name, namespace: nil, from: nil, source: nil, &block)
-          raise ProviderAlreadyRegisteredError, name if providers.key?(name)
-
-          if from && source.is_a?(Class)
-            raise ArgumentError, "You must supply a block when using a provider source"
-          end
-
-          if block && source.is_a?(Class)
-            raise ArgumentError, "You must supply only a `source:` option or a block, not both"
-          end
-
-          provider =
-            if from
-              provider_from_source(
-                name,
-                namespace: namespace,
-                source: source || name,
-                group: from,
-                &block
-              )
-            else
-              provider(name, namespace: namespace, source: source, &block)
-            end
-
-          providers.register_provider provider
+        #   @api public
+        def register_provider(...)
+          providers.register_provider(...)
         end
-        # rubocop:enable Metrics/PerceivedComplexity
 
+        # rubocop:enable Layout/LineLength
+
+        # @see .register_provider
+        # @api public
         def boot(name, **opts, &block)
           Dry::Core::Deprecations.announce(
             "Dry::System::Container.boot",
@@ -586,40 +580,9 @@ module Dry
 
         # @api private
         def providers
-          @providers ||= config.provider_registrar.new(provider_paths)
+          @providers ||= config.provider_registrar.new(self)
         end
         deprecate :booter, :providers
-
-        # rubocop:disable Metrics/PerceivedComplexity, Layout/LineLength
-        # @api private
-        def provider_paths
-          provider_dirs = config.provider_dirs
-          bootable_dirs = config.bootable_dirs || ["system/boot"]
-
-          if config.provider_dirs == ["system/providers"] && \
-             provider_dirs.none? { |d| root.join(d).exist? } && \
-             bootable_dirs.any? { |d| root.join(d).exist? }
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
-              "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
-              tag: "dry-system",
-              uplevel: 2
-            )
-
-            provider_dirs = bootable_dirs
-          end
-
-          provider_dirs.map { |dir|
-            dir = Pathname(dir)
-
-            if dir.relative?
-              root.join(dir)
-            else
-              dir
-            end
-          }
-        end
-        # rubocop:enable Metrics/PerceivedComplexity, Layout/LineLength
 
         # @api private
         def auto_registrar
@@ -749,29 +712,6 @@ module Dry
               break component
             end
           } || IndirectComponent.new(Identifier.new(key))
-        end
-
-        def provider_from_source(name, source:, group:, namespace:, &block)
-          source_class = System.provider_sources.resolve(name: source, group: group)
-
-          Provider.new(
-            name: name,
-            namespace: namespace,
-            target_container: self,
-            source_class: source_class,
-            &block
-          )
-        end
-
-        def provider(name, namespace:, source: nil, &block)
-          source_class = source || Provider::Source.for(name: name, target_container: self, &block)
-
-          Provider.new(
-            name: name,
-            namespace: namespace,
-            target_container: self,
-            source_class: source_class
-          )
         end
       end
 
