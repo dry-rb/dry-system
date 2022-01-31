@@ -111,6 +111,29 @@ RSpec.describe Dry::System::Identifier do
     end
   end
 
+  describe "#include?" do
+    it "returns true when the given string matches one or more whole key segments" do
+      expect(identifier.include?("kittens.operations")).to be true
+    end
+
+    it "returns false when the given string is an incomplete part of a key segment" do
+      expect(identifier.include?("kitten")).to be false
+      expect(identifier.include?("kittens.operation")).to be false
+    end
+
+    it "returns false when the given string is not any of the key segments" do
+      expect(identifier.include?("puppies")).to be false
+    end
+
+    it "returns false if the given string is nil" do
+      expect(identifier.include?(nil)).to be false
+    end
+
+    it "returns false if the given string is blank" do
+      expect(identifier.include?("")).to be false
+    end
+  end
+
   describe "#key_with_separator" do
     it "returns the key split by the given separator" do
       expect(identifier.key_with_separator("/")).to eq "kittens/operations/belly_rub"

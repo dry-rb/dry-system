@@ -89,6 +89,34 @@ module Dry
           key.eql?(trailing_segments)
       end
 
+      # Returns true if the given segments string matches whole segments within the {key}.
+      #
+      # @example
+      #   identifier.key # => "articles.operations.create"
+      #
+      #   identifier.include?("operations") # => true
+      #   identifier.include?("articles.operations") # => true
+      #   identifier.include?("operations.create") # => true
+      #
+      #   identifier.include?("article") # false, not a whole segment
+      #   identifier.include?("update") # => false
+      #
+      # @param segments [String] the one of more key segments to check
+      # @return [Boolean]
+      # @api public
+      def include?(segments)
+        return false if segments.to_s.empty?
+
+        sep_re = Regexp.escape(KEY_SEPARATOR)
+        key.match?(
+          /
+            (\A|#{sep_re})
+            #{Regexp.escape(segments)}
+            (\Z|#{sep_re})
+          /x
+        )
+      end
+
       # Returns the key with its segments separated by the given separator
       #
       # @example
