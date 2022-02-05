@@ -26,7 +26,7 @@ module Dry
         def extended(system)
           system.setting :autoloader, reader: true
 
-          system.config.autoloader = ::Zeitwerk::Loader.new
+          system.config.autoloader = options.fetch(:loader) { ::Zeitwerk::Loader.new }
           system.config.component_dirs.loader = Dry::System::Loader::Autoloading
           system.config.component_dirs.add_to_load_path = false
 
@@ -38,8 +38,6 @@ module Dry
         private
 
         def setup_autoloader(system)
-          system.config.autoloader = options[:loader] if options[:loader]
-
           configure_loader(system.autoloader, system)
 
           push_component_dirs_to_loader(system, system.autoloader)
