@@ -25,6 +25,8 @@ module Dry
         # @api private
         def extended(system)
           system.setting :autoloader, reader: true
+
+          system.config.autoloader = ::Zeitwerk::Loader.new
           system.config.component_dirs.loader = Dry::System::Loader::Autoloading
           system.config.component_dirs.add_to_load_path = false
 
@@ -35,15 +37,15 @@ module Dry
 
         private
 
-        # @api private
         def setup_autoloader(system)
-          if !system.autoloader
-            system.config.autoloader = build_zeitwerk_loader(system)
-          end
+          system.config.autoloader = options[:loader] if options[:loader]
+
+          configure_loader(system.autoloader, system)
 
           push_component_dirs_to_loader(system, system.autoloader)
 
           system.autoloader.setup
+
           system.after(:finalize) { system.autoloader.eager_load } if eager_load?(system)
 
           system
@@ -52,21 +54,15 @@ module Dry
         # Build a zeitwerk loader with the configured component directories
         #
         # @return [Zeitwerk::Loader]
-        #
-        # @api private
-        def build_zeitwerk_loader(system)
-          options.fetch(:loader) { ::Zeitwerk::Loader.new }.tap do |loader|
-            loader.tag = system.config.name || system.name
-            loader.inflector = CompatInflector.new(system.config)
-            loader.logger = method(:puts) if options[:debug]
-          end
+        def configure_loader(loader, system)
+          loader.tag = system.config.name || system.name unless loader.tag
+          loader.inflector = CompatInflector.new(system.config)
+          loader.logger = method(:puts) if options[:debug]
         end
 
         # Add component dirs to the zeitwerk loader
         #
         # @return [Zeitwerk::Loader]
-        #
-        # @api private
         def push_component_dirs_to_loader(system, loader)
           system.config.component_dirs.each do |dir|
             dir.namespaces.each do |ns|
@@ -80,7 +76,6 @@ module Dry
           loader
         end
 
-        # @api private
         def module_for_namespace(namespace, inflector)
           return Object unless namespace.const
 
@@ -88,12 +83,17 @@ module Dry
             inflector.constantize(inflector.camelize(namespace.const))
           rescue NameError
             namespace.const.split(PATH_SEPARATOR).reduce(Object) { |parent_mod, mod_path|
-              parent_mod.const_set(inflector.camelize(mod_path), Module.new)
+              get_or_define_module(parent_mod, inflector.camelize(mod_path))
             }
           end
         end
 
-        # @api private
+        def get_or_define_module(parent_mod, name)
+          parent_mod.const_get(name)
+        rescue NameError
+          parent_mod.const_set(name, Module.new)
+        end
+
         def eager_load?(system)
           options.fetch(:eager_load) {
             system.config.respond_to?(:env) && system.config.env == :production
