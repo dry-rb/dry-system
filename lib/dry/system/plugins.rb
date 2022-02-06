@@ -21,8 +21,8 @@ module Dry
         end
 
         # @api private
-        def apply_to(system, options)
-          system.extend(stateful? ? mod.new(options) : mod)
+        def apply_to(system, **options)
+          system.extend(stateful? ? mod.new(**options) : mod)
           system.instance_eval(&block) if block
           system
         end
@@ -90,13 +90,13 @@ module Dry
       # @return [self]
       #
       # @api public
-      def use(name, options = {})
+      def use(name, **options)
         return self if enabled_plugins.include?(name)
 
         raise PluginNotFoundError, name unless (plugin = Plugins.registry[name])
 
         plugin.load_dependencies
-        plugin.apply_to(self, options)
+        plugin.apply_to(self, **options)
 
         enabled_plugins << name
 
@@ -134,6 +134,9 @@ module Dry
 
       require "dry/system/plugins/zeitwerk"
       register(:zeitwerk, Plugins::Zeitwerk)
+
+      require_relative "plugins/injector_mixin"
+      register(:injector_mixin, Plugins::InjectorMixin)
     end
   end
 end
