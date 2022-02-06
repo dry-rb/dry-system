@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/constants"
-require "dry/system/plugins/zeitwerk/compat_inflector"
 
 module Dry
   module System
@@ -10,15 +9,22 @@ module Dry
       class Zeitwerk < Module
         # @api private
         def self.dependencies
-          ["dry/system/loader/autoloading", {"zeitwerk" => "zeitwerk"}]
+          [
+            "dry/system/loader/autoloading",
+            "dry/system/plugins/zeitwerk/compat_inflector",
+            {"zeitwerk" => "zeitwerk"}
+          ]
         end
 
         # @api private
-        attr_reader :options
+        attr_reader :loader, :setup, :eager_load, :debug
 
         # @api private
-        def initialize(options)
-          @options = options
+        def initialize(loader: nil, setup: true, eager_load: nil, debug: false)
+          @loader = loader || ::Zeitwerk::Loader.new
+          @setup = setup
+          @eager_load = eager_load
+          @debug = debug
           super()
         end
 
@@ -26,7 +32,7 @@ module Dry
         def extended(system)
           system.setting :autoloader, reader: true
 
-          system.config.autoloader = options.fetch(:loader) { ::Zeitwerk::Loader.new }
+          system.config.autoloader = loader
           system.config.component_dirs.loader = Dry::System::Loader::Autoloading
           system.config.component_dirs.add_to_load_path = false
 
@@ -42,7 +48,7 @@ module Dry
 
           push_component_dirs_to_loader(system, system.autoloader)
 
-          system.autoloader.setup
+          system.autoloader.setup if setup
 
           system.after(:finalize) { system.autoloader.eager_load } if eager_load?(system)
 
@@ -55,7 +61,7 @@ module Dry
         def configure_loader(loader, system)
           loader.tag = system.config.name || system.name unless loader.tag
           loader.inflector = CompatInflector.new(system.config)
-          loader.logger = method(:puts) if options[:debug]
+          loader.logger = method(:puts) if debug
         end
 
         # Add component dirs to the zeitwerk loader
@@ -93,9 +99,9 @@ module Dry
         end
 
         def eager_load?(system)
-          options.fetch(:eager_load) {
-            system.config.respond_to?(:env) && system.config.env == :production
-          }
+          return eager_load unless eager_load.nil?
+
+          system.config.respond_to?(:env) && system.config.env == :production
         end
       end
     end

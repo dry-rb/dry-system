@@ -10,8 +10,9 @@ module Dry
         attr_reader :options
 
         # @api private
-        def initialize(options)
+        def initialize(**options)
           @options = options
+          super()
         end
 
         def inferrer
