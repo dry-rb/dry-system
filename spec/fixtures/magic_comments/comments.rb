@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# rubocop:disable Layout/CommentIndentation
 # frozen_string_literal: true
 
 # This is a file with a mix of valid and invalid magic comments
@@ -10,9 +11,10 @@
 # 123_will_not_match: will not match
 # not-using-underscores: value for comment using dashes
 
-# not_at_start_of_line: will not match
+  # not_at_start_of_line: will not match
 
 module Test
 end
 
 # after_code: will not match
+# rubocop:enable Layout/CommentIndentation

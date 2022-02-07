@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Lazy loading components with auto-registration disabled" do
   before do
     module Test
