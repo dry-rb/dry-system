@@ -60,7 +60,7 @@ RSpec.describe "Plugins / Dependency Graph" do
         expect(events.map { [_1.id, _1.payload] }).to eq [
           [:resolved_dependency, {dependency_map: {mailer: "mailer"}, target_class: Test::Foo}],
           [:registered_dependency, {class: Object, key: "mailer"}],
-          [:registered_dependency, {class: Test::Foo, key: "foo"}],
+          [:registered_dependency, {class: Test::Foo, key: "foo"}]
         ]
       end
     end
@@ -120,4 +120,3 @@ RSpec.describe "Plugins / Dependency Graph" do
     it_behaves_like "dependency graph notifications"
   end
 end
-

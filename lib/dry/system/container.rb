@@ -193,7 +193,7 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash) # rubocop:disable Style/KeywordParametersOrder, Layout/LineLength
+        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash)
           if deprecated_import_hash.any?
             Dry::Core::Deprecations.announce(
               "Dry::System::Container.import with {namespace => container} hash",

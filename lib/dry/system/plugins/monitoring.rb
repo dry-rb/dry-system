@@ -21,7 +21,7 @@ module Dry
 
         # @api private
         def self.dependencies
-          {'dry-events': "dry/events/publisher"}
+          {"dry-events": "dry/events/publisher"}
         end
 
         # @api private
