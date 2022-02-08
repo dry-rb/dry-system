@@ -73,7 +73,7 @@ This prepares the way for dry-system 1.0, which will be released in the coming m
   configure do |config|
     config.component_dirs.add "lib" do |dir|
       dir.instance = proc do |component|
-        if component.key.match?(/workers\./)
+        if component.identifier.include?("workers")
           # Register classes for jobs
           component.loader.constant(component)
         else
