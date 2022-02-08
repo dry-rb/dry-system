@@ -17,12 +17,12 @@ module Dry
         end
 
         # @api private
-        attr_reader :loader, :setup, :eager_load, :debug
+        attr_reader :loader, :run_setup, :eager_load, :debug
 
         # @api private
-        def initialize(loader: nil, setup: true, eager_load: nil, debug: false)
+        def initialize(loader: nil, run_setup: true, eager_load: nil, debug: false)
           @loader = loader || ::Zeitwerk::Loader.new
-          @setup = setup
+          @run_setup = run_setup
           @eager_load = eager_load
           @debug = debug
           super()
@@ -48,7 +48,7 @@ module Dry
 
           push_component_dirs_to_loader(system, system.autoloader)
 
-          system.autoloader.setup if setup
+          system.autoloader.setup if run_setup
 
           system.after(:finalize) { system.autoloader.eager_load } if eager_load?(system)
 
