@@ -34,40 +34,110 @@ RSpec.describe Dry::System::Identifier do
   end
 
   describe "#start_with?" do
-    it "returns true when the provided string matches the base segment of the identifier string" do
+    it "returns true when the given string matches the base segment of the key" do
       expect(identifier.start_with?("kittens")).to be true
     end
 
-    it "returns true when the provided string matches multiple base segments of the identifier string" do
+    it "returns true when the given string matches multiple base segments of the key" do
       expect(identifier.start_with?("kittens.operations")).to be true
     end
 
-    it "returns false if the provided string is only a partial base segment" do
+    it "returns false if the given string is only a partial base segment of the key" do
       expect(identifier.start_with?("kitten")).to be false
     end
 
-    it "returns false if the provided string is not a base segment" do
+    it "returns false if the given string is not a base segment of the key" do
       expect(identifier.start_with?("puppies")).to be false
     end
 
-    it "returns true when the provided string matches all segments of the identifier string" do
+    it "returns true when the given string matches all segments of the key" do
       expect(identifier.start_with?("kittens.operations.belly_rub")).to be true
     end
 
-    it "returns true when the provided string is nil" do
+    it "returns true when the given string is nil" do
       expect(identifier.start_with?(nil)).to be true
+    end
+
+    it "returns true if the given string is empty" do
+      expect(identifier.start_with?("")).to be true
     end
 
     context "component is identified by a single segment" do
       let(:key) { "belly_rub" }
 
-      it "returns true when the provided string matches the identifier string" do
+      it "returns true when the given string matches the key" do
         expect(identifier.start_with?("belly_rub")).to be true
       end
 
-      it "returns false when the provided string does not match the identifier string" do
-        expect(identifier.start_with?("belly_ruby")).to be false
+      it "returns false when the given string does not match the key" do
+        expect(identifier.start_with?("head_scratch")).to be false
       end
+    end
+  end
+
+  describe "#end_with?" do
+    it "returns true when the given string matches the last segment of the key" do
+      expect(identifier.end_with?("belly_rub")).to be true
+    end
+
+    it "returns true when the given string matches multiple trailing segments of the key" do
+      expect(identifier.end_with?("operations.belly_rub")).to be true
+    end
+
+    it "returns false if the given string is an incomplete part of a trailing segment" do
+      expect(identifier.end_with?("rub")).to be false
+      expect(identifier.end_with?("ations.belly_rub")).to be false
+    end
+
+    it "return false if the given string is not part of any trailing segment" do
+      expect(identifier.end_with?("head_scratch")).to be false
+    end
+
+    it "returns true if the given string matches all segments of the key" do
+      expect(identifier.end_with?("kittens.operations.belly_rub")).to be true
+    end
+
+    it "returns true if the given string is nil" do
+      expect(identifier.end_with?(nil)).to be true
+    end
+
+    it "returns true if the given string is empty" do
+      expect(identifier.end_with?("")).to be true
+    end
+
+    context "component key with only a single segment" do
+      let(:key) { "belly_rub" }
+
+      it "returns true when the given string matches the key" do
+        expect(identifier.end_with?("belly_rub")).to be true
+      end
+
+      it "returns false when the given string does not match the key" do
+        expect(identifier.end_with?("head_scratch")).to be false
+      end
+    end
+  end
+
+  describe "#include?" do
+    it "returns true when the given string matches one or more whole key segments" do
+      expect(identifier.include?("kittens.operations")).to be true
+    end
+
+    it "returns false when the given string is an incomplete part of a key segment" do
+      expect(identifier.include?("kitten")).to be false
+      expect(identifier.include?("kittens.operation")).to be false
+    end
+
+    it "returns false when the given string is not any of the key segments" do
+      expect(identifier.include?("puppies")).to be false
+    end
+
+    it "returns false if the given string is nil" do
+      expect(identifier.include?(nil)).to be false
+    end
+
+    it "returns false if the given string is blank" do
+      expect(identifier.include?("")).to be false
     end
   end
 

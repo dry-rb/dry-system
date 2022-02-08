@@ -44,11 +44,9 @@ module Dry
         segments.first.to_sym
       end
 
-      # Returns true if the given leading namespaces are a leading part of the
-      # identifier's key
+      # Returns true if the given leading segments string is a leading part of the {key}.
       #
-      # Also returns true if nil is given (technically, from nothing everything is
-      # wrought)
+      # Also returns true if nil or an empty string is given.
       #
       # @example
       #   identifier.key # => "articles.operations.create"
@@ -58,13 +56,61 @@ module Dry
       #   identifier.start_with?("article") # => false
       #   identifier.start_with?(nil) # => true
       #
-      # @param leading_namespaces [String] the one or more leading namespaces to check
+      # @param leading_segments [String] the one or more leading segments to check
       # @return [Boolean]
       # @api public
-      def start_with?(leading_namespaces)
-        leading_namespaces.nil? ||
-          key.start_with?("#{leading_namespaces}#{KEY_SEPARATOR}") ||
-          key.eql?(leading_namespaces)
+      def start_with?(leading_segments)
+        leading_segments.to_s.empty? ||
+          key.start_with?("#{leading_segments}#{KEY_SEPARATOR}") ||
+          key.eql?(leading_segments)
+      end
+
+      # Returns true if the given trailing segments string is the end part of the {key}.
+      #
+      # Also returns true if nil or an empty string is given.
+      #
+      # @example
+      #   identifier.key # => "articles.operations.create"
+      #
+      #   identifier.end_with?("create") # => true
+      #   identifier.end_with?("operations.create") # => true
+      #   identifier.end_with?("ate") # => true
+      #
+      # @param trailing_segments [String] the one or more trailing key segments to check
+      # @return [Boolean]
+      # @api public
+      def end_with?(trailing_segments)
+        trailing_segments.to_s.empty? ||
+          key.end_with?("#{KEY_SEPARATOR}#{trailing_segments}") ||
+          key.eql?(trailing_segments)
+      end
+
+      # Returns true if the given segments string matches whole segments within the {key}.
+      #
+      # @example
+      #   identifier.key # => "articles.operations.create"
+      #
+      #   identifier.include?("operations") # => true
+      #   identifier.include?("articles.operations") # => true
+      #   identifier.include?("operations.create") # => true
+      #
+      #   identifier.include?("article") # false, not a whole segment
+      #   identifier.include?("update") # => false
+      #
+      # @param segments [String] the one of more key segments to check
+      # @return [Boolean]
+      # @api public
+      def include?(segments)
+        return false if segments.to_s.empty?
+
+        sep_re = Regexp.escape(KEY_SEPARATOR)
+        key.match?(
+          /
+            (\A|#{sep_re})
+            #{Regexp.escape(segments)}
+            (\Z|#{sep_re})
+          /x
+        )
       end
 
       # Returns the key with its segments separated by the given separator
