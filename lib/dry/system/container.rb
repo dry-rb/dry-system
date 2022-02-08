@@ -276,7 +276,7 @@ module Dry
         #       end
         #     end
         #
-        #     # system/boot/db.rb
+        #     # system/providers/db.rb
         #     #
         #     # Provider registration under a namespace. This will register the
         #     # db object with the "persistence.db" key
