@@ -74,7 +74,8 @@ module Dry
       #
       #   identifier.end_with?("create") # => true
       #   identifier.end_with?("operations.create") # => true
-      #   identifier.end_with?("ate") # => true
+      #   identifier.end_with?("ate") # => false, not a whole segment
+      #   identifier.end_with?("nup") # => false, not in key at all
       #
       # @param trailing_segments [String] the one or more trailing key segments to check
       # @return [Boolean]
@@ -94,8 +95,8 @@ module Dry
       #   identifier.include?("articles.operations") # => true
       #   identifier.include?("operations.create") # => true
       #
-      #   identifier.include?("article") # false, not a whole segment
-      #   identifier.include?("update") # => false
+      #   identifier.include?("article") # => false, not a whole segment
+      #   identifier.include?("update") # => false, not in key at all
       #
       # @param segments [String] the one of more key segments to check
       # @return [Boolean]
