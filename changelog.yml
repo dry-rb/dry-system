@@ -6,8 +6,7 @@
     Deprecations are in place for otherwise breaking changes to commonly used parts of dry-system, though some breaking changes remain.
 
     This prepares the way for dry-system 1.0, which will be released in the coming months.
-  date: 2022-02-07
-  fixed:
+  date: 2022-02-08
   added:
   - |-
     Containers can configure specific components for export using `config.exports` (@timriley in #209).
