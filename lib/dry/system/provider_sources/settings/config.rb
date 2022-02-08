@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/configurable"
+require "dry/core/deprecations"
 require_relative "loader"
 
 module Dry
@@ -49,6 +50,19 @@ module Dry
               raise InvalidSettingsError, errors unless errors.empty?
             end
           end
+
+          # rubocop:disable Layout/LineLength
+          def self.key(name, type)
+            Dry::Core::Deprecations.announce(
+              "Dry::System :settings provider source setting definition using `key`",
+              "Use `setting` instead, with dry-configurable `setting` options, e.g. `setting :my_setting, default: \"hello\", constructor: Types::String.constrained(min_length: 3)`",
+              tag: "dry-system",
+              uplevel: 1
+            )
+
+            setting(name, constructor: type)
+          end
+          # rubocop:enable Layout/LineLength
 
           include Dry::Configurable
 
