@@ -28,9 +28,9 @@ end
 
 ### Auto-registered component keys
 
-When components are auto-registered, their default keys are based on their file paths and your [component dir](/gems/dry-system/component-dirs) configuration. For example, `lib/api/client.rb` will have the key `"api.client"` and will resolve an instance of `API::Client`.
+When components are auto-registered, their default keys are based on their file paths and your [component dir](docs::component-dirs) configuration. For example, `lib/api/client.rb` will have the key `"api.client"` and will resolve an instance of `API::Client`.
 
-Resolving a component will also start a registered [provider](/gems/dry-system/providers) if it shares the same name as the root segment of its container key. This is useful in cases where a group of components require an additional dependency to be always made available.
+Resolving a component will also start a registered [provider](docs::providers) if it shares the same name as the root segment of its container key. This is useful in cases where a group of components require an additional dependency to be always made available.
 
 For example, if you have a group of repository objects that need a `persistence` provider to be started, all you need to do is to follow this naming convention:
 
