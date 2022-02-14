@@ -54,7 +54,7 @@ Here's a simple example:
 # system/providers/db.rb
 
 Application.register_provider(:database) do
-  init do
+  prepare do
     require '3rd_party/db'
 
     register(:database, 3rdParty::DB.configure(ENV['DB_URL']))
