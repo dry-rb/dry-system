@@ -71,6 +71,13 @@ RSpec.describe Dry::System::Loader do
       end
 
       it_behaves_like "object loader"
+
+      it "isolates component by removing its constant" do
+        constant
+        instance = loader.call(component, isolate: true)
+        expect(Test.const_defined?("Bar")).to eq(false)
+        expect(instance).to be_a(constant)
+      end
     end
 
     context "with a constructor accepting args" do
