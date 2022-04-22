@@ -13,11 +13,11 @@ You can define your providers as individual source files in `system/providers/`,
 
 Application.register_provider(:database) do
   prepare do
-    require "3rd_party/db"
+    require "third_party/db"
   end
 
   start do
-    register(:database, 3rdParty::DB.new)
+    register(:database, ThirdParty::DB.new)
   end
 end
 ```
@@ -44,7 +44,7 @@ Application["database"]
 
 The provider lifecycle consists of three steps, each with a distinct purpose:
 
-* `prepare` - basic setup code, here you can require 3rd party code and perform basic configuration
+* `prepare` - basic setup code, here you can require third party code and perform basic configuration
 * `start` - code that needs to run for a component to be usable at application's runtime
 * `stop` - code that needs to run to stop a component, ie close a database connection, clear some artifacts etc.
 
@@ -55,9 +55,9 @@ Here's a simple example:
 
 Application.register_provider(:database) do
   prepare do
-    require '3rd_party/db'
+    require 'third_party/db'
 
-    register(:database, 3rdParty::DB.configure(ENV['DB_URL']))
+    register(:database, ThirdParty::DB.configure(ENV['DB_URL']))
   end
 
   start do
