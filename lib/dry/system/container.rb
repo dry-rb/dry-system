@@ -194,6 +194,8 @@ module Dry
         #
         # @api public
         def import(keys: nil, from: nil, as: nil, **deprecated_import_hash)
+          raise Dry::System::ContainerAlreadyFinalizedError if finalized?
+
           if deprecated_import_hash.any?
             Dry::Core::Deprecations.announce(
               "Dry::System::Container.import with {namespace => container} hash",
