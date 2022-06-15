@@ -1,4 +1,11 @@
 ---
+- version: unreleased
+  summary: 
+  date: 
+  fixed:
+  - Fix incorrect type in `ManifestRegistrar#finalize!` (@alassek)
+  added: 
+  changed: 
 - version: 0.24.0
   changed:
   - dry-struct depedency was removed (@flash-gordon)
@@ -90,7 +97,6 @@
       ```
 
       For complete control of component loading, you should continue to configure the component dir’s `loader` instead.
-
   - |-
     A new `ComponentNotLoadableError` error and helpful message is raised when resolving a component and an unexpected class is defined in the component’s source file (@cllns in #217).
 
@@ -328,8 +334,9 @@
     Removed the unused `system_dir` container setting (**BREAKING**) (@timriley in #200)
 
       If you’ve configured this inside your container, you can remove it.
-  - |-
-    dry-system’s first-party external provider sources now available via `require "dry/system/provider_sources"`, with the previous `require "dry/system/components"` deprecated (@timriley in #202).
+  - 'dry-system’s first-party external provider sources now available via `require
+    "dry/system/provider_sources"`, with the previous `require "dry/system/components"`
+    deprecated (@timriley in #202).'
   - |-
     When using registering a provider using a first-party dry-system provider source, `from: :dry_system` instead of `from: :system` (which is now deprecated) (@timriley in #202).
 
@@ -387,8 +394,9 @@
     Container plugins should define their settings on the container using their module `.extended` hook, no longer in a `before(:configure)` hook (as above) (**BREAKING**) (@timriley in #207).
 
       This ensures the plugin settings are available immediately after you’ve enabled the plugin via `Dry::System::Container.use`.
-  - |-
-    The `Dry::System::Container` key `namespace_separator` setting is no longer expected to be user-configured. A key namespace separator of "." is hard-coded and expected to remain the separator string. (@timriley in #206)
+  - 'The `Dry::System::Container` key `namespace_separator` setting is no longer expected
+    to be user-configured. A key namespace separator of "." is hard-coded and expected
+    to remain the separator string. (@timriley in #206)'
   - |-
     Containers can import a specific subset of another container’s components via changes to `.import`, which is now `.import(keys: nil, from:, as:)` (with prior API deprecated) (@timriley in #209)
 
@@ -417,32 +425,39 @@
     Container imports are now made without finalizing the exporting container in most cases, ensuring more efficient imports (@timriley in #209)
 
       Now, the only time the exporting container will be finalized is when a container is importing all components, and the exporting container has not declared any components in `config.exports`.
-  - |-
-    [Internal] The `manual_registrar` container setting and associated `ManualRegistrar` class have been renamed to `manifest_registrar` and `ManifestRegistrar` respectively (**BREAKING**) (@timriley in #208).
-  - |-
-    The default value for the container `registrations_dir` setting has been changed from `"container"` to `"system/registrations"` (**BREAKING**) (@timriley in #208)
-  - |-
-    The `:dependency_graph` plugin now supports all dry-auto_inject injector strategies (@davydovanton and @timriley in #214)
+  - "[Internal] The `manual_registrar` container setting and associated `ManualRegistrar`
+    class have been renamed to `manifest_registrar` and `ManifestRegistrar` respectively
+    (**BREAKING**) (@timriley in #208)."
+  - 'The default value for the container `registrations_dir` setting has been changed
+    from `"container"` to `"system/registrations"` (**BREAKING**) (@timriley in #208)'
+  - 'The `:dependency_graph` plugin now supports all dry-auto_inject injector strategies
+    (@davydovanton and @timriley in #214)'
   fixed:
-  - |-
-    Registrations made in providers (by calling `register` inside a provider step) have all their registration options preserved (such as a block-based registration, or the `memoize:` option) when having their registration merged into the target container after the provider lifecycle steps complete (@timriley in #212).
+  - 'Registrations made in providers (by calling `register` inside a provider step)
+    have all their registration options preserved (such as a block-based registration,
+    or the `memoize:` option) when having their registration merged into the target
+    container after the provider lifecycle steps complete (@timriley in #212).'
   - |-
     Providers can no longer implicitly re-start themselves while in the process of starting and cause an infinite loop (@timriley #213).
 
       This was possible before when a provider resolved a component from the target container that auto-injected dependencies with container keys sharing the same base key as the provider name.
 - version: 0.22.0
-  summary:
+  summary: 
   date: 2022-01-06
-  fixed:
+  fixed: 
   added:
-  - 'Expanded public interfaces for `Dry::System::Config::ComponentDirs` and `Dry::System::Config::Namespaces` to better support programmatic construction and inspection of these configs (@timriley in #195)'
+  - 'Expanded public interfaces for `Dry::System::Config::ComponentDirs` and `Dry::System::Config::Namespaces`
+    to better support programmatic construction and inspection of these configs (@timriley
+    in #195)'
   changed:
-  - 'Deprecated `Dry::System::Config::Namespaces#root` as the way to add and configure a root namespace. Use `#add_root` instead (@timriley in #195)'
-  - 'Allow bootsnap plugin to use bootsnap on Ruby versions up to 3.0 (pusewicz in #196)'
+  - 'Deprecated `Dry::System::Config::Namespaces#root` as the way to add and configure
+    a root namespace. Use `#add_root` instead (@timriley in #195)'
+  - 'Allow bootsnap plugin to use bootsnap on Ruby versions up to 3.0 (pusewicz in
+    #196)'
 - version: 0.21.0
-  summary:
+  summary: 
   date: 2021-11-01
-  fixed:
+  fixed: 
   added:
   - 'Added **component dir namespaces** as a way to specify multiple, ordered, independent
     namespace rules within a given component dir. This replaces and expands upon the
@@ -474,7 +489,7 @@
     errors have been removed (@timriley in #194)'
   - 'Allow bootsnap for Rubies up to 3.0.x (via #196) (@pusewicz)'
 - version: 0.20.0
-  summary:
+  summary: 
   date: '2021-09-12'
   fixed:
   - 'Fixed dependency graph plugin to work with internal changes introduced in 0.19.0
@@ -483,7 +498,7 @@
     by a single segment, or if all matching segments are provided (@wuarmin in #177)'
   - 'Fixed compatibility of `finalize!` signature provided in `Container::Stubs` (@mpokrywka
     in #178)'
-  added:
+  added: 
   changed:
   - "[internal] Upgraded to new `setting` API provided in dry-configurable 0.13.0
     (@timriley in #179)"
@@ -597,17 +612,17 @@
   - "[BREAKING] `Dry::System::Container.require_path` has been removed. Provide custom
     require behavior by configuring your own `loader` (@timriley in #153)"
 - version: 0.18.1
-  summary:
+  summary: 
   date: '2020-08-26'
   fixed:
   - Made `Booter#boot_files` a public method again, since it was required by dry-rails
     (@timriley)
-  added:
-  changed:
+  added: 
+  changed: 
 - version: 0.18.0
-  summary:
+  summary: 
   date: '2020-08-24'
-  fixed:
+  fixed: 
   added:
   - |-
     New `bootable_dirs` setting on `Dry::System::Container`, which accepts paths to multiple directories for looking up bootable component files. (@timriley in PR #151)
@@ -615,26 +630,26 @@
       For each entry in the `bootable_dirs` array, relative directories will be appended to the container's `root`, and absolute directories will be left unchanged.
 
       When searching for bootable files, the first match will win, and any subsequent same-named files will not be loaded. In this way, the `bootable_dirs` act similarly to the `$PATH` in a shell environment.
-  changed:
+  changed: 
 - version: 0.17.0
-  summary:
+  summary: 
   date: '2020-02-19'
   fixed:
   - 'Works with the latest dry-configurable version (issue #141) (@solnic)'
-  added:
+  added: 
   changed:
   - Depends on dry-configurable `=> 0.11.1` now (@solnic)
 - version: 0.16.0
-  summary:
+  summary: 
   date: '2020-02-15'
   changed:
   - Plugins can now define their own settings which are available in the `before(:configure)`
     hook (@solnic)
   - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 - version: 0.15.0
-  summary:
+  summary: 
   date: '2020-01-30'
-  fixed:
+  fixed: 
   added: |
     New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
 
@@ -648,10 +663,10 @@
   - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
   - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 - version: 0.14.1
-  summary:
+  summary: 
   date: '2020-01-22'
-  fixed:
-  added:
+  fixed: 
+  added: 
   changed:
   - Use `Kernel.require` explicitly to avoid issues with monkey-patched `require`
     from ActiveSupport (@solnic)
