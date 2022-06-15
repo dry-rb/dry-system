@@ -13,8 +13,19 @@ RSpec.describe "Lazy-loading registration manifest files" do
     end
   end
 
-  it "loads a registration manifest file if the component could not be found" do
-    expect(Test::Container["foo.special"]).to be_a(Test::Foo)
-    expect(Test::Container["foo.special"].name).to eq "special"
+  shared_examples "manifest component" do
+    it "loads a registration manifest file if the component could not be found" do
+      expect(Test::Container["foo.special"]).to be_a(Test::Foo)
+      expect(Test::Container["foo.special"].name).to eq "special"
+    end
+  end
+
+  context "Non-finalized container" do
+    include_examples "manifest component"
+  end
+
+  context "Finalized container" do
+    before { Test::Container.finalize! }
+    include_examples "manifest component"
   end
 end
