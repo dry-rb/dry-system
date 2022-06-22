@@ -193,7 +193,7 @@ module Dry
         # @param other [Hash, Dry::Container::Namespace]
         #
         # @api public
-        def import(keys: nil, from: nil, as: nil, **deprecated_import_hash)
+        def import(keys: nil, from: Undefined, as: Undefined, **deprecated_import_hash)
           if deprecated_import_hash.any?
             Dry::Core::Deprecations.announce(
               "Dry::System::Container.import with {namespace => container} hash",
@@ -206,7 +206,7 @@ module Dry
               importer.register(container: container, namespace: namespace)
             end
             return self
-          elsif from.nil? || as.nil?
+          elsif from == Undefined || as == Undefined
             # These keyword arguments can become properly required in the params list once
             # we remove the deprecation shim above
             raise ArgumentError, "required keyword arguments: :from, :as"
@@ -659,6 +659,7 @@ module Dry
 
         protected
 
+        # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
         # @api private
         def load_component(key)
           return self if registered?(key)
@@ -678,11 +679,14 @@ module Dry
           elsif manifest_registrar.file_exists?(component)
             manifest_registrar.(component)
           elsif importer.namespace?(component.identifier.root_key)
-            load_imported_component(component.identifier)
+            load_imported_component(component.identifier, namespace: component.identifier.root_key)
+          elsif importer.namespace?(nil)
+            load_imported_component(component.identifier, namespace: nil)
           end
 
           self
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
 
         private
 
@@ -692,14 +696,12 @@ module Dry
           end
         end
 
-        def load_imported_component(identifier)
-          import_namespace = identifier.root_key
+        def load_imported_component(identifier, namespace:)
+          return unless importer.namespace?(namespace)
 
-          return unless importer.namespace?(import_namespace)
+          import_key = identifier.namespaced(from: namespace, to: nil).key
 
-          import_key = identifier.namespaced(from: import_namespace, to: nil).key
-
-          importer.import(import_namespace, keys: [import_key])
+          importer.import(namespace, keys: [import_key])
         end
 
         def find_component(key)
