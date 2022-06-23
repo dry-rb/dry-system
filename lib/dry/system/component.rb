@@ -7,6 +7,7 @@ require "dry/inflector"
 require "dry/system/loader"
 require "dry/system/errors"
 require "dry/system/constants"
+require "pathname"
 require_relative "identifier"
 
 module Dry
@@ -17,7 +18,7 @@ module Dry
     #
     # @api public
     class Component
-      include Dry::Equalizer(:identifier, :namespace, :options)
+      include Dry::Equalizer(:identifier, :file_path, :namespace, :options)
 
       DEFAULT_OPTIONS = {
         inflector: Dry::Inflector.new,
@@ -28,6 +29,10 @@ module Dry
       #   @return [String] the component's unique identifier
       attr_reader :identifier
 
+      # @!attribute [r] file_path
+      #   @return [Pathname] the component's source file path
+      attr_reader :file_path
+
       # @!attribute [r] namespace
       #   @return [Dry::System::Config::Namespace] the component's namespace
       attr_reader :namespace
@@ -37,8 +42,9 @@ module Dry
       attr_reader :options
 
       # @api private
-      def initialize(identifier, namespace:, **options)
+      def initialize(identifier, file_path:, namespace:, **options)
         @identifier = identifier
+        @file_path = Pathname(file_path)
         @namespace = namespace
         @options = DEFAULT_OPTIONS.merge(options)
       end

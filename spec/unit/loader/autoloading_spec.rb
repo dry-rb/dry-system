@@ -11,6 +11,7 @@ RSpec.describe Dry::System::Loader::Autoloading do
     let(:component) {
       Dry::System::Component.new(
         Dry::System::Identifier.new("test.not_loaded_const"),
+        file_path: "/path/to/test/not_loaded_const.rb",
         namespace: Dry::System::Config::Namespace.default_root
       )
     }
