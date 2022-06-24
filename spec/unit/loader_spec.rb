@@ -15,6 +15,7 @@ RSpec.describe Dry::System::Loader do
     let(:component) {
       Dry::System::Component.new(
         Dry::System::Identifier.new("test.bar"),
+        file_path: "/path/to/test/bar.rb",
         namespace: Dry::System::Config::Namespace.default_root
       )
     }
@@ -56,6 +57,7 @@ RSpec.describe Dry::System::Loader do
       let(:component) {
         Dry::System::Component.new(
           Dry::System::Identifier.new("test.bar"),
+          file_path: "/path/to/test/bar.rb",
           namespace: Dry::System::Config::Namespace.default_root
         )
       }
@@ -77,6 +79,7 @@ RSpec.describe Dry::System::Loader do
       let(:component) {
         Dry::System::Component.new(
           Dry::System::Identifier.new("test.bar"),
+          file_path: "/path/to/test/bar.rb",
           namespace: Dry::System::Config::Namespace.default_root
         )
       }
@@ -101,6 +104,7 @@ RSpec.describe Dry::System::Loader do
       let(:component) {
         Dry::System::Component.new(
           Dry::System::Identifier.new("test.api_bar"),
+          file_path: "/path/to/test/api_bar.rb",
           namespace: Dry::System::Config::Namespace.default_root,
           inflector: Dry::Inflector.new { |i| i.acronym("API") }
         )
@@ -122,6 +126,7 @@ RSpec.describe Dry::System::Loader do
     let(:component) {
       Dry::System::Component.new(
         Dry::System::Identifier.new("test.api_bar"),
+        file_path: "/path/to/test/api_bar.rb",
         namespace: Dry::System::Config::Namespace.default_root,
         inflector: Dry::Inflector.new { |i| i.acronym("API") }
       )

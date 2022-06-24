@@ -6,9 +6,17 @@ require "dry/system/loader"
 require "dry/system/config/namespace"
 
 RSpec.describe Dry::System::Component do
-  subject(:component) { described_class.new(identifier, namespace: namespace, loader: loader) }
+  subject(:component) {
+    described_class.new(
+      identifier,
+      file_path: file_path,
+      namespace: namespace,
+      loader: loader
+    )
+  }
 
   let(:identifier) { Dry::System::Identifier.new("test.foo") }
+  let(:file_path) { "/path/to/test/foo.rb" }
   let(:namespace) { Dry::System::Config::Namespace.default_root }
   let(:loader) { class_spy(Dry::System::Loader) }
 

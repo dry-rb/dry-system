@@ -141,7 +141,12 @@ module Dry
           **MagicCommentsParser.(file_path)
         }
 
-        Component.new(identifier, namespace: namespace, **options)
+        Component.new(
+          identifier,
+          namespace: namespace,
+          file_path: file_path,
+          **options
+        )
       end
 
       def component_options
