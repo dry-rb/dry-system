@@ -84,7 +84,7 @@ module Dry
       end
 
       def import_keys(other, namespace, keys)
-        container.merge(build_merge_container(other, keys), namespace: namespace)
+        merge(container, build_merge_container(other, keys), namespace: namespace)
       end
 
       def import_all(other, namespace)
@@ -95,7 +95,14 @@ module Dry
             build_merge_container(other.finalize!, other.keys)
           end
 
-        container.merge(merge_container, namespace: namespace)
+        merge(container, merge_container, namespace: namespace)
+      end
+
+      # Merges `other` into `container`, favoring the container's existing registrations
+      def merge(container, other, namespace:)
+        container.merge(other, namespace: namespace) { |_key, old_item, new_item|
+          old_item || new_item
+        }
       end
 
       def build_merge_container(other, keys)

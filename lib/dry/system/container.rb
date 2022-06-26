@@ -375,10 +375,10 @@ module Dry
           hooks[:before_finalize].each { |hook| instance_eval(&hook) }
           yield(self) if block
 
-          importer.finalize!
           providers.finalize!
-          manifest_registrar.finalize!
           auto_registrar.finalize!
+          manifest_registrar.finalize!
+          importer.finalize!
 
           @__finalized__ = true
 
