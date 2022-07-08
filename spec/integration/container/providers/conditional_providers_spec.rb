@@ -21,7 +21,7 @@ RSpec.describe "Providers / Conditional providers" do
 
   shared_examples "does not load the provider" do
     it "does not run the provider when a related component is resolved" do
-      expect { container["provided"] }.to raise_error(Dry::Container::Error, /Nothing registered/)
+      expect { container["provided"] }.to raise_error(Dry::Container::KeyError, /key not found: "provided"/)
       expect(container.providers.key?(:provided)).to be false
     end
   end

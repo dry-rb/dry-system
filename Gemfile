@@ -6,6 +6,8 @@ eval_gemfile "Gemfile.devtools"
 
 gemspec
 
+gem "dry-container", github: "dry-rb/dry-container", branch: "main"
+
 # Remove verson constraint once latter versions release their -java packages
 gem "bootsnap", "= 1.4.9"
 gem "dotenv"

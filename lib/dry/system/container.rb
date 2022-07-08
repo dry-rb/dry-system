@@ -2,9 +2,9 @@
 
 require "pathname"
 
-require "dry-auto_inject"
-require "dry-configurable"
-require "dry-container"
+require "dry/configurable"
+require "dry/auto_inject"
+require "dry/container"
 require "dry/core/deprecations"
 require "dry/inflector"
 
@@ -70,12 +70,11 @@ module Dry
     #
     # @api public
     class Container
-      extend Dry::Configurable
       extend Dry::Container::Mixin
       extend Dry::System::Plugins
 
       setting :name
-      setting :root, default: Pathname.pwd.freeze, constructor: -> path { Pathname(path) }
+      setting :root, default: Pathname.pwd.freeze, constructor: ->(path) { Pathname(path) }
       setting :provider_dirs, default: ["system/providers"]
       setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "system/registrations"
