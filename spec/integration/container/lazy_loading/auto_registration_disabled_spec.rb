@@ -17,6 +17,6 @@ RSpec.describe "Lazy loading components with auto-registration disabled" do
   end
 
   it "does not load the component" do
-    expect { Test::Container["entities.kitten"] }.to raise_error(Dry::Container::Error)
+    expect { Test::Container["entities.kitten"] }.to raise_error(Dry::Container::KeyError)
   end
 end
