@@ -7,6 +7,9 @@
 
 - Fix incorrect type in `ManifestRegistrar#finalize!` (@alassek)
 
+### Changed
+
+- Import root components via `nil` import namespace (via #236) (@timriley)
 
 [Compare v0.24.0...master](https://github.com/dry-rb/dry-system/compare/v0.24.0...master)
 
