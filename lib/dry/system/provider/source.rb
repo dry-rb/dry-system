@@ -53,9 +53,14 @@ module Dry
           def inherited(subclass)
             super
 
-            # FIXME: This shouldn't _need_ to be in an inherited hook but right now it's
-            # the only way to prevent individual Source instances from sharing settings
-            subclass.include Dry::Configurable
+            # Include Dry::Configurable only when first subclassing to ensure that
+            # distinct Source subclasses do not share settings.
+            #
+            # The superclass check here allows deeper Source class hierarchies to be
+            # created without running into a Dry::Configurable::AlreadyIncluded error.
+            if subclass.superclass == Source
+              subclass.include Dry::Configurable
+            end
           end
 
           # @api private
