@@ -8,6 +8,7 @@
   changed:
   - 'Import root components via `nil` import namespace (via #236) (@timriley)'
   - 'Allow deeper `Provider::Source` hierarchies (via #240) (@timriley + @solnic)'
+  - 'Prefer local components when importing (via #241) (@timriley  + @solnic)'
 - version: 0.24.0
   changed:
   - dry-struct depedency was removed (@flash-gordon)
