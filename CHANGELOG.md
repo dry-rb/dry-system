@@ -11,6 +11,7 @@
 
 - Import root components via `nil` import namespace (via #236) (@timriley)
 - Allow deeper `Provider::Source` hierarchies (via #240) (@timriley + @solnic)
+- Prefer local components when importing (via #241) (@timriley  + @solnic)
 
 [Compare v0.24.0...master](https://github.com/dry-rb/dry-system/compare/v0.24.0...master)
 
