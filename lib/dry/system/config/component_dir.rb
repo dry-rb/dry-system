@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/configurable"
-require "dry/core/deprecations"
 require "dry/system/constants"
 require "dry/system/loader"
 require_relative "namespaces"

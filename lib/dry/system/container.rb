@@ -5,7 +5,7 @@ require "pathname"
 require "dry/configurable"
 require "dry/auto_inject"
 require "dry/container"
-require "dry/core/deprecations"
+require "dry/core"
 require "dry/inflector"
 
 require "dry/system/auto_registrar"

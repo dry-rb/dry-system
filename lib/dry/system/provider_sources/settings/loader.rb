@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/configurable"
-require "dry/core/deprecations"
-
 module Dry
   module System
     module ProviderSources

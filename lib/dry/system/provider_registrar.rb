@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/core/deprecations"
 require "dry/system"
 require "pathname"
 require_relative "errors"
