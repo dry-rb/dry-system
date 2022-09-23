@@ -38,7 +38,7 @@ RSpec.describe "Plugins / Dependency Graph" do
     Test::Container = Class.new(Dry::System::Container) {
       use :dependency_graph
 
-      configure do |config|
+      configure! do |config|
         config.root = root
         config.component_dirs.add "lib" do |dir|
           dir.namespaces.add_root const: "test"

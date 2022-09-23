@@ -6,14 +6,14 @@ RSpec.describe "Lazy-booting external deps" do
   before do
     module Test
       class Umbrella < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.name = :core
           config.root = SPEC_ROOT.join("fixtures/umbrella").realpath
         end
       end
 
       class App < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.name = :main
         end
       end

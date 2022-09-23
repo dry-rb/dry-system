@@ -10,7 +10,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
   describe "Memoizing all components in a component directory" do
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
@@ -43,7 +43,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
   describe "Memoizing specific components in a component directory with a memoize proc" do
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
 
           config.component_dirs.add "components" do |dir|
@@ -91,7 +91,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
     context "No memoizing config for component_dir" do
       before do
         class Test::Container < Dry::System::Container
-          configure do |config|
+          configure! do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
               dir.namespaces.add "test", key: nil
@@ -110,7 +110,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
     context "Memoize config 'false' for component_dir" do
       before do
         class Test::Container < Dry::System::Container
-          configure do |config|
+          configure! do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
               dir.namespaces.add "test", key: nil
@@ -130,7 +130,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
     context "Memoize config 'true' for component_dir" do
       before do
         class Test::Container < Dry::System::Container
-          configure do |config|
+          configure! do |config|
             config.root = SPEC_ROOT.join("fixtures").realpath
             config.component_dirs.add "memoize_magic_comments" do |dir|
               dir.namespaces.add "test", key: nil

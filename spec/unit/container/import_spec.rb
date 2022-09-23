@@ -24,14 +24,14 @@ RSpec.describe Dry::System::Container, ".import" do
   describe "import module" do
     it "loads system when it was not loaded in the imported container yet" do
       class Test::Other < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/import_test").realpath
           config.component_dirs.add "lib"
         end
       end
 
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
           config.component_dirs.add "lib"
         end

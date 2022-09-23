@@ -28,7 +28,7 @@ RSpec.describe Dry::System::Container do
     end
 
     before do
-      system.configure {}
+      system.configured!
       system.register(:object, klass.new)
     end
 

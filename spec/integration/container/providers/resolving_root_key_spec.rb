@@ -37,7 +37,7 @@ RSpec.describe "Providers / Resolving components with same root key as a running
   before do
     root = @dir
     Test::Container = Class.new(Dry::System::Container) do
-      configure do |config|
+      configure! do |config|
         config.root = root
         config.component_dirs.add "lib" do |dir|
           dir.namespaces.add_root const: "test"

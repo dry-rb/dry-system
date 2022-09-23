@@ -28,7 +28,7 @@ RSpec.describe "Zeitwerk plugin / Resolving components" do
       container = Class.new(Dry::System::Container) do
         use :zeitwerk
 
-        configure do |config|
+        configure! do |config|
           config.root = tmp_dir
           config.component_dirs.add "lib" do |dir|
             dir.namespaces.add_root const: "test"

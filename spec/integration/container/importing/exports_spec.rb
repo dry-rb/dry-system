@@ -32,7 +32,7 @@ RSpec.describe "Container / Imports / Exports" do
     exports = self.exports if respond_to?(:exports)
 
     Class.new(Dry::System::Container) {
-      configure do |config|
+      configure! do |config|
         config.root = root
         config.component_dirs.add "lib" do |dir|
           dir.namespaces.add_root const: "test"

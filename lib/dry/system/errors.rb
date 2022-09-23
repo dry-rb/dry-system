@@ -6,6 +6,16 @@ module Dry
   module System
     extend Dry::Core::Deprecations["dry-system"]
 
+    Error = Class.new(StandardError)
+
+    # Error raised when further configuration is attempted on a container after it has been marked
+    # as configured
+    ContainerAlreadyConfiguredError = Class.new(Error) do
+      def initialize(container)
+        super("Container #{container} has already been marked as configured")
+      end
+    end
+
     # Error raised when a component dir is added to configuration more than once
     #
     # @api public

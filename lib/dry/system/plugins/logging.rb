@@ -40,10 +40,13 @@ module Dry
           elsif config.logger
             register(:logger, config.logger)
           else
-            config.logger = config.logger_class.new(log_file_path)
-            config.logger.level = log_level
+            configure do |config|
+              config.logger = config.logger_class.new(log_file_path)
+              config.logger.level = log_level
+            end
 
             register(:logger, config.logger)
+
             self
           end
         end

@@ -6,7 +6,7 @@ RSpec.describe "Component dir namespaces / Namespaces as component dir defaults"
     cont_config = defined?(container_config) ? container_config : -> * {}
 
     Class.new(Dry::System::Container) {
-      configure do |config|
+      configure! do |config|
         config.root = root
 
         cont_config.(config)

@@ -10,11 +10,13 @@ RSpec.describe "Autoloading loader" do
   specify "Resolving components using Zeitwerk" do
     module Test
       class Container < Dry::System::Container
-        config.root = SPEC_ROOT.join("fixtures/autoloading").realpath
-        config.component_dirs.loader = Dry::System::Loader::Autoloading
-        config.component_dirs.add "lib" do |dir|
-          dir.add_to_load_path = false
-          dir.namespaces.add "test", key: nil
+        configure! do |config|
+          config.root = SPEC_ROOT.join("fixtures/autoloading").realpath
+          config.component_dirs.loader = Dry::System::Loader::Autoloading
+          config.component_dirs.add "lib" do |dir|
+            dir.add_to_load_path = false
+            dir.namespaces.add "test", key: nil
+          end
         end
       end
     end

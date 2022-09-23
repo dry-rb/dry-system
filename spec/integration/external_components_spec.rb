@@ -7,7 +7,7 @@ RSpec.describe "External Components" do
   subject(:container) do
     module Test
       class Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/app").realpath
         end
 

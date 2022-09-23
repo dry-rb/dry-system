@@ -3,7 +3,7 @@
 RSpec.describe "Auto-registration / Custom auto_register proc" do
   before do
     class Test::Container < Dry::System::Container
-      configure do |config|
+      configure! do |config|
         config.root = SPEC_ROOT.join("fixtures").realpath
 
         config.component_dirs.add "components" do |dir|

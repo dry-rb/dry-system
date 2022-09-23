@@ -9,7 +9,7 @@ RSpec.describe "Component dir namespaces / Multiple namespaces" do
     dir_config = defined?(component_dir_config) ? component_dir_config : -> * {}
 
     Class.new(Dry::System::Container) {
-      configure do |config|
+      configure! do |config|
         config.root = root
         config.component_dirs.add("lib", &dir_config)
       end

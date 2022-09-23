@@ -177,7 +177,9 @@ RSpec.describe Dry::System::Container, ".use" do
           setting :trace, default: []
 
           after(:configure) do
-            config.trace << :test_plugin_configured
+            configure do |config|
+              config.trace << :test_plugin_configured
+            end
           end
         end
       end
@@ -187,8 +189,8 @@ RSpec.describe Dry::System::Container, ".use" do
 
         descendant = Class.new(system)
 
-        system.configure {}
-        descendant.configure {}
+        system.configured!
+        descendant.configured!
 
         expect(system.config.trace).to eql([:test_plugin_configured])
         expect(descendant.config.trace).to eql([:test_plugin_configured])
@@ -201,13 +203,15 @@ RSpec.describe Dry::System::Container, ".use" do
           setting :trace, default: []
 
           after(:configure) do
-            config.trace << :test_plugin_configured
+            configure do |config|
+              config.trace << :test_plugin_configured
+            end
           end
         end
       end
 
       it "enables the plugin only once" do
-        system.use(:test_plugin).use(:test_plugin).configure {}
+        system.use(:test_plugin).use(:test_plugin).configured!
 
         expect(system.config.trace).to eql([:test_plugin_configured])
       end

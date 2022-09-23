@@ -32,9 +32,11 @@ module Dry
         def extended(system)
           system.setting :autoloader, reader: true
 
-          system.config.autoloader = loader
-          system.config.component_dirs.loader = Dry::System::Loader::Autoloading
-          system.config.component_dirs.add_to_load_path = false
+          system.configure do |config|
+            config.autoloader = loader
+            config.component_dirs.loader = Dry::System::Loader::Autoloading
+            config.component_dirs.add_to_load_path = false
+          end
 
           system.after(:configure, &method(:setup_autoloader))
 

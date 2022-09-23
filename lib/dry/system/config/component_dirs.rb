@@ -268,7 +268,7 @@ module Dry
         def apply_defaults_to_dir(dir)
           defaults.config.values.each do |key, _|
             if defaults.configured?(key) && !dir.configured?(key)
-              dir.public_send(:"#{key}=", defaults.public_send(key).dup)
+              dir.public_send(:"#{key}=", defaults.public_send(key))
             end
           end
         end

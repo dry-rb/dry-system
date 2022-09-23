@@ -267,7 +267,7 @@ module Dry
             # namespaces have been added
             !config.namespaces.empty?
           else
-            config._settings[key].input_defined?
+            _values.key?(key)
           end
         end
 

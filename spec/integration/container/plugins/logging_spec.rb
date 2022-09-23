@@ -2,7 +2,7 @@
 
 RSpec.describe "Plugins / Logging" do
   before do
-    system.configure do |config|
+    system.configure! do |config|
       config.root = SPEC_ROOT.join("fixtures/test")
     end
   end

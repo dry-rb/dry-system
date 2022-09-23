@@ -5,8 +5,10 @@ require "dry/system/container"
 RSpec.describe Dry::System::Container, "Load path handling" do
   let(:container) {
     class Test::Container < Dry::System::Container
-      config.root = SPEC_ROOT.join("fixtures/test")
-      config.component_dirs.add "lib"
+      configure do |config|
+        config.root = SPEC_ROOT.join("fixtures/test")
+        config.component_dirs.add "lib"
+      end
     end
 
     Test::Container

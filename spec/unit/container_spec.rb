@@ -9,7 +9,7 @@ RSpec.describe Dry::System::Container do
   context "with default core dir" do
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
           config.component_dirs.add "lib"
         end
@@ -39,7 +39,7 @@ RSpec.describe Dry::System::Container do
   describe ".init" do
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/lazytest").realpath
         end
 
@@ -83,7 +83,7 @@ RSpec.describe Dry::System::Container do
       it_behaves_like "a booted system" do
         before do
           class Test::Container < Dry::System::Container
-            configure do |config|
+            configure! do |config|
               config.root = SPEC_ROOT.join("fixtures/test").realpath
             end
 
@@ -116,7 +116,7 @@ RSpec.describe Dry::System::Container do
 
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/stubbing").realpath
           config.component_dirs.add "lib"
         end
@@ -166,7 +166,7 @@ RSpec.describe Dry::System::Container do
       end
 
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
           config.component_dirs.add "lib"
         end
@@ -192,7 +192,7 @@ RSpec.describe Dry::System::Container do
   describe ".resolve" do
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
           config.component_dirs.add "lib"
         end
@@ -207,7 +207,7 @@ RSpec.describe Dry::System::Container do
   describe ".registered?" do
     before do
       class Test::Container < Dry::System::Container
-        configure do |config|
+        configure! do |config|
           config.root = SPEC_ROOT.join("fixtures/test").realpath
           config.component_dirs.add "lib"
         end
