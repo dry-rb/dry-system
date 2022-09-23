@@ -22,7 +22,7 @@ module Dry
         end
 
         # @api private
-        def initialize_copy(source)
+        private def initialize_copy(source)
           super
           @namespaces = source.namespaces.dup
         end
