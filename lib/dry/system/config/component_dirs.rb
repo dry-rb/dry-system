@@ -111,7 +111,7 @@ module Dry
 
         # @api private
         def initialize_copy(source)
-          @dirs = source.dirs.map { |path, dir| [path, dir.dup] }.to_h
+          @dirs = source.dirs.to_h { |path, dir| [path, dir.dup] }
           @defaults = source.defaults.dup
         end
 
