@@ -125,7 +125,6 @@ module Dry
         #
         # @api public
         def configure!(&block)
-          # FIXME: needs tests
           raise ContainerAlreadyConfiguredError.new(self) if configured?
 
           configure(&block)
@@ -151,6 +150,9 @@ module Dry
           return self if configured?
 
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
+
+          _configurable_finalize!
+
           @__configured__ = true
 
           self
@@ -331,6 +333,11 @@ module Dry
         def finalized?
           @__finalized__.equal?(true)
         end
+
+        # Finalizes the config for this container
+        #
+        # @api private
+        alias_method :_configurable_finalize!, :finalize!
 
         # Finalizes the container
         #
