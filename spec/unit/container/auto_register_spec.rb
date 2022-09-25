@@ -100,9 +100,7 @@ RSpec.describe Dry::System::Container, ".auto_register!" do
 
     it { expect(Test::Container["foo"]).to be_an_instance_of(Test::Foo) }
     it { expect(Test::Container["bar"]).to eq(Test::Bar) }
-    it {
-      # byebug
-      expect(Test::Container["bar"].call).to eq("Welcome to my Moe's Tavern!") }
+    it { expect(Test::Container["bar"].call).to eq("Welcome to my Moe's Tavern!") }
     it { expect(Test::Container["bar.baz"]).to be_an_instance_of(Test::Bar::Baz) }
   end
 

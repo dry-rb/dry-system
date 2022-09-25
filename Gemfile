@@ -6,7 +6,7 @@ eval_gemfile "Gemfile.devtools"
 
 gemspec
 
-gem "dry-configurable", github: "dry-rb/dry-configurable", branch: "write-settings-in-configure-only"
+gem "dry-configurable", github: "dry-rb/dry-configurable", branch: "write-settings-in-configure-only" # rubocop:disable Layout/LineLength
 gem "dry-core", github: "dry-rb/dry-core"
 
 # Remove verson constraint once latter versions release their -java packages

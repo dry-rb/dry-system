@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/GlobalVars
 RSpec.describe "Zeitwerk plugin / Eager loading" do
   include ZeitwerkHelpers
 
@@ -60,3 +61,4 @@ RSpec.describe "Zeitwerk plugin / Eager loading" do
     end
   end
 end
+# rubocop:enable Style/GlobalVars
