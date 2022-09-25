@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "dry-auto_inject", ">= 0.4.0"
   spec.add_runtime_dependency "dry-configurable", "~> 0.14", ">= 0.14.0"
   spec.add_runtime_dependency "dry-container", "~> 0.9", ">= 0.9.0"
-  spec.add_runtime_dependency "dry-core", ">= 0.9"
+  spec.add_runtime_dependency "dry-core", "~> 0.5", ">= 0.5"
   spec.add_runtime_dependency "dry-inflector", "~> 0.1", ">= 0.1.2"
 
   spec.add_development_dependency "bundler"
