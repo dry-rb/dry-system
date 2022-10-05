@@ -156,11 +156,18 @@ module Dry
           return self if configured?
 
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
-          config.finalize! if finalize_config
+
+          _configurable_finalize! if finalize_config
+
           @__configured__ = true
 
           self
         end
+
+        # Finalizes the config for this container
+        #
+        # @api private
+        alias_method :_configurable_finalize!, :finalize!
 
         def configured?
           @__configured__.equal?(true)
