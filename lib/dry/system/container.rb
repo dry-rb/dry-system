@@ -86,8 +86,7 @@ module Dry
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
 
-      # We presume "." as key namespace separator. This is not intended to be
-      # user-configurable.
+      # Expect "." as key namespace separator. This is not intended to be user-configurable.
       config.namespace_separator = KEY_SEPARATOR
 
       class << self
