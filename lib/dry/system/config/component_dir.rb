@@ -247,30 +247,6 @@ module Dry
           !!config.auto_register
         end
 
-        # Returns true if the given setting has been explicitly configured by the user
-        #
-        # This is used when determining whether to apply system-wide default values to a
-        # component dir (explicitly configured settings will not be overridden by
-        # defaults)
-        #
-        # @param key [Symbol] the setting name
-        #
-        # @return [Boolean]
-        #
-        # @see Dry::System::Config::ComponentDirs#apply_defaults_to_dir
-        # @api private
-        def configured?(key)
-          case key
-          when :namespaces
-            # Because we mutate the default value for the `namespaces` setting, rather
-            # than assign a new one, to check if it's configured we must see whether any
-            # namespaces have been added
-            !config.namespaces.empty?
-          else
-            config._settings[key].input_defined?
-          end
-        end
-
         private
 
         def method_missing(name, *args, &block)

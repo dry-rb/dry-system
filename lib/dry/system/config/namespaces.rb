@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core/deprecations"
+require "dry/core/equalizer"
 require "dry/system/errors"
 require_relative "namespace"
 
@@ -13,6 +14,8 @@ module Dry
       #
       # @api private
       class Namespaces
+        include Dry::Equalizer(:namespaces)
+
         # @api private
         attr_reader :namespaces
 
