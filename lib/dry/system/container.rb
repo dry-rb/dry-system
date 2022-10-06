@@ -86,8 +86,7 @@ module Dry
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
       setting :importer, default: Dry::System::Importer
 
-      # We presume "." as key namespace separator. This is not intended to be
-      # user-configurable.
+      # Expect "." as key namespace separator. This is not intended to be user-configurable.
       config.namespace_separator = KEY_SEPARATOR
 
       class << self
@@ -127,14 +126,7 @@ module Dry
         # @api public
         def configure(finalize_config: true, &block)
           super(&block)
-
-          unless configured?
-            hooks[:after_configure].each { |hook| instance_eval(&hook) }
-            config.finalize! if finalize_config
-            @__configured__ = true
-          end
-
-          self
+          configured!(finalize_config: finalize_config)
         end
 
         # Marks the container as configured, runs the after-`configured` hooks, then
@@ -156,11 +148,18 @@ module Dry
           return self if configured?
 
           hooks[:after_configure].each { |hook| instance_eval(&hook) }
-          config.finalize! if finalize_config
+
+          _configurable_finalize! if finalize_config
+
           @__configured__ = true
 
           self
         end
+
+        # Finalizes the config for this container
+        #
+        # @api private
+        alias_method :_configurable_finalize!, :finalize!
 
         def configured?
           @__configured__.equal?(true)
