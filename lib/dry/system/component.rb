@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "concurrent/map"
-
 require "dry/core/equalizer"
 require "dry/inflector"
 require "dry/system/loader"
