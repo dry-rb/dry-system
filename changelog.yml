@@ -1,4 +1,11 @@
 ---
+- version: 0.26.0
+  date: 2022-10-08
+  changed:
+    - |-
+      Update dry-configurable dependency to 0.16.0 and make internal adjustments to suit (@timriley in #249)
+    - |-
+      Remove now-unused concurrent-ruby gem dependency (@timriley in #250)
 - version: 0.25.0
   summary:
   date: "2022-07-10"
