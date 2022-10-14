@@ -2,7 +2,6 @@
 
 require "zeitwerk"
 require "dry/core"
-require_relative "system/provider_source_registry"
 
 module Dry
   module System
@@ -15,7 +14,7 @@ module Dry
         loader.push_dir(root)
         loader.ignore(
           "#{root}/dry-system.rb",
-          "#{root}/dry/system/{constants,errors,stubs,version}.rb"
+          "#{root}/dry/system/{constants,errors,plugins,stubs,version}.rb"
         )
         loader.inflector.inflect("dsl" => "DSL")
       end

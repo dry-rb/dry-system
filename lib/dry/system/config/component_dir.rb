@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/constants"
-require "dry/system/loader"
-require_relative "namespaces"
 
 module Dry
   module System

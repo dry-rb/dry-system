@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/errors"
-require_relative "namespace"
 
 module Dry
   module System

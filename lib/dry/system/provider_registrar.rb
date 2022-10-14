@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "dry/system"
 require "pathname"
-require_relative "errors"
-require_relative "constants"
-require_relative "provider"
+
+require "dry/system"
+require "dry/system/errors"
+require "dry/system/constants"
 
 module Dry
   module System

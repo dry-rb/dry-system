@@ -5,24 +5,9 @@ require "pathname"
 require "dry/configurable"
 require "dry/auto_inject"
 require "dry/container"
-require "dry/core"
 require "dry/inflector"
 
-require "dry/system/auto_registrar"
-require "dry/system/component"
-require "dry/system/constants"
-require "dry/system/errors"
-require "dry/system/identifier"
-require "dry/system/importer"
-require "dry/system/indirect_component"
-require "dry/system/manifest_registrar"
 require "dry/system/plugins"
-require "dry/system/provider_registrar"
-require "dry/system/provider"
-require "dry/system/provider/source"
-
-require_relative "component_dir"
-require_relative "config/component_dirs"
 
 module Dry
   module System

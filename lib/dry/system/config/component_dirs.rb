@@ -2,7 +2,6 @@
 
 require "dry/system/constants"
 require "dry/system/errors"
-require_relative "component_dir"
 
 module Dry
   module System

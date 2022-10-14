@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/constants"
-require_relative "component"
 
 module Dry
   module System
