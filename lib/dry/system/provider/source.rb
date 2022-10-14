@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/configurable"
-require "dry/core/class_attributes"
-require "dry/core/deprecations"
 require_relative "source_dsl"
 
 module Dry

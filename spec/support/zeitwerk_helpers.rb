@@ -3,21 +3,29 @@
 module ZeitwerkHelpers
   def teardown_zeitwerk
     # From zeitwerk's own test/support/loader_test
+    # adjusted to work with dry-rb gem loaders
 
-    Zeitwerk::Registry.loaders.each(&:unload)
+    Zeitwerk::Registry.loaders.reject! do |loader|
+      test_loader = loader.root_dirs.any? do |dir, _|
+        dir.include?("/spec/") || dir.include?(Dir.tmpdir)
+      end
 
-    Zeitwerk::Registry.loaders.clear
-
-    # This private interface changes between 2.5.4 and 2.6.0
-    if Zeitwerk::Registry.respond_to?(:loaders_managing_gems)
-      Zeitwerk::Registry.loaders_managing_gems.clear
-    else
-      Zeitwerk::Registry.gem_loaders_by_root_file.clear
-      Zeitwerk::Registry.autoloads.clear
-      Zeitwerk::Registry.inceptions.clear
+      if test_loader
+        loader.unload
+        true
+      else
+        false
+      end
     end
 
-    Zeitwerk::ExplicitNamespace.cpaths.clear
-    Zeitwerk::ExplicitNamespace.tracer.disable
+    Zeitwerk::Registry.gem_loaders_by_root_file.clear
+    Zeitwerk::Registry.autoloads.reject! do |path, _|
+      path.include?("/spec/")
+    end
+    Zeitwerk::Registry.inceptions.clear
+
+    Zeitwerk::ExplicitNamespace.cpaths.reject! do |name, _|
+      name.start_with?("Dry::")
+    end
   end
 end

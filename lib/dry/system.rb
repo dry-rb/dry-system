@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/core/deprecations"
+require "dry/core"
 require_relative "system/provider_source_registry"
 
 module Dry

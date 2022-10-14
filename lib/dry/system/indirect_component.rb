@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/core/equalizer"
-
 module Dry
   module System
     # An indirect component is a component that cannot be directly from a source file
