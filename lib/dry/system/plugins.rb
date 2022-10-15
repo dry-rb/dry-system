@@ -93,7 +93,7 @@ module Dry
       def use(name, **options)
         return self if enabled_plugins.include?(name)
 
-        raise PluginNotFoundError, name unless (plugin = Plugins.registry[name])
+        raise PluginNotFoundError, name unless (plugin = Dry::System::Plugins.registry[name])
 
         plugin.load_dependencies
         plugin.apply_to(self, **options)
