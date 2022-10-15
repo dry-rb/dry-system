@@ -1,4 +1,11 @@
 ---
+- version: 0.27.1
+  summary:
+  date: 2022-10-15
+  fixed:
+  - Tweak for zeitwerk loader (@flash-gordon)
+  added:
+  changed:
 - version: 0.27.0
   summary:
   date: 2022-10-15
