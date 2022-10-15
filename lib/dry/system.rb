@@ -14,7 +14,7 @@ module Dry
         loader.push_dir(root)
         loader.ignore(
           "#{root}/dry-system.rb",
-          "#{root}/dry/system/{constants,errors,stubs,version}.rb"
+          "#{root}/dry/system/{components,constants,errors,stubs,version}.rb"
         )
         loader.inflector.inflect("dsl" => "DSL")
       end
