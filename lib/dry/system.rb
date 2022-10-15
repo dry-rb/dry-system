@@ -16,7 +16,7 @@ module Dry
           "#{root}/dry-system.rb",
           "#{root}/dry/system/{components,constants,errors,stubs,version}.rb"
         )
-        loader.inflector.inflect("dsl" => "DSL")
+        loader.inflector.inflect("source_dsl" => "SourceDSL")
       end
     end
 
