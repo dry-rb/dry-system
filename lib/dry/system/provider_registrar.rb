@@ -2,7 +2,6 @@
 
 require "pathname"
 
-require "dry/system"
 require "dry/system/errors"
 require "dry/system/constants"
 
