@@ -7,8 +7,6 @@ require "dry/auto_inject"
 require "dry/container"
 require "dry/inflector"
 
-require "dry/system/plugins"
-
 module Dry
   module System
     # Abstract container class to inherit from
