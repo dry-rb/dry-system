@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
+require "pathname"
 require "dry/inflector"
-require "dry/system/loader"
 require "dry/system/errors"
 require "dry/system/constants"
-require "pathname"
-require_relative "identifier"
 
 module Dry
   module System

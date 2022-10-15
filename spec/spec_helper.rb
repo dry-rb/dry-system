@@ -14,7 +14,7 @@ SPEC_ROOT = Pathname(__FILE__).dirname
 Dir[SPEC_ROOT.join("support/*.rb").to_s].sort.each { |f| require f }
 Dir[SPEC_ROOT.join("shared/*.rb").to_s].sort.each { |f| require f }
 
-require "dry/system/container"
+require "dry/system"
 require "dry/system/stubs"
 require "dry/events"
 require "dry/types"

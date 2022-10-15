@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "loader"
-
 module Dry
   module System
     module ProviderSources

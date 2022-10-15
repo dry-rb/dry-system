@@ -2,9 +2,6 @@
 
 require "pathname"
 require "dry/system/constants"
-require_relative "constants"
-require_relative "identifier"
-require_relative "magic_comments_parser"
 
 module Dry
   module System
