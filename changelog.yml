@@ -12,7 +12,11 @@
   fixed:
   added:
   changed:
-  - Use zeitwerk for auto-loading dry-system (@flash-gordon + @solnic)
+  - |-
+    [BREAKING] Use zeitwerk for auto-loading dry-system (@flash-gordon + @solnic)
+
+    From now on you need to do `require "dry/system"` as it sets up its Zeitwerk loader and from
+    there, everything else will be auto-loaded.
 - version: 0.26.0
   date: 2022-10-08
   changed:
