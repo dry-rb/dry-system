@@ -15,7 +15,10 @@
 
 ### Changed
 
-- Use zeitwerk for auto-loading dry-system (@flash-gordon + @solnic)
+- [BREAKING] Use zeitwerk for auto-loading dry-system (@flash-gordon + @solnic)
+
+From now on you need to do `require "dry/system"` as it sets up its Zeitwerk loader and from
+there, everything else will be auto-loaded.
 
 [Compare v0.26.0...v0.27.0](https://github.com/dry-rb/dry-system/compare/v0.26.0...v0.27.0)
 
