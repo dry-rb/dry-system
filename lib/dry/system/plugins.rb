@@ -58,25 +58,12 @@ module Dry
         @enabled_plugins ||= []
       end
 
-      require "dry/system/plugins/bootsnap"
       register(:bootsnap, Plugins::Bootsnap)
-
-      require "dry/system/plugins/logging"
       register(:logging, Plugins::Logging)
-
-      require "dry/system/plugins/env"
       register(:env, Plugins::Env)
-
-      require "dry/system/plugins/notifications"
       register(:notifications, Plugins::Notifications)
-
-      require "dry/system/plugins/monitoring"
       register(:monitoring, Plugins::Monitoring)
-
-      require "dry/system/plugins/dependency_graph"
       register(:dependency_graph, Plugins::DependencyGraph)
-
-      require "dry/system/plugins/zeitwerk"
       register(:zeitwerk, Plugins::Zeitwerk)
     end
   end

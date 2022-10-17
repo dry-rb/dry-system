@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "source_dsl"
-
 module Dry
   module System
     class Provider

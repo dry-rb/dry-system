@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "dependency_graph/strategies"
-
 module Dry
   module System
     module Plugins

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/system/constants"
-require "dry/system/plugins/monitoring/proxy"
 
 module Dry
   module System
