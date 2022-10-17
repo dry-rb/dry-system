@@ -1,4 +1,11 @@
 ---
+- version: 0.27.2
+  summary:
+  date: 2022-10-17
+  fixed:
+  - Removed remaining manual require left-overs (@solnic)
+  added:
+  changed:
 - version: 0.27.1
   summary:
   date: 2022-10-15
