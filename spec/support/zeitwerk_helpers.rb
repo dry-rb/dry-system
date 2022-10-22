@@ -6,9 +6,7 @@ module ZeitwerkHelpers
     # adjusted to work with dry-rb gem loaders
 
     Zeitwerk::Registry.loaders.reject! do |loader|
-      test_loader = loader.root_dirs.any? do |dir, _|
-        dir.include?("/spec/") || dir.include?(Dir.tmpdir)
-      end
+      test_loader = loader.dirs.any? { |dir| dir.include?("/spec/") || dir.include?(Dir.tmpdir) }
 
       if test_loader
         loader.unregister
