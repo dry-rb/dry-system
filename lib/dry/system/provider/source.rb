@@ -183,21 +183,6 @@ module Dry
         # @api public
         def stop; end
 
-        def use(*provider_names)
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Provider#use",
-            "Use `target_container.start` instead, e.g. `target_container.start(:another_provider)`", # rubocop:disable Layout/LineLength
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          provider_names.each do |name|
-            target_container.start(name)
-          end
-
-          self
-        end
-
         # Registers a "before" callback for the given lifecycle step.
         #
         # The given block will be run before the lifecycle step method is run. The block
