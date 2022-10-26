@@ -171,7 +171,7 @@ module Dry
         #   MyApp["core.logger"].info("Test")
         #   MyApp["core2.logger"].info("Test2")
         #
-        # @param keys [Array<String>] Keys to use for partial importing components from the container
+        # @param keys [Array<String>] Keys for the components to import
         # @param from [Class] The container to import from
         # @param as [Symbol] Namespace to use for the components of the imported container
         #
