@@ -277,25 +277,6 @@ module Dry
 
         # rubocop:enable Layout/LineLength
 
-        # @see .register_provider
-        # @api public
-        def boot(name, **opts, &block)
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Container.boot",
-            "Use `Dry::System::Container.register_provider` instead",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          register_provider(
-            name,
-            namespace: opts[:namespace],
-            from: opts[:from],
-            source: opts[:key],
-            &block
-          )
-        end
-
         # Return if a container was finalized
         #
         # @return [TrueClass, FalseClass]
