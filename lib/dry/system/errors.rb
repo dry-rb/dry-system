@@ -4,6 +4,11 @@ module Dry
   module System
     extend Dry::Core::Deprecations["dry-system"]
 
+    # Error raised when import is called on an already finalized container
+    #
+    # @api public
+    ContainerAlreadyFinalizedError = Class.new(StandardError)
+
     # Error raised when a component dir is added to configuration more than once
     #
     # @api public

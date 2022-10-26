@@ -21,6 +21,16 @@ RSpec.describe Dry::System::Container, ".import" do
     expect(app["persistence.users"]).to eql(%w[jane joe])
   end
 
+  context "when container has been finalized" do
+    it "raises an error" do
+      app.finalize!
+
+      expect do
+        app.import(from: db, as: :persistence)
+      end.to raise_error(Dry::System::ContainerAlreadyFinalizedError)
+    end
+  end
+
   describe "import module" do
     it "loads system when it was not loaded in the imported container yet" do
       class Test::Other < Dry::System::Container

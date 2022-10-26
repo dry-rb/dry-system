@@ -152,29 +152,36 @@ module Dry
         #
         # @example
         #   # system/container.rb
+        #   require "dry/system/container"
+        #   require "logger"
+        #
         #   class Core < Dry::System::Container
-        #     configure do |config|
-        #       config.root = Pathname("/path/to/app")
-        #       config.auto_register = %w(lib/apis lib/core)
-        #     end
+        #     register("logger", Logger.new($stdout))
         #   end
         #
         #   # apps/my_app/system/container.rb
         #   require 'system/container'
         #
         #   class MyApp < Dry::System::Container
-        #     configure do |config|
-        #       config.root = Pathname("/path/to/app")
-        #       config.auto_register = %w(lib/apis lib/core)
-        #     end
-        #
-        #     import core: Core
+        #     import(from: Core, as: :core)
         #   end
         #
-        # @param other [Hash, Dry::Container::Namespace]
+        #   MyApp.import(keys: ["logger"], from: Core, as: :core2)
+        #
+        #   MyApp["core.logger"].info("Test")
+        #   MyApp["core2.logger"].info("Test2")
+        #
+        # @param keys [Array<String>] Keys for the components to import
+        # @param from [Class] The container to import from
+        # @param as [Symbol] Namespace to use for the components of the imported container
+        #
+        # @raise [Dry::System::ContainerAlreadyFinalizedError] if the container has already
+        #  been finalized
         #
         # @api public
         def import(keys: nil, from: Undefined, as: Undefined, **deprecated_import_hash)
+          raise Dry::System::ContainerAlreadyFinalizedError if finalized?
+
           if deprecated_import_hash.any?
             Dry::Core::Deprecations.announce(
               "Dry::System::Container.import with {namespace => container} hash",
