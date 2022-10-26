@@ -2,8 +2,6 @@
 
 module Dry
   module System
-    extend Dry::Core::Deprecations["dry-system"]
-
     # Error raised when import is called on an already finalized container
     #
     # @api public
@@ -48,8 +46,6 @@ module Dry
         super("Provider #{provider_name.inspect} has already been registered")
       end
     end
-    DuplicatedComponentKeyError = ProviderAlreadyRegisteredError
-    deprecate_constant :DuplicatedComponentKeyError
 
     # Error raised when a named provider could not be found
     #
@@ -59,8 +55,6 @@ module Dry
         super("Provider #{name.inspect} not found")
       end
     end
-    InvalidComponentError = ProviderNotFoundError
-    deprecate_constant :InvalidComponentError
 
     # Error raised when a named provider source could not be found
     #
