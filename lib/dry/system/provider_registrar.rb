@@ -197,11 +197,7 @@ module Dry
       end
 
       def build_provider(name, namespace:, source: nil, &block)
-        source_class = source || Provider::Source.for(
-          name: name,
-          target_container: container,
-          &block
-        )
+        source_class = source || Provider::Source.for(name: name, &block)
 
         Provider.new(
           name: name,

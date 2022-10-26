@@ -37,7 +37,7 @@ module Dry
           # @see Dry::System::Provider::SourceDSL
           #
           # @api private
-          def for(name:, group: nil, target_container:, &block) # rubocop:disable Style/KeywordParametersOrder
+          def for(name:, group: nil, &block)
             Class.new(self) { |klass|
               klass.source_name name
               klass.source_group group

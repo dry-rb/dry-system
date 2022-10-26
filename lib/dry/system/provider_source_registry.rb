@@ -22,14 +22,13 @@ module Dry
         sources[key(name, group)] = source
       end
 
-      def register_from_block(name:, group:, target_container:, &block)
+      def register_from_block(name:, group:, &block)
         register(
           name: name,
           group: group,
           source: Provider::Source.for(
             name: name,
             group: group,
-            target_container: target_container,
             &block
           )
         )

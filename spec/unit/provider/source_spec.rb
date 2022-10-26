@@ -28,7 +28,7 @@ RSpec.describe Dry::System::Provider::Source do
   context "using a base class" do
     it_behaves_like "a provider class" do
       let(:provider_class) do
-        described_class.for(name: "Persistence", target_container: target_container) do
+        described_class.for(name: "Persistence") do
           start do
             register(:persistence, {})
           end
@@ -40,7 +40,7 @@ RSpec.describe Dry::System::Provider::Source do
   context "using a sub-class" do
     it_behaves_like "a provider class" do
       let(:parent_class) do
-        described_class.for(name: "Persistence", target_container: target_container) do
+        described_class.for(name: "Persistence") do
           start do
             register(:persistence, {})
           end
