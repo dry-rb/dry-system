@@ -90,6 +90,44 @@ RSpec.describe "Settings component" do
     end
   end
 
+  context 'Missing setting value' do
+    subject(:system) do
+      Class.new(Dry::System::Container) do
+        setting :env
+
+        configure do |config|
+          config.root = SPEC_ROOT.join("fixtures").join("settings_test")
+          config.env = :test
+        end
+
+        register_provider(:settings, from: :dry_system) do
+          before(:prepare) do
+            target_container.require_from_root "types"
+          end
+
+          settings do
+            setting :missing_value_designated_optional, constructor: SettingsTest::Types::String.optional
+            setting :missing_value_with_default, constructor: SettingsTest::Types::String, default: 'blah'
+            setting :missing_value_without_default, constructor: SettingsTest::Types::String
+          end
+        end
+      end
+    end
+
+    it "raises InvalidSettingsError with meaningful message for settings where the constructor cannot accept nil" do
+      expect {
+        settings.to_h
+      }.to raise_error(
+        Dry::System::ProviderSources::Settings::InvalidSettingsError,
+        <<~TEXT
+          Could not load settings. The following settings were invalid:
+
+          missing_value_without_default: nil violates constraints (type?(String, nil) failed)
+        TEXT
+      )
+    end
+  end
+
   context "With default values" do
     subject(:system) do
       Class.new(Dry::System::Container) do

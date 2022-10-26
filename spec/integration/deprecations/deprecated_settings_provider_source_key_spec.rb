@@ -30,10 +30,16 @@ RSpec.describe "Deprecated :settings provider source `key`" do
     Test::Container
   }
 
-  it "defines the setting" do
+  before do
     ENV["SOME_INT_USING_DEPRECATED_KEY"] = "5"
-    expect(container[:settings].some_int_using_deprecated_key).to eq 5
+  end
+
+  after do
     ENV.delete("SOME_INT_USING_DEPRECATED_KEY")
+  end
+
+  it "defines the setting" do
+    expect(container[:settings].some_int_using_deprecated_key).to eq 5
   end
 
   it "prints a deprecation notice" do

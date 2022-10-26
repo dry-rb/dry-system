@@ -37,7 +37,11 @@ module Dry
                 value = loader[setting_name.to_s.upcase]
 
                 begin
-                  settings_obj.config.public_send(:"#{setting_name}=", value) if value
+                  if value
+                    settings_obj.config.public_send(:"#{setting_name}=", value)
+                  else
+                    settings_obj.config[setting_name]
+                  end
                 rescue => e # rubocop:disable Style/RescueStandardError
                   errors[setting_name] = e
                 end
