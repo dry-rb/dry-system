@@ -178,26 +178,8 @@ module Dry
         #  been finalized
         #
         # @api public
-        def import(keys: nil, from: Undefined, as: Undefined, **deprecated_import_hash)
+        def import(from:, as:, keys: nil)
           raise Dry::System::ContainerAlreadyFinalizedError if finalized?
-
-          if deprecated_import_hash.any?
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Container.import with {namespace => container} hash",
-              "Use Dry::System::Container.import(from: container, as: namespace) instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            deprecated_import_hash.each do |namespace, container|
-              importer.register(container: container, namespace: namespace)
-            end
-            return self
-          elsif from == Undefined || as == Undefined
-            # These keyword arguments can become properly required in the params list once
-            # we remove the deprecation shim above
-            raise ArgumentError, "required keyword arguments: :from, :as"
-          end
 
           importer.register(container: from, namespace: as, keys: keys)
 
