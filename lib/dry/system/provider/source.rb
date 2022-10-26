@@ -37,11 +37,11 @@ module Dry
           # @see Dry::System::Provider::SourceDSL
           #
           # @api private
-          def for(name:, group: nil, target_container:, &block) # rubocop:disable Style/KeywordParametersOrder
+          def for(name:, group: nil, &block)
             Class.new(self) { |klass|
               klass.source_name name
               klass.source_group group
-              SourceDSL.evaluate(klass, target_container, &block) if block
+              SourceDSL.evaluate(klass, &block) if block
             }
           end
 
@@ -183,21 +183,6 @@ module Dry
         # @api public
         def stop; end
 
-        def use(*provider_names)
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Provider#use",
-            "Use `target_container.start` instead, e.g. `target_container.start(:another_provider)`", # rubocop:disable Layout/LineLength
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          provider_names.each do |name|
-            target_container.start(name)
-          end
-
-          self
-        end
-
         # Registers a "before" callback for the given lifecycle step.
         #
         # The given block will be run before the lifecycle step method is run. The block
@@ -212,17 +197,6 @@ module Dry
         #
         # @api public
         def before(step_name, &block)
-          if step_name.to_sym == :init
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Provider before(:init) callback",
-              "Use `before(:prepare)` callback instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            step_name = :prepare
-          end
-
           callbacks[:before][step_name] << block
           self
         end
@@ -241,17 +215,6 @@ module Dry
         #
         # @api public
         def after(step_name, &block)
-          if step_name.to_sym == :init
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Provider after(:init) callback",
-              "Use `after(:prepare)` callback instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            step_name = :prepare
-          end
-
           callbacks[:after][step_name] << block
           self
         end
@@ -259,18 +222,7 @@ module Dry
         # @api private
         def run_callback(hook, step)
           callbacks[hook][step].each do |callback|
-            if callback.parameters.any?
-              Dry::Core::Deprecations.announce(
-                "Dry::System::Provider::Source.before and .after callbacks with single block parameter", # rubocop:disable Layout/LineLength
-                "Use `provider_container` (or `container` for short) inside your block instead",
-                tag: "dry-system",
-                uplevel: 1
-              )
-
-              instance_exec(provider_container, &callback)
-            else
-              instance_eval(&callback)
-            end
+            instance_eval(&callback)
           end
         end
 

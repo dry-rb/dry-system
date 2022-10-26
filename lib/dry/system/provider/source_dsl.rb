@@ -10,19 +10,8 @@ module Dry
       #
       # @api private
       class SourceDSL
-        extend Dry::Core::Deprecations["Dry::System::Provider::SourceDSL"]
-
-        def self.evaluate(source_class, target_container, &block)
-          if block.parameters.any?
-            Dry::Core::Deprecations.announce(
-              "Dry::System.register_provider with single block parameter",
-              "Use `target_container` (or `target` for short) inside your block instead",
-              tag: "dry-system"
-            )
-            new(source_class).instance_exec(target_container, &block)
-          else
-            new(source_class).instance_eval(&block)
-          end
+        def self.evaluate(source_class, &block)
+          new(source_class).instance_eval(&block)
         end
 
         attr_reader :source_class
@@ -35,35 +24,9 @@ module Dry
           source_class.setting(...)
         end
 
-        # rubocop:disable Layout/LineLength
-
-        def settings(&block)
-          Dry::Core::Deprecations.announce(
-            "Dry::System.register_provider with nested settings block",
-            "Use individual top-level `setting` declarations instead (see dry-configurable docs for details)",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          DeprecatedSettingsDSL.new(self).instance_eval(&block)
-        end
-
-        # rubocop:enable Layout/LineLength
-
-        class DeprecatedSettingsDSL
-          def initialize(base_dsl)
-            @base_dsl = base_dsl
-          end
-
-          def key(name, type)
-            @base_dsl.setting(name, constructor: type)
-          end
-        end
-
         def prepare(&block)
           source_class.define_method(:prepare, &block)
         end
-        deprecate :init, :prepare
 
         def start(&block)
           source_class.define_method(:start, &block)

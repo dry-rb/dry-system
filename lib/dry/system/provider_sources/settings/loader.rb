@@ -26,12 +26,6 @@ module Dry
             require "dotenv"
             Dotenv.load(*dotenv_files(root, env)) if defined?(Dotenv)
           rescue LoadError
-            Dry::Core::Deprecations.announce(
-              "Dry::System :settings provider now requires dotenv to to load settings from .env files`", # rubocop:disable Layout/LineLength
-              "Add `gem \"dotenv\"` to your application's `Gemfile`",
-              tag: "dry-system",
-              uplevel: 3
-            )
             # Do nothing if dotenv is unavailable
           end
 

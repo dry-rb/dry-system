@@ -42,39 +42,6 @@ RSpec.describe Dry::System::Config::Namespaces do
     end
   end
 
-  describe "#root with argumments (DEPRECATED for #add_root)" do
-    before do
-      # We don't care about the deprecation messages when we're not testing for them
-      # specifically
-      Dry::Core::Deprecations.set_logger!(StringIO.new)
-    end
-
-    it "adds a root namespace with the given configuration" do
-      expect {
-        namespaces.root key: "key_ns", const: "const_ns"
-      }
-        .to change { namespaces.length }
-        .from(0).to(1)
-
-      ns = namespaces.namespaces[nil]
-
-      expect(ns).to be_root
-      expect(ns.path).to be_nil
-      expect(ns.key).to eq "key_ns"
-      expect(ns.const).to eq "const_ns"
-    end
-
-    it "prints a deprecation warning" do
-      logger = StringIO.new
-      Dry::Core::Deprecations.set_logger! logger
-
-      namespaces.root key: "key_ns", const: "const_ns"
-
-      logger.rewind
-      expect(logger.string).to match(/Namespaces#root \(with arguments\) is deprecated/)
-    end
-  end
-
   describe "#add" do
     it "adds the namespace with the given configuration" do
       expect {

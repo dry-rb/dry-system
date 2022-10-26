@@ -44,19 +44,7 @@ module Dry
         # @return [Namespace, nil] the root namespace, if configured
         #
         # @api public
-        def root(**options)
-          if options.any?
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Config::Namespaces#root (with arguments)",
-              "Use `#add_root(key: nil, const: nil)` instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            add_root(**options)
-            return
-          end
-
+        def root
           namespaces[Namespace::ROOT_PATH]
         end
 

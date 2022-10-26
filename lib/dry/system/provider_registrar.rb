@@ -15,8 +15,6 @@ module Dry
     #
     # @api private
     class ProviderRegistrar
-      extend Dry::Core::Deprecations["Dry::System::Container"]
-
       # @api private
       attr_reader :providers
 
@@ -138,7 +136,6 @@ module Dry
           end
         }.first
       end
-      deprecate :boot_files, :provider_files
 
       # @api private
       def finalize!
@@ -184,24 +181,9 @@ module Dry
 
       private
 
-      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
       # @api private
       def provider_paths
         provider_dirs = container.config.provider_dirs
-        bootable_dirs = container.config.bootable_dirs || ["system/boot"]
-
-        if container.config.provider_dirs == ["system/providers"] && \
-           provider_dirs.none? { |d| container.root.join(d).exist? } && \
-           bootable_dirs.any? { |d| container.root.join(d).exist? }
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
-            "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
-            tag: "dry-system",
-            uplevel: 2
-          )
-
-          provider_dirs = bootable_dirs
-        end
 
         provider_dirs.map { |dir|
           dir = Pathname(dir)
@@ -213,14 +195,9 @@ module Dry
           end
         }
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
 
       def build_provider(name, namespace:, source: nil, &block)
-        source_class = source || Provider::Source.for(
-          name: name,
-          target_container: container,
-          &block
-        )
+        source_class = source || Provider::Source.for(name: name, &block)
 
         Provider.new(
           name: name,

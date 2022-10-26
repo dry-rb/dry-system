@@ -22,31 +22,19 @@ module Dry
         sources[key(name, group)] = source
       end
 
-      def register_from_block(name:, group:, target_container:, &block)
+      def register_from_block(name:, group:, &block)
         register(
           name: name,
           group: group,
           source: Provider::Source.for(
             name: name,
             group: group,
-            target_container: target_container,
             &block
           )
         )
       end
 
       def resolve(name:, group:)
-        if group == :system
-          Dry::Core::Deprecations.announce(
-            "Providers using `from: :system`",
-            "Use `from: :dry_system` instead",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          group = :dry_system
-        end
-
         sources[key(name, group)].tap { |source|
           unless source
             raise ProviderSourceNotFoundError.new(

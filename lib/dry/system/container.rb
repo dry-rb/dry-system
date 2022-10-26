@@ -59,7 +59,6 @@ module Dry
       setting :name
       setting :root, default: Pathname.pwd.freeze, constructor: ->(path) { Pathname(path) }
       setting :provider_dirs, default: ["system/providers"]
-      setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "system/registrations"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :exports, reader: true
@@ -73,8 +72,6 @@ module Dry
       config.namespace_separator = KEY_SEPARATOR
 
       class << self
-        extend Dry::Core::Deprecations["Dry::System::Container"]
-
         # @!method config
         #   Returns the configuration for the container
         #
@@ -179,26 +176,8 @@ module Dry
         #  been finalized
         #
         # @api public
-        def import(keys: nil, from: Undefined, as: Undefined, **deprecated_import_hash)
+        def import(from:, as:, keys: nil)
           raise Dry::System::ContainerAlreadyFinalizedError if finalized?
-
-          if deprecated_import_hash.any?
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Container.import with {namespace => container} hash",
-              "Use Dry::System::Container.import(from: container, as: namespace) instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            deprecated_import_hash.each do |namespace, container|
-              importer.register(container: container, namespace: namespace)
-            end
-            return self
-          elsif from == Undefined || as == Undefined
-            # These keyword arguments can become properly required in the params list once
-            # we remove the deprecation shim above
-            raise ArgumentError, "required keyword arguments: :from, :as"
-          end
 
           importer.register(container: from, namespace: as, keys: keys)
 
@@ -298,26 +277,6 @@ module Dry
 
         # rubocop:enable Layout/LineLength
 
-        # @see .register_provider
-        # @api public
-        def boot(name, **opts, &block)
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Container.boot",
-            "Use `Dry::System::Container.register_provider` instead",
-            tag: "dry-system",
-            uplevel: 1
-          )
-
-          register_provider(
-            name,
-            namespace: opts[:namespace],
-            from: opts[:from],
-            source: opts[:key],
-            &block
-          )
-        end
-        deprecate :finalize, :boot
-
         # Return if a container was finalized
         #
         # @return [TrueClass, FalseClass]
@@ -410,7 +369,6 @@ module Dry
           providers.prepare(name)
           self
         end
-        deprecate :init, :prepare
 
         # Stop a specific component but calls only `stop` lifecycle trigger
         #
@@ -570,7 +528,6 @@ module Dry
         def providers
           @providers ||= config.provider_registrar.new(self)
         end
-        deprecate :booter, :providers
 
         # @api private
         def auto_registrar
