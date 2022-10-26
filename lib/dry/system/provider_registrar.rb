@@ -188,20 +188,6 @@ module Dry
       # @api private
       def provider_paths
         provider_dirs = container.config.provider_dirs
-        bootable_dirs = container.config.bootable_dirs || ["system/boot"]
-
-        if container.config.provider_dirs == ["system/providers"] && \
-           provider_dirs.none? { |d| container.root.join(d).exist? } && \
-           bootable_dirs.any? { |d| container.root.join(d).exist? }
-          Dry::Core::Deprecations.announce(
-            "Dry::System::Container.config.bootable_dirs (defaulting to 'system/boot')",
-            "Use `Dry::System::Container.config.provider_dirs` (defaulting to 'system/providers') instead",
-            tag: "dry-system",
-            uplevel: 2
-          )
-
-          provider_dirs = bootable_dirs
-        end
 
         provider_dirs.map { |dir|
           dir = Pathname(dir)

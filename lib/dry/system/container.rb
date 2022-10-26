@@ -59,7 +59,6 @@ module Dry
       setting :name
       setting :root, default: Pathname.pwd.freeze, constructor: ->(path) { Pathname(path) }
       setting :provider_dirs, default: ["system/providers"]
-      setting :bootable_dirs # Deprecated for provider_dirs, see .provider_paths below
       setting :registrations_dir, default: "system/registrations"
       setting :component_dirs, default: Config::ComponentDirs.new, cloneable: true
       setting :exports, reader: true
