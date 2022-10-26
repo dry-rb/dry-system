@@ -41,7 +41,7 @@ module Dry
             Class.new(self) { |klass|
               klass.source_name name
               klass.source_group group
-              SourceDSL.evaluate(klass, target_container, &block) if block
+              SourceDSL.evaluate(klass, &block) if block
             }
           end
 
