@@ -222,18 +222,7 @@ module Dry
         # @api private
         def run_callback(hook, step)
           callbacks[hook][step].each do |callback|
-            if callback.parameters.any?
-              Dry::Core::Deprecations.announce(
-                "Dry::System::Provider::Source.before and .after callbacks with single block parameter", # rubocop:disable Layout/LineLength
-                "Use `provider_container` (or `container` for short) inside your block instead",
-                tag: "dry-system",
-                uplevel: 1
-              )
-
-              instance_exec(provider_container, &callback)
-            else
-              instance_eval(&callback)
-            end
+            instance_eval(&callback)
           end
         end
 
