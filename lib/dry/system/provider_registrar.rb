@@ -181,7 +181,6 @@ module Dry
 
       private
 
-      # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
       # @api private
       def provider_paths
         provider_dirs = container.config.provider_dirs
@@ -196,7 +195,6 @@ module Dry
           end
         }
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Layout/LineLength
 
       def build_provider(name, namespace:, source: nil, &block)
         source_class = source || Provider::Source.for(
