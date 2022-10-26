@@ -197,17 +197,6 @@ module Dry
         #
         # @api public
         def before(step_name, &block)
-          if step_name.to_sym == :init
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Provider before(:init) callback",
-              "Use `before(:prepare)` callback instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            step_name = :prepare
-          end
-
           callbacks[:before][step_name] << block
           self
         end
@@ -226,17 +215,6 @@ module Dry
         #
         # @api public
         def after(step_name, &block)
-          if step_name.to_sym == :init
-            Dry::Core::Deprecations.announce(
-              "Dry::System::Provider after(:init) callback",
-              "Use `after(:prepare)` callback instead",
-              tag: "dry-system",
-              uplevel: 1
-            )
-
-            step_name = :prepare
-          end
-
           callbacks[:after][step_name] << block
           self
         end
