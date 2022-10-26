@@ -15,8 +15,6 @@ module Dry
     #
     # @api private
     class ProviderRegistrar
-      extend Dry::Core::Deprecations["Dry::System::Container"]
-
       # @api private
       attr_reader :providers
 
@@ -138,7 +136,6 @@ module Dry
           end
         }.first
       end
-      deprecate :boot_files, :provider_files
 
       # @api private
       def finalize!
