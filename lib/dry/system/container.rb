@@ -72,8 +72,6 @@ module Dry
       config.namespace_separator = KEY_SEPARATOR
 
       class << self
-        extend Dry::Core::Deprecations["Dry::System::Container"]
-
         # @!method config
         #   Returns the configuration for the container
         #
@@ -297,7 +295,6 @@ module Dry
             &block
           )
         end
-        deprecate :finalize, :boot
 
         # Return if a container was finalized
         #
@@ -391,7 +388,6 @@ module Dry
           providers.prepare(name)
           self
         end
-        deprecate :init, :prepare
 
         # Stop a specific component but calls only `stop` lifecycle trigger
         #
@@ -551,7 +547,6 @@ module Dry
         def providers
           @providers ||= config.provider_registrar.new(self)
         end
-        deprecate :booter, :providers
 
         # @api private
         def auto_registrar
