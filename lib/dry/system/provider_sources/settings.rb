@@ -21,7 +21,7 @@ module Dry
             # requiring an app-specific types module for setting constructors)
             if block
               @settings_block = block
-            elsif @settings_class
+            elsif defined? @settings_class
               @settings_class
             elsif @settings_block
               @settings_class = Class.new(Settings::Config, &@settings_block)
