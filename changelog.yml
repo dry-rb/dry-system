@@ -1,4 +1,8 @@
 ---
+- version: 0.28.
+  date: unreleased
+  changed:
+  - This version uses dry-core 1.0 and its container (@solnic + @flash-gordon)
 - version: 0.27.2
   summary:
   date: 2022-10-17
