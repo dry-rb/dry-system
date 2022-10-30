@@ -90,7 +90,7 @@ RSpec.describe "Settings component" do
     end
   end
 
-  context 'Missing setting value' do
+  context "Missing setting value" do
     subject(:system) do
       Class.new(Dry::System::Container) do
         setting :env
@@ -107,7 +107,7 @@ RSpec.describe "Settings component" do
 
           settings do
             setting :missing_value_designated_optional, constructor: SettingsTest::Types::String.optional
-            setting :missing_value_with_default, constructor: SettingsTest::Types::String, default: 'blah'
+            setting :missing_value_with_default, constructor: SettingsTest::Types::String, default: "blah"
             setting :missing_value_without_default, constructor: SettingsTest::Types::String
           end
         end
