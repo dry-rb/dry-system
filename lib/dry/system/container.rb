@@ -4,7 +4,6 @@ require "pathname"
 
 require "dry/configurable"
 require "dry/auto_inject"
-require "dry/container"
 require "dry/inflector"
 
 module Dry
@@ -53,7 +52,7 @@ module Dry
     #
     # @api public
     class Container
-      extend Dry::Container::Mixin
+      extend Dry::Core::Container::Mixin
       extend Dry::System::Plugins
 
       setting :name

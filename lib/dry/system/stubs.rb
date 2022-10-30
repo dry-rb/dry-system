@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/container/stub"
+require "dry/core/container/stub"
 
 module Dry
   module System

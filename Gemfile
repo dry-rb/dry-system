@@ -14,6 +14,8 @@ gem "dry-monitor"
 gem "dry-types"
 gem "zeitwerk"
 
+gem "dry-core", github: "dry-rb/dry-core", branch: "main"
+
 group :tools do
   gem "pry-byebug", platforms: :mri
 end
