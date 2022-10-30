@@ -37,7 +37,7 @@ RSpec.describe Dry::System::Container, "configuration phase" do
         .to [:after_configure]
     end
 
-    xit "does not run after configure hooks when called a second time" do
+    it "does not run after configure hooks when called a second time" do
       container.instance_eval do
         def hooks_trace
           @hooks_trace ||= []
@@ -48,7 +48,10 @@ RSpec.describe Dry::System::Container, "configuration phase" do
         end
       end
 
-      expect { container.configure {}; container.configure {} }
+      expect {
+        container.configure(finalize_config: false) {}
+        container.configure(finalize_config: false) {}
+      }
         .to change { container.hooks_trace }
         .from([])
         .to [:after_configure]
