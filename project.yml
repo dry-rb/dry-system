@@ -10,6 +10,6 @@ gemspec:
     - rspec
   runtime_dependencies:
     - [dry-auto_inject, ">= 0.10.0"]
-    - [dry-configurable, "~> 0.16", ">= 0.16.0"]
+    - [dry-configurable, ">= 1.0.0.rc1", "< 2"]
     - [dry-core, ">= 1.0.0.rc1", "< 2"]
     - [dry-inflector, "~> 0.1", ">= 0.1.2"]
