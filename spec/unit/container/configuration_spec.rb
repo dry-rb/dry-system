@@ -37,7 +37,7 @@ RSpec.describe Dry::System::Container, "configuration phase" do
         .to [:after_configure]
     end
 
-    it "does not run after configure hooks when called a second time" do
+    xit "does not run after configure hooks when called a second time" do
       container.instance_eval do
         def hooks_trace
           @hooks_trace ||= []
