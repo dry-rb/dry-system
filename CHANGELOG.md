@@ -5,7 +5,7 @@
 
 ### Changed
 
-- This version uses dry-core 1.0 and its container (@solnic + @flash-gordon)
+- This version uses dry-core 1.0 and dry-configurable 1.0 (@solnic + @flash-gordon)
 
 [Compare v0.27.2...v0.28.0](https://github.com/dry-rb/dry-system/compare/v0.27.2...v0.28.0)
 
