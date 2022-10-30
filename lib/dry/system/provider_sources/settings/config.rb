@@ -20,7 +20,7 @@ module Dry
           private
 
           def setting_errors(errors)
-            errors.sort_by { |k, _| k }.map { |key, error| "#{key}: #{error}" }
+            errors.sort_by { |k, _| k.name }.map { |key, error| "#{key}: #{error}" }
           end
         end
 
@@ -33,17 +33,17 @@ module Dry
             new.tap do |settings_obj|
               errors = {}
 
-              settings.to_a.each do |setting_name|
-                value = loader[setting_name.to_s.upcase]
+              settings.to_a.each do |setting|
+                value = loader[setting.name.to_s.upcase]
 
                 begin
                   if value
-                    settings_obj.config.public_send(:"#{setting_name}=", value)
+                    settings_obj.config.public_send(:"#{setting.name}=", value)
                   else
-                    settings_obj.config[setting_name]
+                    settings_obj.config[setting.name]
                   end
                 rescue => e # rubocop:disable Style/RescueStandardError
-                  errors[setting_name] = e
+                  errors[setting.name] = e
                 end
               end
 

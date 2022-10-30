@@ -105,7 +105,7 @@ module Dry
       end
 
       def build_merge_container(other, keys)
-        keys.each_with_object(Dry::Container.new) { |key, ic|
+        keys.each_with_object(Core::Container.new) { |key, ic|
           next unless other.key?(key)
 
           # Access the other container's items directly so that we can preserve all their

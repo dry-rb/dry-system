@@ -60,7 +60,7 @@ RSpec.describe Dry::System::Container, "configuration phase" do
         .from(false).to true
 
       expect { container.configure { |c| c.root = "/root" } }
-        .to raise_error Dry::Configurable::FrozenConfig
+        .to raise_error Dry::Configurable::FrozenConfigError
     end
 
     it "does not finalize the config with `finalize_config: false`" do
@@ -120,7 +120,7 @@ RSpec.describe Dry::System::Container, "configuration phase" do
         .to change { container.config.frozen? }
         .from(false).to true
 
-      expect { container.config.root = "/root" }.to raise_error Dry::Configurable::FrozenConfig
+      expect { container.config.root = "/root" }.to raise_error Dry::Configurable::FrozenConfigError
     end
 
     it "does not finalize the config with `finalize_config: false`" do

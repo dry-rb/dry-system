@@ -2,11 +2,11 @@
 
 RSpec.describe Dry::System::Provider::Source do
   let(:target_container) do
-    Dry::Container.new
+    Dry::Core::Container.new
   end
 
   let(:provider_container) do
-    Dry::Container.new
+    Dry::Core::Container.new
   end
 
   shared_examples_for "a provider class" do

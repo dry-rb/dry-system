@@ -6,7 +6,7 @@ module Dry
       module DependencyGraph
         # @api private
         class Strategies
-          extend Dry::Container::Mixin
+          extend Core::Container::Mixin
 
           # @api private
           class Kwargs < Dry::AutoInject::Strategies::Kwargs

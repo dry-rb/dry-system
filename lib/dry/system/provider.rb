@@ -90,7 +90,7 @@ module Dry
       # later marged into the target container after the `prepare` and `start` lifecycle
       # steps.
       #
-      # @return [Dry::Container]
+      # @return [Dry::Core::Container]
       #
       # @api public
       attr_reader :provider_container
@@ -206,7 +206,7 @@ module Dry
 
       # @api private
       def build_provider_container
-        container = Dry::Container.new
+        container = Core::Container.new
 
         case namespace
         when String, Symbol
