@@ -7,7 +7,11 @@ module Dry
     class Container
       # @api private
       module Stubs
-        def finalize!(freeze: true, &block)
+        # This overrides default finalize! just to disable automatic freezing
+        # of the container
+        #
+        # @api private
+        def finalize!(**, &block)
           super(freeze: false, &block)
         end
       end
