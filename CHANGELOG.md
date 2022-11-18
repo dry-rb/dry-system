@@ -10,6 +10,9 @@
 ### Changed
 
 - This version uses dry-core 1.0 and dry-configurable 1.0 (@solnic + @flash-gordon)
+- Raise error on import after finalize (via #254) (@timriley + @tak1n)
+- Validate settings even if loader does not set value (via #246) (@oeoeaio)
+- Remove all deprecated functionality and deprecation messages (via #255) (@timriley)
 
 [Compare v0.27.2...v1.0.0](https://github.com/dry-rb/dry-system/compare/v0.27.2...v1.0.0)
 
