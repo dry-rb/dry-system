@@ -1,35 +1,30 @@
 ---
 - version: unreleased
-  summary: 
-  date: 
+  summary:
+  date:
   fixed:
-  - 'Only use DidYouMean-integrated Error for Component loading failure (via #261)
-    (@cllns + @solnic)'
-  added: 
-  changed: 
-- version: 0.28.0
-  date: unreleased
+  - 'Only use DidYouMean-integrated Error for Component loading failure (via #261) (@cllns + @solnic)'
   changed:
   - This version uses dry-core 1.0 and dry-configurable 1.0 (@solnic + @flash-gordon)
 - version: 0.27.2
-  summary: 
+  summary:
   date: 2022-10-17
   fixed:
   - Removed remaining manual require left-overs (@solnic)
-  added: 
-  changed: 
+  added:
+  changed:
 - version: 0.27.1
-  summary: 
+  summary:
   date: 2022-10-15
   fixed:
   - Tweak for zeitwerk loader (@flash-gordon)
-  added: 
-  changed: 
+  added:
+  changed:
 - version: 0.27.0
-  summary: 
+  summary:
   date: 2022-10-15
-  fixed: 
-  added: 
+  fixed:
+  added:
   changed:
   - |-
     [BREAKING] Use zeitwerk for auto-loading dry-system (@flash-gordon + @solnic)
@@ -43,11 +38,11 @@
     suit (@timriley in #249)'
   - 'Remove now-unused concurrent-ruby gem dependency (@timriley in #250)'
 - version: 0.25.0
-  summary: 
+  summary:
   date: '2022-07-10'
   fixed:
   - Fix incorrect type in `ManifestRegistrar#finalize!` (@alassek)
-  added: 
+  added:
   changed:
   - 'Import root components via `nil` import namespace (via #236) (@timriley)'
   - 'Allow deeper `Provider::Source` hierarchies (via #240) (@timriley + @solnic)'
@@ -488,9 +483,9 @@
 
       This was possible before when a provider resolved a component from the target container that auto-injected dependencies with container keys sharing the same base key as the provider name.
 - version: 0.22.0
-  summary: 
+  summary:
   date: 2022-01-06
-  fixed: 
+  fixed:
   added:
   - 'Expanded public interfaces for `Dry::System::Config::ComponentDirs` and `Dry::System::Config::Namespaces`
     to better support programmatic construction and inspection of these configs (@timriley
@@ -501,9 +496,9 @@
   - 'Allow bootsnap plugin to use bootsnap on Ruby versions up to 3.0 (pusewicz in
     #196)'
 - version: 0.21.0
-  summary: 
+  summary:
   date: 2021-11-01
-  fixed: 
+  fixed:
   added:
   - 'Added **component dir namespaces** as a way to specify multiple, ordered, independent
     namespace rules within a given component dir. This replaces and expands upon the
@@ -535,7 +530,7 @@
     errors have been removed (@timriley in #194)'
   - 'Allow bootsnap for Rubies up to 3.0.x (via #196) (@pusewicz)'
 - version: 0.20.0
-  summary: 
+  summary:
   date: '2021-09-12'
   fixed:
   - 'Fixed dependency graph plugin to work with internal changes introduced in 0.19.0
@@ -544,7 +539,7 @@
     by a single segment, or if all matching segments are provided (@wuarmin in #177)'
   - 'Fixed compatibility of `finalize!` signature provided in `Container::Stubs` (@mpokrywka
     in #178)'
-  added: 
+  added:
   changed:
   - "[internal] Upgraded to new `setting` API provided in dry-configurable 0.13.0
     (@timriley in #179)"
@@ -658,17 +653,17 @@
   - "[BREAKING] `Dry::System::Container.require_path` has been removed. Provide custom
     require behavior by configuring your own `loader` (@timriley in #153)"
 - version: 0.18.1
-  summary: 
+  summary:
   date: '2020-08-26'
   fixed:
   - Made `Booter#boot_files` a public method again, since it was required by dry-rails
     (@timriley)
-  added: 
-  changed: 
+  added:
+  changed:
 - version: 0.18.0
-  summary: 
+  summary:
   date: '2020-08-24'
-  fixed: 
+  fixed:
   added:
   - |-
     New `bootable_dirs` setting on `Dry::System::Container`, which accepts paths to multiple directories for looking up bootable component files. (@timriley in PR #151)
@@ -676,26 +671,26 @@
       For each entry in the `bootable_dirs` array, relative directories will be appended to the container's `root`, and absolute directories will be left unchanged.
 
       When searching for bootable files, the first match will win, and any subsequent same-named files will not be loaded. In this way, the `bootable_dirs` act similarly to the `$PATH` in a shell environment.
-  changed: 
+  changed:
 - version: 0.17.0
-  summary: 
+  summary:
   date: '2020-02-19'
   fixed:
   - 'Works with the latest dry-configurable version (issue #141) (@solnic)'
-  added: 
+  added:
   changed:
   - Depends on dry-configurable `=> 0.11.1` now (@solnic)
 - version: 0.16.0
-  summary: 
+  summary:
   date: '2020-02-15'
   changed:
   - Plugins can now define their own settings which are available in the `before(:configure)`
     hook (@solnic)
   - Dependency on dry-configurable was bumped to `~> 0.11` (@solnic)
 - version: 0.15.0
-  summary: 
+  summary:
   date: '2020-01-30'
-  fixed: 
+  fixed:
   added: |
     New hook - `before(:configure)` which a plugin should use if it needs to declare new settings (@solnic)
 
@@ -709,10 +704,10 @@
   - Centralize error definitions in `lib/dry/system/errors.rb` (@cgeorgii)
   - All built-in plugins use `before(:configure)` now to declare their settings (@solnic)
 - version: 0.14.1
-  summary: 
+  summary:
   date: '2020-01-22'
-  fixed: 
-  added: 
+  fixed:
+  added:
   changed:
   - Use `Kernel.require` explicitly to avoid issues with monkey-patched `require`
     from ActiveSupport (@solnic)
