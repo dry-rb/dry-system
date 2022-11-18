@@ -1,4 +1,9 @@
 ---
+- version: 1.0.1
+  summary:
+  date: 2022-11-18
+  changed:
+  - 'Bumped dry-auto_inject dependency to its 1.0.0 final release (@solnic)'
 - version: 1.0.0
   summary:
   date: 2022-11-18
