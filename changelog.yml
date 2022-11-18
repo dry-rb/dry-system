@@ -1,7 +1,7 @@
 ---
-- version: unreleased
+- version: 1.0.0
   summary:
-  date:
+  date: 2022-11-18
   fixed:
   - 'Only use DidYouMean-integrated Error for Component loading failure (via #261) (@cllns + @solnic)'
   changed:
