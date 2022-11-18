@@ -9,6 +9,10 @@
   - 'Raise error on import after finalize (via #254) (@timriley + @tak1n)'
   - 'Validate settings even if loader does not set value (via #246) (@oeoeaio)'
   - 'Remove all deprecated functionality and deprecation messages (via #255) (@timriley)'
+  - 'Use main dry/monitor entrypoint for autoloading (via #257) (@timriley)'
+  - 'Use dry-configurable 1.0 (via 43c79095ccf54c6251e825ae20c97a9415e78209) (@flash-gordon)'
+  - 'Use dry-core 1.0 (via 3d0cf95aef120601e67f3e8fbbf16d004017d376) (@flash-gordon)'
+  - 'Remove dry-container dependency and update to use `Dry::Core::Container` (via 2b76554e5925fc92614627d5c1e0a9177cecf12f) (@solnic)'
 - version: 0.27.2
   summary:
   date: 2022-10-17
