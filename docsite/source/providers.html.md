@@ -77,7 +77,7 @@ You can start one provider as a dependency of another by invoking the providerâ€
 ``` ruby
 # system/providers/logger.rb
 Application.register_provider(:logger) do
-  init do
+  prepare do
     require "logger"
   end
 
