@@ -14,6 +14,3 @@ gem "dry-events"
 gem "dry-monitor"
 gem "zeitwerk"
 
-group :tools do
-  gem "pry-byebug", platforms: :mri
-end
