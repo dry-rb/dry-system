@@ -14,7 +14,7 @@ To distribute a group of provider sources (defined in their own files), register
 # my_gem
 #  |- lib/my_gem/provider_sources.rb
 
-Dry::System.register_provider_sources(:common, boot_path: File.join(__dir__, "provider_sources"))
+Dry::System.register_provider_sources(File.join(__dir__, "provider_sources"))
 ```
 
 Then, define your provider source:
