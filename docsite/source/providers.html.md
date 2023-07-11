@@ -13,11 +13,11 @@ You can define your providers as individual source files in `system/providers/`,
 
 Application.register_provider(:database) do
   prepare do
-    require "3rd_party/db"
+    require "third_party/db"
   end
 
   start do
-    register(:database, 3rdParty::DB.new)
+    register(:database, ThirdParty::DB.new)
   end
 end
 ```
