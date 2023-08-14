@@ -2,7 +2,7 @@
 [gem]: https://rubygems.org/gems/dry-system
 [actions]: https://github.com/dry-rb/dry-system/actions
 
-# dry-system [![Gem Version](https://badge.fury.io/rb/dry-system.svg)][gem] [![CI Status](https://github.com/dry-rb/dry-system/workflows/ci/badge.svg)][actions]
+# dry-system [![Gem Version](https://badge.fury.io/rb/dry-system.svg)][gem] [![CI Status](https://github.com/dry-rb/dry-system/workflows/CI/badge.svg)][actions]
 
 ## Links
 
