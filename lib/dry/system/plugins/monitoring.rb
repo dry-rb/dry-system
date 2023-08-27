@@ -36,7 +36,7 @@ module Dry
               end
             end
 
-            decorate(key, with: -> target { proxy.new(target, notifications) })
+            decorate(key, with: -> tgt { proxy.new(tgt, notifications) })
           end
         end
       end

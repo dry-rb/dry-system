@@ -3,8 +3,8 @@
 module Dry
   module System
     class MagicCommentsParser
-      VALID_LINE_RE = /^(#.*)?$/.freeze
-      COMMENT_RE = /^#\s+(?<name>[A-Za-z]{1}[A-Za-z0-9_]+):\s+(?<value>.+?)$/.freeze
+      VALID_LINE_RE = /^(#.*)?$/
+      COMMENT_RE = /^#\s+(?<name>[A-Za-z]{1}[A-Za-z0-9_]+):\s+(?<value>.+?)$/
 
       COERCIONS = {
         "true" => true,

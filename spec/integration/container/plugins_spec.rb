@@ -218,6 +218,7 @@ RSpec.describe Dry::System::Container, ".use" do
     let(:plugin) do
       Class.new(Module) do
         def initialize(options)
+          super()
           @options = options
 
           define_method(:plugin_test) do

@@ -8,6 +8,6 @@ module Dry
     RB_GLOB = "*.rb"
     PATH_SEPARATOR = File::SEPARATOR
     KEY_SEPARATOR = "."
-    WORD_REGEX = /\w+/.freeze
+    WORD_REGEX = /\w+/
   end
 end
