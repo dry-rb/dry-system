@@ -32,15 +32,15 @@ By using simple naming conventions we can automatically register objects within 
 Let's provide a custom logger object and put it under a custom load-path that we will configure:
 
 ``` ruby
-require 'dry/system'
+require "dry/system"
 
 class Application < Dry::System::Container
   configure do |config|
-    config.root = Pathname('./my/app')
+    config.root = Pathname("./my/app")
 
     # Add a 'lib' component dir (relative to `root`), containing class definitions
     # that can be auto-registered
-    config.component_dirs.add 'lib'
+    config.component_dirs.add "lib"
   end
 end
 
@@ -53,5 +53,5 @@ end
 Application.finalize!
 
 # the logger becomes available
-Application['logger']
+Application["logger"]
 ```
