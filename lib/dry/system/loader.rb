@@ -67,7 +67,7 @@ module Dry
           inflector.constantize(const_name)
         rescue NameError => e
           # Ensure it's this component's constant, not any other NameError within the component
-          if e.message =~ /#{const_name}( |\n)/
+          if e.message =~ /#{const_name}( |\n|$)/
             raise ComponentNotLoadableError.new(component, e)
           else
             raise e
