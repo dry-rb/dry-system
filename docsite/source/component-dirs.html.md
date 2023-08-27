@@ -201,7 +201,7 @@ Set this to false if you’re using dry-container with an autoloader.
 When using a class autoloader, consider setting this to `Dry::System::Loader::Autoloading`:
 
 ```ruby
-require "dry/system/loader/autoloading"
+require "dry/system"
 
 class Application < Dry::System::Container
   configure do |config|

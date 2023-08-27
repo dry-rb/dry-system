@@ -8,7 +8,7 @@ In some cases it is useful to stub a component in your tests. To enable this, dr
 in which a container will not be frozen during finalization. This allows you to use `stub` API to stub a given component.
 
 ``` ruby
-require 'dry/system/container'
+require 'dry/system'
 
 class Application < Dry::System::Container
   configure do |config|

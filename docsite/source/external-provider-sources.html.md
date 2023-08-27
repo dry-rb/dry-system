@@ -39,7 +39,7 @@ Then you can use this provider source when you register a provider in a dry-syst
 ``` ruby
 # system/app/container.rb
 
-require "dry/system/container"
+require "dry/system"
 require "my_gem/provider_sources"
 
 module App

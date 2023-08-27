@@ -41,7 +41,7 @@ Here's a sample setup for this scenario:
 
 ``` ruby
 # system/container.rb
-require "dry/system/container"
+require "dry/system"
 
 class Application < Dry::System::Container
   configure do |config|

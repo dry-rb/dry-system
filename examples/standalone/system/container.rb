@@ -2,7 +2,7 @@
 
 require "dry/events"
 require "dry/monitor/notifications"
-require "dry/system/container"
+require "dry/system"
 
 class App < Dry::System::Container
   use :dependency_graph

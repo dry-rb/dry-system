@@ -11,7 +11,7 @@ dry-system provides a `:settings` provider source that you can use to load setti
 ```ruby
 # system/providers/settings.rb:
 
-require "dry/system/provider_sources"
+require "dry/system"
 
 Application.register_provider(:settings, from: :dry_system) do
   before :prepare do

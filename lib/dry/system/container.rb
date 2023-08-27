@@ -148,7 +148,7 @@ module Dry
         #
         # @example
         #   # system/container.rb
-        #   require "dry/system/container"
+        #   require "dry/system"
         #   require "logger"
         #
         #   class Core < Dry::System::Container
