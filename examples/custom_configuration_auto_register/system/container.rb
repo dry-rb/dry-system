@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/system/container"
+require "dry/system"
 
 class App < Dry::System::Container
   configure do |config|
