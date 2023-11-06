@@ -325,9 +325,9 @@ module Dry
             [providers, auto_registrar, manifest_registrar, importer].each(&:finalize!)
 
             @__finalized__ = true
-
-            self.freeze if freeze
           end
+
+          self.freeze if freeze
 
           self
         end
