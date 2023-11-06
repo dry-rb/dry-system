@@ -329,8 +329,8 @@ module Dry
 
           @__finalized__ = true
 
-          self.freeze if freeze
           hooks[:after_finalize].each { |hook| instance_eval(&hook) }
+          self.freeze if freeze
           self
         end
 
