@@ -485,6 +485,15 @@ module Dry
         end
 
         # @api public
+        def register(key, *)
+          super
+
+          hooks[:after_register].each { |hook| instance_exec(key, &hook) }
+
+          self
+        end
+
+        # @api public
         def resolve(key)
           load_component(key) unless finalized?
 
