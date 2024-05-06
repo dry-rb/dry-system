@@ -21,6 +21,9 @@ module Dry
       # @api private
       attr_reader :container
 
+      # @api public
+      alias_method :target_container, :container
+
       # @api private
       def initialize(container)
         @providers = {}
@@ -202,7 +205,7 @@ module Dry
         Provider.new(
           name: name,
           namespace: namespace,
-          target_container: container,
+          target_container: target_container,
           source_class: source_class
         )
       end
@@ -213,7 +216,7 @@ module Dry
         Provider.new(
           name: name,
           namespace: namespace,
-          target_container: container,
+          target_container: target_container,
           source_class: source_class,
           &block
         )
