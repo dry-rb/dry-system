@@ -13,7 +13,8 @@ module Dry
     # provider registrar is responsible for loading provider files and exposing an API for
     # running the provider lifecycle steps.
     #
-    # @api private
+    # @api public
+    # @since 1.1.0
     class ProviderRegistrar
       # @api private
       attr_reader :providers
@@ -21,7 +22,12 @@ module Dry
       # @api private
       attr_reader :container
 
+      # Returns the container exposed to providers as `target_container`.
+      #
+      # @return [Dry::System::Container]
+      #
       # @api public
+      # @since 1.1.0
       alias_method :target_container, :container
 
       # @api private
