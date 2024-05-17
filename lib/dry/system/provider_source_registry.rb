@@ -6,6 +6,17 @@ module Dry
   module System
     # @api private
     class ProviderSourceRegistry
+      # @api private
+      class Registration
+        attr_reader :source
+        attr_reader :provider_options
+
+        def initialize(source:, provider_options:)
+          @source = source
+          @provider_options = provider_options
+        end
+      end
+
       attr_reader :sources
 
       def initialize
@@ -18,19 +29,19 @@ module Dry
         end
       end
 
-      def register(name:, group:, source:)
-        sources[key(name, group)] = source
+      def register(name:, group:, source:, provider_options:)
+        sources[key(name, group)] = Registration.new(
+          source: source,
+          provider_options: provider_options
+        )
       end
 
-      def register_from_block(name:, group:, &block)
+      def register_from_block(name:, group:, provider_options:, &block)
         register(
           name: name,
           group: group,
-          source: Provider::Source.for(
-            name: name,
-            group: group,
-            &block
-          )
+          source: Provider::Source.for(name: name, group: group, &block),
+          provider_options: provider_options
         )
       end
 
