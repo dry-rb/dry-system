@@ -46,7 +46,7 @@ module Dry
 
       # @see Container.register_provider
       # @api private
-      def register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
+      def register_provider(name, from: nil, source: nil, if: true, **provider_options, &block)
         raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
         if from && source.is_a?(Class)
@@ -63,13 +63,18 @@ module Dry
           if from
             build_provider_from_source(
               name,
-              namespace: namespace,
               source: source || name,
               group: from,
+              options: provider_options,
               &block
             )
           else
-            build_provider(name, namespace: namespace, source: source, &block)
+            build_provider(
+              name,
+              source: source,
+              options: provider_options,
+              &block
+            )
           end
 
         providers[provider.name] = provider
@@ -205,25 +210,26 @@ module Dry
         }
       end
 
-      def build_provider(name, namespace:, source: nil, &block)
+      def build_provider(name, options:, source: nil, &block)
         source_class = source || Provider::Source.for(name: name, &block)
 
         Provider.new(
+          **options,
           name: name,
-          namespace: namespace,
           target_container: target_container,
           source_class: source_class
         )
       end
 
-      def build_provider_from_source(name, source:, group:, namespace:, &block)
-        source_class = System.provider_sources.resolve(name: source, group: group)
+      def build_provider_from_source(name, source:, group:, options:, &block)
+        provider_source = System.provider_sources.resolve(name: source, group: group)
 
         Provider.new(
+          **provider_source.provider_options,
+          **options,
           name: name,
-          namespace: namespace,
           target_container: target_container,
-          source_class: source_class,
+          source_class: provider_source.source,
           &block
         )
       end
