@@ -84,43 +84,28 @@ module Dry
 
       # rubocop:enable Metrics/PerceivedComplexity
 
-      # Returns a provider for the given name, if it has already been loaded
-      #
-      # @api public
-      def [](provider_name)
-        providers[provider_name]
-      end
-      alias_method :provider, :[]
-
-      # @api private
-      def key?(provider_name)
-        providers.key?(provider_name)
-      end
-
       # Returns a provider if it can be found or loaded, otherwise nil
       #
       # @return [Dry::System::Provider, nil]
       #
-      # @api private
-      def find_and_load_provider(name)
-        name = name.to_sym
+      # @api public
+      def [](provider_name)
+        provider_name = provider_name.to_sym
 
-        if (provider = providers[name])
+        if (provider = providers[provider_name])
           return provider
         end
 
         return if finalized?
 
-        require_provider_file(name)
+        require_provider_file(provider_name)
 
-        providers[name]
+        providers[provider_name]
       end
 
       # @api private
-      def start_provider_dependency(component)
-        if (provider = find_and_load_provider(component.root_key))
-          provider.start
-        end
+      def key?(provider_name)
+        providers.key?(provider_name)
       end
 
       # Returns all provider files within the configured provider_paths.
