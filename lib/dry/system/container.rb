@@ -608,14 +608,14 @@ module Dry
         def load_component(key)
           return self if registered?(key)
 
-          if (provider = providers.find_and_load_provider(key))
+          if (provider = providers[key])
             provider.start
             return self
           end
 
           component = find_component(key)
 
-          providers.start_provider_dependency(component)
+          providers[component.root_key]&.start
           return self if registered?(key)
 
           if component.loadable?
