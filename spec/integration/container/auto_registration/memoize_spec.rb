@@ -17,6 +17,8 @@ RSpec.describe "Auto-registration / Memoizing components" do
             dir.namespaces.add "test", key: nil
             dir.memoize = true
           end
+
+          config.inflector = Dry::Inflector.new { |i| i.acronym("ABC") }
         end
       end
     end
@@ -66,7 +68,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
 
     context "Finalized container" do
       before do
-        Test::Container.finalize!
+        Test::Container.finalize!(eager_load: false)
       end
 
       include_examples "memoizing components"

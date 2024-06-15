@@ -314,7 +314,7 @@ module Dry
         # @return [self] frozen container
         #
         # @api public
-        def finalize!(freeze: true, eager_load: false, &block)
+        def finalize!(freeze: true, eager_load: true, &block)
           return self if finalized?
 
           configured!

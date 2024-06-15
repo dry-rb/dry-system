@@ -176,7 +176,7 @@ RSpec.describe Dry::System::Container, "configuration phase" do
         .to [:after_configure]
     end
 
-    it "raises error for undefined constant (due to inflector acronym)" do
+    it "raises error for undefined constant (due to inflector missing acronym)" do
       expect {
         container.configure do |config|
           config.root = SPEC_ROOT.join("fixtures").realpath
@@ -184,7 +184,7 @@ RSpec.describe Dry::System::Container, "configuration phase" do
             dir.namespaces.add "test", key: nil
           end
         end
-        container.finalize!(eager_load: true)
+        container.finalize!
       }.to raise_error(Dry::System::ComponentNotLoadableError)
     end
 
