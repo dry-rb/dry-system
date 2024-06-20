@@ -196,7 +196,11 @@ module Dry
       end
 
       def build_provider(name, options:, source: nil, &block)
-        source_class = source || Provider::Source.for(name: name, &block)
+        source_class = source || Provider::Source.for(
+          name: name,
+          superclass: container.config.provider_source_class,
+          &block
+        )
 
         Provider.new(
           **options,
