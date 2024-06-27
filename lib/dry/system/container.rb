@@ -65,6 +65,7 @@ module Dry
       setting :auto_registrar, default: Dry::System::AutoRegistrar
       setting :manifest_registrar, default: Dry::System::ManifestRegistrar
       setting :provider_registrar, default: Dry::System::ProviderRegistrar
+      setting :provider_source_class, default: Dry::System::Provider::Source
       setting :importer, default: Dry::System::Importer
 
       # Expect "." as key namespace separator. This is not intended to be user-configurable.

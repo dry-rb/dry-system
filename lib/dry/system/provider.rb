@@ -127,7 +127,7 @@ module Dry
       attr_reader :source
 
       # @api private
-      def initialize(name:, namespace: nil, target_container:, source_class:, &block) # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, build_source:) # rubocop:disable Style/KeywordParametersOrder
         @name = name
         @namespace = namespace
         @target_container = target_container
@@ -136,10 +136,9 @@ module Dry
         @statuses = []
         @step_running = nil
 
-        @source = source_class.new(
+        @source = build_source.call(
           provider_container: provider_container,
-          target_container: target_container,
-          &block
+          target_container: target_container
         )
       end
 

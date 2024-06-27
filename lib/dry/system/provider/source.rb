@@ -120,7 +120,7 @@ module Dry
         alias_method :target, :target_container
 
         # @api private
-        def initialize(provider_container:, target_container:, &block)
+        def initialize(provider_container:, target_container:, **, &block)
           super()
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container

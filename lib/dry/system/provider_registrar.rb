@@ -196,13 +196,15 @@ module Dry
       end
 
       def build_provider(name, options:, source: nil, &block)
-        source_class = source || Provider::Source.for(name: name, &block)
+        source_class = source || container.config.provider_source_class.for(name: name, &block)
 
         Provider.new(
           **options,
           name: name,
           target_container: target_container,
-          source_class: source_class
+          build_source: -> **opts {
+            source_class.new(**provider_source_options, **opts)
+          }
         )
       end
 
@@ -214,10 +216,14 @@ module Dry
           **options,
           name: name,
           target_container: target_container,
-          source_class: provider_source.source,
-          &block
+          build_source: -> **opts {
+            provider_source.source.new(**provider_source_options, **opts, &block)
+          }
         )
       end
+
+      # Extension point for subclasses
+      def provider_source_options = {}
 
       def with_provider(provider_name)
         require_provider_file(provider_name) unless providers.key?(provider_name)
