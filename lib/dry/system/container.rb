@@ -327,9 +327,7 @@ module Dry
           manifest_registrar.finalize!
           importer.finalize!
 
-          if eager_load
-            keys.each { |key| resolve(key) }
-          end
+          keys.each { |key| resolve(key) } if eager_load
 
           @__finalized__ = true
 
