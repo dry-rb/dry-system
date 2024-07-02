@@ -54,6 +54,8 @@ RSpec.describe "Auto-registration / Memoizing components" do
               !component.key.match?(/bar/)
             end
           end
+
+          config.inflector = Dry::Inflector.new { |i| i.acronym("ABC") }
         end
       end
     end
@@ -68,7 +70,7 @@ RSpec.describe "Auto-registration / Memoizing components" do
 
     context "Finalized container" do
       before do
-        Test::Container.finalize!(eager_load: false)
+        Test::Container.finalize!
       end
 
       include_examples "memoizing components"
