@@ -5,9 +5,9 @@
     - |-
       Add `Dry::System::ProviderRegistrar#target_container`, to be passed when initializing
       providers. By default this is an alias of `#container`. This allows for custom provider
-      registrars to override `#target_container` to provide a custom container. An overridden
-      value **MUST** still wrap the original `#target_container` to ensure components are
-      registered in the right place. (via #270) (@timriley)
+      registrars to override `#target_container` to provide a custom `#target` within providers.
+      An overridden value **MUST** still wrap the original `#target_container` to ensure components
+      are registered in the right place. (via #270) (@timriley)
   changed:
     - |-
       Make `Dry::System::ProviderRegistrar` public API (via #270) (@timriley)
