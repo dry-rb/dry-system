@@ -237,7 +237,7 @@ module Dry
         provider_source = System.provider_sources.resolve(name: source, group: group)
 
         source_options =
-          if provider_source.source == provider_source_class
+          if provider_source.source <= provider_source_class
             provider_source_options
           else
             {}
