@@ -136,6 +136,21 @@ module Dry
         }.first
       end
 
+      # Extension point for subclasses to customize their
+      # provider source superclass. Expected to be a subclass
+      # of Dry::System::Provider::Source
+      #
+      # @api public
+      # @since 1.1.0
+      def provider_source_class = Dry::System::Provider::Source
+
+      # Extension point for subclasses to customize initialization
+      # params for provider_source_class
+      #
+      # @api public
+      # @since 1.1.0
+      def provider_source_options = {}
+
       # @api private
       def finalize!
         provider_files.each do |path|
@@ -196,18 +211,37 @@ module Dry
       end
 
       def build_provider(name, options:, source: nil, &block)
-        source_class = source || Provider::Source.for(name: name, &block)
+        source_class = source || Provider::Source.for(
+          name: name,
+          superclass: provider_source_class,
+          &block
+        )
+
+        source_options =
+          if source_class < provider_source_class
+            provider_source_options
+          else
+            {}
+          end
 
         Provider.new(
           **options,
           name: name,
           target_container: target_container,
-          source_class: source_class
+          source_class: source_class,
+          source_options: source_options
         )
       end
 
       def build_provider_from_source(name, source:, group:, options:, &block)
         provider_source = System.provider_sources.resolve(name: source, group: group)
+
+        source_options =
+          if provider_source.source <= provider_source_class
+            provider_source_options
+          else
+            {}
+          end
 
         Provider.new(
           **provider_source.provider_options,
@@ -215,6 +249,7 @@ module Dry
           name: name,
           target_container: target_container,
           source_class: provider_source.source,
+          source_options: source_options,
           &block
         )
       end
