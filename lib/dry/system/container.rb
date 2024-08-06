@@ -329,8 +329,8 @@ module Dry
 
           @__finalized__ = true
 
-          self.freeze if freeze
           hooks[:after_finalize].each { |hook| instance_eval(&hook) }
+          self.freeze if freeze
           self
         end
 
@@ -484,6 +484,15 @@ module Dry
         # @api public
         def root
           config.root
+        end
+
+        # @api public
+        def register(key, *)
+          super
+
+          hooks[:after_register].each { |hook| instance_exec(key, &hook) }
+
+          self
         end
 
         # @api public
