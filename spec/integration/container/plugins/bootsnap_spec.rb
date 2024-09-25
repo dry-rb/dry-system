@@ -21,7 +21,7 @@ RSpec.describe "Plugins / Bootsnap" do
   end
 
   describe ".require_from_root" do
-    xit "loads file" do
+    it "loads file" do
       system.require_from_root("lib/test/models")
 
       expect(Object.const_defined?("Test::Models")).to be(true)
