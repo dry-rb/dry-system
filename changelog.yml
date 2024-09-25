@@ -1,4 +1,12 @@
 ---
+- version: 1.1.0.beta2
+  date: 2024-09-25
+  changed:
+    - |-
+      Allow provider sources to use a custom superclass. This requires a custom provider registrar
+      to be configured, with its own implementations of `#provider_source_class` (the superclass to
+      use) and `#provider_source_options` (custom initialization args to pass to the provider
+      source). (via #275) (@alassek, @timriley)
 - version: 1.1.0.beta1
   date: 2024-07-03
   added:
