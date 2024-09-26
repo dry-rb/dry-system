@@ -27,14 +27,14 @@ module Dry
         # @api private
         class Config
           # @api private
-          def self.load(root:, env:, loader: Loader)
+          def self.load(root:, env:, prefix: "", loader: Loader)
             loader = loader.new(root: root, env: env)
 
             new.tap do |settings_obj|
               errors = {}
 
               settings.to_a.each do |setting|
-                value = loader[setting.name.to_s.upcase]
+                value = loader[prefix + setting.name.to_s.upcase]
 
                 begin
                   if value
