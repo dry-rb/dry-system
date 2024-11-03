@@ -103,6 +103,9 @@ module Dry
         providers[provider_name]
       end
 
+      # @api public
+      alias_method :find_and_load_provider, :[]
+
       # @api private
       def key?(provider_name)
         providers.key?(provider_name)
