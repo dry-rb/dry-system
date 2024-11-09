@@ -41,8 +41,6 @@ You can use this settings object in other providers:
 ```ruby
 Application.register_provider(:redis) do
   start do
-    use :settings
-
     uri = URI.parse(target[:settings].redis_url)
     redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 
