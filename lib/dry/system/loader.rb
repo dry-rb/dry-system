@@ -43,16 +43,25 @@ module Dry
         # @return [Object]
         #
         # @api public
-        def call(component, *args)
+        def call(component, *args, isolate: false)
           require!(component)
 
           constant = self.constant(component)
 
-          if singleton?(constant)
+          instance = if singleton?(constant)
             constant.instance(*args)
           else
             constant.new(*args)
           end
+
+          if isolate
+            constant_name_parts = constant.to_s.split("::")
+            namespace = constant_name_parts.slice(0..-2).join("::")
+            namespace_const = component.inflector.constantize(namespace)
+            namespace_const.send(:remove_const, constant_name_parts.last)
+          end
+
+          instance
         end
         ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
 
