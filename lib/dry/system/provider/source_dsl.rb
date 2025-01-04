@@ -10,8 +10,8 @@ module Dry
       #
       # @api private
       class SourceDSL
-        def self.evaluate(source_class, &block)
-          new(source_class).instance_eval(&block)
+        def self.evaluate(source_class, &)
+          new(source_class).instance_eval(&)
         end
 
         attr_reader :source_class
@@ -24,23 +24,23 @@ module Dry
           source_class.setting(...)
         end
 
-        def prepare(&block)
-          source_class.define_method(:prepare, &block)
+        def prepare(&)
+          source_class.define_method(:prepare, &)
         end
 
-        def start(&block)
-          source_class.define_method(:start, &block)
+        def start(&)
+          source_class.define_method(:start, &)
         end
 
-        def stop(&block)
-          source_class.define_method(:stop, &block)
+        def stop(&)
+          source_class.define_method(:stop, &)
         end
 
         private
 
-        def method_missing(name, *args, &block)
+        def method_missing(name, ...)
           if source_class.respond_to?(name)
-            source_class.public_send(name, *args, &block)
+            source_class.public_send(name, ...)
           else
             super
           end

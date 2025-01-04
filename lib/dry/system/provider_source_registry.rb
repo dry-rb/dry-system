@@ -24,7 +24,7 @@ module Dry
       end
 
       def load_sources(path)
-        Dir[File.join(path, "**/#{RB_GLOB}")].sort.each do |file|
+        ::Dir[::File.join(path, "**/#{RB_GLOB}")].each do |file|
           require file
         end
       end

@@ -7,7 +7,7 @@ module Dry
     module Config
       # @api public
       class ComponentDir
-        include Dry::Configurable
+        include ::Dry::Configurable
 
         # @!group Settings
 
@@ -211,9 +211,9 @@ module Dry
 
         private
 
-        def method_missing(name, *args, &block)
+        def method_missing(name, ...)
           if config.respond_to?(name)
-            config.public_send(name, *args, &block)
+            config.public_send(name, ...)
           else
             super
           end

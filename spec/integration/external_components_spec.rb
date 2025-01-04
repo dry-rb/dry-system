@@ -139,7 +139,7 @@ RSpec.describe "External Components" do
       "Available provider sources:",
       "- :logger, group: :external_components"
     ]
-    error_re = /#{msgs.join('.*')}/m
+    error_re = /#{msgs.join(".*")}/m
 
     expect {
       Class.new(Dry::System::Container) {

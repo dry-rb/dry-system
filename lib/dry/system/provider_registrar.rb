@@ -126,10 +126,10 @@ module Dry
       # @api public
       def provider_files
         @provider_files ||= provider_paths.each_with_object([[], []]) { |path, (provider_files, loaded)| # rubocop:disable Layout/LineLength
-          files = Dir["#{path}/#{RB_GLOB}"].sort
+          files = ::Dir["#{path}/#{RB_GLOB}"]
 
           files.each do |file|
-            basename = File.basename(file)
+            basename = ::File.basename(file)
 
             unless loaded.include?(basename)
               provider_files << Pathname(file)

@@ -11,8 +11,8 @@ module Dry
         # of the container
         #
         # @api private
-        def finalize!(**, &block)
-          super(freeze: false, &block)
+        def finalize!(**, &)
+          super(freeze: false, &)
         end
       end
 

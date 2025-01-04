@@ -40,15 +40,15 @@ module Dry
           def for(name:, group: nil, superclass: nil, &block)
             superclass ||= self
 
-            Class.new(superclass) { |klass|
+            ::Class.new(superclass) { |klass|
               klass.source_name name
               klass.source_group group
 
               name_with_group = group ? "#{group}->#{name}" : name
-              klass.instance_eval <<~RUBY, __FILE__, __LINE__ + 1
-                def name
-                  "#{superclass.name}[#{name_with_group}]"
-                end
+              klass.instance_eval(<<~RUBY, __FILE__, __LINE__ + 1)
+                def name                                   # def name
+                  "#{superclass.name}[#{name_with_group}]" #   "CustomSource[custom]"
+                end                                        # end
               RUBY
 
               SourceDSL.evaluate(klass, &block) if block
@@ -263,7 +263,7 @@ module Dry
         end
 
         # @api private
-        def method_missing(name, *args, &block)
+        def method_missing(name, *args, &)
           if container.key?(name)
             container[name]
           else

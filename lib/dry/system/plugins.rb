@@ -11,8 +11,8 @@ module Dry
       # @return [Plugins]
       #
       # @api public
-      def self.register(name, plugin, &block)
-        registry[name] = Plugin.new(name, plugin, &block)
+      def self.register(name, plugin, &)
+        registry[name] = Plugin.new(name, plugin, &)
       end
 
       # @api private

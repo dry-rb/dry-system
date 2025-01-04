@@ -26,7 +26,7 @@ module Dry
 
       # @api private
       def finalize!
-        ::Dir[registrations_dir.join(RB_GLOB)].sort.each do |file|
+        ::Dir[registrations_dir.join(RB_GLOB)].each do |file|
           call(Identifier.new(File.basename(file, RB_EXT)))
         end
       end
@@ -38,7 +38,7 @@ module Dry
 
       # @api private
       def file_exists?(component)
-        File.exist?(File.join(registrations_dir, "#{component.root_key}#{RB_EXT}"))
+        ::File.exist?(::File.join(registrations_dir, "#{component.root_key}#{RB_EXT}"))
       end
 
       private
