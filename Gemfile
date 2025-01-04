@@ -20,3 +20,7 @@ gem "dry-inflector", github: "dry-rb/dry-inflector"
 gem "dry-logic", github: "dry-rb/dry-logic"
 
 gem "zeitwerk"
+
+group :test do
+  gem "ostruct"
+end

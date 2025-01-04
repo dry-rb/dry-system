@@ -30,8 +30,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.1"
 
   # to update dependencies edit project.yml
-  spec.add_dependency "dry-auto_inject", "~> 1.0"
-  spec.add_dependency "dry-configurable", "~> 1.0"
-  spec.add_dependency "dry-core", "~> 1.0"
+  spec.add_dependency "dry-auto_inject", "~> 1.1"
+  spec.add_dependency "dry-configurable", "~> 1.3"
+  spec.add_dependency "dry-core", "~> 1.1"
   spec.add_dependency "dry-inflector", "~> 1.0"
 end
