@@ -17,16 +17,21 @@ RSpec.describe "Plugins / Bootsnap" do
     end
   end
 
+  let(:cache_dir) do
+    system.root.join("tmp/cache")
+  end
+
   let(:bootsnap_cache_file) do
-    system.root.join("tmp/cache/bootsnap")
+    cache_dir.join("bootsnap")
   end
 
   before do
-    FileUtils.rm_r(system.root.join("tmp/cache"))
+    FileUtils.rm_r(cache_dir)
+    FileUtils.mkdir_p(cache_dir)
   end
 
   after do
-    FileUtils.rm_r(system.root.join("tmp/cache"))
+    FileUtils.rm_r(cache_dir)
   end
 
   describe ".require_from_root" do
