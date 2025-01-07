@@ -187,8 +187,8 @@ module Dry
         # @yieldparam namespace [Namespace] the yielded namespace
         #
         # @api public
-        def each(&block)
-          to_a.each(&block)
+        def each(&)
+          to_a.each(&)
         end
       end
     end

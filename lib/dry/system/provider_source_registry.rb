@@ -24,7 +24,7 @@ module Dry
       end
 
       def load_sources(path)
-        Dir[File.join(path, "**/#{RB_GLOB}")].sort.each do |file|
+        ::Dir[::File.join(path, "**/#{RB_GLOB}")].each do |file|
           require file
         end
       end
@@ -36,11 +36,11 @@ module Dry
         )
       end
 
-      def register_from_block(name:, group:, provider_options:, &block)
+      def register_from_block(name:, group:, provider_options:, &)
         register(
           name: name,
           group: group,
-          source: Provider::Source.for(name: name, group: group, &block),
+          source: Provider::Source.for(name: name, group: group, &),
           provider_options: provider_options
         )
       end

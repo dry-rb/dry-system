@@ -8,11 +8,12 @@ group :test do
   gem "simplecov", require: false, platforms: :ruby
   gem "simplecov-cobertura", require: false, platforms: :ruby
   gem "rexml", require: false
+  gem "rspec"
 
   gem "warning"
 end
 
 group :tools do
-  gem "rubocop", "~> 1.55.0"
+  gem "rubocop", "~> 1.69.2"
   gem "byebug"
 end

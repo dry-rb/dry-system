@@ -125,7 +125,7 @@ module Dry
           end
         end
 
-        super message.join("\n")
+        super(message.join("\n"))
       end
     end
   end

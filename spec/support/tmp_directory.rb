@@ -9,22 +9,22 @@ module RSpec
     module TmpDirectory
       private
 
-      def with_tmp_directory(&block)
-        with_directory(make_tmp_directory, &block)
+      def with_tmp_directory(&)
+        with_directory(make_tmp_directory, &)
       end
 
-      def with_directory(dir, &block)
-        Dir.chdir(dir, &block)
+      def with_directory(dir, &)
+        Dir.chdir(dir, &)
       end
 
       def make_tmp_directory
-        Pathname(Dir.mktmpdir).tap do |dir|
+        Pathname(::Dir.mktmpdir).tap do |dir|
           (@made_tmp_dirs ||= []) << dir
         end
       end
 
       def write(path, *content)
-        Pathname.new(path).dirname.mkpath
+        ::Pathname.new(path).dirname.mkpath
 
         File.open(path, ::File::CREAT | ::File::WRONLY) do |file|
           file.write(Array(content).flatten.join)

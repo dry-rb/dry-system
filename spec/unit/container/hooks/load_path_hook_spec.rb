@@ -23,8 +23,10 @@ RSpec.describe Dry::System::Container, "Default hooks / Load path" do
     end
 
     it "adds the component dirs to the load path" do
-      expect { container.configure do; end }
-        .to change { $LOAD_PATH.include?(SPEC_ROOT.join("fixtures/test/lib").to_s) }
+      expect {
+        container.configure do
+        end
+      }.to change { $LOAD_PATH.include?(SPEC_ROOT.join("fixtures/test/lib").to_s) }
         .from(false).to(true)
     end
   end
@@ -37,7 +39,10 @@ RSpec.describe Dry::System::Container, "Default hooks / Load path" do
     end
 
     it "does not change the load path" do
-      expect { container.configure do; end }.not_to(change { $LOAD_PATH })
+      expect {
+        container.configure do
+        end
+      }.not_to(change { $LOAD_PATH })
     end
   end
 end

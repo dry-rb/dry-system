@@ -76,13 +76,13 @@ module Dry
 
       def files(namespace)
         if namespace.path?
-          Dir[File.join(full_path, namespace.path, "**", RB_GLOB)].sort
+          ::Dir[::File.join(full_path, namespace.path, "**", RB_GLOB)]
         else
           non_root_paths = config.namespaces.to_a.reject(&:root?).map(&:path)
 
-          Dir[File.join(full_path, "**", RB_GLOB)].reject { |file_path|
+          ::Dir[::File.join(full_path, "**", RB_GLOB)].reject { |file_path|
             Pathname(file_path).relative_path_from(full_path).to_s.start_with?(*non_root_paths)
-          }.sort
+          }
         end
       end
 
@@ -155,9 +155,9 @@ module Dry
         }
       end
 
-      def method_missing(name, *args, &block)
+      def method_missing(name, ...)
         if config.respond_to?(name)
-          config.public_send(name, *args, &block)
+          config.public_send(name, ...)
         else
           super
         end

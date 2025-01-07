@@ -21,20 +21,17 @@ Gem::Specification.new do |spec|
   spec.executables   = []
   spec.require_paths = ["lib"]
 
-  spec.metadata["allowed_push_host"] = "https://rubygems.org"
-  spec.metadata["changelog_uri"]     = "https://github.com/dry-rb/dry-system/blob/main/CHANGELOG.md"
-  spec.metadata["source_code_uri"]   = "https://github.com/dry-rb/dry-system"
-  spec.metadata["bug_tracker_uri"]   = "https://github.com/dry-rb/dry-system/issues"
+  spec.metadata["allowed_push_host"]     = "https://rubygems.org"
+  spec.metadata["changelog_uri"]         = "https://github.com/dry-rb/dry-system/blob/main/CHANGELOG.md"
+  spec.metadata["source_code_uri"]       = "https://github.com/dry-rb/dry-system"
+  spec.metadata["bug_tracker_uri"]       = "https://github.com/dry-rb/dry-system/issues"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.1"
 
   # to update dependencies edit project.yml
-  spec.add_runtime_dependency "dry-auto_inject", "~> 1.0"
-  spec.add_runtime_dependency "dry-configurable", "~> 1.0"
-  spec.add_runtime_dependency "dry-core", "~> 1.0"
-  spec.add_runtime_dependency "dry-inflector", "~> 1.0"
-
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
+  spec.add_dependency "dry-auto_inject", "~> 1.1"
+  spec.add_dependency "dry-configurable", "~> 1.3"
+  spec.add_dependency "dry-core", "~> 1.1"
+  spec.add_dependency "dry-inflector", "~> 1.1"
 end

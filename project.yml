@@ -4,12 +4,8 @@ gemspec:
   authors: ["Piotr Solnica"]
   email: ["piotr.solnica@gmail.com"]
   summary: "Organize your code into reusable components"
-  development_dependencies:
-    - bundler
-    - rake
-    - rspec
   runtime_dependencies:
-    - [dry-auto_inject, "~> 1.0"]
-    - [dry-core, "~> 1.0"]
-    - [dry-configurable, "~> 1.0"]
-    - [dry-inflector, "~> 1.0"]
+    - [dry-auto_inject, "~> 1.1"]
+    - [dry-core, "~> 1.1"]
+    - [dry-configurable, "~> 1.3"]
+    - [dry-inflector, "~> 1.1"]

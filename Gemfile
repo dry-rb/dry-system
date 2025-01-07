@@ -12,4 +12,9 @@ gem "dotenv"
 gem "dry-events"
 gem "dry-monitor"
 gem "dry-types"
+
 gem "zeitwerk"
+
+group :test do
+  gem "ostruct"
+end

@@ -43,18 +43,17 @@ module Dry
         # @return [Object]
         #
         # @api public
-        def call(component, *args)
+        def call(component, *args, **kwargs)
           require!(component)
 
           constant = self.constant(component)
 
           if singleton?(constant)
-            constant.instance(*args)
+            constant.instance(*args, **kwargs)
           else
-            constant.new(*args)
+            constant.new(*args, **kwargs)
           end
         end
-        ruby2_keywords(:call) if respond_to?(:ruby2_keywords, true)
 
         # Returns the component's class constant
         #

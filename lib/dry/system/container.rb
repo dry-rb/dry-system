@@ -103,8 +103,8 @@ module Dry
         # @see after
         #
         # @api public
-        def configure(finalize_config: true, &block)
-          super(&block)
+        def configure(finalize_config: true, &)
+          super(&)
           configured!(finalize_config: finalize_config)
         end
 
@@ -314,13 +314,13 @@ module Dry
         # @return [self] frozen container
         #
         # @api public
-        def finalize!(freeze: true, eager_load: true, &block)
+        def finalize!(freeze: true, eager_load: true, &)
           return self if finalized?
 
           configured!
 
           hooks[:before_finalize].each { |hook| instance_eval(&hook) }
-          yield(self) if block
+          yield(self) if block_given?
 
           providers.finalize!
           auto_registrar.finalize!
@@ -464,7 +464,7 @@ module Dry
         # @api public
         def require_from_root(*paths)
           paths.flat_map { |path|
-            path.to_s.include?("*") ? ::Dir[root.join(path)].sort : root.join(path)
+            path.to_s.include?("*") ? ::Dir[root.join(path)] : root.join(path)
           }.each { |path|
             Kernel.require path.to_s
           }

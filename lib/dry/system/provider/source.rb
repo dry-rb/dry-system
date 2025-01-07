@@ -37,11 +37,21 @@ module Dry
           # @see Dry::System::Provider::SourceDSL
           #
           # @api private
-          def for(name:, group: nil, &block)
-            Class.new(self) { |klass|
+          def for(name:, group: nil, superclass: nil, &)
+            superclass ||= self
+
+            ::Class.new(superclass) { |klass|
               klass.source_name name
               klass.source_group group
-              SourceDSL.evaluate(klass, &block) if block
+
+              name_with_group = group ? "#{group}->#{name}" : name
+              klass.instance_eval(<<~RUBY, __FILE__, __LINE__ + 1)
+                def name                                   # def name
+                  "#{superclass.name}[#{name_with_group}]" #   "CustomSource[custom]"
+                end                                        # end
+              RUBY
+
+              SourceDSL.evaluate(klass, &) if block_given?
             }
           end
 
@@ -56,14 +66,6 @@ module Dry
             if subclass.superclass == Source
               subclass.include Dry::Configurable
             end
-          end
-
-          # @api private
-          def name
-            source_str = source_name
-            source_str = "#{source_group}->#{source_str}" if source_group
-
-            "Dry::System::Provider::Source[#{source_str}]"
           end
 
           # @api private
@@ -117,15 +119,18 @@ module Dry
         #
         # @api public
         attr_reader :target_container
-        alias_method :target, :target_container
+
+        # @see #target_container
+        # @api public
+        def target = target_container
 
         # @api private
-        def initialize(provider_container:, target_container:, &block)
+        def initialize(provider_container:, target_container:, &)
           super()
           @callbacks = {before: CALLBACK_MAP.dup, after: CALLBACK_MAP.dup}
           @provider_container = provider_container
           @target_container = target_container
-          instance_exec(&block) if block
+          instance_exec(&) if block_given?
         end
 
         # Returns a string containing a human-readable representation of the provider.
@@ -258,7 +263,7 @@ module Dry
         end
 
         # @api private
-        def method_missing(name, *args, &block)
+        def method_missing(name, *args, &)
           if container.key?(name)
             container[name]
           else

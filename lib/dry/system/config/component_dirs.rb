@@ -110,7 +110,7 @@ module Dry
 
         # @api private
         def initialize_copy(source)
-          @dirs = source.dirs.map { |path, dir| [path, dir.dup] }.to_h
+          @dirs = source.dirs.to_h { |path, dir| [path, dir.dup] }
           @defaults = source.defaults.dup
         end
 
@@ -221,8 +221,8 @@ module Dry
         # @yieldparam dir [ComponentDir] the yielded component dir
         #
         # @api public
-        def each(&block)
-          to_a.each(&block)
+        def each(&)
+          to_a.each(&)
         end
 
         protected
@@ -272,9 +272,9 @@ module Dry
           end
         end
 
-        def method_missing(name, *args, &block)
+        def method_missing(name, ...)
           if defaults.respond_to?(name)
-            defaults.public_send(name, *args, &block)
+            defaults.public_send(name, ...)
           else
             super
           end

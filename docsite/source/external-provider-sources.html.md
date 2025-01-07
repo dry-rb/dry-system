@@ -24,7 +24,7 @@ Then, define your provider source:
 #  |- lib/my_gem/provider_sources/exception_notifier.rb
 
 Dry::System.register_provider_source(:exception_notifier, group: :my_gem) do
-  init do
+  prepare do
     require "some_exception_notifier"
   end
 
@@ -90,7 +90,7 @@ Dry::System.register_component(:exception_notifier, provider: :common) do
   setting :environments, default: :production, constructor: Types::Strict::Array.of(Types::Strict::Symbol)
   setting :logger
 
-  init do
+  prepare do
     require "some_exception_notifier"
   end
 

@@ -46,14 +46,14 @@ module Dry
 
       # @see Container.register_provider
       # @api private
-      def register_provider(name, from: nil, source: nil, if: true, **provider_options, &block)
+      def register_provider(name, from: nil, source: nil, if: true, **provider_options, &)
         raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
         if from && source.is_a?(Class)
           raise ArgumentError, "You must supply a block when using a provider source"
         end
 
-        if block && source.is_a?(Class)
+        if block_given? && source.is_a?(Class)
           raise ArgumentError, "You must supply only a `source:` option or a block, not both"
         end
 
@@ -66,14 +66,14 @@ module Dry
               source: source || name,
               group: from,
               options: provider_options,
-              &block
+              &
             )
           else
             build_provider(
               name,
               source: source,
               options: provider_options,
-              &block
+              &
             )
           end
 
@@ -103,6 +103,9 @@ module Dry
         providers[provider_name]
       end
 
+      # @api public
+      alias_method :find_and_load_provider, :[]
+
       # @api private
       def key?(provider_name)
         providers.key?(provider_name)
@@ -123,10 +126,10 @@ module Dry
       # @api public
       def provider_files
         @provider_files ||= provider_paths.each_with_object([[], []]) { |path, (provider_files, loaded)| # rubocop:disable Layout/LineLength
-          files = Dir["#{path}/#{RB_GLOB}"].sort
+          files = ::Dir["#{path}/#{RB_GLOB}"]
 
           files.each do |file|
-            basename = File.basename(file)
+            basename = ::File.basename(file)
 
             unless loaded.include?(basename)
               provider_files << Pathname(file)
@@ -135,6 +138,21 @@ module Dry
           end
         }.first
       end
+
+      # Extension point for subclasses to customize their
+      # provider source superclass. Expected to be a subclass
+      # of Dry::System::Provider::Source
+      #
+      # @api public
+      # @since 1.1.0
+      def provider_source_class = Dry::System::Provider::Source
+
+      # Extension point for subclasses to customize initialization
+      # params for provider_source_class
+      #
+      # @api public
+      # @since 1.1.0
+      def provider_source_options = {}
 
       # @api private
       def finalize!
@@ -195,19 +213,38 @@ module Dry
         }
       end
 
-      def build_provider(name, options:, source: nil, &block)
-        source_class = source || Provider::Source.for(name: name, &block)
+      def build_provider(name, options:, source: nil, &)
+        source_class = source || Provider::Source.for(
+          name: name,
+          superclass: provider_source_class,
+          &
+        )
+
+        source_options =
+          if source_class < provider_source_class
+            provider_source_options
+          else
+            {}
+          end
 
         Provider.new(
           **options,
           name: name,
           target_container: target_container,
-          source_class: source_class
+          source_class: source_class,
+          source_options: source_options
         )
       end
 
-      def build_provider_from_source(name, source:, group:, options:, &block)
+      def build_provider_from_source(name, source:, group:, options:, &)
         provider_source = System.provider_sources.resolve(name: source, group: group)
+
+        source_options =
+          if provider_source.source <= provider_source_class
+            provider_source_options
+          else
+            {}
+          end
 
         Provider.new(
           **provider_source.provider_options,
@@ -215,7 +252,8 @@ module Dry
           name: name,
           target_container: target_container,
           source_class: provider_source.source,
-          &block
+          source_options: source_options,
+          &
         )
       end
 

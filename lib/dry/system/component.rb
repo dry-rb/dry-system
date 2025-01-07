@@ -60,10 +60,9 @@ module Dry
       #
       # @return [Object] component's class instance
       # @api public
-      def instance(*args)
-        options[:instance]&.call(self, *args) || loader.call(self, *args)
+      def instance(*args, **kwargs)
+        options[:instance]&.call(self, *args, **kwargs) || loader.call(self, *args, **kwargs)
       end
-      ruby2_keywords(:instance) if respond_to?(:ruby2_keywords, true)
 
       # Returns the component's unique key
       #

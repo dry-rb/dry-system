@@ -20,7 +20,7 @@ module Dry
                 target_class: klass
               )
 
-              super(klass)
+              super
             end
           end
 
@@ -36,7 +36,7 @@ module Dry
                 target_class: klass
               )
 
-              super(klass)
+              super
             end
           end
 
@@ -51,7 +51,7 @@ module Dry
                 target_class: klass
               )
 
-              super(klass)
+              super
             end
           end
 

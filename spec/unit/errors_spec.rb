@@ -16,7 +16,7 @@ module Dry
 
           it do
             expect(subject.message).to eq(
-              "Component 'test.foo' is not loadable.\n"\
+              "Component 'test.foo' is not loadable.\n" \
               "Looking for Test::Foo."
             )
           end

@@ -34,7 +34,7 @@ module Dry
         end
 
         # @api private
-        def register(key, contents = nil, options = {}, &block)
+        def register(key, contents = nil, options = {}, &)
           super.tap do
             key = key.to_s
 
