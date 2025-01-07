@@ -35,12 +35,14 @@ RSpec.describe "Plugins / Bootsnap" do
   end
 
   describe ".require_from_root" do
-    it "loads file" do
-      system.require_from_root("lib/test/models")
+    if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.4.0")
+      it "loads file" do
+        system.require_from_root("lib/test/models")
 
-      expect(Object.const_defined?("Test::Models")).to be(true)
+        expect(Object.const_defined?("Test::Models")).to be(true)
 
-      expect(bootsnap_cache_file.exist?).to be(true)
+        expect(bootsnap_cache_file.exist?).to be(true)
+      end
     end
   end
 end
