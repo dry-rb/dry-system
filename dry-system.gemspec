@@ -33,5 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-auto_inject", "~> 1.1"
   spec.add_dependency "dry-configurable", "~> 1.3"
   spec.add_dependency "dry-core", "~> 1.1"
-  spec.add_dependency "dry-inflector", "~> 1.0"
+  spec.add_dependency "dry-inflector", "~> 1.1"
 end
