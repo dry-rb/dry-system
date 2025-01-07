@@ -1,6 +1,6 @@
 ---
 - version: 1.2.0
-  date: 2025-01-04
+  date: 2025-01-07
   changed:
     - "Update required Ruby version to 3.1 (@flash-gordon)"
 - version: 1.1.1
