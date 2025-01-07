@@ -1,6 +1,8 @@
 ---
 - version: 1.2.0
   date: 2025-01-07
+  added:
+    - "Option to skip eager loading during finalize with `eager_load: false` (via #276) (@cllns)"
   changed:
     - "Update required Ruby version to 3.1 (@flash-gordon)"
 - version: 1.1.1
