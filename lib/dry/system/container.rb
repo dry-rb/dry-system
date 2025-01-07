@@ -314,7 +314,7 @@ module Dry
         # @return [self] frozen container
         #
         # @api public
-        def finalize!(freeze: true, &)
+        def finalize!(freeze: true, eager_load: true, &)
           return self if finalized?
 
           configured!
@@ -326,6 +326,8 @@ module Dry
           auto_registrar.finalize!
           manifest_registrar.finalize!
           importer.finalize!
+
+          keys.each { |key| resolve(key) } if eager_load
 
           @__finalized__ = true
 
