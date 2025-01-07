@@ -37,7 +37,11 @@ module Dry
 
         # @api private
         def bootsnap_available?
-          RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.3.0" && RUBY_VERSION < "3.1.0"
+          spec = Gem.loaded_specs["bootsnap"] or return false
+
+          RUBY_ENGINE == "ruby" &&
+            spec.match_platform(RUBY_PLATFORM) &&
+            spec.required_ruby_version.satisfied_by?(Gem::Version.new(RUBY_VERSION))
         end
       end
     end
