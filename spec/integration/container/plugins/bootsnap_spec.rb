@@ -11,15 +11,14 @@ RSpec.describe "Plugins / Bootsnap" do
         config.bootsnap = {
           load_path_cache: false,
           compile_cache_iseq: true,
-          compile_cache_yaml: true,
-          autoload_paths_cache: false
+          compile_cache_yaml: true
         }
       end
     end
   end
 
   let(:bootsnap_cache_file) do
-    system.root.join("tmp/cache/bootsnap-compile-cache")
+    system.root.join("tmp/cache/bootsnap")
   end
 
   before do

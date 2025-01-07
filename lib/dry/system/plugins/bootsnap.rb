@@ -7,8 +7,7 @@ module Dry
         DEFAULT_OPTIONS = {
           load_path_cache: true,
           compile_cache_iseq: true,
-          compile_cache_yaml: true,
-          autoload_paths_cache: false
+          compile_cache_yaml: true
         }.freeze
 
         # @api private
