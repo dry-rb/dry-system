@@ -319,20 +319,18 @@ module Dry
 
           configured!
 
-          hooks[:before_finalize].each { |hook| instance_eval(&hook) }
-          yield(self) if block_given?
+          run_hooks(:finalize) do
+            yield(self) if block_given?
 
-          providers.finalize!
-          auto_registrar.finalize!
-          manifest_registrar.finalize!
-          importer.finalize!
+            [providers, auto_registrar, manifest_registrar, importer].each(&:finalize!)
 
-          keys.each { |key| resolve(key) } if eager_load
+            keys.each { resolve(_1) } if eager_load
 
-          @__finalized__ = true
+            @__finalized__ = true
 
-          self.freeze if freeze
-          hooks[:after_finalize].each { |hook| instance_eval(&hook) }
+            self.freeze if freeze
+          end
+
           self
         end
 
@@ -624,8 +622,8 @@ module Dry
             load_local_component(component)
           elsif manifest_registrar.file_exists?(component)
             manifest_registrar.(component)
-          elsif importer.namespace?(component.identifier.root_key)
-            load_imported_component(component.identifier, namespace: component.identifier.root_key)
+          elsif importer.namespace?(component.root_key)
+            load_imported_component(component.identifier, namespace: component.root_key)
           elsif importer.namespace?(nil)
             load_imported_component(component.identifier, namespace: nil)
           end
@@ -660,6 +658,12 @@ module Dry
               break component
             end
           } || IndirectComponent.new(Identifier.new(key))
+        end
+
+        def run_hooks(event)
+          hooks[:"before_#{event}"].each { instance_eval(&_1) }
+          yield
+          hooks[:"after_#{event}"].each { instance_eval(&_1) }
         end
       end
 
