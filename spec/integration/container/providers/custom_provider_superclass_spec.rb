@@ -6,8 +6,8 @@ RSpec.describe "Providers / Custom provider superclass" do
       class CustomSource < Dry::System::Provider::Source
         attr_reader :custom_setting
 
-        def initialize(custom_setting:, **options, &block)
-          super(**options, &block)
+        def initialize(custom_setting:, **options, &)
+          super(**options, &)
           @custom_setting = custom_setting
         end
       end

@@ -46,14 +46,14 @@ module Dry
 
       # @see Container.register_provider
       # @api private
-      def register_provider(name, from: nil, source: nil, if: true, **provider_options, &block)
+      def register_provider(name, from: nil, source: nil, if: true, **provider_options, &)
         raise ProviderAlreadyRegisteredError, name if providers.key?(name)
 
         if from && source.is_a?(Class)
           raise ArgumentError, "You must supply a block when using a provider source"
         end
 
-        if block && source.is_a?(Class)
+        if block_given? && source.is_a?(Class)
           raise ArgumentError, "You must supply only a `source:` option or a block, not both"
         end
 
@@ -66,14 +66,14 @@ module Dry
               source: source || name,
               group: from,
               options: provider_options,
-              &block
+              &
             )
           else
             build_provider(
               name,
               source: source,
               options: provider_options,
-              &block
+              &
             )
           end
 
@@ -213,11 +213,11 @@ module Dry
         }
       end
 
-      def build_provider(name, options:, source: nil, &block)
+      def build_provider(name, options:, source: nil, &)
         source_class = source || Provider::Source.for(
           name: name,
           superclass: provider_source_class,
-          &block
+          &
         )
 
         source_options =
@@ -236,7 +236,7 @@ module Dry
         )
       end
 
-      def build_provider_from_source(name, source:, group:, options:, &block)
+      def build_provider_from_source(name, source:, group:, options:, &)
         provider_source = System.provider_sources.resolve(name: source, group: group)
 
         source_options =
@@ -253,7 +253,7 @@ module Dry
           target_container: target_container,
           source_class: provider_source.source,
           source_options: source_options,
-          &block
+          &
         )
       end
 

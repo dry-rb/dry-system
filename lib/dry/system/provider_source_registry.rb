@@ -36,11 +36,11 @@ module Dry
         )
       end
 
-      def register_from_block(name:, group:, provider_options:, &block)
+      def register_from_block(name:, group:, provider_options:, &)
         register(
           name: name,
           group: group,
-          source: Provider::Source.for(name: name, group: group, &block),
+          source: Provider::Source.for(name: name, group: group, &),
           provider_options: provider_options
         )
       end

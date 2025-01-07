@@ -127,8 +127,8 @@ module Dry
       attr_reader :source
 
       # @api private
-      # rubocop:disable Layout/LineLength, Style/KeywordParametersOrder
-      def initialize(name:, namespace: nil, target_container:, source_class:, source_options: {}, &block)
+      # rubocop:disable Style/KeywordParametersOrder
+      def initialize(name:, namespace: nil, target_container:, source_class:, source_options: {}, &)
         @name = name
         @namespace = namespace
         @target_container = target_container
@@ -141,10 +141,10 @@ module Dry
           **source_options,
           provider_container: provider_container,
           target_container: target_container,
-          &block
+          &
         )
       end
-      # rubocop:enable Layout/LineLength, Style/KeywordParametersOrder
+      # rubocop:enable Style/KeywordParametersOrder
 
       # Runs the `prepare` lifecycle step.
       #

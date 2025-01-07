@@ -24,15 +24,15 @@ module Dry
         end
 
         # @api private
-        def monitor(key, **options, &block)
+        def monitor(key, **options, &)
           notifications = self[:notifications]
 
           resolve(key).tap do |target|
             proxy = Proxy.for(target, **options, key: key)
 
-            if block
+            if block_given?
               proxy.monitored_methods.each do |meth|
-                notifications.subscribe(:monitoring, target: key, method: meth, &block)
+                notifications.subscribe(:monitoring, target: key, method: meth, &)
               end
             end
 

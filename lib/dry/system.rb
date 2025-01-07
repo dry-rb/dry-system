@@ -30,8 +30,8 @@ module Dry
     # Registers a provider source, which can be used as the basis for other providers
     #
     # @api public
-    def self.register_provider_source(name, group:, source: nil, provider_options: {}, &block)
-      if source && block
+    def self.register_provider_source(name, group:, source: nil, provider_options: {}, &)
+      if source && block_given?
         raise ArgumentError, "You must supply only a `source:` option or a block, not both"
       end
 
@@ -47,7 +47,7 @@ module Dry
           name: name,
           group: group,
           provider_options: provider_options,
-          &block
+          &
         )
       end
     end
