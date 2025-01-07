@@ -41,3 +41,4 @@ Gemfile.lock
 
 ## Tests
 /spec/examples.txt
+/spec/fixtures/test/tmp/cache

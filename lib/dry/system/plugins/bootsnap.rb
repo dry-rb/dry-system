@@ -6,7 +6,6 @@ module Dry
       module Bootsnap
         DEFAULT_OPTIONS = {
           load_path_cache: true,
-          disable_trace: true,
           compile_cache_iseq: true,
           compile_cache_yaml: true,
           autoload_paths_cache: false
@@ -32,7 +31,7 @@ module Dry
         def setup_bootsnap
           return unless bootsnap_available?
 
-          ::Bootsnap.setup(config.bootsnap.merge(cache_dir: root.join("tmp/cache").to_s))
+          ::Bootsnap.setup(**config.bootsnap, cache_dir: root.join("tmp/cache").to_s)
         end
 
         # @api private

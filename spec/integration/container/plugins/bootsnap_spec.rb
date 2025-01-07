@@ -8,12 +8,22 @@ RSpec.describe "Plugins / Bootsnap" do
       configure do |config|
         config.root = SPEC_ROOT.join("fixtures/test")
         config.env = :development
+        config.bootsnap = {
+          load_path_cache: false,
+          compile_cache_iseq: true,
+          compile_cache_yaml: true,
+          autoload_paths_cache: false
+        }
       end
     end
   end
 
   let(:bootsnap_cache_file) do
-    system.root.join("tmp/cache/bootsnap-load-path-cache")
+    system.root.join("tmp/cache/bootsnap-compile-cache")
+  end
+
+  before do
+    FileUtils.rm_r(system.root.join("tmp/cache"))
   end
 
   after do
@@ -21,7 +31,7 @@ RSpec.describe "Plugins / Bootsnap" do
   end
 
   describe ".require_from_root" do
-    xit "loads file" do
+    it "loads file" do
       system.require_from_root("lib/test/models")
 
       expect(Object.const_defined?("Test::Models")).to be(true)
