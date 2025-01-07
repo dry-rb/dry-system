@@ -26,12 +26,12 @@ RSpec.describe "Plugins / Bootsnap" do
   end
 
   before do
-    FileUtils.rm_r(cache_dir)
+    FileUtils.rm_rf(cache_dir)
     FileUtils.mkdir_p(cache_dir)
   end
 
   after do
-    FileUtils.rm_r(cache_dir)
+    FileUtils.rm_rf(cache_dir)
   end
 
   describe ".require_from_root" do
