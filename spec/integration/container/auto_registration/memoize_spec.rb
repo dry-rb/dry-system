@@ -17,8 +17,6 @@ RSpec.describe "Auto-registration / Memoizing components" do
             dir.namespaces.add "test", key: nil
             dir.memoize = true
           end
-
-          config.inflector = Dry::Inflector.new { |i| i.acronym("ABC") }
         end
       end
     end
@@ -54,8 +52,6 @@ RSpec.describe "Auto-registration / Memoizing components" do
               !component.key.match?(/bar/)
             end
           end
-
-          config.inflector = Dry::Inflector.new { |i| i.acronym("ABC") }
         end
       end
     end
