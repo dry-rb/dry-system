@@ -1,4 +1,10 @@
 ---
+- version: 1.2.1
+  date: 2025-01-08
+  fixed:
+    - |-
+      `eager_load` was removed from `finalize!`. It was introduced with `true` by default that
+      wasn't the intention #281 (via #282) (@flash-gordon)
 - version: 1.2.0
   date: 2025-01-07
   added:
