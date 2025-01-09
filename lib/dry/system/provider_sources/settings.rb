@@ -6,13 +6,17 @@ module Dry
       module Settings
         class Source < Dry::System::Provider::Source
           setting :store
+          setting :register_as, default: :settings
+          setting :prefix, default: ""
 
           def prepare
             require "dry/system/provider_sources/settings/config"
           end
 
           def start
-            register(:settings, settings.load(root: target.root, env: target.config.env))
+            register(config.register_as,
+                     settings.load(root: target.root, env: target.config.env,
+                                   prefix: config.prefix))
           end
 
           def settings(&block)
