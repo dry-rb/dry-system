@@ -24,7 +24,7 @@ module Dry
         end
 
         # @api private
-        def monitor(key, **options, &)
+        def monitor(key, **options, &block)
           notifications = self[:notifications]
 
           resolve(key).tap do |target|
@@ -32,7 +32,7 @@ module Dry
 
             if block_given?
               proxy.monitored_methods.each do |meth|
-                notifications.subscribe(:monitoring, target: key, method: meth, &)
+                notifications.subscribe(:monitoring, target: key, method: meth, &block)
               end
             end
 

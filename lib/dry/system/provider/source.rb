@@ -37,7 +37,7 @@ module Dry
           # @see Dry::System::Provider::SourceDSL
           #
           # @api private
-          def for(name:, group: nil, superclass: nil, &)
+          def for(name:, group: nil, superclass: nil, &block)
             superclass ||= self
 
             ::Class.new(superclass) { |klass|
@@ -51,7 +51,7 @@ module Dry
                 end                                        # end
               RUBY
 
-              SourceDSL.evaluate(klass, &) if block_given?
+              SourceDSL.evaluate(klass, &block) if block_given?
             }
           end
 
