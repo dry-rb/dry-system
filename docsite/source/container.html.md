@@ -2,6 +2,8 @@
 title: Container
 layout: gem-single
 name: dry-system
+sections:
+  - hooks
 ---
 
 The main API of dry-system is the abstract container that you inherit from. It allows you to configure basic settings and exposes APIs for requiring files easily. Container is the entry point to your application, and it encapsulates application's state.
