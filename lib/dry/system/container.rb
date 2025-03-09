@@ -325,9 +325,9 @@ module Dry
             [providers, auto_registrar, manifest_registrar, importer].each(&:finalize!)
 
             @__finalized__ = true
-
-            self.freeze if freeze
           end
+
+          self.freeze if freeze
 
           self
         end
@@ -482,6 +482,15 @@ module Dry
         # @api public
         def root
           config.root
+        end
+
+        # @api public
+        def register(key, *)
+          super
+
+          hooks[:after_register].each { |hook| instance_exec(key, &hook) }
+
+          self
         end
 
         # @api public
