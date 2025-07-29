@@ -33,7 +33,7 @@ module Dry
 
       # @api private
       def call(component)
-        require(root.join(config.registrations_dir, component.root_key.to_s))
+        load(root.join(config.registrations_dir, "#{component.root_key}#{RB_EXT}"))
       end
 
       # @api private
