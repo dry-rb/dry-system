@@ -3,11 +3,18 @@
 ## 1.2.3 2025-07-29
 
 
+### Added
+
+- Add :register after-hook to detect container key registration dynamically. (via #274, @alassek)
+
 ### Fixed
 
 - Re-register components from manifest registrars in apps that reload the container (e.g. when
 using dry-rails and Rails development mode) (via #286, @alassek)
 
+### Changed
+
+- :finalize after-hook now executes before container freeze to allow mutation. (via #274, @alassek)
 
 [Compare v1.2.2...v1.2.3](https://github.com/dry-rb/dry-system/compare/v1.2.2...v1.2.3)
 
