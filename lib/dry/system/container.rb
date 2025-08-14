@@ -629,8 +629,8 @@ module Dry
             load_local_component(component)
           elsif manifest_registrar.file_exists?(component)
             manifest_registrar.(component)
-          elsif importer.namespace?(component.root_key&.to_s)
-            load_imported_component(component.identifier, namespace: component.root_key&.to_s)
+          elsif importer.namespace?(component.root_key)
+            load_imported_component(component.identifier, namespace: component.root_key)
           elsif importer.namespace?(nil)
             load_imported_component(component.identifier, namespace: nil)
           end
