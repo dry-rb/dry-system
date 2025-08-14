@@ -36,7 +36,7 @@ module Dry
 
       # @api private
       def register(namespace:, container:, keys: nil)
-        registry[namespace] = Item.new(
+        registry[namespace_key(namespace)] = Item.new(
           namespace: namespace,
           container: container,
           import_keys: keys
@@ -45,12 +45,12 @@ module Dry
 
       # @api private
       def [](name)
-        registry.fetch(name)
+        registry.fetch(namespace_key(name))
       end
 
       # @api private
       def key?(name)
-        registry.key?(name)
+        registry.key?(namespace_key(name))
       end
       alias_method :namespace?, :key?
 
@@ -75,6 +75,17 @@ module Dry
       end
 
       private
+
+      # Returns nil if given a nil (i.e. root) namespace. Otherwise, converts the namespace to a
+      # string.
+      #
+      # This ensures imported components are found when either symbols or strings to given as the
+      # namespace in {Container.import}.
+      def namespace_key(namespace)
+        return nil if namespace.nil?
+
+        namespace.to_s
+      end
 
       def keys_to_import(keys, item)
         keys
