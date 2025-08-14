@@ -1,3 +1,9 @@
+- version: 1.2.4
+  date: 2025-08-14
+  fixed:
+    - |-
+      Allow imported components to be lazy loaded when both strings and symbols are given as the
+      namespace to `Container.import` (@timriley in #287)
 - version: 1.2.3
   date: 2025-07-29
   added:
