@@ -5,6 +5,7 @@ require "pathname"
 require "dry/configurable"
 require "dry/auto_inject"
 require "dry/inflector"
+require "dry/system/cyclic_dependency_detector"
 
 module Dry
   module System
@@ -493,11 +494,22 @@ module Dry
           self
         end
 
+        # Resolves a component by its key, loading it if necessary.
+        #
+        # In case of a cyclic dependency, it will detect the cycle
+        # and replace the error with CyclicDependencyError providing
+        # information on the dependency loading cycle.
+        #
         # @api public
         def resolve(key)
           load_component(key) unless finalized?
 
           super
+        rescue SystemStackError => e
+          cycle = CyclicDependencyDetector.detect_from_backtrace(e.backtrace)
+          e = CyclicDependencyError.new(cycle) if cycle.any?
+
+          raise e
         end
 
         alias_method :registered?, :key?
