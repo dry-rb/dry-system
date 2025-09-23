@@ -183,8 +183,6 @@ module Dry
           self
         end
 
-        # rubocop:disable Layout/LineLength
-
         # @overload register_provider(name, namespace: nil, from: nil, source: nil, if: true, &block)
         #   Registers a provider and its lifecycle hooks
         #
@@ -273,8 +271,6 @@ module Dry
         def register_provider(...)
           providers.register_provider(...)
         end
-
-        # rubocop:enable Layout/LineLength
 
         # Return if a container was finalized
         #

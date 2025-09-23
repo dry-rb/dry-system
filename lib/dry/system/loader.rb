@@ -64,12 +64,12 @@ module Dry
           inflector = component.inflector
           const_name = inflector.camelize(component.const_path)
           inflector.constantize(const_name)
-        rescue NameError => e
+        rescue NameError => exception
           # Ensure it's this component's constant, not any other NameError within the component
-          if e.message =~ /#{const_name}( |\n|$)/
-            raise ComponentNotLoadableError.new(component, e)
+          if exception.message =~ /#{const_name}( |\n|$)/
+            raise ComponentNotLoadableError.new(component, exception)
           else
-            raise e
+            raise exception
           end
         end
 

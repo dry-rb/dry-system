@@ -42,8 +42,8 @@ module Dry
                   else
                     settings_obj.config[setting.name]
                   end
-                rescue => e # rubocop:disable Style/RescueStandardError
-                  errors[setting.name] = e
+                rescue => exception # rubocop:disable Style/RescueStandardError
+                  errors[setting.name] = exception
                 end
               end
 

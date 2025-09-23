@@ -48,8 +48,6 @@ module Dry
           namespaces[Namespace::ROOT_PATH]
         end
 
-        # rubocop:disable Layout/LineLength
-
         # Adds a component dir namespace
         #
         # A namespace encompasses a given sub-directory of the component dir, and
@@ -101,8 +99,6 @@ module Dry
 
           namespaces[path] = Namespace.new(path: path, key: key, const: const)
         end
-
-        # rubocop:enable Layout/LineLength
 
         # Adds a root component dir namespace
         #

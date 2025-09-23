@@ -64,8 +64,6 @@ module Dry
         #
         #   @see memoize=
 
-        # rubocop:disable Layout/LineLength
-
         # @!method namespaces
         #
         #   Returns the default configured namespaces for all added component dirs
@@ -89,8 +87,6 @@ module Dry
         #
         #   @see add_to_load_path=
 
-        # rubocop:enable Layout/LineLength
-
         # @!endgroup
 
         # A ComponentDir for configuring the default values to apply to all added
@@ -110,7 +106,7 @@ module Dry
 
         # @api private
         def initialize_copy(source)
-          @dirs = source.dirs.to_h { |path, dir| [path, dir.dup] }
+          @dirs = source.dirs.transform_values(&:dup)
           @defaults = source.defaults.dup
         end
 
