@@ -9,10 +9,11 @@ begin
   require "byebug"
   require "pry-byebug"
 rescue LoadError; end
-SPEC_ROOT = Pathname(__FILE__).dirname
 
-Dir[SPEC_ROOT.join("support/*.rb").to_s].each { |f| require f }
-Dir[SPEC_ROOT.join("shared/*.rb").to_s].each { |f| require f }
+SPEC_ROOT = Pathname(__dir__)
+
+Dir[SPEC_ROOT.join("support", "**", "*.rb")].each { |f| require f }
+Dir[SPEC_ROOT.join("shared", "**", "*.rb")].each { |f| require f }
 
 require "dry/system"
 require "dry/system/stubs"
