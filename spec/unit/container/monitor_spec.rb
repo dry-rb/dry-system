@@ -14,7 +14,7 @@ RSpec.describe Dry::System::Container do
           "Test::Class_#{__id__}"
         end
 
-        def say(word, &block)
+        def say(word, lang: nil, &block)
           block&.call
           word
         end
@@ -36,26 +36,26 @@ RSpec.describe Dry::System::Container do
       captured = []
 
       system.monitor(:object) do |event|
-        captured << [event.id, event[:target], event[:method], event[:args]]
+        captured << [event.id, event[:target], event[:method], event[:args], event[:kwargs]]
       end
 
       object = system[:object]
       block_result = []
       block = proc { block_result << true }
 
-      result = object.say("hi", &block)
+      result = object.say("hi", lang: "en", &block)
 
       expect(block_result).to eql([true])
       expect(result).to eql("hi")
 
-      expect(captured).to eql([[:monitoring, :object, :say, ["hi"]]])
+      expect(captured).to eql([[:monitoring, :object, :say, ["hi"], { lang: "en" }]])
     end
 
     it "monitors specified object method calls" do
       captured = []
 
       system.monitor(:object, methods: [:say]) do |event|
-        captured << [event.id, event[:target], event[:method], event[:args]]
+        captured << [event.id, event[:target], event[:method], event[:args], event[:kwargs]]
       end
 
       object = system[:object]
@@ -63,7 +63,7 @@ RSpec.describe Dry::System::Container do
       object.say("hi")
       object.other
 
-      expect(captured).to eql([[:monitoring, :object, :say, ["hi"]]])
+      expect(captured).to eql([[:monitoring, :object, :say, ["hi"], {}]])
     end
   end
 end
