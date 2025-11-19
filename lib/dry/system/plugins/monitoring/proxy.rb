@@ -28,12 +28,12 @@ module Dry
               monitored_methods(monitored_methods)
 
               monitored_methods.each do |meth|
-                define_method(meth) do |*args, &block|
+                define_method(meth) do |*args, **kwargs, &block|
                   object = __getobj__
-                  opts = {target: key, object: object, method: meth, args: args}
+                  opts = {target: key, object: object, method: meth, args: args, kwargs: kwargs}
 
                   __notifications__.instrument(:monitoring, opts) do
-                    object.public_send(meth, *args, &block)
+                    object.public_send(meth, *args, **kwargs, &block)
                   end
                 end
               end
