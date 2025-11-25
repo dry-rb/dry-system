@@ -61,7 +61,7 @@ module Dry
     # @api public
     ProviderSourceNotFoundError = Class.new(StandardError) do
       def initialize(name:, group:, keys:)
-        msg = "Provider source not found: #{name.inspect}, group: #{group.inspect}"
+        msg = "Provider source not found: #{name.inspect}, group: #{group.inspect}\n"
 
         key_list = keys.map { |key| "- #{key[:name].inspect}, group: #{key[:group].inspect}" }
         msg += "Available provider sources:\n\n#{key_list}"
