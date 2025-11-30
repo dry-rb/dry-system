@@ -7,6 +7,15 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/dry-rb/dry-system/compare/v1.2.5...main
+
+## [1.2.5] - 2025-12-01
+
+### Fixed
+
+- Pass through keyword arguments to monitored objects in `monitoring` plugin. (@yuszuv in #290)
+
+[1.2.5]: https://github.com/dry-rb/dry-system/compare/v1.2.4...v1.2.5
 
 ## [1.2.4] - 2025-08-14
 
