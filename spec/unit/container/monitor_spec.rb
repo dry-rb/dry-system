@@ -14,7 +14,7 @@ RSpec.describe Dry::System::Container do
           "Test::Class_#{__id__}"
         end
 
-        def say(word, lang: nil, &block)
+        def say(word, lang: nil, &block) # rubocop:disable Lint/UnusedMethodArgument
           block&.call
           word
         end
@@ -48,7 +48,7 @@ RSpec.describe Dry::System::Container do
       expect(block_result).to eql([true])
       expect(result).to eql("hi")
 
-      expect(captured).to eql([[:monitoring, :object, :say, ["hi"], { lang: "en" }]])
+      expect(captured).to eql([[:monitoring, :object, :say, ["hi"], {lang: "en"}]])
     end
 
     it "monitors specified object method calls" do

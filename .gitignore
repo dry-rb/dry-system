@@ -1,6 +1,7 @@
 *.gem
 *.rbc
 *.log
+/.rubocop*
 /.config
 /coverage/
 /InstalledFiles
