@@ -99,13 +99,8 @@ RSpec.describe Dry::System::Container, ".use" do
 
       it "raises exception" do
         msg =
-          if RUBY_ENGINE == "jruby"
-            "dry-system plugin :test_plugin failed to load its dependencies: " \
-              "no such file to load -- this-does-not-exist - add gem_name to your Gemfile"
-          else
-            "dry-system plugin :test_plugin failed to load its dependencies: " \
-              "cannot load such file -- this-does-not-exist - add gem_name to your Gemfile"
-          end
+          "dry-system plugin :test_plugin failed to load its dependencies: " \
+            "cannot load such file -- this-does-not-exist - add gem_name to your Gemfile"
 
         expect { system.use(:test_plugin) }
           .to raise_error(Dry::System::PluginDependencyMissing, msg)
@@ -123,13 +118,8 @@ RSpec.describe Dry::System::Container, ".use" do
 
       it "raises exception" do
         msg =
-          if RUBY_ENGINE == "jruby"
-            "dry-system plugin :test_plugin failed to load its dependencies: " \
-              "no such file to load -- this-does-not-exist"
-          else
-            "dry-system plugin :test_plugin failed to load its dependencies: " \
-              "cannot load such file -- this-does-not-exist"
-          end
+          "dry-system plugin :test_plugin failed to load its dependencies: " \
+            "cannot load such file -- this-does-not-exist"
 
         expect { system.use(:test_plugin) }
           .to raise_error(Dry::System::PluginDependencyMissing, msg)
