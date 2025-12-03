@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+if RUBY_ENGINE == "jruby"
+  require "jruby"
+  JRuby.objectspace = true
+end
+
 module ZeitwerkHelpers
   def teardown_zeitwerk
     ObjectSpace.each_object(Zeitwerk::Loader) do |loader|
