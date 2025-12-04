@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-if RUBY_ENGINE == "jruby"
-  require "jruby"
-  JRuby.objectspace = true
-end
-
 module ZeitwerkHelpers
   def teardown_zeitwerk
-    ObjectSpace.each_object(Zeitwerk::Loader) do |loader|
+    # we need the double-each here because othewise we operate on a collection that
+    # is directly mutated by loader.unregister, leading to unexpected results.
+    # With each.to_a.each we re iterating a copy.
+    Zeitwerk::Registry.loaders.each.to_a.each do |loader|
       if loader.dirs.any? { |dir| dir.include?("/spec/") || dir.include?(Dir.tmpdir) }
         loader.unregister
       end
