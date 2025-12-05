@@ -4,8 +4,6 @@ require "dry/system/loader/autoloading"
 require "zeitwerk"
 
 RSpec.describe "Component dir namespaces / Autoloading loader" do
-  include ZeitwerkHelpers
-
   let(:container) {
     root = @dir
     dir_config = defined?(component_dir_config) ? component_dir_config : -> * {}
@@ -21,9 +19,9 @@ RSpec.describe "Component dir namespaces / Autoloading loader" do
     }
   }
 
-  let(:loader) { Zeitwerk::Loader.new }
+  let(:loader) { ZeitwerkLoaderRegistry.new_loader }
 
-  after { teardown_zeitwerk }
+  after { ZeitwerkLoaderRegistry.clear }
 
   context "top-level constant namespace" do
     let(:component_dir_config) {
