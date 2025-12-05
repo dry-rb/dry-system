@@ -5,8 +5,6 @@ require "dry/system/loader/autoloading"
 require "zeitwerk"
 
 RSpec.describe "Autoloading loader" do
-  include ZeitwerkHelpers
-
   specify "Resolving components using Zeitwerk" do
     module Test
       class Container < Dry::System::Container
@@ -19,7 +17,7 @@ RSpec.describe "Autoloading loader" do
       end
     end
 
-    loader = Zeitwerk::Loader.new
+    loader = ZeitwerkLoaderRegistry.new_loader
     loader.push_dir Test::Container.config.root.join("lib").realpath
     loader.setup
 
@@ -29,6 +27,6 @@ RSpec.describe "Autoloading loader" do
     expect(foo).to be_a Test::Foo
     expect(entity).to be_a Test::Entities::FooEntity
 
-    teardown_zeitwerk
+    ZeitwerkLoaderRegistry.clear
   end
 end
