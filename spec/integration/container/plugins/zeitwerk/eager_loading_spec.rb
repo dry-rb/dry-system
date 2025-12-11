@@ -3,13 +3,11 @@
 # rubocop:disable Style/GlobalVars
 
 RSpec.describe "Zeitwerk plugin / Eager loading" do
-  include ZeitwerkHelpers
-
   before do
     $eager_loaded = false
   end
 
-  after { teardown_zeitwerk }
+  after { ZeitwerkLoaderRegistry.clear }
 
   it "Eager loads after finalization" do
     with_tmp_directory do |tmp_dir|
