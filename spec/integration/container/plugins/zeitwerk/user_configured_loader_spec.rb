@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe "Zeitwerk plugin / User-configured loader" do
-  include ZeitwerkHelpers
+  before do
+    allow(Zeitwerk::Loader).to receive(:new).and_return(ZeitwerkLoaderRegistry.new_loader)
+  end
 
-  after { teardown_zeitwerk }
+  after { ZeitwerkLoaderRegistry.clear }
 
   it "uses the user-configured loader and pushes component dirs to it" do
     with_tmp_directory do |tmp_dir|
