@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe "Zeitwerk plugin / User-configured loader" do
+  before do
+    allow(Zeitwerk::Loader).to receive(:new).and_return(ZeitwerkLoaderRegistry.new_loader)
+  end
+
   after { ZeitwerkLoaderRegistry.clear }
 
   it "uses the user-configured loader and pushes component dirs to it" do
@@ -24,7 +28,7 @@ RSpec.describe "Zeitwerk plugin / User-configured loader" do
             dir.namespaces.add_root const: "test"
           end
 
-          config.autoloader = ZeitwerkLoaderRegistry.new_loader.tap do |loader|
+          config.autoloader = Zeitwerk::Loader.new.tap do |loader|
             loader.tag = "custom_loader"
             loader.logger = -> str { logs << str }
           end

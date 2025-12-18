@@ -5,6 +5,7 @@
 RSpec.describe "Zeitwerk plugin / Eager loading" do
   before do
     $eager_loaded = false
+    allow(Zeitwerk::Loader).to receive(:new).and_return(ZeitwerkLoaderRegistry.new_loader)
   end
 
   after { ZeitwerkLoaderRegistry.clear }

@@ -19,7 +19,11 @@ RSpec.describe "Component dir namespaces / Autoloading loader" do
     }
   }
 
-  let(:loader) { ZeitwerkLoaderRegistry.new_loader }
+  let(:loader) { Zeitwerk::Loader.new }
+
+  before do
+    allow(Zeitwerk::Loader).to receive(:new).and_return(ZeitwerkLoaderRegistry.new_loader)
+  end
 
   after { ZeitwerkLoaderRegistry.clear }
 

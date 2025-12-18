@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe "Zeitwerk plugin / Resolving components" do
+  before do
+    allow(Zeitwerk::Loader).to receive(:new).and_return(ZeitwerkLoaderRegistry.new_loader)
+  end
+
   after { ZeitwerkLoaderRegistry.clear }
 
   specify "Resolving components using Zeitwerk" do

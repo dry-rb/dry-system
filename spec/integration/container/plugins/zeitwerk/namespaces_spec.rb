@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe "Zeitwerk plugin / Namespaces" do
+  before do
+    allow(Zeitwerk::Loader).to receive(:new).and_return(ZeitwerkLoaderRegistry.new_loader)
+  end
+
   after { ZeitwerkLoaderRegistry.clear }
 
   it "loads components from a root namespace with a const namespace" do
