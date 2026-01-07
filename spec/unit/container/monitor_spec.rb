@@ -14,7 +14,7 @@ RSpec.describe Dry::System::Container do
           "Test::Class_#{__id__}"
         end
 
-        def say(word, lang: nil, &block) # rubocop:disable Lint/UnusedMethodArgument
+        def say(word, lang: nil, &block)
           block&.call
           word
         end
