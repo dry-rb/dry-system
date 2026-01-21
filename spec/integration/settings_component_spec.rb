@@ -168,4 +168,101 @@ RSpec.describe "Settings component" do
       end
     end
   end
+
+  context "With a custom prefix" do
+    subject(:system) do
+      Class.new(Dry::System::Container) do
+        setting :env
+
+        configure do |config|
+          config.root = SPEC_ROOT.join("fixtures").join("settings_test")
+          config.env = :test
+        end
+
+        register_provider(:settings, from: :dry_system) do
+          configure do |config|
+            config.prefix = "CUSTOM_PREFIX_"
+          end
+
+          before(:prepare) do
+            target_container.require_from_root "types"
+          end
+
+          settings do
+            setting :string_value, constructor: SettingsTest::Types::String
+          end
+        end
+      end
+    end
+
+    before do
+      ENV["CUSTOM_PREFIX_STRING_VALUE"] = "foo"
+    end
+
+    after do
+      ENV.delete("CUSTOM_PREFIX_STRING_VALUE")
+    end
+
+    it "sets up system settings component via ENV and .env" do
+      expect(settings.string_value).to eql("foo")
+    end
+  end
+
+  context "With multiple settings providers" do
+    subject(:system) do
+      Class.new(Dry::System::Container) do
+        setting :env
+
+        configure do |config|
+          config.root = SPEC_ROOT.join("fixtures").join("settings_test")
+          config.env = :test
+        end
+
+        register_provider(:settings_provider1, from: :dry_system, source: :settings) do
+          configure do |config|
+            config.register_as = "database_settings"
+          end
+
+          before(:prepare) do
+            target_container.require_from_root "types"
+          end
+
+          settings do
+            setting :example_port, constructor: SettingsTest::Types::Coercible::Integer
+          end
+        end
+
+        register_provider(:settings_provider2, from: :dry_system, source: :settings) do
+          configure do |config|
+            config.register_as = "api_settings"
+          end
+
+          before(:prepare) do
+            target_container.require_from_root "types"
+          end
+
+          settings do
+            setting :example_token, constructor: SettingsTest::Types::String
+          end
+        end
+      end
+    end
+
+    before do
+      ENV["EXAMPLE_PORT"] = "19"
+      ENV["EXAMPLE_TOKEN"] = "abc123"
+      system.start(:settings_provider1)
+      system.start(:settings_provider2)
+    end
+
+    after do
+      ENV.delete("EXAMPLE_PORT")
+      ENV.delete("EXAMPLE_TOKENT")
+    end
+
+    it "sets up system settings component via ENV and .env" do
+      expect(system["database_settings"].example_port).to eql(19)
+      expect(system["api_settings"].example_token).to eql("abc123")
+    end
+  end
 end
