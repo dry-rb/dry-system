@@ -89,7 +89,7 @@ RSpec.describe "Plugins / Dependency Graph" do
 
     specify "objects receive dependencies via keyword arguments" do
       expect(container["bar"].method(:initialize).parameters).to eq(
-        [[:keyrest, :kwargs], [:block, :block]]
+        [[:keyrest, :__auto_inject_kwargs__], [:block, :block]]
       )
     end
 
