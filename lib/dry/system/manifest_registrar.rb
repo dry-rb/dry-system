@@ -26,8 +26,13 @@ module Dry
 
       # @api private
       def finalize!
+        eager_loaded = container.keys.each_with_object(Set.new) do |key, set|
+          set << Identifier.new(key).root_key
+        end
+
         ::Dir[registrations_dir.join(RB_GLOB)].each do |file|
-          call(Identifier.new(File.basename(file, RB_EXT)))
+          ident = Identifier.new(File.basename(file, RB_EXT))
+          call(ident) unless eager_loaded.include?(ident.root_key)
         end
       end
 
