@@ -220,7 +220,7 @@ module Dry
           container
         else
           raise ArgumentError,
-                "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
+            "+namespace:+ must be true, string or symbol: #{namespace.inspect} given."
         end
       end
 
