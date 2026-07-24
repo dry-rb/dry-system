@@ -32,7 +32,7 @@ module Dry
 
           # Skip files already loaded during earlier stages of finalization, such as a provider
           # resolving a component satisfied via a manifest. Since `#call` uses `load`, re-running
-          # here would duplicate registrations.
+          # here would attempt a duplicate registration and raise an error.
           call(ident) unless @loaded.include?(ident.root_key)
         end
       end

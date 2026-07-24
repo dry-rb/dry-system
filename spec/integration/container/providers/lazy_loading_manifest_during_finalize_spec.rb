@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Providers / Eager-loading a manifest-registered dependency" do
+RSpec.describe "Providers / Lazy loading a manifest-registered dependency as part of finalize" do
   before :context do
     @dir = make_tmp_directory
 
