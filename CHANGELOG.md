@@ -7,6 +7,10 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ## [Unreleased]
 
+### Fixed
+
+- Avoid errors from attempted duplicate registrations when finalizing a container with manifest-registered dependencies that have already been loaded as part of finalizing providers. (@alassek, @timriley in #295)
+
 [Unreleased]: https://github.com/dry-rb/dry-system/compare/v1.2.5...main
 
 ## [1.2.5] - 2025-12-01
