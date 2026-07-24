@@ -22,22 +22,24 @@ module Dry
       def initialize(container)
         @container = container
         @config = container.config
+        @loaded = Set.new
       end
 
       # @api private
       def finalize!
-        eager_loaded = container.keys.each_with_object(Set.new) do |key, set|
-          set << Identifier.new(key).root_key
-        end
-
         ::Dir[registrations_dir.join(RB_GLOB)].each do |file|
           ident = Identifier.new(File.basename(file, RB_EXT))
-          call(ident) unless eager_loaded.include?(ident.root_key)
+
+          # Skip files already loaded during earlier stages of finalization, such as a provider
+          # resolving a component satisfied via a manifest. Since `#call` uses `load`, re-running
+          # here would duplicate registrations.
+          call(ident) unless @loaded.include?(ident.root_key)
         end
       end
 
       # @api private
       def call(component)
+        @loaded << component.root_key
         load(root.join(config.registrations_dir, "#{component.root_key}#{RB_EXT}"))
       end
 
