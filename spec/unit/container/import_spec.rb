@@ -21,6 +21,35 @@ RSpec.describe Dry::System::Container, ".import" do
     expect(app["persistence.users"]).to eql(%w[jane joe])
   end
 
+  it "imports into a string namespace" do
+    app.import(from: db, as: "persistence")
+
+    app.finalize!
+
+    expect(app["persistence.users"]).to eql(%w[jane joe])
+  end
+
+  it "imports into the root namespace" do
+    app.import(from: db, as: :root)
+
+    app.finalize!
+
+    expect(app["users"]).to eql(%w[jane joe])
+  end
+
+  it "keeps nil as a root namespace alias" do
+    app.import(from: db, as: nil)
+
+    app.finalize!
+
+    expect(app["users"]).to eql(%w[jane joe])
+  end
+
+  it "rejects unsupported namespace values" do
+    expect { app.import(from: db, as: 123) }
+      .to raise_error(TypeError, "Import namespace must be a String, Symbol, nil, or :root")
+  end
+
   context "when container has been finalized" do
     it "raises an error" do
       app.finalize!

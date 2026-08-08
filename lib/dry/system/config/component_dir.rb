@@ -200,7 +200,7 @@ module Dry
         # @api public
         def initialize(path)
           super()
-          @path = path
+          @path = path == ROOT ? EMPTY_STRING : path
           yield self if block_given?
         end
 
