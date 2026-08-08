@@ -169,7 +169,7 @@ module Dry
         #
         # @param keys [Array<String>] Keys for the components to import
         # @param from [Class] The container to import from
-        # @param as [Symbol] Namespace to use for the components of the imported container
+        # @param as [String, Symbol, nil, :root] Namespace to use for the components of the imported container
         #
         # @raise [Dry::System::ContainerAlreadyFinalizedError] if the container has already
         #  been finalized

@@ -51,6 +51,13 @@ RSpec.describe Dry::System::Config::ComponentDirs do
   end
 
   describe "#add" do
+    it "adds the container root" do
+      dir = component_dirs.add(:root)
+
+      expect(dir.path).to eq ""
+      expect(component_dirs.dir(:root)).to be dir
+    end
+
     it "adds a component dir by path, with config set on a yielded dir" do
       expect {
         component_dirs.add "test/path" do |dir|
@@ -117,9 +124,22 @@ RSpec.describe Dry::System::Config::ComponentDirs do
       expect(dir.namespaces.to_a.map(&:path)).to eq [nil]
       expect(dir.memoize).to be false
     end
+
+    it "rejects unsupported path values" do
+      [nil, :other, 123].each do |path|
+        expect { component_dirs.add(path) }
+          .to raise_error(TypeError, "Component dir path must be a String or :root")
+      end
+    end
   end
 
   describe "#delete" do
+    it "deletes the container root" do
+      added_dir = component_dirs.add(:root)
+
+      expect(component_dirs.delete(:root)).to be added_dir
+    end
+
     it "deletes and returns the component dir for the given path" do
       added_dir = component_dirs.add("test/path")
 
