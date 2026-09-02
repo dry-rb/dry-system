@@ -9,6 +9,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Added
 
+- The Zeitwerk plugin accepts an `enable_reloading:` option, which enables reloading on the loader ahead of `setup`, so Zeitwerk tracks the constants it defines and they can be unloaded later. Applied from the plugin's `after(:configure)` hook, so it is in time whether the loader is set up by the plugin or by the integrating library. (@afomera)
+
 ### Changed
 
 - Provider files are now evaluated with `load` rather than `require`, matching the `ManifestRegistrar`. A provider file is evaluated once per provider registrar rather than once per process, so a second container sharing a provider dir gets its own providers instead of having the file skipped, and a container built afresh picks up changes to it. (@afomera)

@@ -17,13 +17,15 @@ module Dry
         end
 
         # @api private
-        attr_reader :loader, :run_setup, :eager_load, :debug
+        attr_reader :loader, :run_setup, :eager_load, :enable_reloading, :debug
 
         # @api private
-        def initialize(loader: nil, run_setup: true, eager_load: nil, debug: false)
+        def initialize(loader: nil, run_setup: true, eager_load: nil, enable_reloading: false,
+                       debug: false)
           @loader = loader || ::Zeitwerk::Loader.new
           @run_setup = run_setup
           @eager_load = eager_load
+          @enable_reloading = enable_reloading
           @debug = debug
           super()
         end
@@ -61,6 +63,13 @@ module Dry
         def configure_loader(loader, system)
           loader.tag = system.config.name || system.name unless loader.tag
           loader.inflector = CompatInflector.new(system.config)
+
+          # Zeitwerk only keeps track of the constants it defines (and so can only unload them
+          # later) when reloading is enabled ahead of `setup`. This runs from an `after(:configure)`
+          # hook, so it is in time either way: whether the loader is set up here via `run_setup`, or
+          # by the integrating library afterwards.
+          loader.enable_reloading if enable_reloading
+
           loader.logger = method(:puts) if debug
         end
 
