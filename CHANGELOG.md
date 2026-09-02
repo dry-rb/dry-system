@@ -11,6 +11,8 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 ### Changed
 
+- Provider files are now evaluated with `load` rather than `require`, matching the `ManifestRegistrar`. A provider file is evaluated once per provider registrar rather than once per process, so a second container sharing a provider dir gets its own providers instead of having the file skipped, and a container built afresh picks up changes to it. (@afomera)
+
 ### Deprecated
 
 ### Removed
