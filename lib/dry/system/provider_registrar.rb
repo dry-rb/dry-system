@@ -34,6 +34,7 @@ module Dry
       def initialize(container)
         @providers = {}
         @container = container
+        @loaded = Set.new
       end
 
       # @api private
@@ -270,7 +271,7 @@ module Dry
       def load_provider(path)
         name = Pathname(path).basename(RB_EXT).to_s.to_sym
 
-        Kernel.require path unless providers.key?(name)
+        load_provider_file(path) unless providers.key?(name)
 
         self
       end
@@ -278,7 +279,27 @@ module Dry
       def require_provider_file(name)
         provider_file = find_provider_file(name)
 
-        Kernel.require provider_file if provider_file
+        load_provider_file(provider_file) if provider_file
+      end
+
+      # Evaluates a provider file, at most once for this registrar.
+      #
+      # Uses `load` rather than `require` so that a provider file is evaluated once per registrar
+      # rather than once per process. Evaluating the file adds its provider to this registrar alone.
+      # This allows for a container to be unloaded and reloaded, and its providers to be registered
+      # again.
+      #
+      # Tracks loaded files because `load`, unlike `require`, will evaluate a file more than once.
+      # A file registering a provider under some other name would otherwise be evaluated on every
+      # lookup of its own name, and raise {ProviderAlreadyRegisteredError} the second time.
+      def load_provider_file(path)
+        path = path.to_s
+
+        return if @loaded.include?(path)
+
+        @loaded << path
+
+        Kernel.load path
       end
 
       def find_provider_file(name)

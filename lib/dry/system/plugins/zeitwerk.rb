@@ -17,13 +17,20 @@ module Dry
         end
 
         # @api private
-        attr_reader :loader, :run_setup, :eager_load, :debug
+        attr_reader :loader, :run_setup, :eager_load, :enable_reloading, :debug
 
         # @api private
-        def initialize(loader: nil, run_setup: true, eager_load: nil, debug: false)
+        def initialize(
+          loader: nil,
+          run_setup: true,
+          eager_load: nil,
+          enable_reloading: false,
+          debug: false
+        )
           @loader = loader || ::Zeitwerk::Loader.new
           @run_setup = run_setup
           @eager_load = eager_load
+          @enable_reloading = enable_reloading
           @debug = debug
           super()
         end
@@ -61,6 +68,10 @@ module Dry
         def configure_loader(loader, system)
           loader.tag = system.config.name || system.name unless loader.tag
           loader.inflector = CompatInflector.new(system.config)
+
+          # Must come before `loader.setup`, otherwise Zeitwerk raises.
+          loader.enable_reloading if enable_reloading
+
           loader.logger = method(:puts) if debug
         end
 
