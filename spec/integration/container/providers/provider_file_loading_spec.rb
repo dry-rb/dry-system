@@ -14,6 +14,14 @@ RSpec.describe "Providers / Loading provider files" do
   def write_provider(content)
     with_directory(@dir) do
       write "system/providers/greeter.rb", content
+
+      # Avoid test flakes when the bootsnap plugin tests have run before this one.
+      #
+      # Bootsnap's compile cache (which the bootsnap plugin spec turns on for the whole process)
+      # keys on file size and mtime in whole seconds. Two same-size writes in the same second would
+      # otherwise replay the earlier file.
+      @mtime = (@mtime || Time.now) + 1
+      FileUtils.touch("system/providers/greeter.rb", mtime: @mtime)
     end
   end
 
