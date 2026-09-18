@@ -20,8 +20,13 @@ module Dry
         attr_reader :loader, :run_setup, :eager_load, :enable_reloading, :debug
 
         # @api private
-        def initialize(loader: nil, run_setup: true, eager_load: nil, enable_reloading: false,
-                       debug: false)
+        def initialize(
+          loader: nil,
+          run_setup: true,
+          eager_load: nil,
+          enable_reloading: false,
+          debug: false
+        )
           @loader = loader || ::Zeitwerk::Loader.new
           @run_setup = run_setup
           @eager_load = eager_load
