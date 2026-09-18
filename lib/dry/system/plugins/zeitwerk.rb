@@ -69,10 +69,7 @@ module Dry
           loader.tag = system.config.name || system.name unless loader.tag
           loader.inflector = CompatInflector.new(system.config)
 
-          # Zeitwerk only keeps track of the constants it defines (and so can only unload them
-          # later) when reloading is enabled ahead of `setup`. This runs from an `after(:configure)`
-          # hook, so it is in time either way: whether the loader is set up here via `run_setup`, or
-          # by the integrating library afterwards.
+          # Must come before `loader.setup`, otherwise Zeitwerk raises.
           loader.enable_reloading if enable_reloading
 
           loader.logger = method(:puts) if debug
