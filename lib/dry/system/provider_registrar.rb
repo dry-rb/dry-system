@@ -284,16 +284,14 @@ module Dry
 
       # Evaluates a provider file, at most once for this registrar.
       #
-      # Uses `load` rather than `require`, matching the {ManifestRegistrar}, so that a provider
-      # file is evaluated once per registrar rather than once per process. Providers register
-      # themselves against a particular container, so a file already `require`d for one container
-      # would otherwise be skipped for the next, leaving that container without the provider.
-      # Evaluating the file again also means a container built afresh picks up any changes to it.
+      # Uses `load` rather than `require` so that a provider file is evaluated once per registrar
+      # rather than once per process. Evaluating the file adds its provider to this registrar alone.
+      # This allows for a container to be unloaded and reloaded, and its providers to be registered
+      # again.
       #
-      # Files are tracked because `load`, unlike `require`, will happily evaluate one twice. A
-      # provider file registering a provider under some other name is never satisfied by its own
-      # loading, so it would otherwise be evaluated on every lookup of the name matching its
-      # filename, and raise {ProviderAlreadyRegisteredError} the second time around.
+      # Tracks loaded files because `load`, unlike `require`, will evaluate a file more than once.
+      # A file registering a provider under some other name would otherwise be evaluated on every
+      # lookup of its own name, and raise {ProviderAlreadyRegisteredError} the second time.
       def load_provider_file(path)
         path = path.to_s
 
