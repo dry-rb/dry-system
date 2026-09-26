@@ -9,5 +9,6 @@ module Dry
     PATH_SEPARATOR = File::SEPARATOR
     KEY_SEPARATOR = "."
     WORD_REGEX = /\w+/
+    ROOT = :root
   end
 end
