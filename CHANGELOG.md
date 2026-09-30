@@ -22,6 +22,7 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 ### Fixed
 
 - Avoid errors from attempted duplicate registrations when finalizing a container with manifest-registered dependencies that have already been loaded as part of finalizing providers. (@alassek, @timriley in #295)
+- Require `"dry/configurable"` in the files that need it, fixing issues when loading specific source files _before_ the main `Dry::System::Container` source file is required. (@timriley in #298)
 
 ### Security
 

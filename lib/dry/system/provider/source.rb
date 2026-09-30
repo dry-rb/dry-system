@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/configurable"
+
 module Dry
   module System
     class Provider
