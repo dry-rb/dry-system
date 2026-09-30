@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/configurable"
 require "dry/system/constants"
 
 module Dry
