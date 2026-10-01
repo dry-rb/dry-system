@@ -2,7 +2,7 @@
 
 [actions]: https://github.com/dry-rb/dry-system/actions
 [chat]: https://discord.gg/naQApPAsZB
-[forum]: https://discourse.hanamirb.org
+[forum]: https://discourse.hanakai.org
 [rubygem]: https://rubygems.org/gems/dry-system
 
 # dry-system [![Gem Version](https://badge.fury.io/rb/dry-system.svg)][rubygem] [![CI Status](https://github.com/dry-rb/dry-system/workflows/CI/badge.svg)][actions]
