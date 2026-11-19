@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/system/cycle_visualization"
+
 module Dry
   module System
     # Error raised when import is called on an already finalized container
@@ -126,6 +128,24 @@ module Dry
         end
 
         super(message.join("\n"))
+      end
+    end
+
+    # Error raised when components have cyclic dependencies
+    #
+    # @api public
+    CyclicDependencyError = Class.new(StandardError) do
+      # @api private
+      def initialize(cycle)
+        cycle_visualization = CycleVisualization.generate(cycle)
+
+        super(<<~ERROR_MESSAGE)
+          These dependencies form a cycle:
+
+          #{cycle_visualization}
+
+          You must break this cycle in order to use any of them.
+        ERROR_MESSAGE
       end
     end
   end
