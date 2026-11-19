@@ -16,6 +16,12 @@ RSpec.describe Dry::System::Config::Namespaces do
     it "returns nil when no namepace was previously configured for the given path" do
       expect(namespaces.namespace("test/path")).to be nil
     end
+
+    it "returns the root namespace for :root" do
+      added_namespace = namespaces.add(:root)
+
+      expect(namespaces.namespace(:root)).to be added_namespace
+    end
   end
 
   describe "#[]" do
@@ -43,6 +49,20 @@ RSpec.describe Dry::System::Config::Namespaces do
   end
 
   describe "#add" do
+    it "adds a root namespace" do
+      namespace = namespaces.add(:root)
+
+      expect(namespace).to be_root
+      expect(namespace.key).to be_nil
+      expect(namespace.const).to be_nil
+    end
+
+    it "keeps nil as a root path alias" do
+      namespace = namespaces.add(nil)
+
+      expect(namespace).to be_root
+    end
+
     it "adds the namespace with the given configuration" do
       expect {
         namespaces.add "test/path", key: "key_ns", const: "const_ns"
@@ -61,6 +81,13 @@ RSpec.describe Dry::System::Config::Namespaces do
       namespaces.add "test/path"
 
       expect { namespaces.add "test/path" }.to raise_error(Dry::System::NamespaceAlreadyAddedError, %r{test/path})
+    end
+
+    it "rejects unsupported path values" do
+      [:other, 123].each do |path|
+        expect { namespaces.add(path) }
+          .to raise_error(TypeError, "Namespace path must be a String, nil, or :root")
+      end
     end
   end
 

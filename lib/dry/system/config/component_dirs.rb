@@ -112,14 +112,14 @@ module Dry
 
         # Returns and optionally yields a previously added component dir
         #
-        # @param path [String] the path for the component dir
+        # @param path [String, :root] the path for the component dir
         # @yieldparam dir [ComponentDir] the component dir
         #
         # @return [ComponentDir] the component dir
         #
         # @api public
         def dir(path)
-          dirs[path].tap do |dir|
+          dirs[normalize_path(path)].tap do |dir|
             # Defaults can be (re-)applied first, since the dir has already been added
             apply_defaults_to_dir(dir) if dir
             yield dir if block_given?
@@ -130,7 +130,7 @@ module Dry
         # @overload add(path)
         #   Adds and configures a component dir for the given path
         #
-        #   @param path [String] the path for the component dir, relative to the configured
+        #   @param path [String, :root] the path for the component dir, relative to the configured
         #     container root
         #   @yieldparam dir [ComponentDir] the component dir to configure
         #
@@ -166,20 +166,20 @@ module Dry
             # Defaults must be applied after yielding, since the dir is being newly added,
             # and must have its configuration fully in place before we can know which
             # defaults to apply
-            yield dir if path_or_dir == path && block_given?
+            yield dir if !path_or_dir.is_a?(ComponentDir) && block_given?
             apply_defaults_to_dir(dir)
           end
         end
 
         # Deletes and returns a previously added component dir
         #
-        # @param path [String] the path for the component dir
+        # @param path [String, :root] the path for the component dir
         #
         # @return [ComponentDir] the removed component dir
         #
         # @api public
         def delete(path)
-          dirs.delete(path)
+          dirs.delete(normalize_path(path))
         end
 
         # Returns the paths of the component dirs
@@ -248,11 +248,18 @@ module Dry
         def path_and_dir(path_or_dir)
           if path_or_dir.is_a?(ComponentDir)
             dir = path_or_dir
-            [dir.path, dir]
+            [normalize_path(dir.path), dir]
           else
-            path = path_or_dir
+            path = normalize_path(path_or_dir)
             [path, ComponentDir.new(path)]
           end
+        end
+
+        def normalize_path(path)
+          return EMPTY_STRING if path == ROOT
+          return path if path.is_a?(String)
+
+          raise TypeError, "Component dir path must be a String or :root"
         end
 
         # Applies default settings to a component dir. This is run every time the dirs are

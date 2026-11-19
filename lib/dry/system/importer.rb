@@ -36,6 +36,8 @@ module Dry
 
       # @api private
       def register(namespace:, container:, keys: nil)
+        namespace = normalize_namespace(namespace)
+
         registry[namespace_key(namespace)] = Item.new(
           namespace: namespace,
           container: container,
@@ -75,6 +77,13 @@ module Dry
       end
 
       private
+
+      def normalize_namespace(namespace)
+        return nil if namespace == ROOT
+        return namespace if namespace.nil? || namespace.is_a?(String) || namespace.is_a?(Symbol)
+
+        raise TypeError, "Import namespace must be a String, Symbol, nil, or :root"
+      end
 
       # Returns nil if given a nil (i.e. root) namespace. Otherwise, converts the namespace to a
       # string.

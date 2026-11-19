@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/system/constants"
 require "dry/system/errors"
 
 module Dry
@@ -34,7 +35,7 @@ module Dry
         #
         # @api public
         def namespace(path)
-          namespaces[path]
+          namespaces[path == ROOT ? Namespace::ROOT_PATH : path]
         end
         alias_method :[], :namespace
 
@@ -80,8 +81,8 @@ module Dry
         #
         #   namespaces.add "bananas", key: "desserts", const: "eat_me/now"
         #
-        # @param path [String] the path to the sub-directory of source files to which this
-        #   namespace should apply, relative to the component dir
+        # @param path [String, :root, nil] the path to the sub-directory of source files to
+        #   which this namespace should apply, relative to the component dir
         # @param key [String, nil] the leading namespace to apply to the container keys
         #   for the components. Set `nil` for the keys to be top-level.
         # @param const [String, nil] the Ruby constant namespace to expect for constants
@@ -94,7 +95,11 @@ module Dry
         # @see Namespace
         #
         # @api public
-        def add(path, key: path, const: path)
+        def add(path, key: Undefined, const: Undefined)
+          path = normalize_path(path)
+          key = Undefined.default(key, path)
+          const = Undefined.default(const, path)
+
           raise NamespaceAlreadyAddedError, path if namespaces.key?(path)
 
           namespaces[path] = Namespace.new(path: path, key: key, const: const)
@@ -106,7 +111,7 @@ module Dry
         #
         # @api public
         def add_root(key: nil, const: nil)
-          add(Namespace::ROOT_PATH, key: key, const: const)
+          add(ROOT, key: key, const: const)
         end
 
         # Deletes the configured namespace for the given path and returns the namespace
@@ -119,7 +124,7 @@ module Dry
         #
         # @api public
         def delete(path)
-          namespaces.delete(path)
+          namespaces.delete(path == ROOT ? Namespace::ROOT_PATH : path)
         end
 
         # Deletes the configured root namespace and returns the namespace
@@ -185,6 +190,16 @@ module Dry
         # @api public
         def each(&)
           to_a.each(&)
+        end
+
+        private
+
+        def normalize_path(path)
+          return Namespace::ROOT_PATH if path == ROOT
+          return path if path.nil?
+          return path if path.is_a?(String)
+
+          raise TypeError, "Namespace path must be a String, nil, or :root"
         end
       end
     end
