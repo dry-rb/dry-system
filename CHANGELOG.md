@@ -2,10 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Break Versioning](https://www.taoensso.com/break-versioning).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Break Versioning](https://www.taoensso.com/break-versioning).
 
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+[Unreleased]: https://github.com/dry-rb/dry-system/compare/v1.3.0...main
+
+## [1.3.0] - 2026-11-27
 
 ### Added
 
@@ -15,18 +30,12 @@ and this project adheres to [Break Versioning](https://www.taoensso.com/break-ve
 
 - Provider files are now evaluated with `load` rather than `require`, matching the `ManifestRegistrar`. A provider file is evaluated once per provider registrar rather than once per process, so a second container sharing a provider dir gets its own providers instead of having the file skipped, and a container built afresh picks up changes to it. (@afomera in #297)
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Avoid errors from attempted duplicate registrations when finalizing a container with manifest-registered dependencies that have already been loaded as part of finalizing providers. (@alassek, @timriley in #295)
 - Require `"dry/configurable"` in the files that need it, fixing issues when loading specific source files _before_ the main `Dry::System::Container` source file is required. (@timriley in #298)
 
-### Security
-
-[Unreleased]: https://github.com/dry-rb/dry-system/compare/v1.2.5...main
+[1.3.0]: https://github.com/dry-rb/dry-system/compare/v1.2.5...v1.3.0
 
 ## [1.2.5] - 2025-12-01
 
